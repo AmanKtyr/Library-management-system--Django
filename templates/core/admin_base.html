@@ -137,7 +137,7 @@
                     <i class="fas fa-home"></i>
                     <span>Main Site</span>
                 </a>
-                <a href="{% url 'account_logout' %}" class="admin-pro-menu-item">
+                <a href="{% url 'core:admin_logout' %}" class="admin-pro-menu-item">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>
                 </a>
@@ -238,7 +238,7 @@
                                 <i class="fas fa-lock me-2"></i> Change Password
                             </a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{% url 'account_logout' %}">
+                            <a class="dropdown-item" href="{% url 'core:admin_logout' %}">
                                 <i class="fas fa-sign-out-alt me-2"></i> Logout
                             </a>
                         </div>

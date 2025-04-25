@@ -1,0 +1,859 @@
+{% extends "base_minimal.html" %}
+{% load i18n %}
+{% load account socialaccount %}
+
+{% block head_title %}{% trans "Sign In" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Modern professional login page styles - Updated */
+  :root {
+    --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    --secondary-gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    --accent-color: #8b5cf6;
+    --text-light: #ffffff;
+    --text-dark: #1e293b;
+    --text-muted: #64748b;
+    --border-radius: 16px;
+    --box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+
+  /* Background with animated gradient */
+  .login-container {
+    min-height: 100vh;
+    background: linear-gradient(-45deg, #f0f9ff, #e0f2fe, #dbeafe, #ede9fe);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  @keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .login-wrapper {
+    display: flex;
+    width: 1100px;
+    max-width: 95%;
+    height: 650px;
+    max-height: 95vh;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--box-shadow);
+    background-color: #fff;
+    position: relative;
+    transform: perspective(1000px) rotateY(0deg);
+    transition: var(--transition);
+    animation: cardAppear 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+
+  @keyframes cardAppear {
+    0% {
+      opacity: 0;
+      transform: perspective(1000px) rotateY(-5deg) translateY(30px);
+    }
+    100% {
+      opacity: 1;
+      transform: perspective(1000px) rotateY(0deg) translateY(0);
+    }
+  }
+
+  .login-left {
+    flex: 1.2;
+    position: relative;
+    background-image: url('/static/images/library-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+  }
+
+  .login-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--primary-gradient);
+    z-index: 1;
+  }
+
+  /* Animated particles effect */
+  .login-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    overflow: hidden;
+  }
+
+  .login-particle {
+    position: absolute;
+    display: block;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    animation: float 15s infinite ease-in-out;
+  }
+
+  .login-particle:nth-child(1) {
+    width: 80px;
+    height: 80px;
+    top: 10%;
+    left: 20%;
+    animation-delay: 0s;
+    animation-duration: 20s;
+  }
+
+  .login-particle:nth-child(2) {
+    width: 40px;
+    height: 40px;
+    top: 60%;
+    left: 70%;
+    animation-delay: 2s;
+    animation-duration: 18s;
+  }
+
+  .login-particle:nth-child(3) {
+    width: 60px;
+    height: 60px;
+    top: 40%;
+    left: 25%;
+    animation-delay: 4s;
+    animation-duration: 16s;
+  }
+
+  .login-particle:nth-child(4) {
+    width: 100px;
+    height: 100px;
+    top: 80%;
+    left: 10%;
+    animation-delay: 6s;
+    animation-duration: 22s;
+  }
+
+  .login-particle:nth-child(5) {
+    width: 50px;
+    height: 50px;
+    top: 30%;
+    left: 80%;
+    animation-delay: 8s;
+    animation-duration: 19s;
+  }
+
+  @keyframes float {
+    0% {
+      transform: translateY(0) translateX(0) rotate(0deg);
+      opacity: 0.8;
+    }
+    50% {
+      transform: translateY(-100px) translateX(100px) rotate(180deg);
+      opacity: 0.4;
+    }
+    100% {
+      transform: translateY(0) translateX(0) rotate(360deg);
+      opacity: 0.8;
+    }
+  }
+
+  .login-content {
+    position: relative;
+    z-index: 3;
+    padding: 50px;
+    color: var(--text-light);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .login-logo {
+    margin-bottom: 30px;
+    animation: fadeInDown 0.8s ease-out 0.2s both;
+  }
+
+  .login-logo img {
+    max-width: 140px;
+    filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.2));
+    transition: var(--transition);
+  }
+
+  .login-logo img:hover {
+    transform: scale(1.05);
+  }
+
+  .login-content h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    letter-spacing: -0.5px;
+    animation: fadeInDown 0.8s ease-out 0.4s both;
+    background: linear-gradient(to right, #fff, #e0e7ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+  }
+
+  .login-content .lead {
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 40px;
+    opacity: 0.9;
+    line-height: 1.6;
+    animation: fadeInDown 0.8s ease-out 0.6s both;
+  }
+
+  .login-features {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+    animation: fadeInUp 0.8s ease-out 0.8s both;
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    transition: var(--transition);
+  }
+
+  .feature-item:hover {
+    transform: translateX(5px);
+  }
+
+  .feature-item i {
+    font-size: 20px;
+    margin-right: 12px;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: var(--transition);
+  }
+
+  .feature-item:hover i {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.1);
+  }
+
+  .login-right {
+    flex: 0.8;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Subtle background pattern */
+  .login-right::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+      radial-gradient(#e0e7ff 1px, transparent 1px),
+      radial-gradient(#e0e7ff 1px, transparent 1px);
+    background-size: 20px 20px;
+    background-position: 0 0, 10px 10px;
+    opacity: 0.3;
+  }
+
+  .login-form-container {
+    width: 100%;
+    padding: 50px;
+    max-width: 450px;
+    position: relative;
+    z-index: 1;
+    animation: fadeIn 0.8s ease-out;
+  }
+
+  .login-header {
+    margin-bottom: 30px;
+    text-align: center;
+    animation: fadeInDown 0.8s ease-out 0.2s both;
+  }
+
+  .login-header h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 15px;
+    position: relative;
+    display: inline-block;
+  }
+
+  .login-header h2::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 3px;
+    background: var(--secondary-gradient);
+    border-radius: 3px;
+  }
+
+  .login-header p {
+    color: var(--text-muted);
+    font-size: 16px;
+    margin-bottom: 25px;
+  }
+
+  .form-floating {
+    position: relative;
+    margin-bottom: 25px;
+    animation: fadeInUp 0.8s ease-out;
+    animation-fill-mode: both;
+  }
+
+  .form-floating:nth-child(1) {
+    animation-delay: 0.3s;
+  }
+
+  .form-floating:nth-child(2) {
+    animation-delay: 0.5s;
+  }
+
+  .form-control {
+    height: 60px;
+    padding: 20px 20px 20px 50px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    font-size: 16px;
+    transition: var(--transition);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+    background-color: #f8fafc;
+  }
+
+  .form-control:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 5px 15px rgba(139, 92, 246, 0.15);
+    background-color: #fff;
+    outline: none;
+  }
+
+  .form-icon {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    z-index: 10;
+    transition: var(--transition);
+  }
+
+  .form-control:focus + label + .form-icon {
+    color: var(--accent-color);
+  }
+
+  .password-toggle {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    cursor: pointer;
+    z-index: 10;
+    transition: var(--transition);
+  }
+
+  .password-toggle:hover {
+    color: var(--accent-color);
+  }
+
+  .form-check {
+    margin-bottom: 25px;
+    animation: fadeInUp 0.8s ease-out 0.7s both;
+  }
+
+  .form-check-input {
+    width: 20px;
+    height: 20px;
+    margin-top: 0;
+    margin-right: 10px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .form-check-input:checked {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+  }
+
+  .form-check-label {
+    font-size: 15px;
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+
+  .btn-primary {
+    height: 60px;
+    background: var(--secondary-gradient);
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 10px 20px rgba(59, 130, 246, 0.2);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    animation: fadeInUp 0.8s ease-out 0.9s both;
+  }
+
+  .btn-primary::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: var(--transition);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 25px rgba(59, 130, 246, 0.3);
+    background: linear-gradient(to right, #2563eb, #4f46e5);
+  }
+
+  .btn-primary:hover::before {
+    left: 100%;
+    transition: 0.7s;
+  }
+
+  .login-links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+    font-size: 15px;
+    animation: fadeInUp 0.8s ease-out 1.1s both;
+  }
+
+  .login-links a {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: var(--transition);
+    position: relative;
+  }
+
+  .login-links a::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: var(--accent-color);
+    transition: var(--transition);
+  }
+
+  .login-links a:hover {
+    color: #7c3aed;
+  }
+
+  .login-links a:hover::after {
+    width: 100%;
+  }
+
+  .login-footer {
+    margin-top: 50px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-muted);
+    animation: fadeInUp 0.8s ease-out 1.3s both;
+  }
+
+  .social-login {
+    margin-top: 30px;
+    text-align: center;
+    animation: fadeInUp 0.8s ease-out 1.5s both;
+  }
+
+  .social-login-divider {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+  }
+
+  .social-login-divider::before,
+  .social-login-divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .social-login-divider span {
+    padding: 0 15px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  .social-login-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+  }
+
+  .social-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: var(--text-muted);
+    font-size: 20px;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .social-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 50%;
+    transform: scale(0);
+    transition: var(--transition);
+  }
+
+  .social-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+  }
+
+  .social-btn:hover::before {
+    transform: scale(1);
+  }
+
+  .social-btn.google:hover {
+    color: #ea4335;
+    border-color: #ea4335;
+  }
+
+  .social-btn.facebook:hover {
+    color: #1877f2;
+    border-color: #1877f2;
+  }
+
+  .social-btn.twitter:hover {
+    color: #1da1f2;
+    border-color: #1da1f2;
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 992px) {
+    .login-wrapper {
+      flex-direction: column;
+      height: auto;
+      max-height: none;
+    }
+
+    .login-left {
+      display: none;
+    }
+
+    .login-right {
+      width: 100%;
+      padding: 40px 0;
+    }
+
+    .login-form-container {
+      padding: 30px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .login-form-container {
+      padding: 20px;
+    }
+
+    .login-header h2 {
+      font-size: 24px;
+    }
+
+    .form-control {
+      height: 55px;
+    }
+
+    .btn-primary {
+      height: 55px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+  <div class="login-wrapper">
+    <div class="login-left">
+      <div class="login-overlay"></div>
+      <!-- Animated particles -->
+      <div class="login-particles">
+        <div class="login-particle"></div>
+        <div class="login-particle"></div>
+        <div class="login-particle"></div>
+        <div class="login-particle"></div>
+        <div class="login-particle"></div>
+      </div>
+      <div class="login-content">
+        <div class="login-logo">
+          <img src="/static/images/logo-white.png" alt="Library Management System" class="img-fluid">
+        </div>
+        <h1>Library Management System</h1>
+        <p class="lead">Discover, borrow, and enjoy books from our extensive collection</p>
+        <div class="login-features">
+          <div class="feature-item">
+            <i class="fas fa-book"></i>
+            <span>Extensive Collection</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-search"></i>
+            <span>Easy Search</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-clock"></i>
+            <span>24/7 Access</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-mobile-alt"></i>
+            <span>Mobile Friendly</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-history"></i>
+            <span>Borrowing History</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-star"></i>
+            <span>Book Reviews</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="login-right">
+      <div class="login-form-container">
+        <div class="login-header">
+          <h2>{% trans "Sign In" %}</h2>
+          <p>Welcome back! Please enter your credentials to continue</p>
+        </div>
+
+        {% if messages %}
+        <div class="messages">
+          {% for message in messages %}
+          <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <form class="login-form" method="POST" action="{% url 'account_login' %}">
+          {% csrf_token %}
+
+          <div class="form-floating mb-3">
+            <input type="email" name="login" class="form-control" id="id_login" placeholder="name@example.com" required>
+            <label for="id_login">Email address</label>
+            <div class="form-icon">
+              <i class="fas fa-envelope"></i>
+            </div>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input type="password" name="password" class="form-control" id="id_password" placeholder="Password" required>
+            <label for="id_password">Password</label>
+            <div class="password-toggle">
+              <i class="fas fa-eye" id="togglePassword"></i>
+            </div>
+            <div class="form-icon">
+              <i class="fas fa-lock"></i>
+            </div>
+          </div>
+
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" name="remember" id="id_remember">
+            <label class="form-check-label" for="id_remember">
+              Remember me
+            </label>
+          </div>
+
+          {% if redirect_field_value %}
+          <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+          {% endif %}
+
+          <div class="d-grid gap-2">
+            <button class="btn btn-primary btn-lg" type="submit">
+              <i class="fas fa-sign-in-alt me-2"></i>{% trans "Sign In" %}
+            </button>
+          </div>
+
+          <div class="login-links mt-3">
+            <a href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+            <span class="separator">|</span>
+            <a href="{% url 'account_signup' %}">{% trans "Create Account" %}</a>
+          </div>
+        </form>
+
+        {% if socialaccount_providers %}
+        <div class="social-login">
+          <div class="social-login-divider">
+            <span>Or sign in with</span>
+          </div>
+          <div class="social-login-buttons">
+            {% for provider in socialaccount_providers %}
+              {% if provider.id == 'google' %}
+                <a href="{% provider_login_url provider.id process='login' %}" class="social-btn google">
+                  <i class="fab fa-google"></i>
+                </a>
+              {% elif provider.id == 'facebook' %}
+                <a href="{% provider_login_url provider.id process='login' %}" class="social-btn facebook">
+                  <i class="fab fa-facebook-f"></i>
+                </a>
+              {% elif provider.id == 'twitter' %}
+                <a href="{% provider_login_url provider.id process='login' %}" class="social-btn twitter">
+                  <i class="fab fa-twitter"></i>
+                </a>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="login-footer">
+          <p>&copy; {% now "Y" %} Library Management System. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Password toggle functionality
+    const togglePassword = document.querySelector('#togglePassword');
+    const password = document.querySelector('#id_password');
+
+    if (togglePassword && password) {
+      togglePassword.addEventListener('click', function() {
+        // Toggle the type attribute
+        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        password.setAttribute('type', type);
+
+        // Toggle the icon
+        this.classList.toggle('fa-eye');
+        this.classList.toggle('fa-eye-slash');
+      });
+    }
+
+    // Add subtle hover effect to the login card
+    const loginWrapper = document.querySelector('.login-wrapper');
+    if (loginWrapper) {
+      loginWrapper.addEventListener('mousemove', function(e) {
+        const rect = this.getBoundingClientRect();
+        const x = e.clientX - rect.left; // x position within the element
+        const y = e.clientY - rect.top;  // y position within the element
+
+        // Calculate rotation based on mouse position
+        // Limit the rotation to a small amount (3deg)
+        const rotateY = ((x / rect.width) - 0.5) * 3;
+        const rotateX = ((y / rect.height) - 0.5) * -3;
+
+        // Apply the transform
+        this.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      });
+
+      // Reset transform when mouse leaves
+      loginWrapper.addEventListener('mouseleave', function() {
+        this.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+      });
+    }
+
+    // Add focus animation to form fields
+    const formControls = document.querySelectorAll('.form-control');
+    formControls.forEach(input => {
+      input.addEventListener('focus', function() {
+        this.classList.add('highlight-input');
+        setTimeout(() => {
+          this.classList.remove('highlight-input');
+        }, 1000);
+      });
+    });
+
+    // Add button press effect
+    const submitBtn = document.querySelector('.btn-primary');
+    if (submitBtn) {
+      submitBtn.addEventListener('mousedown', function() {
+        this.style.transform = 'translateY(2px)';
+        this.style.boxShadow = '0 5px 15px rgba(59, 130, 246, 0.2)';
+      });
+
+      submitBtn.addEventListener('mouseup', function() {
+        this.style.transform = '';
+        this.style.boxShadow = '';
+      });
+
+      submitBtn.addEventListener('mouseleave', function() {
+        this.style.transform = '';
+        this.style.boxShadow = '';
+      });
+    }
+  });
+</script>
+{% endblock %}

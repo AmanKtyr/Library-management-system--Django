@@ -114,12 +114,12 @@
                                 {% endif %}
 
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{% url 'account_logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                                <li><a class="dropdown-item" href="{% url 'core:user_logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                             </ul>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link btn-with-icon login-btn me-2" href="{% url 'account_login' %}">
+                            <a class="nav-link btn-with-icon login-btn me-2" href="{% url 'core:user_login' %}">
                                 <i class="fas fa-sign-in-alt"></i> Login
                             </a>
                         </li>

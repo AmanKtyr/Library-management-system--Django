@@ -140,6 +140,27 @@ def admin_login(request):
 
     return render(request, 'account/login_admin.html')
 
+def admin_logout(request):
+    """View function for the custom admin logout page."""
+    if not request.user.is_authenticated:
+        return redirect('core:admin_login')
+
+    return render(request, 'account/logout_admin.html')
+
+def user_logout(request):
+    """View function for the custom user logout page."""
+    if not request.user.is_authenticated:
+        return redirect('account_login')
+
+    return render(request, 'account/logout.html')
+
+def user_login(request):
+    """View function for the custom user login page."""
+    if request.user.is_authenticated:
+        return redirect('core:dashboard')
+
+    return render(request, 'account/login.html')
+
 # Custom Admin Panel Views
 def is_super_admin(user):
     """Check if user is a super admin."""

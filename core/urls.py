@@ -20,6 +20,11 @@ urlpatterns = [
     # Library Admin Panel URLs
     path('library-admin-panel/', views.library_admin_panel, name='library_admin_panel'),
 
-    # Admin Login
+    # Admin Login/Logout
     path('admin-login/', views.admin_login, name='admin_login'),
+    path('admin-logout/', views.admin_logout, name='admin_logout'),
+
+    # User Login/Logout
+    path('login/', views.user_login, name='user_login'),
+    path('logout/', views.user_logout, name='user_logout'),
 ]

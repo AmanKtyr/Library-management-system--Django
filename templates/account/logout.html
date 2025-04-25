@@ -1,0 +1,447 @@
+{% extends "base_minimal.html" %}
+{% load i18n %}
+{% load account %}
+
+{% block head_title %}{% trans "Sign Out" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Modern professional logout page styles - Updated */
+  :root {
+    --logout-primary: #4f46e5; /* Indigo */
+    --logout-secondary: #8b5cf6; /* Purple */
+    --logout-accent: #f59e0b; /* Amber */
+    --logout-gradient: linear-gradient(135deg, var(--logout-primary), var(--logout-secondary));
+    --logout-text-light: #ffffff;
+    --logout-text-dark: #1e293b;
+    --logout-text-muted: #64748b;
+    --logout-border-radius: 20px;
+    --logout-box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    --logout-transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+
+  /* Background with animated gradient */
+  .logout-container {
+    min-height: 100vh;
+    background: linear-gradient(-45deg, #f0f9ff, #e0f2fe, #dbeafe, #ede9fe);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  @keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Floating shapes in background */
+  .logout-container::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.05) 0%, rgba(79, 70, 229, 0.05) 5%, transparent 5.1%),
+      radial-gradient(circle at 85% 60%, rgba(139, 92, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 7%, transparent 7.1%),
+      radial-gradient(circle at 40% 80%, rgba(245, 158, 11, 0.05) 0%, rgba(245, 158, 11, 0.05) 6%, transparent 6.1%);
+    background-size: 120% 120%;
+    background-position: 0 0;
+    animation: moveBG 20s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  @keyframes moveBG {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 100% 100%; }
+  }
+
+  .logout-card {
+    width: 500px;
+    max-width: 95%;
+    background-color: #fff;
+    border-radius: var(--logout-border-radius);
+    overflow: hidden;
+    box-shadow: var(--logout-box-shadow);
+    position: relative;
+    transform: perspective(1000px) rotateY(0deg);
+    transition: var(--logout-transition);
+    animation: cardAppear 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+  }
+
+  @keyframes cardAppear {
+    0% {
+      opacity: 0;
+      transform: perspective(1000px) rotateY(-5deg) translateY(30px);
+    }
+    100% {
+      opacity: 1;
+      transform: perspective(1000px) rotateY(0deg) translateY(0);
+    }
+  }
+
+  /* Card hover effect */
+  .logout-card:hover {
+    transform: translateY(-5px) scale(1.01);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+  }
+
+  .logout-header {
+    background: var(--logout-gradient);
+    padding: 30px;
+    color: var(--logout-text-light);
+    text-align: center;
+    position: relative;
+    clip-path: polygon(0 0, 100% 0, 100% 85%, 50% 100%, 0 85%);
+    padding-bottom: 50px;
+  }
+
+  .logout-logo {
+    margin-bottom: 20px;
+    animation: fadeInDown 0.8s ease-out 0.2s both;
+  }
+
+  .logout-logo img {
+    max-width: 100px;
+    filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.2));
+    transition: var(--logout-transition);
+  }
+
+  .logout-logo img:hover {
+    transform: scale(1.05) rotate(5deg);
+  }
+
+  .logout-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: -0.5px;
+    animation: fadeInDown 0.8s ease-out 0.4s both;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .logout-body {
+    padding: 40px 30px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Subtle background pattern */
+  .logout-body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+      radial-gradient(#e0e7ff 1px, transparent 1px),
+      radial-gradient(#e0e7ff 1px, transparent 1px);
+    background-size: 20px 20px;
+    background-position: 0 0, 10px 10px;
+    opacity: 0.3;
+    z-index: -1;
+  }
+
+  .logout-message {
+    font-size: 18px;
+    color: var(--logout-text-dark);
+    margin-bottom: 30px;
+    line-height: 1.6;
+    animation: fadeInUp 0.8s ease-out 0.6s both;
+  }
+
+  .logout-icon {
+    font-size: 60px;
+    color: var(--logout-primary);
+    margin-bottom: 20px;
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    line-height: 100px;
+    border-radius: 50%;
+    background-color: rgba(79, 70, 229, 0.1);
+    animation: iconPulse 2s infinite ease-in-out;
+    transition: var(--logout-transition);
+  }
+
+  @keyframes iconPulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(79, 70, 229, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
+    }
+  }
+
+  .logout-icon:hover {
+    transform: rotate(15deg);
+    background-color: rgba(79, 70, 229, 0.15);
+  }
+
+  .logout-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    animation: fadeInUp 0.8s ease-out 0.8s both;
+  }
+
+  .btn-primary {
+    height: 55px;
+    background: var(--logout-gradient);
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2);
+    transition: var(--logout-transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: var(--logout-transition);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 25px rgba(79, 70, 229, 0.3);
+  }
+
+  .btn-primary:hover::before {
+    left: 100%;
+    transition: 0.7s;
+  }
+
+  .btn-outline {
+    height: 55px;
+    background: transparent;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--logout-text-muted);
+    transition: var(--logout-transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .btn-outline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background-color: rgba(79, 70, 229, 0.05);
+    transition: var(--logout-transition);
+    z-index: -1;
+  }
+
+  .btn-outline:hover {
+    border-color: var(--logout-primary);
+    color: var(--logout-primary);
+  }
+
+  .btn-outline:hover::before {
+    width: 100%;
+  }
+
+  .logout-footer {
+    margin-top: 40px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--logout-text-muted);
+    animation: fadeInUp 0.8s ease-out 1s both;
+  }
+
+  /* Animations */
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 576px) {
+    .logout-header {
+      padding: 25px 20px 45px;
+    }
+
+    .logout-body {
+      padding: 30px 20px;
+    }
+
+    .logout-message {
+      font-size: 16px;
+    }
+
+    .logout-icon {
+      width: 80px;
+      height: 80px;
+      line-height: 80px;
+      font-size: 40px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="logout-container">
+  <div class="logout-card" id="logoutCard">
+    <div class="logout-header">
+      <div class="logout-logo">
+        <img src="/static/images/logo-white.png" alt="Library Management System" class="img-fluid">
+      </div>
+      <h1>{% trans "Sign Out" %}</h1>
+    </div>
+
+    <div class="logout-body">
+      <div class="logout-icon">
+        <i class="fas fa-sign-out-alt"></i>
+      </div>
+
+      <p class="logout-message">{% trans "Are you sure you want to sign out?" %}</p>
+
+      <div class="logout-actions">
+        <form method="post" action="{% url 'account_logout' %}">
+          {% csrf_token %}
+          {% if redirect_field_value %}
+          <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+          {% endif %}
+          <button type="submit" class="btn btn-primary" id="logoutBtn">
+            <i class="fas fa-sign-out-alt me-2"></i>{% trans "Yes, Sign Out" %}
+          </button>
+        </form>
+
+        <a href="{% url 'core:home' %}" class="btn btn-outline" id="cancelBtn">
+          <i class="fas fa-arrow-left me-2"></i>{% trans "No, Return to Site" %}
+        </a>
+      </div>
+
+      <div class="logout-footer">
+        <p>&copy; {% now "Y" %} Library Management System. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Add 3D effect on mouse move
+    const logoutCard = document.getElementById('logoutCard');
+
+    if (logoutCard) {
+      logoutCard.addEventListener('mousemove', function(e) {
+        const rect = this.getBoundingClientRect();
+        const x = e.clientX - rect.left; // x position within the element
+        const y = e.clientY - rect.top;  // y position within the element
+
+        // Calculate rotation based on mouse position
+        // Limit the rotation to a small amount (3deg)
+        const rotateY = ((x / rect.width) - 0.5) * 3;
+        const rotateX = ((y / rect.height) - 0.5) * -3;
+
+        // Apply the transform
+        this.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      });
+
+      // Reset transform when mouse leaves
+      logoutCard.addEventListener('mouseleave', function() {
+        this.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+      });
+    }
+
+    // Add button press effect
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('mousedown', function() {
+        this.style.transform = 'translateY(2px)';
+        this.style.boxShadow = '0 5px 15px rgba(79, 70, 229, 0.2)';
+      });
+
+      logoutBtn.addEventListener('mouseup', function() {
+        this.style.transform = '';
+        this.style.boxShadow = '';
+      });
+
+      logoutBtn.addEventListener('mouseleave', function() {
+        this.style.transform = '';
+        this.style.boxShadow = '';
+      });
+    }
+
+    // Add button press effect for cancel button
+    const cancelBtn = document.getElementById('cancelBtn');
+    if (cancelBtn) {
+      cancelBtn.addEventListener('mousedown', function() {
+        this.style.transform = 'translateY(2px)';
+      });
+
+      cancelBtn.addEventListener('mouseup', function() {
+        this.style.transform = '';
+      });
+
+      cancelBtn.addEventListener('mouseleave', function() {
+        this.style.transform = '';
+      });
+    }
+
+    // Add icon animation on hover
+    const logoutIcon = document.querySelector('.logout-icon');
+    if (logoutIcon) {
+      logoutIcon.addEventListener('mouseenter', function() {
+        this.style.transform = 'rotate(15deg) scale(1.1)';
+      });
+
+      logoutIcon.addEventListener('mouseleave', function() {
+        this.style.transform = '';
+      });
+    }
+  });
+</script>
+{% endblock %}
