@@ -43,28 +43,8 @@ def library_detail(request, slug):
 @login_required
 def create_library(request):
     """View function for creating a new library (Super Admin only)."""
-    user = request.user
-
-    if not user.is_super_admin:
-        return HttpResponseForbidden("You don't have permission to access this page.")
-
-    if request.method == 'POST':
-        form = LibraryForm(request.POST, request.FILES)
-        if form.is_valid():
-            library = form.save(commit=False)
-            library.save()
-            messages.success(request, f"Library '{library.name}' created successfully.")
-            return redirect('libraries:manage_libraries')
-    else:
-        form = LibraryForm()
-
-    context = {
-        'form': form,
-        'title': 'Create New Library',
-        'submit_text': 'Create Library',
-    }
-
-    return render(request, 'libraries/library_form.html', context)
+    # Redirect to the manage libraries page, which now includes the create form
+    return redirect('libraries:manage_libraries')
 
 @login_required
 def manage_libraries(request):
@@ -76,8 +56,19 @@ def manage_libraries(request):
 
     libraries = Library.objects.all()
 
+    # Create a new form instance for adding a library
+    form = LibraryForm()
+
+    if request.method == 'POST':
+        form = LibraryForm(request.POST, request.FILES)
+        if form.is_valid():
+            library = form.save()
+            messages.success(request, f"Library '{library.name}' created successfully.")
+            return redirect('libraries:manage_libraries')
+
     context = {
         'libraries': libraries,
+        'form': form,
     }
 
     return render(request, 'libraries/manage_libraries.html', context)

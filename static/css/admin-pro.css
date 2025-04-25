@@ -109,6 +109,7 @@
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
     border-right: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
 }
 
 .admin-pro-sidebar::-webkit-scrollbar {
@@ -211,8 +212,23 @@
     text-decoration: none;
     transition: all 0.3s ease;
     border-left: 3px solid transparent;
-    margin-bottom: 2px;
-    border-radius: 0 4px 4px 0;
+    margin-bottom: 8px;
+    border-radius: 0 8px 8px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.admin-pro-menu-item:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background-color: var(--secondary-color);
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+    transform-origin: bottom;
 }
 
 .admin-pro-menu-item:hover {
@@ -221,11 +237,36 @@
     transform: translateX(3px);
 }
 
+.admin-pro-menu-item:hover:before {
+    transform: scaleY(1);
+}
+
 .admin-pro-menu-item.active {
     background-color: rgba(255, 255, 255, 0.15);
     color: white;
     border-left-color: var(--secondary-color);
     font-weight: 500;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.admin-pro-menu-item.active:before {
+    transform: scaleY(1);
+}
+
+.admin-pro-menu-item:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.05), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+}
+
+.admin-pro-menu-item:hover:after {
+    transform: translateX(100%);
 }
 
 .admin-pro-menu-item i {
@@ -1055,11 +1096,27 @@
     background-color: white;
     border-radius: var(--border-radius);
     box-shadow: var(--card-shadow);
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
     text-decoration: none;
     color: var(--gray-700);
     height: 100%;
     border: 1px solid rgba(0, 0, 0, 0.03);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.admin-pro-action-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0) 0%, rgba(58, 90, 120, 0.05) 100%);
+    z-index: -1;
+    transition: opacity 0.3s ease;
+    opacity: 0;
 }
 
 .admin-pro-action-card:hover {
@@ -1068,17 +1125,45 @@
     color: var(--gray-800);
 }
 
+.admin-pro-action-card:hover::before {
+    opacity: 1;
+}
+
+.admin-pro-action-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+}
+
+.admin-pro-action-card:hover::after {
+    transform: scaleX(1);
+}
+
 .admin-pro-action-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 10px;
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 15px;
+    margin-right: 20px;
     color: white;
-    font-size: 20px;
+    font-size: 24px;
     flex-shrink: 0;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    box-shadow: 0 5px 15px rgba(58, 90, 120, 0.3);
+    transition: all 0.3s ease;
+}
+
+.admin-pro-action-card:hover .admin-pro-action-icon {
+    transform: scale(1.1) rotate(5deg);
 }
 
 .admin-pro-action-content {
@@ -1372,13 +1457,33 @@
 .admin-pro-status-card {
     background-color: white;
     border-radius: var(--border-radius);
-    padding: 20px;
+    padding: 25px;
     box-shadow: var(--card-shadow);
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
     height: 100%;
     position: relative;
     overflow: hidden;
     border: 1px solid rgba(0, 0, 0, 0.03);
+    z-index: 1;
+}
+
+.admin-pro-status-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 80%);
+    opacity: 0;
+    z-index: -1;
+    transform: translate(-100%, -100%);
+    transition: opacity 0.5s ease, transform 0.7s ease;
+}
+
+.admin-pro-status-card:hover::before {
+    opacity: 0.2;
+    transform: translate(0, 0);
 }
 
 .admin-pro-status-card:hover {
@@ -1387,61 +1492,128 @@
 }
 
 .admin-pro-status-card.success {
-    border-left: 4px solid var(--success-color);
+    border: none;
+    background: linear-gradient(to right, white 0%, white 97%, var(--success-color) 97%, var(--success-color) 100%);
 }
 
 .admin-pro-status-card.danger {
-    border-left: 4px solid var(--danger-color);
+    border: none;
+    background: linear-gradient(to right, white 0%, white 97%, var(--danger-color) 97%, var(--danger-color) 100%);
 }
 
 .admin-pro-status-card.warning {
-    border-left: 4px solid var(--warning-color);
+    border: none;
+    background: linear-gradient(to right, white 0%, white 97%, var(--warning-color) 97%, var(--warning-color) 100%);
 }
 
 .admin-pro-status-card.info {
-    border-left: 4px solid var(--info-color);
+    border: none;
+    background: linear-gradient(to right, white 0%, white 97%, var(--info-color) 97%, var(--info-color) 100%);
 }
 
 .admin-pro-status-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 15px;
-    font-size: 18px;
+    margin-bottom: 20px;
+    font-size: 20px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.admin-pro-status-icon::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.admin-pro-status-card:hover .admin-pro-status-icon::after {
+    opacity: 0.4;
+}
+
+.admin-pro-status-card:hover .admin-pro-status-icon {
+    transform: scale(1.1);
 }
 
 .admin-pro-status-card.success .admin-pro-status-icon {
-    background-color: rgba(39, 174, 96, 0.1);
+    background: linear-gradient(135deg, rgba(39, 174, 96, 0.2) 0%, rgba(39, 174, 96, 0.1) 100%);
     color: var(--success-color);
+    box-shadow: 0 5px 15px rgba(39, 174, 96, 0.2);
 }
 
 .admin-pro-status-card.danger .admin-pro-status-icon {
-    background-color: rgba(231, 76, 60, 0.1);
+    background: linear-gradient(135deg, rgba(231, 76, 60, 0.2) 0%, rgba(231, 76, 60, 0.1) 100%);
     color: var(--danger-color);
+    box-shadow: 0 5px 15px rgba(231, 76, 60, 0.2);
 }
 
 .admin-pro-status-card.warning .admin-pro-status-icon {
-    background-color: rgba(230, 126, 34, 0.1);
+    background: linear-gradient(135deg, rgba(230, 126, 34, 0.2) 0%, rgba(230, 126, 34, 0.1) 100%);
     color: var(--warning-color);
+    box-shadow: 0 5px 15px rgba(230, 126, 34, 0.2);
 }
 
 .admin-pro-status-card.info .admin-pro-status-icon {
-    background-color: rgba(52, 152, 219, 0.1);
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.2) 0%, rgba(52, 152, 219, 0.1) 100%);
     color: var(--info-color);
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
 }
 
 .admin-pro-status-content {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    position: relative;
 }
 
 .admin-pro-status-value {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 700;
-    margin: 0 0 5px;
+    margin: 0 0 8px;
     color: var(--dark-color);
+    display: inline-block;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.admin-pro-status-card:hover .admin-pro-status-value {
+    transform: translateY(-2px);
+}
+
+.admin-pro-status-card.success .admin-pro-status-value {
+    background: linear-gradient(to right, var(--dark-color), var(--success-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.admin-pro-status-card.danger .admin-pro-status-value {
+    background: linear-gradient(to right, var(--dark-color), var(--danger-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.admin-pro-status-card.warning .admin-pro-status-value {
+    background: linear-gradient(to right, var(--dark-color), var(--warning-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.admin-pro-status-card.info .admin-pro-status-value {
+    background: linear-gradient(to right, var(--dark-color), var(--info-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .admin-pro-status-label {
@@ -1449,36 +1621,96 @@
     color: var(--gray-600);
     margin: 0;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.8px;
     font-weight: 500;
+    position: relative;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.admin-pro-status-card:hover .admin-pro-status-label {
+    letter-spacing: 1px;
 }
 
 .admin-pro-status-progress {
-    height: 6px;
+    height: 8px;
     background-color: var(--gray-200);
-    border-radius: 3px;
+    border-radius: 4px;
     overflow: hidden;
+    position: relative;
+}
+
+.admin-pro-status-progress::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0.2) 20%,
+        rgba(255, 255, 255, 0.1) 40%,
+        rgba(255, 255, 255, 0) 60%);
+    animation: shimmer 2s infinite linear;
+    transform: translateX(-100%);
+}
+
+@keyframes shimmer {
+    100% {
+        transform: translateX(100%);
+    }
 }
 
 .admin-pro-status-bar {
     height: 100%;
-    border-radius: 3px;
+    border-radius: 4px;
+    transition: width 1s cubic-bezier(0.165, 0.84, 0.44, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.admin-pro-status-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0) 100%);
+    animation: progressShine 2s infinite linear;
+}
+
+@keyframes progressShine {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
 }
 
 .admin-pro-status-bar.success {
-    background-color: var(--success-color);
+    background: linear-gradient(to right, var(--success-color), #2ecc71);
+    box-shadow: 0 0 10px rgba(39, 174, 96, 0.3);
 }
 
 .admin-pro-status-bar.danger {
-    background-color: var(--danger-color);
+    background: linear-gradient(to right, var(--danger-color), #e74c3c);
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.3);
 }
 
 .admin-pro-status-bar.warning {
-    background-color: var(--warning-color);
+    background: linear-gradient(to right, var(--warning-color), #f39c12);
+    box-shadow: 0 0 10px rgba(230, 126, 34, 0.3);
 }
 
 .admin-pro-status-bar.info {
-    background-color: var(--info-color);
+    background: linear-gradient(to right, var(--info-color), #3498db);
+    box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
 }
 
 /* Staff Cards */
@@ -1486,15 +1718,34 @@
     background-color: white;
     border-radius: var(--border-radius);
     box-shadow: var(--card-shadow);
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
     height: 100%;
     overflow: hidden;
     border: 1px solid rgba(0, 0, 0, 0.03);
+    position: relative;
+    z-index: 1;
+}
+
+.admin-pro-staff-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, transparent 0%, rgba(58, 90, 120, 0.03) 100%);
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .admin-pro-staff-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-5px) scale(1.01);
     box-shadow: var(--card-hover-shadow);
+}
+
+.admin-pro-staff-card:hover::before {
+    opacity: 1;
 }
 
 .admin-pro-staff-header {
@@ -1505,18 +1756,43 @@
 }
 
 .admin-pro-staff-avatar {
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     overflow: hidden;
-    margin-right: 15px;
+    margin-right: 20px;
     flex-shrink: 0;
+    position: relative;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border: 3px solid white;
+    transition: all 0.3s ease;
+}
+
+.admin-pro-staff-card:hover .admin-pro-staff-avatar {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.admin-pro-staff-avatar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 70%);
+    pointer-events: none;
 }
 
 .admin-pro-staff-avatar img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.admin-pro-staff-card:hover .admin-pro-staff-avatar img {
+    transform: scale(1.1);
 }
 
 .admin-pro-staff-avatar-placeholder {
@@ -1528,24 +1804,65 @@
     align-items: center;
     justify-content: center;
     font-weight: 600;
-    font-size: 20px;
+    font-size: 24px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .admin-pro-staff-info {
     flex: 1;
+    transition: all 0.3s ease;
+}
+
+.admin-pro-staff-card:hover .admin-pro-staff-info {
+    transform: translateX(5px);
 }
 
 .admin-pro-staff-name {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 600;
-    margin: 0 0 5px;
+    margin: 0 0 8px;
     color: var(--dark-color);
+    position: relative;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.admin-pro-staff-name::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(to right, var(--primary-color), var(--primary-light));
+    transition: width 0.3s ease;
+}
+
+.admin-pro-staff-card:hover .admin-pro-staff-name::after {
+    width: 100%;
 }
 
 .admin-pro-staff-email {
-    font-size: 13px;
+    font-size: 14px;
     margin: 0;
     color: var(--gray-600);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.admin-pro-staff-email i {
+    margin-right: 5px;
+    font-size: 12px;
+    color: var(--primary-color);
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.3s ease;
+}
+
+.admin-pro-staff-card:hover .admin-pro-staff-email i {
+    opacity: 1;
+    transform: translateX(0);
 }
 
 .admin-pro-staff-details {

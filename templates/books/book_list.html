@@ -11,20 +11,18 @@
             <p class="lead">Browse our collection of books across all libraries.</p>
         </div>
     </div>
-    
+
     <!-- Search Form -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card">
+            <div class="card card-glass fade-in-up">
                 <div class="card-body">
                     <form method="get" action="{% url 'books:book_list' %}" id="book-search-form">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <div class="input-group">
+                                <div class="search-form">
                                     <input type="text" name="q" id="search-input" class="form-control" placeholder="Search by title, author, or ISBN" value="{{ query }}">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-search"></i> Search
-                                    </button>
+                                    <i class="fas fa-search search-icon"></i>
                                 </div>
                             </div>
                             <div class="col-md-3">
@@ -47,50 +45,127 @@
                                     {% endfor %}
                                 </select>
                             </div>
+                            <div class="col-12 text-end">
+                                <button type="submit" class="btn btn-gradient-primary">
+                                    <i class="fas fa-search me-2"></i> Search Books
+                                </button>
+                                <button type="reset" class="btn btn-outline-secondary ms-2">
+                                    <i class="fas fa-redo me-2"></i> Reset
+                                </button>
+                            </div>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <!-- Books List -->
     <div class="row">
         {% for book in books %}
             <div class="col-md-3 mb-4">
-                <div class="card h-100">
-                    {% if book.cover_image %}
-                        <img src="{{ book.cover_image.url }}" class="card-img-top" alt="{{ book.title }}">
-                    {% else %}
-                        <img src="https://placehold.co/200x300?text=No+Cover" class="card-img-top" alt="No Cover">
-                    {% endif %}
+                <div class="card card-floating h-100 hover-lift stagger-item fade-in-up">
+                    <div class="card-img-overlay-hover">
+                        {% if book.cover_image %}
+                            <img src="{{ book.cover_image.url }}" class="card-img-top" alt="{{ book.title }}">
+                        {% else %}
+                            <img src="https://placehold.co/200x300?text=No+Cover" class="card-img-top" alt="No Cover">
+                        {% endif %}
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title">{{ book.title|truncatechars:30 }}</h5>
+                        <h5 class="card-title hover-color-change">{{ book.title|truncatechars:30 }}</h5>
                         <p class="card-text">
                             {% for author in book.authors.all %}
                                 {% if forloop.first %}by {% endif %}
-                                <a href="{% url 'books:author_detail' slug=author.slug %}">{{ author.name }}</a>{% if not forloop.last %}, {% endif %}
+                                <a href="{% url 'books:author_detail' slug=author.slug %}" class="hover-underline">{{ author.name }}</a>{% if not forloop.last %}, {% endif %}
                             {% endfor %}
                         </p>
                         <p class="card-text">
                             {% for category in book.categories.all %}
-                                <a href="{% url 'books:category_detail' slug=category.slug %}" class="badge bg-secondary text-decoration-none">{{ category.name }}</a>
+                                <a href="{% url 'books:category_detail' slug=category.slug %}" class="badge bg-secondary text-decoration-none hover-grow">{{ category.name }}</a>
                             {% endfor %}
                         </p>
                         <p class="card-text"><small class="text-muted">ISBN: {{ book.isbn }}</small></p>
                     </div>
                     <div class="card-footer bg-transparent border-top-0">
-                        <a href="{% url 'books:book_detail' slug=book.slug %}" class="btn btn-primary w-100">View Details</a>
+                        <a href="{% url 'books:book_detail' slug=book.slug %}" class="btn btn-gradient-primary w-100 btn-ripple">
+                            <i class="fas fa-book-open me-2"></i> View Details
+                        </a>
                     </div>
                 </div>
             </div>
         {% empty %}
             <div class="col-12 text-center">
-                <div class="alert alert-info">
-                    <p>No books found matching your criteria. Try a different search or filter.</p>
+                <div class="alert alert-info fade-in">
+                    <i class="fas fa-info-circle me-2 fa-2x"></i>
+                    <p class="mb-0">No books found matching your criteria. Try a different search or filter.</p>
                 </div>
             </div>
         {% endfor %}
     </div>
+
+    <!-- Floating Action Button -->
+    <a href="#" class="btn-floating btn-gradient-primary" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </a>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Back to top button functionality
+        const backToTopButton = document.getElementById('backToTop');
+
+        // Initially hide the button
+        backToTopButton.style.opacity = '0';
+        backToTopButton.style.visibility = 'hidden';
+
+        // Show/hide the button based on scroll position
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 300) {
+                backToTopButton.style.opacity = '1';
+                backToTopButton.style.visibility = 'visible';
+            } else {
+                backToTopButton.style.opacity = '0';
+                backToTopButton.style.visibility = 'hidden';
+            }
+        });
+
+        // Smooth scroll to top when clicked
+        backToTopButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Add staggered animation to book cards
+        const bookCards = document.querySelectorAll('.stagger-item');
+        bookCards.forEach((card, index) => {
+            card.style.animationDelay = `${0.1 * (index % 4)}s`;
+        });
+
+        // Add ripple effect to buttons
+        const rippleButtons = document.querySelectorAll('.btn-ripple');
+        rippleButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                const x = e.clientX - e.target.getBoundingClientRect().left;
+                const y = e.clientY - e.target.getBoundingClientRect().top;
+
+                const ripple = document.createElement('span');
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+                ripple.classList.add('ripple-effect');
+
+                this.appendChild(ripple);
+
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+    });
+</script>
 {% endblock %}

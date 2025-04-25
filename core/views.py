@@ -297,42 +297,8 @@ def admin_libraries(request):
 @user_passes_test(is_super_admin)
 def admin_users(request):
     """View function for managing users in the admin panel."""
-    users = User.objects.all().order_by('-date_joined')
-
-    # Filter by user type if provided
-    user_type = request.GET.get('type', '')
-    if user_type:
-        users = users.filter(user_type=user_type)
-
-    # Filter by status if provided
-    status = request.GET.get('status', '')
-    if status == 'active':
-        users = users.filter(is_active=True)
-    elif status == 'inactive':
-        users = users.filter(is_active=False)
-
-    # Search by name or email if provided
-    query = request.GET.get('q', '')
-    if query:
-        users = users.filter(
-            Q(email__icontains=query) |
-            Q(first_name__icontains=query) |
-            Q(last_name__icontains=query)
-        ).distinct()
-
-    # Pagination
-    paginator = Paginator(users, 10)  # Show 10 users per page
-    page_number = request.GET.get('page')
-    users = paginator.get_page(page_number)
-
-    context = {
-        'users': users,
-        'user_type': user_type,
-        'status': status,
-        'query': query,
-    }
-
-    return render(request, 'core/admin_users.html', context)
+    # Redirect to our custom user list page
+    return redirect('accounts:user_list')
 
 @login_required
 @user_passes_test(is_super_admin)
