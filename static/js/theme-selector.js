@@ -1,4 +1,6 @@
 // Theme Selector Functionality
+let cycleToNextTheme; // Declare globally so it can be accessed from other scripts
+
 document.addEventListener('DOMContentLoaded', function() {
     // Helper function to convert hex to RGB
     function hexToRgb(hex) {
@@ -336,6 +338,131 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.appendChild(themeButton);
     }
 
+    // Create theme cycle button
+    function createThemeCycleButton() {
+        const themeCycleButton = document.createElement('button');
+        themeCycleButton.className = 'theme-cycle-button';
+        themeCycleButton.id = 'themeCycleButton';
+
+        // Get current theme name
+        const currentThemeKey = localStorage.getItem('selectedTheme') || 'classic-light';
+        const currentTheme = themes[currentThemeKey];
+
+        // Create button with tooltip showing current theme
+        themeCycleButton.innerHTML = `
+            <i class="fas fa-sync-alt"></i>
+            <span class="theme-tooltip">
+                Cycle Themes (Current: <span class="current-theme-name">${currentTheme.name}</span>)
+                <span class="tooltip-arrow"></span>
+            </span>
+        `;
+
+        themeCycleButton.title = 'Cycle Through Themes';
+
+        // Set initial button gradient based on theme
+        themeCycleButton.style.background = `linear-gradient(135deg, ${currentTheme.colors.accent} 0%, ${currentTheme.colors.button} 100%)`;
+
+        // Add click event to cycle through themes
+        themeCycleButton.addEventListener('click', function() {
+            cycleThroughThemes();
+        });
+
+        document.body.appendChild(themeCycleButton);
+    }
+
+    // Function to cycle to the next theme
+    function cycleThroughThemes() {
+        // Get all theme keys
+        const themeKeys = Object.keys(themes);
+
+        // Get current theme
+        const currentThemeKey = localStorage.getItem('selectedTheme') || 'classic-light';
+
+        // Find the index of the current theme
+        const currentIndex = themeKeys.indexOf(currentThemeKey);
+
+        // Calculate the next theme index (loop back to 0 if at the end)
+        const nextIndex = (currentIndex + 1) % themeKeys.length;
+
+        // Get the next theme key
+        const nextThemeKey = themeKeys[nextIndex];
+
+        // Apply the next theme
+        applyTheme(nextThemeKey);
+
+        // Save the new theme preference
+        localStorage.setItem('selectedTheme', nextThemeKey);
+
+        // Show notification
+        showThemeChangeNotification(themes[nextThemeKey].name);
+
+        // Update active states in UI
+        updateThemeActiveStates(nextThemeKey);
+    }
+
+    // Assign to global variable for access from other scripts
+    cycleToNextTheme = cycleThroughThemes;
+
+    // Show a notification when theme changes
+    function showThemeChangeNotification(themeName) {
+        // Remove any existing notifications
+        const existingNotification = document.querySelector('.theme-change-notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = 'theme-change-notification';
+        notification.innerHTML = `
+            <i class="fas fa-palette"></i>
+            Theme changed to: ${themeName}
+        `;
+
+        // Add to body
+        document.body.appendChild(notification);
+
+        // Show notification with animation
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 10);
+
+        // Remove notification after delay
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                notification.remove();
+            }, 500);
+        }, 3000);
+    }
+
+    // Update active states in UI elements
+    function updateThemeActiveStates(themeKey) {
+        // Update theme swatches
+        document.querySelectorAll('.theme-swatch').forEach(swatch => {
+            swatch.classList.remove('active');
+            if (swatch.getAttribute('data-theme') === themeKey) {
+                swatch.classList.add('active');
+            }
+        });
+
+        // Update theme options
+        document.querySelectorAll('.theme-option').forEach(option => {
+            option.classList.remove('active');
+            if (option.getAttribute('data-theme') === themeKey) {
+                option.classList.add('active');
+            }
+        });
+
+        // Update theme slider dots
+        document.querySelectorAll('.theme-slider-dot').forEach(dot => {
+            dot.classList.remove('active');
+            if (dot.getAttribute('data-theme') === themeKey) {
+                dot.classList.add('active');
+            }
+        });
+    }
+
     // Apply theme function
     function applyTheme(themeKey) {
         const theme = themes[themeKey];
@@ -440,6 +567,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function initThemeSelector() {
         createThemeSelector();
         createThemeButton();
+        createThemeCycleButton(); // Add the theme cycle button
         createThemeSlider();
 
         // Apply saved theme or default

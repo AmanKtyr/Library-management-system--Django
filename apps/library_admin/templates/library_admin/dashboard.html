@@ -6,7 +6,7 @@
 {% block page_title %}Library Admin Dashboard{% endblock %}
 
 {% block page_actions %}
-<a href="{% url 'books:create_book' %}" class="admin-pro-btn admin-pro-btn-primary">
+<a href="{% url 'books:add_book' %}" class="admin-pro-btn admin-pro-btn-primary">
     <i class="fas fa-plus"></i> Add Book
 </a>
 <a href="{% url 'libraries:manage_library_staff' slug=library.slug %}" class="admin-pro-btn admin-pro-btn-outline">

@@ -6,7 +6,7 @@
 {% block page_title %}Library Admin Dashboard{% endblock %}
 
 {% block page_actions %}
-<a href="{% url 'books:create_book' %}" class="admin-pro-btn admin-pro-btn-primary">
+<a href="{% url 'books:add_book' %}" class="admin-pro-btn admin-pro-btn-primary">
     <i class="fas fa-plus"></i> Add Book
 </a>
 <a href="{% url 'libraries:manage_library_staff' slug=library.slug %}" class="admin-pro-btn admin-pro-btn-outline">
@@ -121,7 +121,7 @@
                         <i class="fas fa-book"></i>
                     </div>
                     <div class="admin-pro-stats-content">
-                        <h3 class="admin-pro-stats-value">{{ book_copies.count }}</h3>
+                        <h3 class="admin-pro-stats-value">{{ total_books }}</h3>
                         <p class="admin-pro-stats-label">Total Books</p>
                         <div class="admin-pro-stats-trend up">
                             <i class="fas fa-arrow-up"></i> 3% from last month
@@ -137,7 +137,7 @@
                         <i class="fas fa-users"></i>
                     </div>
                     <div class="admin-pro-stats-content">
-                        <h3 class="admin-pro-stats-value">{{ staff_members.count }}</h3>
+                        <h3 class="admin-pro-stats-value">{{ staff_members }}</h3>
                         <p class="admin-pro-stats-label">Staff Members</p>
                         <div class="admin-pro-stats-trend up">
                             <i class="fas fa-arrow-up"></i> 2% from last month
@@ -153,7 +153,7 @@
                         <i class="fas fa-user-friends"></i>
                     </div>
                     <div class="admin-pro-stats-content">
-                        <h3 class="admin-pro-stats-value">{{ library.memberships.filter.is_active.count }}</h3>
+                        <h3 class="admin-pro-stats-value">{{ members }}</h3>
                         <p class="admin-pro-stats-label">Active Members</p>
                         <div class="admin-pro-stats-trend up">
                             <i class="fas fa-arrow-up"></i> 5% from last month
@@ -169,7 +169,7 @@
                         <i class="fas fa-exchange-alt"></i>
                     </div>
                     <div class="admin-pro-stats-content">
-                        <h3 class="admin-pro-stats-value">{{ transactions.count }}</h3>
+                        <h3 class="admin-pro-stats-value">{{ recent_transactions.count }}</h3>
                         <p class="admin-pro-stats-label">Transactions</p>
                         <div class="admin-pro-stats-trend up">
                             <i class="fas fa-arrow-up"></i> 8% from last month
@@ -459,11 +459,11 @@
                                     <i class="fas fa-check-circle"></i>
                                 </div>
                                 <div class="admin-pro-status-content">
-                                    <h3 class="admin-pro-status-value">{{ book_copies.filter.status.AVAILABLE.count }}</h3>
+                                    <h3 class="admin-pro-status-value">{{ available_books }}</h3>
                                     <p class="admin-pro-status-label">Available Books</p>
                                 </div>
                                 <div class="admin-pro-status-progress">
-                                    <div class="admin-pro-status-bar success" style="width: {% widthratio book_copies.filter.status.AVAILABLE.count book_copies.count 100 %}%;"></div>
+                                    <div class="admin-pro-status-bar success" style="width: {% widthratio available_books total_books 100 %}%;"></div>
                                 </div>
                             </div>
                         </div>
@@ -473,11 +473,11 @@
                                     <i class="fas fa-book-reader"></i>
                                 </div>
                                 <div class="admin-pro-status-content">
-                                    <h3 class="admin-pro-status-value">{{ book_copies.filter.status.BORROWED.count }}</h3>
+                                    <h3 class="admin-pro-status-value">{{ borrowed_books }}</h3>
                                     <p class="admin-pro-status-label">Borrowed Books</p>
                                 </div>
                                 <div class="admin-pro-status-progress">
-                                    <div class="admin-pro-status-bar danger" style="width: {% widthratio book_copies.filter.status.BORROWED.count book_copies.count 100 %}%;"></div>
+                                    <div class="admin-pro-status-bar danger" style="width: {% widthratio borrowed_books total_books 100 %}%;"></div>
                                 </div>
                             </div>
                         </div>
@@ -487,11 +487,11 @@
                                     <i class="fas fa-bookmark"></i>
                                 </div>
                                 <div class="admin-pro-status-content">
-                                    <h3 class="admin-pro-status-value">{{ book_copies.filter.status.RESERVED.count }}</h3>
+                                    <h3 class="admin-pro-status-value">{{ reserved_books }}</h3>
                                     <p class="admin-pro-status-label">Reserved Books</p>
                                 </div>
                                 <div class="admin-pro-status-progress">
-                                    <div class="admin-pro-status-bar warning" style="width: {% widthratio book_copies.filter.status.RESERVED.count book_copies.count 100 %}%;"></div>
+                                    <div class="admin-pro-status-bar warning" style="width: {% widthratio reserved_books total_books 100 %}%;"></div>
                                 </div>
                             </div>
                         </div>
@@ -501,11 +501,11 @@
                                     <i class="fas fa-tools"></i>
                                 </div>
                                 <div class="admin-pro-status-content">
-                                    <h3 class="admin-pro-status-value">{{ book_copies.filter.status.MAINTENANCE.count }}</h3>
+                                    <h3 class="admin-pro-status-value">0</h3>
                                     <p class="admin-pro-status-label">In Maintenance</p>
                                 </div>
                                 <div class="admin-pro-status-progress">
-                                    <div class="admin-pro-status-bar info" style="width: {% widthratio book_copies.filter.status.MAINTENANCE.count book_copies.count 100 %}%;"></div>
+                                    <div class="admin-pro-status-bar info" style="width: 0%;"></div>
                                 </div>
                             </div>
                         </div>

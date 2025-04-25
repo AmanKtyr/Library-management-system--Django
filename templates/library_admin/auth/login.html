@@ -194,32 +194,17 @@
       });
     });
 
-    // Dark mode toggle functionality
+    // Theme toggle functionality
     const themeToggle = document.getElementById('themeToggle');
-    const container = document.querySelector('.admin-login-container');
-    const htmlElement = document.documentElement;
-
-    // Check for saved theme preference
-    const savedTheme = localStorage.getItem('adminTheme');
-
-    // Apply saved theme if it exists
-    if (savedTheme === 'dark') {
-      container.classList.add('dark-mode');
-      themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+    if (themeToggle) {
+      themeToggle.addEventListener('click', function() {
+        // Find the theme selector toggle button and click it
+        const themeButton = document.querySelector('.theme-selector-toggle');
+        if (themeButton) {
+          themeButton.click();
+        }
+      });
     }
-
-    // Toggle dark/light mode
-    themeToggle.addEventListener('click', function() {
-      container.classList.toggle('dark-mode');
-
-      if (container.classList.contains('dark-mode')) {
-        localStorage.setItem('adminTheme', 'dark');
-        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-      } else {
-        localStorage.setItem('adminTheme', 'light');
-        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-      }
-    });
 
     // 3D effect on mouse move
     const wrapper = document.querySelector('.admin-login-wrapper');

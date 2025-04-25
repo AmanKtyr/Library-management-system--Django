@@ -317,15 +317,14 @@
                 }
             });
 
-            // Navbar Theme Selector
+            // Navbar Theme Selector - Cycle through themes
             const navbarThemeSelector = document.getElementById('navbarThemeSelector');
             if (navbarThemeSelector) {
                 navbarThemeSelector.addEventListener('click', function(e) {
                     e.preventDefault();
-                    // Show theme selector modal
-                    const themeSelector = document.querySelector('.theme-selector-toggle');
-                    if (themeSelector) {
-                        themeSelector.click();
+                    // Cycle to the next theme
+                    if (typeof cycleToNextTheme === 'function') {
+                        cycleToNextTheme();
                     }
                 });
             }

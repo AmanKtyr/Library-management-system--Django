@@ -33,13 +33,19 @@ def dashboard(request):
     available_books = BookCopy.objects.filter(library=library, status='AVAILABLE').count()
     borrowed_books = BookCopy.objects.filter(library=library, status='BORROWED').count()
     reserved_books = BookCopy.objects.filter(library=library, status='RESERVED').count()
+    maintenance_books = BookCopy.objects.filter(library=library, status='MAINTENANCE').count()
+
+    # Get book copies for reference
+    book_copies = BookCopy.objects.filter(library=library)
 
     # Get user statistics
-    staff_members = library.staff.count()
-    members = Membership.objects.filter(library=library, is_active=True).count()
+    staff_members_list = library.staff.all()
+    staff_members_count = staff_members_list.count()
+    members_count = Membership.objects.filter(library=library, is_active=True).count()
 
     # Get recent transactions
     recent_transactions = Transaction.objects.filter(library=library).order_by('-transaction_date')[:10]
+    transactions_count = recent_transactions.count()
 
     # Get overdue books
     overdue_books = Transaction.objects.filter(
@@ -56,9 +62,13 @@ def dashboard(request):
         'available_books': available_books,
         'borrowed_books': borrowed_books,
         'reserved_books': reserved_books,
-        'staff_members': staff_members,
-        'members': members,
+        'maintenance_books': maintenance_books,
+        'book_copies': book_copies,
+        'staff_members': staff_members_count,
+        'staff_members_list': staff_members_list,
+        'members': members_count,
         'recent_transactions': recent_transactions,
+        'transactions_count': transactions_count,
         'overdue_books': overdue_books,
     }
 
