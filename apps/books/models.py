@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
-from libraries.models import Library
+from apps.libraries.models import Library
 
 class Author(models.Model):
     """Model representing an author."""

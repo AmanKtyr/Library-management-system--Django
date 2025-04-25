@@ -5,8 +5,8 @@ from django.http import HttpResponseForbidden
 from django.utils import timezone
 from django.db.models import Q
 from .models import Transaction, Membership, MembershipPlan
-from books.models import BookCopy
-from libraries.models import Library
+from apps.books.models import BookCopy
+from apps.libraries.models import Library
 from .forms import TransactionForm, MembershipForm  # We'll create these forms later
 
 @login_required

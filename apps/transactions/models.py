@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
-from books.models import BookCopy
-from libraries.models import Library
+from apps.books.models import BookCopy
+from apps.libraries.models import Library
 from django.utils import timezone
 import uuid
 

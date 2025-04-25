@@ -3,9 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponseForbidden
 from .models import Library
-from books.models import BookCopy
-from transactions.models import Membership
-from accounts.models import User
+from apps.books.models import BookCopy
+from apps.transactions.models import Membership
+from apps.accounts.models import User
 from .forms import LibraryForm, LibraryStaffForm  # We'll create these forms later
 
 def library_list(request):

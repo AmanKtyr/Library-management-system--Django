@@ -1,10 +1,10 @@
 from django import forms
 from .models import Library
-from accounts.models import User
+from apps.accounts.models import User
 
 class LibraryForm(forms.ModelForm):
     """Form for creating and updating libraries."""
-    
+
     class Meta:
         model = Library
         fields = [
@@ -17,7 +17,7 @@ class LibraryForm(forms.ModelForm):
             'opening_hours': forms.Textarea(attrs={'rows': 4}),
             'established_date': forms.DateInput(attrs={'type': 'date'}),
         }
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Limit admin choices to users with LIBRARY_ADMIN role
@@ -31,12 +31,12 @@ class LibraryStaffForm(forms.Form):
         widget=forms.CheckboxSelectMultiple,
         required=False
     )
-    
+
     def __init__(self, *args, **kwargs):
         library = kwargs.pop('library', None)
         available_staff = kwargs.pop('available_staff', None)
         super().__init__(*args, **kwargs)
-        
+
         if available_staff is not None:
             # Include current staff and available staff
             current_staff = library.staff.all() if library else User.objects.none()

@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class MemberConfig(AppConfig):
+class LibrariesConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'member'
+    name = 'apps.libraries'

@@ -24,16 +24,16 @@ urlpatterns = [
     path('admin/accounts/user/add/', lambda request: redirect('accounts:user_add')),
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
-    path('accounts/', include('accounts.urls')),
-    path('', include('core.urls')),
-    path('libraries/', include('libraries.urls')),
-    path('books/', include('books.urls')),
-    path('transactions/', include('transactions.urls')),
+    path('accounts/', include('apps.accounts.urls')),
+    path('', include('apps.core.urls')),
+    path('libraries/', include('apps.libraries.urls')),
+    path('books/', include('apps.books.urls')),
+    path('transactions/', include('apps.transactions.urls')),
 
     # Role-based URLs
-    path('superadmin/', include('superadmin.urls')),
-    path('library-admin/', include('library_admin.urls')),
-    path('member/', include('member.urls')),
+    path('superadmin/', include('apps.superadmin.urls')),
+    path('library-admin/', include('apps.library_admin.urls')),
+    path('member/', include('apps.member.urls')),
 ]
 
 # Serve media files in development

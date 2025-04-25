@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.http import HttpResponseForbidden
 from django.db.models import Q, Count
 from .models import Book, Author, Category, BookCopy
-from libraries.models import Library
+from apps.libraries.models import Library
 from .forms import BookForm, AuthorForm, CategoryForm, BookCopyForm  # We'll create these forms later
 
 def book_list(request):

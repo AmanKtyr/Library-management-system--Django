@@ -6,10 +6,10 @@ from django.utils import timezone
 from django.core.paginator import Paginator
 from django.http import HttpResponseForbidden
 
-from accounts.models import User
-from libraries.models import Library
-from books.models import Book, BookCopy, Author, Category
-from transactions.models import Transaction, Membership, MembershipPlan
+from apps.accounts.models import User
+from apps.libraries.models import Library
+from apps.books.models import Book, BookCopy, Author, Category
+from apps.transactions.models import Transaction, Membership, MembershipPlan
 
 def is_library_admin(user):
     """Check if user is a library admin."""
@@ -27,20 +27,20 @@ def dashboard(request):
         return redirect('core:home')
 
     library = libraries.first()
-    
+
     # Get library statistics
     total_books = BookCopy.objects.filter(library=library).count()
     available_books = BookCopy.objects.filter(library=library, status='AVAILABLE').count()
     borrowed_books = BookCopy.objects.filter(library=library, status='BORROWED').count()
     reserved_books = BookCopy.objects.filter(library=library, status='RESERVED').count()
-    
+
     # Get user statistics
     staff_members = library.staff.count()
     members = Membership.objects.filter(library=library, is_active=True).count()
-    
+
     # Get recent transactions
     recent_transactions = Transaction.objects.filter(library=library).order_by('-transaction_date')[:10]
-    
+
     # Get overdue books
     overdue_books = Transaction.objects.filter(
         library=library,
@@ -77,12 +77,12 @@ def manage_staff(request):
 
     library = libraries.first()
     staff_members = library.staff.all()
-    
+
     context = {
         'library': library,
         'staff_members': staff_members,
     }
-    
+
     return render(request, 'library_admin/staff.html', context)
 
 @login_required
@@ -98,7 +98,7 @@ def manage_books(request):
 
     library = libraries.first()
     book_copies = BookCopy.objects.filter(library=library)
-    
+
     # Search functionality
     search_query = request.GET.get('q', '')
     if search_query:
@@ -108,19 +108,19 @@ def manage_books(request):
             Q(book__isbn__icontains=search_query) |
             Q(inventory_number__icontains=search_query)
         ).distinct()
-    
+
     # Filter by status
     status = request.GET.get('status', '')
     if status:
         book_copies = book_copies.filter(status=status)
-    
+
     context = {
         'library': library,
         'book_copies': book_copies,
         'search_query': search_query,
         'status': status,
     }
-    
+
     return render(request, 'library_admin/books.html', context)
 
 @login_required
@@ -136,7 +136,7 @@ def manage_members(request):
 
     library = libraries.first()
     memberships = Membership.objects.filter(library=library)
-    
+
     # Search functionality
     search_query = request.GET.get('q', '')
     if search_query:
@@ -146,20 +146,20 @@ def manage_members(request):
             Q(user__last_name__icontains=search_query) |
             Q(membership_number__icontains=search_query)
         )
-    
+
     # Filter by active status
     is_active = request.GET.get('is_active', '')
     if is_active:
         is_active_bool = is_active.lower() == 'true'
         memberships = memberships.filter(is_active=is_active_bool)
-    
+
     context = {
         'library': library,
         'memberships': memberships,
         'search_query': search_query,
         'is_active': is_active,
     }
-    
+
     return render(request, 'library_admin/members.html', context)
 
 @login_required
@@ -175,7 +175,7 @@ def manage_transactions(request):
 
     library = libraries.first()
     transactions = Transaction.objects.filter(library=library).order_by('-transaction_date')
-    
+
     # Filter by transaction type if provided
     transaction_type = request.GET.get('type', '')
     if transaction_type:
@@ -185,14 +185,14 @@ def manage_transactions(request):
     status = request.GET.get('status', '')
     if status:
         transactions = transactions.filter(status=status)
-    
+
     context = {
         'library': library,
         'transactions': transactions,
         'transaction_type': transaction_type,
         'status': status,
     }
-    
+
     return render(request, 'library_admin/transactions.html', context)
 
 @login_required
@@ -207,64 +207,64 @@ def reports(request):
         return redirect('core:home')
 
     library = libraries.first()
-    
+
     # Get report type from GET parameters
     report_type = request.GET.get('type', 'transactions')
-    
+
     context = {
         'library': library,
         'report_type': report_type,
     }
-    
+
     if report_type == 'transactions':
         # Transaction report
         transactions = Transaction.objects.filter(library=library).order_by('-transaction_date')
-        
+
         # Filter by date range if provided
         start_date = request.GET.get('start_date', '')
         end_date = request.GET.get('end_date', '')
-        
+
         if start_date and end_date:
             try:
                 start_date = timezone.datetime.strptime(start_date, '%Y-%m-%d')
                 end_date = timezone.datetime.strptime(end_date, '%Y-%m-%d')
                 end_date = end_date.replace(hour=23, minute=59, second=59)
-                
+
                 transactions = transactions.filter(
                     transaction_date__gte=start_date,
                     transaction_date__lte=end_date
                 )
-                
+
                 context['start_date'] = start_date.strftime('%Y-%m-%d')
                 context['end_date'] = end_date.strftime('%Y-%m-%d')
             except ValueError:
                 messages.error(request, "Invalid date format. Please use YYYY-MM-DD.")
-        
+
         context['transactions'] = transactions
-    
+
     elif report_type == 'members':
         # Member report
         memberships = Membership.objects.filter(library=library)
-        
+
         # Filter by active status
         is_active = request.GET.get('is_active', '')
         if is_active:
             is_active_bool = is_active.lower() == 'true'
             memberships = memberships.filter(is_active=is_active_bool)
             context['is_active'] = is_active
-        
+
         context['memberships'] = memberships
-    
+
     elif report_type == 'books':
         # Book report
         book_copies = BookCopy.objects.filter(library=library)
-        
+
         # Filter by status
         status = request.GET.get('status', '')
         if status:
             book_copies = book_copies.filter(status=status)
             context['status'] = status
-        
+
         context['book_copies'] = book_copies
-    
+
     return render(request, 'library_admin/reports.html', context)

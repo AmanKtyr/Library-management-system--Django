@@ -47,16 +47,16 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
 
     # Custom apps
-    'core.apps.CoreConfig',
-    'accounts.apps.AccountsConfig',
-    'libraries.apps.LibrariesConfig',
-    'books.apps.BooksConfig',
-    'transactions.apps.TransactionsConfig',
+    'apps.core',
+    'apps.accounts',
+    'apps.libraries',
+    'apps.books',
+    'apps.transactions',
 
     # Role-based apps
-    'superadmin.apps.SuperadminConfig',
-    'library_admin.apps.LibraryAdminConfig',
-    'member.apps.MemberConfig',
+    'apps.superadmin',
+    'apps.library_admin',
+    'apps.member',
 ]
 
 # Crispy Forms

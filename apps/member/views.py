@@ -4,22 +4,22 @@ from django.contrib import messages
 from django.db.models import Q
 from django.utils import timezone
 
-from accounts.models import User
-from libraries.models import Library
-from books.models import Book, BookCopy, Author, Category
-from transactions.models import Transaction, Membership
+from apps.accounts.models import User
+from apps.libraries.models import Library
+from apps.books.models import Book, BookCopy, Author, Category
+from apps.transactions.models import Transaction, Membership
 
 @login_required
 def dashboard(request):
     """View function for the member dashboard."""
     user = request.user
-    
+
     # Get user's memberships
     memberships = Membership.objects.filter(user=user, is_active=True)
-    
+
     # Get user's transactions
     transactions = Transaction.objects.filter(user=user).order_by('-transaction_date')[:5]
-    
+
     # Get borrowed books
     borrowed_books = Transaction.objects.filter(
         user=user,
@@ -27,14 +27,14 @@ def dashboard(request):
         status='COMPLETED',
         return_date__isnull=True
     )
-    
+
     # Get reserved books
     reserved_books = Transaction.objects.filter(
         user=user,
         transaction_type='RESERVE',
         status='COMPLETED'
     )
-    
+
     # Get overdue books
     overdue_books = Transaction.objects.filter(
         user=user,
@@ -43,7 +43,7 @@ def dashboard(request):
         due_date__lt=timezone.now(),
         return_date__isnull=True
     )
-    
+
     context = {
         'memberships': memberships,
         'transactions': transactions,
@@ -51,18 +51,18 @@ def dashboard(request):
         'reserved_books': reserved_books,
         'overdue_books': overdue_books,
     }
-    
+
     return render(request, 'member/dashboard.html', context)
 
 @login_required
 def profile(request):
     """View function for the member profile."""
     user = request.user
-    
+
     context = {
         'user': user,
     }
-    
+
     return render(request, 'member/profile.html', context)
 
 @login_required
@@ -70,11 +70,11 @@ def memberships(request):
     """View function for the member's library memberships."""
     user = request.user
     memberships = Membership.objects.filter(user=user)
-    
+
     context = {
         'memberships': memberships,
     }
-    
+
     return render(request, 'member/memberships.html', context)
 
 @login_required
@@ -82,7 +82,7 @@ def transactions(request):
     """View function for the member's transactions."""
     user = request.user
     transactions = Transaction.objects.filter(user=user).order_by('-transaction_date')
-    
+
     # Filter by transaction type if provided
     transaction_type = request.GET.get('type', '')
     if transaction_type:
@@ -92,13 +92,13 @@ def transactions(request):
     status = request.GET.get('status', '')
     if status:
         transactions = transactions.filter(status=status)
-    
+
     context = {
         'transactions': transactions,
         'transaction_type': transaction_type,
         'status': status,
     }
-    
+
     return render(request, 'member/transactions.html', context)
 
 @login_required
@@ -111,11 +111,11 @@ def borrowed_books(request):
         status='COMPLETED',
         return_date__isnull=True
     ).order_by('due_date')
-    
+
     context = {
         'borrowed_books': borrowed_books,
     }
-    
+
     return render(request, 'member/borrowed_books.html', context)
 
 @login_required
@@ -127,11 +127,11 @@ def reserved_books(request):
         transaction_type='RESERVE',
         status='COMPLETED'
     ).order_by('transaction_date')
-    
+
     context = {
         'reserved_books': reserved_books,
     }
-    
+
     return render(request, 'member/reserved_books.html', context)
 
 @login_required
@@ -142,17 +142,17 @@ def fines(request):
         user=user,
         fine_amount__gt=0
     ).order_by('-transaction_date')
-    
+
     # Calculate total fines
     total_fines = sum(fine.fine_amount for fine in fines)
-    
+
     # Calculate unpaid fines
     unpaid_fines = sum(fine.fine_amount for fine in fines if not fine.fine_paid)
-    
+
     context = {
         'fines': fines,
         'total_fines': total_fines,
         'unpaid_fines': unpaid_fines,
     }
-    
+
     return render(request, 'member/fines.html', context)

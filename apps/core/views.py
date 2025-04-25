@@ -4,10 +4,10 @@ from django.contrib import messages
 from django.db.models import Count, Sum, Q
 from django.utils import timezone
 from django.core.paginator import Paginator
-from libraries.models import Library
-from books.models import Book, BookCopy, Author, Category
-from transactions.models import Transaction, Membership, MembershipPlan
-from accounts.models import User
+from apps.libraries.models import Library
+from apps.books.models import Book, BookCopy, Author, Category
+from apps.transactions.models import Transaction, Membership, MembershipPlan
+from apps.accounts.models import User
 
 def home(request):
     """View function for the home page."""
