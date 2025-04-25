@@ -52,7 +52,7 @@ def dashboard(request):
         'overdue_books': overdue_books,
     }
 
-    return render(request, 'member/dashboard.html', context)
+    return render(request, 'member/dashboard/index.html', context)
 
 @login_required
 def profile(request):
@@ -63,7 +63,7 @@ def profile(request):
         'user': user,
     }
 
-    return render(request, 'member/profile.html', context)
+    return render(request, 'member/dashboard/profile.html', context)
 
 @login_required
 def memberships(request):
@@ -75,7 +75,7 @@ def memberships(request):
         'memberships': memberships,
     }
 
-    return render(request, 'member/memberships.html', context)
+    return render(request, 'member/transactions/membership_list.html', context)
 
 @login_required
 def transactions(request):
@@ -99,7 +99,7 @@ def transactions(request):
         'status': status,
     }
 
-    return render(request, 'member/transactions.html', context)
+    return render(request, 'member/transactions/transaction_list.html', context)
 
 @login_required
 def borrowed_books(request):
@@ -116,7 +116,7 @@ def borrowed_books(request):
         'borrowed_books': borrowed_books,
     }
 
-    return render(request, 'member/borrowed_books.html', context)
+    return render(request, 'member/books/borrowed_books.html', context)
 
 @login_required
 def reserved_books(request):
@@ -132,7 +132,7 @@ def reserved_books(request):
         'reserved_books': reserved_books,
     }
 
-    return render(request, 'member/reserved_books.html', context)
+    return render(request, 'member/books/reserved_books.html', context)
 
 @login_required
 def fines(request):
@@ -155,4 +155,4 @@ def fines(request):
         'unpaid_fines': unpaid_fines,
     }
 
-    return render(request, 'member/fines.html', context)
+    return render(request, 'member/transactions/fines.html', context)

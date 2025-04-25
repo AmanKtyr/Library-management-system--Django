@@ -1,0 +1,323 @@
+{% extends 'core/admin_base.html' %}
+{% load static %}
+
+{% block title %}Library Admin Dashboard - Library Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">{{ library.name }} Dashboard</h1>
+    <div>
+        <a href="{% url 'books:manage_book_copies' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i> Add Book Copy
+        </a>
+        <a href="{% url 'libraries:manage_library_staff' slug=library.slug %}" class="btn btn-outline-primary">
+            <i class="fas fa-user-plus me-1"></i> Manage Staff
+        </a>
+    </div>
+</div>
+
+<!-- Library Info -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Library Information</h5>
+                <a href="{% url 'libraries:manage_library' slug=library.slug %}" class="btn btn-sm btn-light">Edit Library</a>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        {% if library.image %}
+                            <img src="{{ library.image.url }}" class="img-fluid rounded mb-3" alt="{{ library.name }}">
+                        {% else %}
+                            <img src="https://placehold.co/300x200?text=Library" class="img-fluid rounded mb-3" alt="Library">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-9">
+                        <h3>{{ library.name }}</h3>
+                        <p><i class="fas fa-map-marker-alt me-2"></i> {{ library.address }}, {{ library.city }}, {{ library.state }}, {{ library.postal_code }}, {{ library.country }}</p>
+                        <p><i class="fas fa-phone me-2"></i> {{ library.phone }}</p>
+                        <p><i class="fas fa-envelope me-2"></i> {{ library.email }}</p>
+                        {% if library.website %}
+                            <p><i class="fas fa-globe me-2"></i> <a href="{{ library.website }}" target="_blank">{{ library.website }}</a></p>
+                        {% endif %}
+                        <div class="mt-3">
+                            <a href="{% url 'libraries:library_detail' slug=library.slug %}" class="btn btn-outline-primary">
+                                <i class="fas fa-eye me-1"></i> View Public Page
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="admin-card card-primary">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="title">Total Books</h5>
+                    <div class="value">{{ total_books }}</div>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-book"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="admin-card card-success">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="title">Available</h5>
+                    <div class="value">{{ available_books }}</div>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="admin-card card-danger">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="title">Borrowed</h5>
+                    <div class="value">{{ borrowed_books }}</div>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-book-reader"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="admin-card card-warning">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="title">Reserved</h5>
+                    <div class="value">{{ reserved_books }}</div>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-bookmark"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Staff and Members -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Staff Members</h5>
+                <a href="{% url 'libraries:manage_library_staff' slug=library.slug %}" class="btn btn-sm btn-light">Manage Staff</a>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for staff in staff_members %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        {% if staff.profile_picture %}
+                                            <img src="{{ staff.profile_picture.url }}" class="rounded-circle me-3" width="50" height="50" alt="{{ staff.get_full_name }}">
+                                        {% else %}
+                                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                        {% endif %}
+                                        <div>
+                                            <h5 class="card-title mb-0">{{ staff.get_full_name|default:"Staff Member" }}</h5>
+                                            <p class="card-text text-muted">{{ staff.email }}</p>
+                                        </div>
+                                    </div>
+                                    {% if staff.phone_number %}
+                                        <p class="card-text"><i class="fas fa-phone me-2"></i>{{ staff.phone_number }}</p>
+                                    {% endif %}
+                                    <p class="card-text"><small class="text-muted">Joined: {{ staff.date_joined|date:"M d, Y" }}</small></p>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="col-12 text-center">
+                            <p>No staff members assigned to this library yet.</p>
+                            <a href="{% url 'libraries:manage_library_staff' slug=library.slug %}" class="btn btn-primary">Add Staff</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Library Members</h5>
+                <a href="{% url 'libraries:manage_library_members' slug=library.slug %}" class="btn btn-sm btn-light">View All</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Member</th>
+                                <th>Membership #</th>
+                                <th>Plan</th>
+                                <th>End Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for membership in members|slice:":5" %}
+                                <tr>
+                                    <td>{{ membership.user.get_full_name|default:membership.user.email }}</td>
+                                    <td>{{ membership.membership_number }}</td>
+                                    <td>{{ membership.plan.name }}</td>
+                                    <td>{{ membership.end_date|date:"M d, Y" }}</td>
+                                    <td>
+                                        {% if membership.is_expired %}
+                                            <span class="badge bg-danger">Expired</span>
+                                        {% else %}
+                                            <span class="badge bg-success">Active</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center">No members in this library yet.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Transactions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Recent Transactions</h5>
+                <a href="{% url 'transactions:transaction_list' %}" class="btn btn-sm btn-light">View All</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>User</th>
+                                <th>Book</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in recent_transactions %}
+                                <tr>
+                                    <td>{{ transaction.transaction_date|date:"M d, Y" }}</td>
+                                    <td>{{ transaction.user.get_full_name|default:transaction.user.email }}</td>
+                                    <td>{{ transaction.book_copy.book.title|truncatechars:30 }}</td>
+                                    <td>
+                                        {% if transaction.transaction_type == 'BORROW' %}
+                                            <span class="badge bg-primary">Borrow</span>
+                                        {% elif transaction.transaction_type == 'RETURN' %}
+                                            <span class="badge bg-success">Return</span>
+                                        {% elif transaction.transaction_type == 'RESERVE' %}
+                                            <span class="badge bg-warning text-dark">Reserve</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ transaction.transaction_type|title }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if transaction.status == 'COMPLETED' %}
+                                            <span class="badge bg-success">Completed</span>
+                                        {% elif transaction.status == 'PENDING' %}
+                                            <span class="badge bg-warning text-dark">Pending</span>
+                                        {% elif transaction.status == 'OVERDUE' %}
+                                            <span class="badge bg-danger">Overdue</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ transaction.status|title }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <a href="{% url 'transactions:transaction_detail' transaction_id=transaction.transaction_id %}" class="btn btn-sm btn-info">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center">No transactions yet.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Overdue Books -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">Overdue Books</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Book</th>
+                                <th>Borrowed By</th>
+                                <th>Due Date</th>
+                                <th>Days Overdue</th>
+                                <th>Fine Amount</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in overdue_books %}
+                                <tr>
+                                    <td>{{ transaction.book_copy.book.title|truncatechars:30 }}</td>
+                                    <td>{{ transaction.user.get_full_name|default:transaction.user.email }}</td>
+                                    <td>{{ transaction.due_date|date:"M d, Y" }}</td>
+                                    <td>{{ transaction.due_date|timeuntil }}</td>
+                                    <td>${{ transaction.calculate_fine }}</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <a href="{% url 'transactions:transaction_detail' transaction_id=transaction.transaction_id %}" class="btn btn-sm btn-info">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="#" class="btn btn-sm btn-warning">
+                                                <i class="fas fa-bell"></i> Notify
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center">No overdue books at the moment.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

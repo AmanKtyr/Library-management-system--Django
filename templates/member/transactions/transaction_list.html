@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Transactions - Library Management System{% endblock %}
+
+{% block extra_css %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="transaction-header">
+        <div class="row">
+            <div class="col-12">
+                <h1><i class="fas fa-exchange-alt me-2 text-primary"></i>Transactions</h1>
+                <p>View and manage your transactions.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Form -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="filter-card">
+                <div class="filter-card-body">
+                    <form method="get" action="{% url 'transactions:transaction_list' %}">
+                        <div class="row g-3">
+                            <div class="col-md-4 col-sm-6">
+                                <label for="type" class="form-label">Transaction Type</label>
+                                <select name="type" id="type" class="form-select">
+                                    <option value="">All Transaction Types</option>
+                                    <option value="BORROW" {% if transaction_type == 'BORROW' %}selected{% endif %}>Borrow</option>
+                                    <option value="RETURN" {% if transaction_type == 'RETURN' %}selected{% endif %}>Return</option>
+                                    <option value="RESERVE" {% if transaction_type == 'RESERVE' %}selected{% endif %}>Reserve</option>
+                                    <option value="CANCEL_RESERVATION" {% if transaction_type == 'CANCEL_RESERVATION' %}selected{% endif %}>Cancel Reservation</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                                <label for="status" class="form-label">Status</label>
+                                <select name="status" id="status" class="form-select">
+                                    <option value="">All Statuses</option>
+                                    <option value="PENDING" {% if status == 'PENDING' %}selected{% endif %}>Pending</option>
+                                    <option value="COMPLETED" {% if status == 'COMPLETED' %}selected{% endif %}>Completed</option>
+                                    <option value="OVERDUE" {% if status == 'OVERDUE' %}selected{% endif %}>Overdue</option>
+                                    <option value="CANCELLED" {% if status == 'CANCELLED' %}selected{% endif %}>Cancelled</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <label class="form-label d-md-block d-none">&nbsp;</label>
+                                <button type="submit" class="transaction-btn transaction-btn-primary w-100">
+                                    <i class="fas fa-filter"></i> Filter Transactions
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transactions Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="transaction-card">
+                <div class="transaction-card-header">
+                    <h2><i class="fas fa-list me-2"></i>Transaction List</h2>
+                </div>
+                <div class="transaction-card-body">
+                    <div class="transaction-table-container">
+                        <table class="transaction-table">
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Date</th>
+                                    <th>Book</th>
+                                    <th class="d-none d-md-table-cell">Library</th>
+                                    {% if user.is_super_admin or user.is_library_admin or user.is_staff_member %}
+                                        <th class="d-none d-lg-table-cell">User</th>
+                                    {% endif %}
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th class="d-none d-md-table-cell">Due Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transaction in transactions %}
+                                    <tr>
+                                        <td data-label="Transaction ID">{{ transaction.transaction_id|truncatechars:8 }}</td>
+                                        <td data-label="Date">{{ transaction.transaction_date|date:"M d, Y" }}</td>
+                                        <td data-label="Book">{{ transaction.book_copy.book.title|truncatechars:30 }}</td>
+                                        <td data-label="Library" class="d-none d-md-table-cell">{{ transaction.library.name }}</td>
+                                        {% if user.is_super_admin or user.is_library_admin or user.is_staff_member %}
+                                            <td data-label="User" class="d-none d-lg-table-cell">{{ transaction.user.get_full_name|default:transaction.user.email }}</td>
+                                        {% endif %}
+                                        <td data-label="Type">
+                                            {% if transaction.transaction_type == 'BORROW' %}
+                                                <span class="transaction-badge transaction-badge-primary">Borrow</span>
+                                            {% elif transaction.transaction_type == 'RETURN' %}
+                                                <span class="transaction-badge transaction-badge-success">Return</span>
+                                            {% elif transaction.transaction_type == 'RESERVE' %}
+                                                <span class="transaction-badge transaction-badge-warning">Reserve</span>
+                                            {% elif transaction.transaction_type == 'CANCEL_RESERVATION' %}
+                                                <span class="transaction-badge transaction-badge-secondary">Cancel</span>
+                                            {% endif %}
+                                        </td>
+                                        <td data-label="Status">
+                                            {% if transaction.status == 'COMPLETED' %}
+                                                <span class="transaction-badge transaction-badge-success">Completed</span>
+                                            {% elif transaction.status == 'PENDING' %}
+                                                <span class="transaction-badge transaction-badge-warning">Pending</span>
+                                            {% elif transaction.status == 'OVERDUE' %}
+                                                <span class="transaction-badge transaction-badge-danger">Overdue</span>
+                                            {% elif transaction.status == 'CANCELLED' %}
+                                                <span class="transaction-badge transaction-badge-secondary">Cancelled</span>
+                                            {% endif %}
+                                        </td>
+                                        <td data-label="Due Date" class="d-none d-md-table-cell">
+                                            {% if transaction.due_date %}
+                                                {{ transaction.due_date|date:"M d, Y" }}
+                                                {% if transaction.is_overdue %}
+                                                    <span class="transaction-badge transaction-badge-danger">Overdue</span>
+                                                {% endif %}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                        <td data-label="Actions">
+                                            <div class="transaction-table-actions">
+                                                <a href="{% url 'transactions:transaction_detail' transaction_id=transaction.transaction_id %}" class="transaction-btn transaction-btn-info transaction-btn-sm">
+                                                    <i class="fas fa-eye"></i><span class="d-none d-md-inline"> View</span>
+                                                </a>
+
+                                                {% if transaction.transaction_type == 'BORROW' and transaction.status == 'COMPLETED' and not transaction.return_date %}
+                                                    <a href="{% url 'transactions:return_book' %}?transaction_id={{ transaction.transaction_id }}" class="transaction-btn transaction-btn-primary transaction-btn-sm">
+                                                        <i class="fas fa-undo"></i><span class="d-none d-md-inline"> Return</span>
+                                                    </a>
+                                                {% endif %}
+
+                                                {% if transaction.transaction_type == 'RESERVE' and transaction.status == 'COMPLETED' and transaction.book_copy.status == 'AVAILABLE' %}
+                                                    <a href="{% url 'transactions:borrow_book' %}?book_copy={{ transaction.book_copy.id }}" class="transaction-btn transaction-btn-primary transaction-btn-sm">
+                                                        <i class="fas fa-book"></i><span class="d-none d-md-inline"> Borrow</span>
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="{% if user.is_super_admin or user.is_library_admin or user.is_staff_member %}9{% else %}8{% endif %}" class="text-center">
+                                            <div class="py-4">
+                                                <div style="font-size: 48px; color: var(--gray-400); margin-bottom: 15px;">
+                                                    <i class="fas fa-exchange-alt"></i>
+                                                </div>
+                                                <h4 style="font-size: 18px; font-weight: 600; margin-bottom: 5px;">No Transactions Found</h4>
+                                                <p style="color: var(--gray-600);">Try changing your filter criteria or check back later.</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

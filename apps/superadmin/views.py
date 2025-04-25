@@ -82,7 +82,7 @@ def dashboard(request):
         'top_books': top_books,
     }
 
-    return render(request, 'superadmin/dashboard.html', context)
+    return render(request, 'superadmin/dashboard/index.html', context)
 
 @login_required
 @user_passes_test(is_super_admin)
@@ -94,7 +94,7 @@ def manage_libraries(request):
         'libraries': libraries,
     }
 
-    return render(request, 'superadmin/libraries.html', context)
+    return render(request, 'superadmin/libraries/library_list.html', context)
 
 @login_required
 @user_passes_test(is_super_admin)
@@ -123,7 +123,7 @@ def manage_users(request):
         'user_type': user_type,
     }
 
-    return render(request, 'superadmin/users.html', context)
+    return render(request, 'superadmin/users/user_list.html', context)
 
 @login_required
 @user_passes_test(is_super_admin)
@@ -135,7 +135,7 @@ def manage_books(request):
         'books': books,
     }
 
-    return render(request, 'superadmin/books.html', context)
+    return render(request, 'superadmin/books/book_list.html', context)
 
 @login_required
 @user_passes_test(is_super_admin)
@@ -159,7 +159,7 @@ def manage_transactions(request):
         'status': status,
     }
 
-    return render(request, 'superadmin/transactions.html', context)
+    return render(request, 'superadmin/transactions/transaction_list.html', context)
 
 @login_required
 @user_passes_test(is_super_admin)
@@ -227,4 +227,4 @@ def reports(request):
         context['books'] = books
         context['categories'] = Category.objects.all()
 
-    return render(request, 'superadmin/reports.html', context)
+    return render(request, 'superadmin/transactions/transaction_reports.html', context)

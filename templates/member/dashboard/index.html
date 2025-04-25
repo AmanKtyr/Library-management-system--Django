@@ -1,0 +1,595 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Member Dashboard - Library Management System{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/member-dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="member-dashboard-header">
+        <div class="row">
+            <div class="col-12">
+                <h1>Welcome, {{ user.get_full_name|default:"Member" }}!</h1>
+                <p>Manage your books, memberships, and transactions all in one place.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recommended Books Section -->
+    <div class="recommended-books-section">
+        <div class="recommended-books-header">
+            <h2><i class="fas fa-star me-2 text-warning"></i>Recommended for You</h2>
+            <a href="{% url 'books:book_list' %}" class="member-btn member-btn-outline member-btn-sm">
+                <i class="fas fa-book"></i> Browse All Books
+            </a>
+        </div>
+        <div class="row">
+            {% for book in recommended_books|slice:":4" %}
+                <div class="col-md-3 mb-3">
+                    <div class="book-card">
+                        <div class="book-card-header">
+                            <div class="book-card-image">
+                                {% if book.cover_image %}
+                                    <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
+                                {% else %}
+                                    <div class="book-card-image-placeholder">
+                                        <i class="fas fa-book"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="book-card-title">
+                                <h3>{{ book.title|truncatechars:40 }}</h3>
+                                <p>{{ book.author }}</p>
+                            </div>
+                        </div>
+                        <div class="book-card-body">
+                            <div class="book-card-info">
+                                <div class="book-card-info-item">
+                                    <span class="book-card-info-label">Genre:</span>
+                                    <span class="book-card-info-value">{{ book.genre.name }}</span>
+                                </div>
+                                <div class="book-card-info-item">
+                                    <span class="book-card-info-label">Rating:</span>
+                                    <span class="book-card-info-value">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= book.average_rating %}
+                                                <i class="fas fa-star text-warning"></i>
+                                            {% else %}
+                                                <i class="far fa-star text-warning"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="book-card-footer">
+                            <a href="{% url 'books:book_detail' slug=book.slug %}" class="member-btn member-btn-primary member-btn-block">
+                                <i class="fas fa-info-circle"></i> View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="member-empty-state">
+                        <div class="member-empty-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h4>No Recommendations Yet</h4>
+                        <p>Start borrowing books to get personalized recommendations.</p>
+                        <a href="{% url 'books:book_list' %}" class="member-btn member-btn-primary">
+                            <i class="fas fa-book"></i> Browse Books
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Profile Info -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="member-profile-card">
+                <div class="member-profile-card-header">
+                    <h2><i class="fas fa-user me-2"></i>Your Profile</h2>
+                    <a href="{% url 'account_change_password' %}" class="member-btn member-btn-sm" style="background-color: rgba(255, 255, 255, 0.2); color: white;">
+                        <i class="fas fa-key"></i> Change Password
+                    </a>
+                </div>
+                <div class="member-profile-card-body text-center">
+                    <div class="member-profile-avatar">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="{{ user.get_full_name }}">
+                        {% else %}
+                            <div class="member-profile-avatar-placeholder">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="member-profile-info">
+                        <h3>{{ user.get_full_name|default:"Member" }}</h3>
+                        <div class="member-profile-info-item">
+                            <div class="member-profile-info-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="member-profile-info-content">
+                                {{ user.email }}
+                            </div>
+                        </div>
+                        {% if user.phone_number %}
+                            <div class="member-profile-info-item">
+                                <div class="member-profile-info-icon">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <div class="member-profile-info-content">
+                                    {{ user.phone_number }}
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if user.address %}
+                            <div class="member-profile-info-item">
+                                <div class="member-profile-info-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="member-profile-info-content">
+                                    {{ user.address }}
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="member-profile-info-item">
+                            <div class="member-profile-info-icon">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                            <div class="member-profile-info-content">
+                                Member since: {{ user.date_joined|date:"F j, Y" }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="member-profile-actions">
+                        <a href="{% url 'accounts:edit_profile' %}" class="member-btn member-btn-primary member-btn-block">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="member-profile-card">
+                <div class="member-profile-card-header">
+                    <h2><i class="fas fa-chart-line me-2"></i>Your Activity</h2>
+                </div>
+                <div class="member-profile-card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="text-center p-3" style="background-color: rgba(39, 174, 96, 0.1); border-radius: 8px;">
+                                <div style="font-size: 32px; color: var(--success-color); margin-bottom: 10px;">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <h4 style="font-size: 24px; font-weight: 700; margin-bottom: 5px;">{{ borrowed_books_count }}</h4>
+                                <p style="color: var(--gray-600); margin: 0;">Books Borrowed</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="text-center p-3" style="background-color: rgba(52, 152, 219, 0.1); border-radius: 8px;">
+                                <div style="font-size: 32px; color: var(--info-color); margin-bottom: 10px;">
+                                    <i class="fas fa-building"></i>
+                                </div>
+                                <h4 style="font-size: 24px; font-weight: 700; margin-bottom: 5px;">{{ memberships.count }}</h4>
+                                <p style="color: var(--gray-600); margin: 0;">Memberships</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="text-center p-3" style="background-color: rgba(230, 126, 34, 0.1); border-radius: 8px;">
+                                <div style="font-size: 32px; color: var(--warning-color); margin-bottom: 10px;">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </div>
+                                <h4 style="font-size: 24px; font-weight: 700; margin-bottom: 5px;">{{ transactions.count }}</h4>
+                                <p style="color: var(--gray-600); margin: 0;">Transactions</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <h4 class="mb-3">Reading Progress</h4>
+                        <div class="progress mb-2" style="height: 10px; border-radius: 5px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 65%;" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <small class="text-muted">65% of your reading goal completed</small>
+                            <small class="text-muted">Goal: 20 books this year</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Memberships -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="member-profile-card">
+                <div class="member-profile-card-header">
+                    <h2><i class="fas fa-id-card me-2"></i>Your Memberships</h2>
+                    <a href="{% url 'transactions:new_membership' %}" class="member-btn member-btn-sm" style="background-color: rgba(255, 255, 255, 0.2); color: white;">
+                        <i class="fas fa-plus"></i> Join a Library
+                    </a>
+                </div>
+                <div class="member-profile-card-body">
+                    <div class="row">
+                        {% for membership in memberships %}
+                            <div class="col-md-4 mb-3">
+                                <div class="membership-card {% if membership.is_expired %}expired{% else %}active{% endif %}">
+                                    <div class="membership-card-header">
+                                        <h3>{{ membership.library.name }}</h3>
+                                        <div class="membership-card-status">
+                                            {% if membership.is_expired %}
+                                                <span class="status-badge status-badge-danger">Expired</span>
+                                            {% else %}
+                                                <span class="status-badge status-badge-success">Active</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="membership-card-body">
+                                        <div class="membership-card-info">
+                                            <div class="membership-card-info-item">
+                                                <span class="membership-card-info-label">Membership Number:</span>
+                                                <span class="membership-card-info-value">{{ membership.membership_number }}</span>
+                                            </div>
+                                            <div class="membership-card-info-item">
+                                                <span class="membership-card-info-label">Plan:</span>
+                                                <span class="membership-card-info-value">{{ membership.plan.name }}</span>
+                                            </div>
+                                            <div class="membership-card-info-item">
+                                                <span class="membership-card-info-label">Start Date:</span>
+                                                <span class="membership-card-info-value">{{ membership.start_date|date:"M d, Y" }}</span>
+                                            </div>
+                                            <div class="membership-card-info-item">
+                                                <span class="membership-card-info-label">End Date:</span>
+                                                <span class="membership-card-info-value">{{ membership.end_date|date:"M d, Y" }}</span>
+                                            </div>
+                                            <div class="membership-card-info-item">
+                                                <span class="membership-card-info-label">Books Allowed:</span>
+                                                <span class="membership-card-info-value">{{ membership.plan.max_books_allowed }}</span>
+                                            </div>
+                                            <div class="membership-card-info-item">
+                                                <span class="membership-card-info-label">Borrowing Period:</span>
+                                                <span class="membership-card-info-value">{{ membership.plan.max_borrowing_days }} days</span>
+                                            </div>
+                                        </div>
+
+                                        {% if not membership.is_expired %}
+                                            <div class="due-date-indicator">
+                                                <div class="due-date-progress">
+                                                    {% with days_left=membership.days_until_expiry %}
+                                                        {% if days_left > 30 %}
+                                                            <div class="due-date-bar good" style="width: 90%;"></div>
+                                                        {% elif days_left > 7 %}
+                                                            <div class="due-date-bar warning" style="width: 50%;"></div>
+                                                        {% else %}
+                                                            <div class="due-date-bar danger" style="width: 20%;"></div>
+                                                        {% endif %}
+                                                    {% endwith %}
+                                                </div>
+                                                <div class="due-date-text {% if membership.days_until_expiry > 30 %}good{% elif membership.days_until_expiry > 7 %}warning{% else %}danger{% endif %}">
+                                                    {{ membership.days_until_expiry }} days left
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="membership-card-footer">
+                                        <div class="d-grid gap-2">
+                                            <a href="{% url 'libraries:library_detail' slug=membership.library.slug %}" class="member-btn member-btn-outline member-btn-block">
+                                                <i class="fas fa-building me-1"></i> View Library
+                                            </a>
+                                            {% if membership.is_expired %}
+                                                <a href="{% url 'transactions:new_membership' %}?library={{ membership.library.id }}" class="member-btn member-btn-danger member-btn-block">
+                                                    <i class="fas fa-sync me-1"></i> Renew Membership
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="col-12">
+                                <div class="member-empty-state">
+                                    <div class="member-empty-icon">
+                                        <i class="fas fa-id-card"></i>
+                                    </div>
+                                    <h4>No Memberships Yet</h4>
+                                    <p>Join a library to start borrowing books.</p>
+                                    <a href="{% url 'transactions:new_membership' %}" class="member-btn member-btn-primary">
+                                        <i class="fas fa-plus"></i> Join a Library
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Current Borrowed Books -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="member-profile-card">
+                <div class="member-profile-card-header">
+                    <h2><i class="fas fa-book-reader me-2"></i>Currently Borrowed Books</h2>
+                </div>
+                <div class="member-profile-card-body">
+                    <div class="row">
+                        {% for transaction in transactions %}
+                            {% if transaction.transaction_type == 'BORROW' and transaction.status == 'COMPLETED' and not transaction.return_date %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="book-card">
+                                        <div class="book-card-header">
+                                            <div class="book-card-image">
+                                                {% if transaction.book_copy.book.cover_image %}
+                                                    <img src="{{ transaction.book_copy.book.cover_image.url }}" alt="{{ transaction.book_copy.book.title }}">
+                                                {% else %}
+                                                    <div class="book-card-image-placeholder">
+                                                        <i class="fas fa-book"></i>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="book-card-title">
+                                                <h3>{{ transaction.book_copy.book.title }}</h3>
+                                                <p>{{ transaction.book_copy.book.author }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="book-card-body">
+                                            <div class="book-card-info">
+                                                <div class="book-card-info-item">
+                                                    <span class="book-card-info-label">Library:</span>
+                                                    <span class="book-card-info-value">{{ transaction.library.name }}</span>
+                                                </div>
+                                                <div class="book-card-info-item">
+                                                    <span class="book-card-info-label">Borrowed Date:</span>
+                                                    <span class="book-card-info-value">{{ transaction.transaction_date|date:"M d, Y" }}</span>
+                                                </div>
+                                                <div class="book-card-info-item">
+                                                    <span class="book-card-info-label">Due Date:</span>
+                                                    <span class="book-card-info-value">{{ transaction.due_date|date:"M d, Y" }}</span>
+                                                </div>
+                                                <div class="book-card-info-item">
+                                                    <span class="book-card-info-label">Status:</span>
+                                                    <span class="book-card-info-value">
+                                                        {% if transaction.is_overdue %}
+                                                            <span class="status-badge status-badge-danger">Overdue</span>
+                                                        {% else %}
+                                                            <span class="status-badge status-badge-success">On Time</span>
+                                                        {% endif %}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div class="due-date-indicator">
+                                                <div class="due-date-progress">
+                                                    {% with days_left=transaction.days_until_due %}
+                                                        {% if days_left > 7 %}
+                                                            <div class="due-date-bar good" style="width: 90%;"></div>
+                                                        {% elif days_left > 2 %}
+                                                            <div class="due-date-bar warning" style="width: 50%;"></div>
+                                                        {% elif days_left > 0 %}
+                                                            <div class="due-date-bar danger" style="width: 20%;"></div>
+                                                        {% else %}
+                                                            <div class="due-date-bar danger" style="width: 100%;"></div>
+                                                        {% endif %}
+                                                    {% endwith %}
+                                                </div>
+                                                <div class="due-date-text {% if transaction.days_until_due > 7 %}good{% elif transaction.days_until_due > 2 %}warning{% else %}danger{% endif %}">
+                                                    {% if transaction.days_until_due > 0 %}
+                                                        {{ transaction.days_until_due }} days left
+                                                    {% else %}
+                                                        {{ transaction.days_until_due|abs }} days overdue
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="book-card-footer">
+                                            <div class="d-flex gap-2">
+                                                <a href="{% url 'books:book_detail' slug=transaction.book_copy.book.slug %}" class="member-btn member-btn-outline flex-grow-1">
+                                                    <i class="fas fa-info-circle"></i> Details
+                                                </a>
+                                                <a href="{% url 'transactions:return_book' %}?transaction_id={{ transaction.transaction_id }}" class="member-btn member-btn-primary flex-grow-1">
+                                                    <i class="fas fa-undo"></i> Return
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% empty %}
+                            <div class="col-12">
+                                <div class="member-empty-state">
+                                    <div class="member-empty-icon">
+                                        <i class="fas fa-book-reader"></i>
+                                    </div>
+                                    <h4>No Borrowed Books</h4>
+                                    <p>You don't have any borrowed books at the moment.</p>
+                                    <a href="{% url 'books:book_list' %}" class="member-btn member-btn-primary">
+                                        <i class="fas fa-book"></i> Browse Books
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reserved Books -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="member-profile-card">
+                <div class="member-profile-card-header">
+                    <h2><i class="fas fa-bookmark me-2"></i>Reserved Books</h2>
+                </div>
+                <div class="member-profile-card-body">
+                    <div class="row">
+                        {% for transaction in transactions %}
+                            {% if transaction.transaction_type == 'RESERVE' and transaction.status == 'COMPLETED' %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="book-card">
+                                        <div class="book-card-header">
+                                            <div class="book-card-image">
+                                                {% if transaction.book_copy.book.cover_image %}
+                                                    <img src="{{ transaction.book_copy.book.cover_image.url }}" alt="{{ transaction.book_copy.book.title }}">
+                                                {% else %}
+                                                    <div class="book-card-image-placeholder">
+                                                        <i class="fas fa-book"></i>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="book-card-title">
+                                                <h3>{{ transaction.book_copy.book.title }}</h3>
+                                                <p>{{ transaction.book_copy.book.author }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="book-card-body">
+                                            <div class="book-card-info">
+                                                <div class="book-card-info-item">
+                                                    <span class="book-card-info-label">Library:</span>
+                                                    <span class="book-card-info-value">{{ transaction.library.name }}</span>
+                                                </div>
+                                                <div class="book-card-info-item">
+                                                    <span class="book-card-info-label">Reserved Date:</span>
+                                                    <span class="book-card-info-value">{{ transaction.transaction_date|date:"M d, Y" }}</span>
+                                                </div>
+                                                <div class="book-card-info-item">
+                                                    <span class="book-card-info-label">Status:</span>
+                                                    <span class="book-card-info-value">
+                                                        {% if transaction.book_copy.status == 'AVAILABLE' %}
+                                                            <span class="status-badge status-badge-success">Available for Pickup</span>
+                                                        {% else %}
+                                                            <span class="status-badge status-badge-warning">Waiting</span>
+                                                        {% endif %}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="book-card-footer">
+                                            <div class="d-flex gap-2">
+                                                <a href="{% url 'books:book_detail' slug=transaction.book_copy.book.slug %}" class="member-btn member-btn-outline flex-grow-1">
+                                                    <i class="fas fa-info-circle"></i> Details
+                                                </a>
+                                                {% if transaction.book_copy.status == 'AVAILABLE' %}
+                                                    <a href="{% url 'transactions:borrow_book' %}?book_copy={{ transaction.book_copy.id }}" class="member-btn member-btn-success flex-grow-1">
+                                                        <i class="fas fa-book"></i> Borrow
+                                                    </a>
+                                                {% endif %}
+                                                <a href="{% url 'transactions:transaction_detail' transaction_id=transaction.transaction_id %}" class="member-btn member-btn-danger flex-grow-1">
+                                                    <i class="fas fa-times"></i> Cancel
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% empty %}
+                            <div class="col-12">
+                                <div class="member-empty-state">
+                                    <div class="member-empty-icon">
+                                        <i class="fas fa-bookmark"></i>
+                                    </div>
+                                    <h4>No Reserved Books</h4>
+                                    <p>You don't have any reserved books at the moment.</p>
+                                    <a href="{% url 'books:book_list' %}" class="member-btn member-btn-primary">
+                                        <i class="fas fa-book"></i> Browse Books
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction History -->
+    <div class="row">
+        <div class="col-12">
+            <div class="member-profile-card">
+                <div class="member-profile-card-header">
+                    <h2><i class="fas fa-history me-2"></i>Transaction History</h2>
+                    <a href="{% url 'transactions:transaction_list' %}" class="member-btn member-btn-sm" style="background-color: rgba(255, 255, 255, 0.2); color: white;">
+                        <i class="fas fa-list"></i> View All
+                    </a>
+                </div>
+                <div class="member-profile-card-body">
+                    <div class="table-responsive">
+                        <table class="member-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Book</th>
+                                    <th>Library</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transaction in transactions|slice:":5" %}
+                                    <tr>
+                                        <td>{{ transaction.transaction_date|date:"M d, Y" }}</td>
+                                        <td>{{ transaction.book_copy.book.title|truncatechars:30 }}</td>
+                                        <td>{{ transaction.library.name }}</td>
+                                        <td>
+                                            {% if transaction.transaction_type == 'BORROW' %}
+                                                <span class="status-badge status-badge-primary">Borrow</span>
+                                            {% elif transaction.transaction_type == 'RETURN' %}
+                                                <span class="status-badge status-badge-success">Return</span>
+                                            {% elif transaction.transaction_type == 'RESERVE' %}
+                                                <span class="status-badge status-badge-warning">Reserve</span>
+                                            {% else %}
+                                                <span class="status-badge status-badge-info">{{ transaction.transaction_type|title }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if transaction.status == 'COMPLETED' %}
+                                                <span class="status-badge status-badge-success">Completed</span>
+                                            {% elif transaction.status == 'PENDING' %}
+                                                <span class="status-badge status-badge-warning">Pending</span>
+                                            {% elif transaction.status == 'OVERDUE' %}
+                                                <span class="status-badge status-badge-danger">Overdue</span>
+                                            {% else %}
+                                                <span class="status-badge status-badge-info">{{ transaction.status|title }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="member-table-actions">
+                                                <a href="{% url 'transactions:transaction_detail' transaction_id=transaction.transaction_id %}" class="member-btn member-btn-sm member-btn-primary">
+                                                    <i class="fas fa-eye"></i> View
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="6" class="text-center">
+                                            <div class="member-empty-state py-4">
+                                                <div class="member-empty-icon">
+                                                    <i class="fas fa-history"></i>
+                                                </div>
+                                                <h4>No Transaction History</h4>
+                                                <p>Your transaction history will appear here.</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

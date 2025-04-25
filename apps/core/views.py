@@ -30,7 +30,7 @@ def home(request):
         'featured_libraries': featured_libraries,
     }
 
-    return render(request, 'core/home.html', context)
+    return render(request, 'shared/home.html', context)
 
 @login_required
 def dashboard(request):
@@ -58,7 +58,7 @@ def dashboard(request):
                 'transactions': transactions,
             }
 
-            return render(request, 'core/dashboard_staff.html', context)
+            return render(request, 'member/dashboard/staff.html', context)
         else:
             messages.warning(request, "You are not assigned to any library yet.")
             return redirect('core:home')
@@ -67,11 +67,11 @@ def dashboard(request):
 
 def about(request):
     """View function for the about page."""
-    return render(request, 'core/about.html')
+    return render(request, 'shared/about.html')
 
 def contact(request):
     """View function for the contact page."""
-    return render(request, 'core/contact.html')
+    return render(request, 'shared/contact.html')
 
 def admin_login(request):
     """View function for the custom admin login page."""
@@ -90,14 +90,19 @@ def admin_logout(request):
     if not request.user.is_authenticated:
         return redirect('core:admin_login')
 
-    return render(request, 'account/logout_admin.html')
+    if request.user.is_super_admin:
+        return render(request, 'superadmin/auth/logout.html')
+    elif request.user.is_library_admin:
+        return render(request, 'library_admin/auth/logout.html')
+    else:
+        return redirect('account_logout')
 
 def user_logout(request):
     """View function for the custom user logout page."""
     if not request.user.is_authenticated:
         return redirect('account_login')
 
-    return render(request, 'account/logout.html')
+    return render(request, 'member/auth/logout.html')
 
 def user_login(request):
     """View function for the custom user login page."""
@@ -168,7 +173,7 @@ def admin_libraries(request):
         'sort': sort,
     }
 
-    return render(request, 'core/admin_libraries.html', context)
+    return render(request, 'superadmin/libraries/library_list.html', context)
 
 @login_required
 @user_passes_test(is_super_admin)
@@ -218,7 +223,7 @@ def admin_books(request):
         'query': query,
     }
 
-    return render(request, 'core/admin_books.html', context)
+    return render(request, 'superadmin/books/book_list.html', context)
 
 @login_required
 @user_passes_test(is_super_admin)
@@ -272,7 +277,7 @@ def admin_transactions(request):
         'status': status,
     }
 
-    return render(request, 'core/admin_transactions.html', context)
+    return render(request, 'superadmin/transactions/transaction_list.html', context)
 
 @login_required
 @user_passes_test(is_super_admin)
@@ -453,7 +458,7 @@ def admin_reports(request):
         'daily_data': daily_data,
     }
 
-    return render(request, 'core/admin_reports.html', context)
+    return render(request, 'superadmin/transactions/transaction_reports.html', context)
 
 @login_required
 @user_passes_test(is_library_admin)

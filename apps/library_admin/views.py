@@ -62,7 +62,7 @@ def dashboard(request):
         'overdue_books': overdue_books,
     }
 
-    return render(request, 'library_admin/dashboard.html', context)
+    return render(request, 'library_admin/dashboard/index.html', context)
 
 @login_required
 @user_passes_test(is_library_admin)
@@ -83,7 +83,7 @@ def manage_staff(request):
         'staff_members': staff_members,
     }
 
-    return render(request, 'library_admin/staff.html', context)
+    return render(request, 'library_admin/users/staff_list.html', context)
 
 @login_required
 @user_passes_test(is_library_admin)
@@ -121,7 +121,7 @@ def manage_books(request):
         'status': status,
     }
 
-    return render(request, 'library_admin/books.html', context)
+    return render(request, 'library_admin/books/book_list.html', context)
 
 @login_required
 @user_passes_test(is_library_admin)
@@ -160,7 +160,7 @@ def manage_members(request):
         'is_active': is_active,
     }
 
-    return render(request, 'library_admin/members.html', context)
+    return render(request, 'library_admin/users/member_list.html', context)
 
 @login_required
 @user_passes_test(is_library_admin)
@@ -193,7 +193,7 @@ def manage_transactions(request):
         'status': status,
     }
 
-    return render(request, 'library_admin/transactions.html', context)
+    return render(request, 'library_admin/transactions/transaction_list.html', context)
 
 @login_required
 @user_passes_test(is_library_admin)
@@ -267,4 +267,4 @@ def reports(request):
 
         context['book_copies'] = book_copies
 
-    return render(request, 'library_admin/reports.html', context)
+    return render(request, 'library_admin/transactions/transaction_reports.html', context)
