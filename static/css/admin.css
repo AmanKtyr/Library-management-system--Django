@@ -1,0 +1,248 @@
+/* Custom styles for Admin Panel */
+
+/* Sidebar */
+#sidebar-wrapper {
+    min-height: 100vh;
+    width: 250px;
+    margin-left: 0;
+    transition: margin 0.25s ease-out;
+}
+
+#sidebar-wrapper .sidebar-heading {
+    padding: 0.875rem 1.25rem;
+    font-size: 1.2rem;
+}
+
+#sidebar-wrapper .list-group {
+    width: 250px;
+}
+
+#sidebar-wrapper .list-group-item {
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+    border-color: rgba(255, 255, 255, 0.1);
+    padding: 1rem 1.25rem;
+}
+
+#sidebar-wrapper .list-group-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+#sidebar-wrapper .list-group-item.active {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+#page-content-wrapper {
+    min-width: 100vw;
+    transition: margin-left 0.25s ease-out;
+}
+
+#wrapper.toggled #sidebar-wrapper {
+    margin-left: -250px;
+}
+
+/* Dashboard cards */
+.admin-card {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    margin-bottom: 20px;
+    border-left: 4px solid #007bff;
+}
+
+.admin-card:hover {
+    transform: translateY(-5px);
+}
+
+.admin-card .card-body {
+    padding: 1.5rem;
+}
+
+.admin-card .value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.admin-card .title {
+    font-size: 1.1rem;
+    color: #6c757d;
+    margin-bottom: 0;
+}
+
+.admin-card .icon {
+    font-size: 3rem;
+    color: rgba(0, 123, 255, 0.2);
+}
+
+/* Color variations */
+.admin-card.card-primary {
+    border-left-color: #007bff;
+}
+
+.admin-card.card-primary .value {
+    color: #007bff;
+}
+
+.admin-card.card-success {
+    border-left-color: #28a745;
+}
+
+.admin-card.card-success .value {
+    color: #28a745;
+}
+
+.admin-card.card-danger {
+    border-left-color: #dc3545;
+}
+
+.admin-card.card-danger .value {
+    color: #dc3545;
+}
+
+.admin-card.card-warning {
+    border-left-color: #ffc107;
+}
+
+.admin-card.card-warning .value {
+    color: #ffc107;
+}
+
+.admin-card.card-info {
+    border-left-color: #17a2b8;
+}
+
+.admin-card.card-info .value {
+    color: #17a2b8;
+}
+
+/* Tables */
+.admin-table {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.admin-table thead {
+    background-color: #007bff;
+    color: white;
+}
+
+.admin-table th {
+    font-weight: 500;
+    border-bottom: none;
+}
+
+/* Action buttons */
+.action-buttons .btn {
+    margin-right: 5px;
+}
+
+.action-buttons .btn:last-child {
+    margin-right: 0;
+}
+
+/* Responsive adjustments */
+@media (min-width: 768px) {
+    #sidebar-wrapper {
+        margin-left: 0;
+    }
+    
+    #page-content-wrapper {
+        min-width: 0;
+        width: 100%;
+    }
+    
+    #wrapper.toggled #sidebar-wrapper {
+        margin-left: -250px;
+    }
+}
+
+/* Charts */
+.chart-container {
+    position: relative;
+    height: 300px;
+    margin-bottom: 20px;
+}
+
+/* Activity feed */
+.activity-feed {
+    padding: 0;
+    list-style: none;
+}
+
+.activity-feed .feed-item {
+    position: relative;
+    padding-bottom: 20px;
+    padding-left: 30px;
+    border-left: 2px solid #e9ecef;
+}
+
+.activity-feed .feed-item:last-child {
+    border-color: transparent;
+}
+
+.activity-feed .feed-item::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: -8px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #007bff;
+}
+
+.activity-feed .feed-item .date {
+    display: block;
+    color: #6c757d;
+    font-size: 0.8rem;
+}
+
+.activity-feed .feed-item .text {
+    position: relative;
+    top: -3px;
+}
+
+/* Search and filter forms */
+.search-form {
+    margin-bottom: 20px;
+}
+
+.filter-form .form-select {
+    min-width: 150px;
+}
+
+/* Pagination */
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.pagination .page-link {
+    color: #007bff;
+}
+
+/* Modal customization */
+.modal-header {
+    background-color: #007bff;
+    color: white;
+}
+
+.modal-header .btn-close {
+    color: white;
+}
+
+/* Form customization */
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+}
+
+/* Toggle button */
+#menu-toggle {
+    margin-right: 15px;
+}

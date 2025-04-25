@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Transaction Details - Library Management System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'core:home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'transactions:transaction_list' %}">Transactions</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Transaction Details</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="mb-4">Transaction Details</h1>
+        </div>
+    </div>
+    
+    <!-- Transaction Info -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Transaction Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Transaction ID:</strong> {{ transaction.transaction_id }}</p>
+                    <p><strong>Type:</strong> 
+                        {% if transaction.transaction_type == 'BORROW' %}
+                            <span class="badge bg-primary">Borrow</span>
+                        {% elif transaction.transaction_type == 'RETURN' %}
+                            <span class="badge bg-success">Return</span>
+                        {% elif transaction.transaction_type == 'RESERVE' %}
+                            <span class="badge bg-warning text-dark">Reserve</span>
+                        {% elif transaction.transaction_type == 'CANCEL_RESERVATION' %}
+                            <span class="badge bg-secondary">Cancel Reservation</span>
+                        {% endif %}
+                    </p>
+                    <p><strong>Status:</strong> 
+                        {% if transaction.status == 'COMPLETED' %}
+                            <span class="badge bg-success">Completed</span>
+                        {% elif transaction.status == 'PENDING' %}
+                            <span class="badge bg-warning text-dark">Pending</span>
+                        {% elif transaction.status == 'OVERDUE' %}
+                            <span class="badge bg-danger">Overdue</span>
+                        {% elif transaction.status == 'CANCELLED' %}
+                            <span class="badge bg-secondary">Cancelled</span>
+                        {% endif %}
+                    </p>
+                    <p><strong>Transaction Date:</strong> {{ transaction.transaction_date|date:"F j, Y, g:i a" }}</p>
+                    {% if transaction.due_date %}
+                        <p><strong>Due Date:</strong> {{ transaction.due_date|date:"F j, Y" }}
+                            {% if transaction.is_overdue %}
+                                <span class="badge bg-danger">Overdue</span>
+                            {% endif %}
+                        </p>
+                    {% endif %}
+                    {% if transaction.return_date %}
+                        <p><strong>Return Date:</strong> {{ transaction.return_date|date:"F j, Y, g:i a" }}</p>
+                    {% endif %}
+                    {% if transaction.fine_amount > 0 %}
+                        <p><strong>Fine Amount:</strong> ${{ transaction.fine_amount }}</p>
+                        <p><strong>Fine Paid:</strong> {% if transaction.fine_paid %}Yes{% else %}No{% endif %}</p>
+                        {% if transaction.fine_payment_date %}
+                            <p><strong>Fine Payment Date:</strong> {{ transaction.fine_payment_date|date:"F j, Y" }}</p>
+                        {% endif %}
+                    {% endif %}
+                    {% if transaction.processed_by %}
+                        <p><strong>Processed By:</strong> {{ transaction.processed_by.get_full_name|default:transaction.processed_by.email }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            {% if transaction.notes %}
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Notes</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>{{ transaction.notes|linebreaks }}</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Book Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        {% if transaction.book_copy.book.cover_image %}
+                            <img src="{{ transaction.book_copy.book.cover_image.url }}" class="img-fluid rounded" style="max-height: 200px;" alt="{{ transaction.book_copy.book.title }}">
+                        {% else %}
+                            <img src="https://placehold.co/200x300?text=No+Cover" class="img-fluid rounded" alt="No Cover">
+                        {% endif %}
+                    </div>
+                    <h5>{{ transaction.book_copy.book.title }}</h5>
+                    <p><strong>Authors:</strong> 
+                        {% for author in transaction.book_copy.book.authors.all %}
+                            {{ author.name }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </p>
+                    <p><strong>ISBN:</strong> {{ transaction.book_copy.book.isbn }}</p>
+                    <p><strong>Inventory Number:</strong> {{ transaction.book_copy.inventory_number }}</p>
+                    <p><strong>Condition:</strong> {{ transaction.book_copy.condition|title }}</p>
+                    <p><strong>Current Status:</strong> 
+                        {% if transaction.book_copy.status == 'AVAILABLE' %}
+                            <span class="badge bg-success">Available</span>
+                        {% elif transaction.book_copy.status == 'BORROWED' %}
+                            <span class="badge bg-danger">Borrowed</span>
+                        {% elif transaction.book_copy.status == 'RESERVED' %}
+                            <span class="badge bg-warning text-dark">Reserved</span>
+                        {% elif transaction.book_copy.status == 'MAINTENANCE' %}
+                            <span class="badge bg-secondary">Maintenance</span>
+                        {% endif %}
+                    </p>
+                    <div class="mt-3">
+                        <a href="{% url 'books:book_detail' slug=transaction.book_copy.book.slug %}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-book me-1"></i> View Book Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Library Information</h5>
+                </div>
+                <div class="card-body">
+                    <h5>{{ transaction.library.name }}</h5>
+                    <p><i class="fas fa-map-marker-alt me-2"></i> {{ transaction.library.address }}, {{ transaction.library.city }}, {{ transaction.library.state }}, {{ transaction.library.postal_code }}, {{ transaction.library.country }}</p>
+                    <p><i class="fas fa-phone me-2"></i> {{ transaction.library.phone }}</p>
+                    <p><i class="fas fa-envelope me-2"></i> {{ transaction.library.email }}</p>
+                    {% if transaction.library.website %}
+                        <p><i class="fas fa-globe me-2"></i> <a href="{{ transaction.library.website }}" target="_blank">{{ transaction.library.website }}</a></p>
+                    {% endif %}
+                    <div class="mt-3">
+                        <a href="{% url 'libraries:library_detail' slug=transaction.library.slug %}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-building me-1"></i> View Library Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">User Information</h5>
+                </div>
+                <div class="card-body">
+                    <h5>{{ transaction.user.get_full_name|default:"User" }}</h5>
+                    <p><i class="fas fa-envelope me-2"></i> {{ transaction.user.email }}</p>
+                    {% if transaction.user.phone_number %}
+                        <p><i class="fas fa-phone me-2"></i> {{ transaction.user.phone_number }}</p>
+                    {% endif %}
+                    <p><i class="fas fa-user-tag me-2"></i> {{ transaction.user.get_user_type_display }}</p>
+                    
+                    {% if user.is_super_admin or user.is_library_admin or user.is_staff_member %}
+                        <div class="mt-3">
+                            <a href="{% url 'admin:accounts_user_change' transaction.user.id %}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-user-edit me-1"></i> View User Details
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Actions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'transactions:transaction_list' %}" class="btn btn-outline-secondary w-100">
+                                <i class="fas fa-arrow-left me-1"></i> Back to Transactions
+                            </a>
+                        </div>
+                        
+                        {% if transaction.transaction_type == 'BORROW' and transaction.status == 'COMPLETED' and not transaction.return_date %}
+                            <div class="col-md-3 mb-2">
+                                <a href="{% url 'transactions:return_book' %}?transaction_id={{ transaction.transaction_id }}" class="btn btn-primary w-100">
+                                    <i class="fas fa-undo me-1"></i> Return Book
+                                </a>
+                            </div>
+                        {% endif %}
+                        
+                        {% if transaction.transaction_type == 'RESERVE' and transaction.status == 'COMPLETED' and transaction.book_copy.status == 'AVAILABLE' %}
+                            <div class="col-md-3 mb-2">
+                                <a href="{% url 'transactions:borrow_book' %}?book_copy={{ transaction.book_copy.id }}" class="btn btn-primary w-100">
+                                    <i class="fas fa-book me-1"></i> Borrow Book
+                                </a>
+                            </div>
+                        {% endif %}
+                        
+                        {% if transaction.transaction_type == 'RESERVE' and transaction.status == 'COMPLETED' %}
+                            <div class="col-md-3 mb-2">
+                                <form method="post" action="{% url 'transactions:transaction_detail' transaction_id=transaction.transaction_id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="cancel_reservation">
+                                    <button type="submit" class="btn btn-danger w-100">
+                                        <i class="fas fa-times me-1"></i> Cancel Reservation
+                                    </button>
+                                </form>
+                            </div>
+                        {% endif %}
+                        
+                        {% if transaction.is_overdue and transaction.fine_amount > 0 and not transaction.fine_paid %}
+                            <div class="col-md-3 mb-2">
+                                <a href="#" class="btn btn-warning w-100">
+                                    <i class="fas fa-money-bill me-1"></i> Pay Fine (${{ transaction.fine_amount }})
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

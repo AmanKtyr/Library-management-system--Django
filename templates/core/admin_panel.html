@@ -1,0 +1,721 @@
+{% extends 'core/admin_base.html' %}
+{% load static %}
+
+{% block title %}Super Admin Dashboard - Library Management System{% endblock %}
+{% block breadcrumb_title %}Dashboard{% endblock %}
+{% block page_title %}Super Admin Dashboard{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'libraries:manage_libraries' %}" class="admin-pro-btn admin-pro-btn-primary">
+    <i class="fas fa-plus"></i> Add Library
+</a>
+<a href="{% url 'admin:accounts_user_add' %}" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-user-plus"></i> Add User
+</a>
+{% endblock %}
+
+{% block content %}
+
+<!-- System Overview -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="admin-pro-card">
+            <div class="admin-pro-stats-card">
+                <div class="admin-pro-stats-icon bg-primary">
+                    <i class="fas fa-building"></i>
+                </div>
+                <div class="admin-pro-stats-content">
+                    <div class="admin-pro-stats-value">{{ total_libraries }}</div>
+                    <p class="admin-pro-stats-label">Total Libraries</p>
+                    <div class="admin-pro-stats-trend up">
+                        <i class="fas fa-arrow-up"></i> {{ active_libraries }} Active
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="admin-pro-card">
+            <div class="admin-pro-stats-card">
+                <div class="admin-pro-stats-icon bg-success">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="admin-pro-stats-content">
+                    <div class="admin-pro-stats-value">{{ total_books }}</div>
+                    <p class="admin-pro-stats-label">Total Books</p>
+                    <div class="admin-pro-stats-trend up">
+                        <i class="fas fa-arrow-up"></i> {{ total_book_copies }} Copies
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="admin-pro-card">
+            <div class="admin-pro-stats-card">
+                <div class="admin-pro-stats-icon bg-info">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="admin-pro-stats-content">
+                    <div class="admin-pro-stats-value">{{ total_users }}</div>
+                    <p class="admin-pro-stats-label">Total Users</p>
+                    <div class="admin-pro-stats-trend up">
+                        <i class="fas fa-arrow-up"></i> {{ members }} Members
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="admin-pro-card">
+            <div class="admin-pro-stats-card">
+                <div class="admin-pro-stats-icon bg-warning">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <div class="admin-pro-stats-content">
+                    <div class="admin-pro-stats-value">{{ total_transactions }}</div>
+                    <p class="admin-pro-stats-label">Transactions</p>
+                    {% if overdue > 0 %}
+                    <div class="admin-pro-stats-trend down">
+                        <i class="fas fa-arrow-down"></i> {{ overdue }} Overdue
+                    </div>
+                    {% else %}
+                    <div class="admin-pro-stats-trend up">
+                        <i class="fas fa-check-circle"></i> No Overdue
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Charts -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="admin-pro-card">
+            <div class="admin-pro-card-header">
+                <h5 class="admin-pro-card-title">
+                    <i class="fas fa-users me-2"></i> User Statistics
+                </h5>
+                <div class="dropdown">
+                    <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline admin-pro-btn-icon" data-bs-toggle="dropdown">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end admin-pro-dropdown-menu">
+                        <a class="dropdown-item" href="{% url 'core:admin_users' %}">
+                            <i class="fas fa-users me-2"></i> View All Users
+                        </a>
+                        <a class="dropdown-item" href="{% url 'admin:accounts_user_add' %}">
+                            <i class="fas fa-user-plus me-2"></i> Add New User
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#" id="downloadUserChart">
+                            <i class="fas fa-download me-2"></i> Download Chart
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="admin-pro-card-body">
+                <canvas id="userChart" width="400" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="admin-pro-card">
+            <div class="admin-pro-card-header">
+                <h5 class="admin-pro-card-title">
+                    <i class="fas fa-exchange-alt me-2"></i> Transaction Statistics
+                </h5>
+                <div class="dropdown">
+                    <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline admin-pro-btn-icon" data-bs-toggle="dropdown">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end admin-pro-dropdown-menu">
+                        <a class="dropdown-item" href="{% url 'core:admin_transactions' %}">
+                            <i class="fas fa-exchange-alt me-2"></i> View All Transactions
+                        </a>
+                        <a class="dropdown-item" href="{% url 'core:admin_reports' %}">
+                            <i class="fas fa-chart-bar me-2"></i> View Reports
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#" id="downloadTransactionChart">
+                            <i class="fas fa-download me-2"></i> Download Chart
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="admin-pro-card-body">
+                <canvas id="transactionChart" width="400" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activities -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="admin-pro-card">
+            <div class="admin-pro-card-header">
+                <h5 class="admin-pro-card-title">
+                    <i class="fas fa-building me-2"></i> Recent Libraries
+                </h5>
+                <a href="{% url 'core:admin_libraries' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
+                    View All <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+            <div class="admin-pro-card-body">
+                <div class="admin-pro-table-container">
+                    <table class="admin-pro-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Location</th>
+                                <th>Admin</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for library in recent_libraries %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-2" style="width: 36px; height: 36px;">
+                                                <i class="fas fa-building text-primary"></i>
+                                            </div>
+                                            <span>{{ library.name }}</span>
+                                        </div>
+                                    </td>
+                                    <td>{{ library.city }}, {{ library.country }}</td>
+                                    <td>
+                                        {% if library.admin %}
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2" style="width: 24px; height: 24px; font-size: 12px;">
+                                                    {{ library.admin.get_initials }}
+                                                </div>
+                                                <span>{{ library.admin.get_full_name|default:library.admin.email }}</span>
+                                            </div>
+                                        {% else %}
+                                            <span class="text-muted">Not assigned</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if library.is_active %}
+                                            <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="admin-pro-table-actions">
+                                            <a href="{% url 'libraries:manage_library' slug=library.slug %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-primary admin-pro-btn-icon" data-bs-toggle="tooltip" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{% url 'libraries:library_detail' slug=library.slug %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-info admin-pro-btn-icon" data-bs-toggle="tooltip" title="View">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center">No libraries available.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="admin-pro-card">
+            <div class="admin-pro-card-header">
+                <h5 class="admin-pro-card-title">
+                    <i class="fas fa-users me-2"></i> Recent Users
+                </h5>
+                <a href="{% url 'core:admin_users' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
+                    View All <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+            <div class="admin-pro-card-body">
+                <div class="admin-pro-table-container">
+                    <table class="admin-pro-table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Role</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in recent_users %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if user.profile_picture %}
+                                                <img src="{{ user.profile_picture.url }}" class="rounded-circle me-2" width="36" height="36" alt="{{ user.get_full_name }}">
+                                            {% else %}
+                                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2" style="width: 36px; height: 36px;">
+                                                    {{ user.get_initials }}
+                                                </div>
+                                            {% endif %}
+                                            <div>
+                                                <div>{{ user.get_full_name|default:"User" }}</div>
+                                                <div class="text-muted small">{{ user.email }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if user.is_super_admin %}
+                                            <span class="badge bg-danger">Super Admin</span>
+                                        {% elif user.is_library_admin %}
+                                            <span class="badge bg-primary">Library Admin</span>
+                                        {% elif user.is_staff_member %}
+                                            <span class="badge bg-info">Staff</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Member</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                                    <td>
+                                        <div class="admin-pro-table-actions">
+                                            <a href="{% url 'admin:accounts_user_change' user.id %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-primary admin-pro-btn-icon" data-bs-toggle="tooltip" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-info admin-pro-btn-icon" data-bs-toggle="tooltip" title="View Profile">
+                                                <i class="fas fa-user"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center">No users available.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Transactions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="admin-pro-card">
+            <div class="admin-pro-card-header">
+                <h5 class="admin-pro-card-title">
+                    <i class="fas fa-exchange-alt me-2"></i> Recent Transactions
+                </h5>
+                <a href="{% url 'core:admin_transactions' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
+                    View All <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+            <div class="admin-pro-card-body">
+                <div class="admin-pro-table-container">
+                    <table class="admin-pro-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>User</th>
+                                <th>Book</th>
+                                <th>Library</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in recent_transactions %}
+                                <tr>
+                                    <td>{{ transaction.transaction_date|date:"M d, Y" }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2" style="width: 30px; height: 30px; font-size: 12px;">
+                                                {{ transaction.user.get_initials }}
+                                            </div>
+                                            <span>{{ transaction.user.get_full_name|default:transaction.user.email|truncatechars:15 }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if transaction.book_copy.book.cover_image %}
+                                                <img src="{{ transaction.book_copy.book.cover_image.url }}" class="me-2" style="width: 30px; height: 45px; object-fit: cover;" alt="{{ transaction.book_copy.book.title }}">
+                                            {% else %}
+                                                <div class="bg-light d-flex align-items-center justify-content-center me-2" style="width: 30px; height: 45px;">
+                                                    <i class="fas fa-book text-primary"></i>
+                                                </div>
+                                            {% endif %}
+                                            <span>{{ transaction.book_copy.book.title|truncatechars:20 }}</span>
+                                        </div>
+                                    </td>
+                                    <td>{{ transaction.library.name }}</td>
+                                    <td>
+                                        {% if transaction.transaction_type == 'BORROW' %}
+                                            <span class="badge bg-primary">Borrow</span>
+                                        {% elif transaction.transaction_type == 'RETURN' %}
+                                            <span class="badge bg-success">Return</span>
+                                        {% elif transaction.transaction_type == 'RESERVE' %}
+                                            <span class="badge bg-warning text-dark">Reserve</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ transaction.transaction_type|title }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if transaction.status == 'COMPLETED' %}
+                                            <span class="badge bg-success">Completed</span>
+                                        {% elif transaction.status == 'PENDING' %}
+                                            <span class="badge bg-warning text-dark">Pending</span>
+                                        {% elif transaction.status == 'OVERDUE' %}
+                                            <span class="badge bg-danger">Overdue</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ transaction.status|title }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="admin-pro-table-actions">
+                                            <a href="{% url 'transactions:transaction_detail' transaction_id=transaction.transaction_id %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-info admin-pro-btn-icon" data-bs-toggle="tooltip" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            {% if transaction.transaction_type == 'BORROW' and transaction.status != 'COMPLETED' %}
+                                                <button type="button" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-success admin-pro-btn-icon" data-bs-toggle="tooltip" title="Complete">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                            {% endif %}
+                                            {% if transaction.transaction_type == 'BORROW' and transaction.status == 'COMPLETED' and not transaction.return_date %}
+                                                <a href="{% url 'transactions:return_book' %}?transaction_id={{ transaction.transaction_id }}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-warning admin-pro-btn-icon" data-bs-toggle="tooltip" title="Return">
+                                                    <i class="fas fa-undo"></i>
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center">No transactions available.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Top Libraries and Books -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="admin-pro-card">
+            <div class="admin-pro-card-header">
+                <h5 class="admin-pro-card-title">
+                    <i class="fas fa-building me-2"></i> Top Libraries by Book Count
+                </h5>
+                <div class="dropdown">
+                    <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline admin-pro-btn-icon" data-bs-toggle="dropdown">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end admin-pro-dropdown-menu">
+                        <a class="dropdown-item" href="{% url 'core:admin_libraries' %}">
+                            <i class="fas fa-list me-2"></i> View All Libraries
+                        </a>
+                        <a class="dropdown-item" href="{% url 'libraries:manage_libraries' %}">
+                            <i class="fas fa-plus me-2"></i> Add New Library
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="admin-pro-card-body">
+                <div class="admin-pro-table-container">
+                    <table class="admin-pro-table">
+                        <thead>
+                            <tr>
+                                <th>Library</th>
+                                <th>Location</th>
+                                <th>Books</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for library in top_libraries %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-2" style="width: 36px; height: 36px;">
+                                                <i class="fas fa-building text-primary"></i>
+                                            </div>
+                                            <span>{{ library.name }}</span>
+                                        </div>
+                                    </td>
+                                    <td>{{ library.city }}, {{ library.country }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <span class="badge bg-primary me-2">{{ library.book_count }}</span>
+                                            <div class="progress" style="width: 100px; height: 6px;">
+                                                <div class="progress-bar bg-primary" role="progressbar" style="width: {{ library.book_count }}%;" aria-valuenow="{{ library.book_count }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="admin-pro-table-actions">
+                                            <a href="{% url 'libraries:manage_library' slug=library.slug %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-primary admin-pro-btn-icon" data-bs-toggle="tooltip" title="Manage">
+                                                <i class="fas fa-cog"></i>
+                                            </a>
+                                            <a href="{% url 'libraries:library_detail' slug=library.slug %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-info admin-pro-btn-icon" data-bs-toggle="tooltip" title="View">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center">No libraries available.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="admin-pro-card">
+            <div class="admin-pro-card-header">
+                <h5 class="admin-pro-card-title">
+                    <i class="fas fa-book me-2"></i> Top Books by Borrow Count
+                </h5>
+                <div class="dropdown">
+                    <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline admin-pro-btn-icon" data-bs-toggle="dropdown">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end admin-pro-dropdown-menu">
+                        <a class="dropdown-item" href="{% url 'core:admin_books' %}">
+                            <i class="fas fa-list me-2"></i> View All Books
+                        </a>
+                        <a class="dropdown-item" href="{% url 'books:add_book' %}">
+                            <i class="fas fa-plus me-2"></i> Add New Book
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="admin-pro-card-body">
+                <div class="admin-pro-table-container">
+                    <table class="admin-pro-table">
+                        <thead>
+                            <tr>
+                                <th>Book</th>
+                                <th>Author</th>
+                                <th>Borrows</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for book in top_books %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if book.cover_image %}
+                                                <img src="{{ book.cover_image.url }}" class="me-2" style="width: 30px; height: 45px; object-fit: cover;" alt="{{ book.title }}">
+                                            {% else %}
+                                                <div class="bg-light d-flex align-items-center justify-content-center me-2" style="width: 30px; height: 45px;">
+                                                    <i class="fas fa-book text-primary"></i>
+                                                </div>
+                                            {% endif %}
+                                            <span>{{ book.title|truncatechars:20 }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% for author in book.authors.all %}
+                                            {{ author.name }}{% if not forloop.last %}, {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <span class="badge bg-success me-2">{{ book.borrow_count }}</span>
+                                            <div class="progress" style="width: 100px; height: 6px;">
+                                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ book.borrow_count }}%;" aria-valuenow="{{ book.borrow_count }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="admin-pro-table-actions">
+                                            <a href="{% url 'books:edit_book' slug=book.slug %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-primary admin-pro-btn-icon" data-bs-toggle="tooltip" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{% url 'books:book_detail' slug=book.slug %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-info admin-pro-btn-icon" data-bs-toggle="tooltip" title="View">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center">No books available.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // User Chart
+        const userCtx = document.getElementById('userChart').getContext('2d');
+        const userChart = new Chart(userCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Super Admins', 'Library Admins', 'Staff', 'Members'],
+                datasets: [{
+                    label: 'User Types',
+                    data: [{{ super_admins }}, {{ library_admins }}, {{ staff_members }}, {{ members }}],
+                    backgroundColor: [
+                        'rgba(220, 53, 69, 0.8)',
+                        'rgba(0, 123, 255, 0.8)',
+                        'rgba(23, 162, 184, 0.8)',
+                        'rgba(108, 117, 125, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(220, 53, 69, 1)',
+                        'rgba(0, 123, 255, 1)',
+                        'rgba(23, 162, 184, 1)',
+                        'rgba(108, 117, 125, 1)'
+                    ],
+                    borderWidth: 1,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'User Distribution',
+                        padding: {
+                            top: 10,
+                            bottom: 20
+                        },
+                        font: {
+                            size: 16,
+                            weight: 'normal'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Transaction Chart
+        const transactionCtx = document.getElementById('transactionChart').getContext('2d');
+        const transactionChart = new Chart(transactionCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Borrows', 'Returns', 'Reserves', 'Overdue'],
+                datasets: [{
+                    label: 'Transaction Types',
+                    data: [{{ borrows }}, {{ returns }}, {{ reserves }}, {{ overdue }}],
+                    backgroundColor: [
+                        'rgba(0, 123, 255, 0.8)',
+                        'rgba(40, 167, 69, 0.8)',
+                        'rgba(255, 193, 7, 0.8)',
+                        'rgba(220, 53, 69, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(0, 123, 255, 1)',
+                        'rgba(40, 167, 69, 1)',
+                        'rgba(255, 193, 7, 1)',
+                        'rgba(220, 53, 69, 1)'
+                    ],
+                    borderWidth: 1,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Transaction Distribution',
+                        padding: {
+                            top: 10,
+                            bottom: 20
+                        },
+                        font: {
+                            size: 16,
+                            weight: 'normal'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Download chart as image
+        document.getElementById('downloadUserChart').addEventListener('click', function() {
+            const canvas = document.getElementById('userChart');
+            const image = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = 'user_distribution.png';
+            link.href = image;
+            link.click();
+        });
+
+        document.getElementById('downloadTransactionChart').addEventListener('click', function() {
+            const canvas = document.getElementById('transactionChart');
+            const image = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = 'transaction_distribution.png';
+            link.href = image;
+            link.click();
+        });
+    });
+</script>
+{% endblock %}

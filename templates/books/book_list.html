@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Books - Library Management System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="mb-4">Books</h1>
+            <p class="lead">Browse our collection of books across all libraries.</p>
+        </div>
+    </div>
+    
+    <!-- Search Form -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="get" action="{% url 'books:book_list' %}" id="book-search-form">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <input type="text" name="q" id="search-input" class="form-control" placeholder="Search by title, author, or ISBN" value="{{ query }}">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search"></i> Search
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="category" class="form-select">
+                                    <option value="">All Categories</option>
+                                    {% for category in categories %}
+                                        <option value="{{ category.slug }}" {% if selected_category == category.slug %}selected{% endif %}>
+                                            {{ category.name }} ({{ category.book_count }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="author" class="form-select">
+                                    <option value="">All Authors</option>
+                                    {% for author in authors %}
+                                        <option value="{{ author.slug }}" {% if selected_author == author.slug %}selected{% endif %}>
+                                            {{ author.name }} ({{ author.book_count }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Books List -->
+    <div class="row">
+        {% for book in books %}
+            <div class="col-md-3 mb-4">
+                <div class="card h-100">
+                    {% if book.cover_image %}
+                        <img src="{{ book.cover_image.url }}" class="card-img-top" alt="{{ book.title }}">
+                    {% else %}
+                        <img src="https://placehold.co/200x300?text=No+Cover" class="card-img-top" alt="No Cover">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ book.title|truncatechars:30 }}</h5>
+                        <p class="card-text">
+                            {% for author in book.authors.all %}
+                                {% if forloop.first %}by {% endif %}
+                                <a href="{% url 'books:author_detail' slug=author.slug %}">{{ author.name }}</a>{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </p>
+                        <p class="card-text">
+                            {% for category in book.categories.all %}
+                                <a href="{% url 'books:category_detail' slug=category.slug %}" class="badge bg-secondary text-decoration-none">{{ category.name }}</a>
+                            {% endfor %}
+                        </p>
+                        <p class="card-text"><small class="text-muted">ISBN: {{ book.isbn }}</small></p>
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0">
+                        <a href="{% url 'books:book_detail' slug=book.slug %}" class="btn btn-primary w-100">View Details</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12 text-center">
+                <div class="alert alert-info">
+                    <p>No books found matching your criteria. Try a different search or filter.</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

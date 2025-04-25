@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ book.title }} - Library Management System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'core:home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'books:book_list' %}">Books</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ book.title }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    
+    <!-- Book Details -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            {% if book.cover_image %}
+                <img src="{{ book.cover_image.url }}" class="book-cover img-fluid mb-3" alt="{{ book.title }}">
+            {% else %}
+                <img src="https://placehold.co/300x450?text=No+Cover" class="book-cover img-fluid mb-3" alt="No Cover">
+            {% endif %}
+            
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Book Details</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>ISBN:</strong> {{ book.isbn }}</p>
+                    {% if book.publisher %}
+                        <p><strong>Publisher:</strong> {{ book.publisher }}</p>
+                    {% endif %}
+                    {% if book.publication_date %}
+                        <p><strong>Publication Date:</strong> {{ book.publication_date|date:"F j, Y" }}</p>
+                    {% endif %}
+                    {% if book.language %}
+                        <p><strong>Language:</strong> {{ book.language }}</p>
+                    {% endif %}
+                    {% if book.pages %}
+                        <p><strong>Pages:</strong> {{ book.pages }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Categories</h5>
+                </div>
+                <div class="card-body">
+                    {% for category in book.categories.all %}
+                        <a href="{% url 'books:category_detail' slug=category.slug %}" class="badge bg-secondary text-decoration-none mb-1">{{ category.name }}</a>
+                    {% empty %}
+                        <p>No categories assigned.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <h1 class="mb-2">{{ book.title }}</h1>
+            <h5 class="text-muted mb-3">
+                by 
+                {% for author in book.authors.all %}
+                    <a href="{% url 'books:author_detail' slug=author.slug %}">{{ author.name }}</a>{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </h5>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Summary</h5>
+                </div>
+                <div class="card-body">
+                    {% if book.summary %}
+                        <p>{{ book.summary|linebreaks }}</p>
+                    {% else %}
+                        <p>No summary available.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Available Copies</h5>
+                </div>
+                <div class="card-body">
+                    {% if copies_by_library %}
+                        <div class="accordion" id="libraryAccordion">
+                            {% for library, copies in copies_by_library.items %}
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading{{ library.id }}">
+                                        <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ library.id }}" aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" aria-controls="collapse{{ library.id }}">
+                                            {{ library.name }} ({{ copies|length }} copies)
+                                        </button>
+                                    </h2>
+                                    <div id="collapse{{ library.id }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" aria-labelledby="heading{{ library.id }}" data-bs-parent="#libraryAccordion">
+                                        <div class="accordion-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-striped table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Inventory #</th>
+                                                            <th>Status</th>
+                                                            <th>Condition</th>
+                                                            <th>Actions</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for copy in copies %}
+                                                            <tr>
+                                                                <td>{{ copy.inventory_number }}</td>
+                                                                <td>
+                                                                    {% if copy.status == 'AVAILABLE' %}
+                                                                        <span class="badge bg-success">Available</span>
+                                                                    {% elif copy.status == 'BORROWED' %}
+                                                                        <span class="badge bg-danger">Borrowed</span>
+                                                                    {% elif copy.status == 'RESERVED' %}
+                                                                        <span class="badge bg-warning text-dark">Reserved</span>
+                                                                    {% else %}
+                                                                        <span class="badge bg-secondary">{{ copy.status|title }}</span>
+                                                                    {% endif %}
+                                                                </td>
+                                                                <td>{{ copy.condition|title }}</td>
+                                                                <td>
+                                                                    <a href="{% url 'libraries:library_detail' slug=library.slug %}" class="btn btn-sm btn-info">
+                                                                        <i class="fas fa-building"></i> View Library
+                                                                    </a>
+                                                                    {% if user.is_authenticated and user.is_library_member %}
+                                                                        {% if copy.status == 'AVAILABLE' %}
+                                                                            <a href="{% url 'transactions:borrow_book' %}?book_copy={{ copy.id }}" class="btn btn-sm btn-primary">
+                                                                                <i class="fas fa-book"></i> Borrow
+                                                                            </a>
+                                                                        {% elif copy.status == 'BORROWED' %}
+                                                                            <a href="{% url 'transactions:reserve_book' %}?book_copy={{ copy.id }}" class="btn btn-sm btn-warning">
+                                                                                <i class="fas fa-bookmark"></i> Reserve
+                                                                            </a>
+                                                                        {% endif %}
+                                                                    {% endif %}
+                                                                </td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <p>No copies of this book are available in any library.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home - Library Management System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <div class="row align-items-center py-5">
+        <div class="col-lg-6">
+            <h1 class="display-4 fw-bold">Welcome to the Library Management System</h1>
+            <p class="lead">A modern solution for managing multiple libraries efficiently. Browse books, join libraries, and manage your reading journey.</p>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                <a href="{% url 'books:book_list' %}" class="btn btn-primary btn-lg px-4 me-md-2">Browse Books</a>
+                <a href="{% url 'libraries:library_list' %}" class="btn btn-outline-secondary btn-lg px-4">Find Libraries</a>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <img src="{% static 'images/library-hero.jpg' %}" alt="Library" class="img-fluid rounded shadow-lg" onerror="this.src='https://placehold.co/600x400?text=Library+Management'">
+        </div>
+    </div>
+    
+    <!-- Stats Section -->
+    <div class="row text-center my-5">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i class="fas fa-building fa-3x text-primary mb-3"></i>
+                    <h3 class="card-title">{{ total_libraries }}</h3>
+                    <p class="card-text">Libraries</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i class="fas fa-book fa-3x text-primary mb-3"></i>
+                    <h3 class="card-title">{{ total_books }}</h3>
+                    <p class="card-text">Books</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i class="fas fa-copy fa-3x text-primary mb-3"></i>
+                    <h3 class="card-title">{{ total_book_copies }}</h3>
+                    <p class="card-text">Book Copies</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Latest Books Section -->
+    <div class="my-5">
+        <h2 class="text-center mb-4">Latest Books</h2>
+        <div class="row">
+            {% for book in latest_books %}
+                <div class="col-md-4 col-lg-2 mb-4">
+                    <div class="card h-100">
+                        {% if book.cover_image %}
+                            <img src="{{ book.cover_image.url }}" class="card-img-top" alt="{{ book.title }}">
+                        {% else %}
+                            <img src="https://placehold.co/200x300?text=No+Cover" class="card-img-top" alt="No Cover">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ book.title|truncatechars:25 }}</h5>
+                            <p class="card-text small">
+                                {% for author in book.authors.all %}
+                                    {% if forloop.first %}by {% endif %}
+                                    {{ author.name }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </p>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <a href="{% url 'books:book_detail' slug=book.slug %}" class="btn btn-sm btn-primary w-100">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12 text-center">
+                    <p>No books available yet.</p>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-3">
+            <a href="{% url 'books:book_list' %}" class="btn btn-outline-primary">View All Books</a>
+        </div>
+    </div>
+    
+    <!-- Featured Libraries Section -->
+    <div class="my-5">
+        <h2 class="text-center mb-4">Featured Libraries</h2>
+        <div class="row">
+            {% for library in featured_libraries %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        {% if library.image %}
+                            <img src="{{ library.image.url }}" class="card-img-top" alt="{{ library.name }}">
+                        {% else %}
+                            <img src="https://placehold.co/400x200?text=Library" class="card-img-top" alt="Library">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ library.name }}</h5>
+                            <p class="card-text">{{ library.description|truncatechars:100 }}</p>
+                            <p class="card-text"><i class="fas fa-map-marker-alt me-2"></i>{{ library.city }}, {{ library.country }}</p>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <a href="{% url 'libraries:library_detail' slug=library.slug %}" class="btn btn-sm btn-primary w-100">View Library</a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12 text-center">
+                    <p>No libraries available yet.</p>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-3">
+            <a href="{% url 'libraries:library_list' %}" class="btn btn-outline-primary">View All Libraries</a>
+        </div>
+    </div>
+    
+    <!-- Features Section -->
+    <div class="my-5">
+        <h2 class="text-center mb-4">Our Features</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-search fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Easy Book Search</h5>
+                        <p class="card-text">Find books by title, author, category, or ISBN across multiple libraries.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-mobile-alt fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Mobile Friendly</h5>
+                        <p class="card-text">Access the library system from any device, anywhere, anytime.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-bell fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Notifications</h5>
+                        <p class="card-text">Get reminders about due dates, reservations, and new arrivals.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
