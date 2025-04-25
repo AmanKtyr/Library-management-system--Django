@@ -18,7 +18,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- AOS Animation Library -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -26,11 +26,16 @@
     <!-- Custom CSS -->
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dark-mode.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    <link rel="stylesheet" href="{% static 'css/theme-selector.css' %}">
+    <link rel="stylesheet" href="{% static 'css/theme-variables.css' %}">
+    <link rel="stylesheet" href="{% static 'css/modern-components.css' %}">
 
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <!-- Navigation -->
+    <!-- Modern Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container">
             <a class="navbar-brand" href="{% url 'core:home' %}">
@@ -42,43 +47,49 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'core:home' %}"><i class="fas fa-home nav-icon"></i> Home</a>
+                        <a class="nav-link nav-underline" href="{% url 'core:home' %}"><i class="fas fa-home nav-icon"></i> Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'libraries:library_list' %}"><i class="fas fa-building nav-icon"></i> Libraries</a>
+                        <a class="nav-link nav-underline" href="{% url 'libraries:library_list' %}"><i class="fas fa-building nav-icon"></i> Libraries</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'books:book_list' %}"><i class="fas fa-book nav-icon"></i> Books</a>
+                        <a class="nav-link nav-underline" href="{% url 'books:book_list' %}"><i class="fas fa-book nav-icon"></i> Books</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'books:author_list' %}"><i class="fas fa-pen-fancy nav-icon"></i> Authors</a>
+                        <a class="nav-link nav-underline" href="{% url 'books:author_list' %}"><i class="fas fa-pen-fancy nav-icon"></i> Authors</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'books:category_list' %}"><i class="fas fa-tags nav-icon"></i> Categories</a>
+                        <a class="nav-link nav-underline" href="{% url 'books:category_list' %}"><i class="fas fa-tags nav-icon"></i> Categories</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'core:about' %}"><i class="fas fa-info-circle nav-icon"></i> About</a>
+                        <a class="nav-link nav-underline" href="{% url 'core:about' %}"><i class="fas fa-info-circle nav-icon"></i> About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'core:contact' %}"><i class="fas fa-envelope nav-icon"></i> Contact</a>
+                        <a class="nav-link nav-underline" href="{% url 'core:contact' %}"><i class="fas fa-envelope nav-icon"></i> Contact</a>
                     </li>
                 </ul>
 
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a href="#" class="nav-link" id="darkModeToggle">
+                        <a href="#" class="nav-link btn-icon" id="darkModeToggle" data-tooltip="Toggle Dark Mode" data-tooltip-position="bottom">
                             <i class="fas fa-moon"></i>
                         </a>
                     </li>
                     {% if user.is_authenticated %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle user-dropdown" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user-circle me-1"></i>
-                                {% if user.get_full_name %}
-                                    {{ user.get_full_name }}
+                                {% if user.profile_picture %}
+                                    <img src="{{ user.profile_picture.url }}" alt="{{ user.get_full_name }}" class="user-avatar">
                                 {% else %}
-                                    {{ user.email }}
+                                    <i class="fas fa-user-circle me-1"></i>
                                 {% endif %}
+                                <span class="d-none d-md-inline">
+                                    {% if user.get_full_name %}
+                                        {{ user.get_full_name }}
+                                    {% else %}
+                                        {{ user.email }}
+                                    {% endif %}
+                                </span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><a class="dropdown-item" href="{% url 'core:dashboard' %}"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
@@ -108,13 +119,13 @@
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link btn btn-outline-light btn-sm login-btn me-2" href="{% url 'account_login' %}">
-                                <i class="fas fa-sign-in-alt me-1"></i> Login
+                            <a class="nav-link btn-with-icon login-btn me-2" href="{% url 'account_login' %}">
+                                <i class="fas fa-sign-in-alt"></i> Login
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link btn btn-light btn-sm register-btn" href="{% url 'account_signup' %}">
-                                <i class="fas fa-user-plus me-1"></i> Register
+                            <a class="nav-link btn-with-icon register-btn" href="{% url 'account_signup' %}">
+                                <i class="fas fa-user-plus"></i> Register
                             </a>
                         </li>
                     {% endif %}
@@ -126,14 +137,46 @@
     <!-- Spacer for fixed navbar -->
     <div class="navbar-spacer"></div>
 
-    <!-- Messages -->
+    <!-- Modern Messages -->
     {% if messages %}
         <div class="container mt-3">
             {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
+                {% with message.tags as tags %}
+                    <div class="alert-modern alert-modern-{{ tags }} fade-in" data-auto-close="true">
+                        <div class="alert-modern-icon">
+                            {% if tags == 'success' %}
+                                <i class="fas fa-check-circle"></i>
+                            {% elif tags == 'info' %}
+                                <i class="fas fa-info-circle"></i>
+                            {% elif tags == 'warning' %}
+                                <i class="fas fa-exclamation-triangle"></i>
+                            {% elif tags == 'danger' or tags == 'error' %}
+                                <i class="fas fa-times-circle"></i>
+                            {% else %}
+                                <i class="fas fa-bell"></i>
+                            {% endif %}
+                        </div>
+                        <div class="alert-modern-content">
+                            <h5 class="alert-modern-title">
+                                {% if tags == 'success' %}
+                                    Success!
+                                {% elif tags == 'info' %}
+                                    Information
+                                {% elif tags == 'warning' %}
+                                    Warning
+                                {% elif tags == 'danger' or tags == 'error' %}
+                                    Error
+                                {% else %}
+                                    Notification
+                                {% endif %}
+                            </h5>
+                            <p>{{ message }}</p>
+                        </div>
+                        <button type="button" class="alert-modern-close" aria-label="Close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                {% endwith %}
             {% endfor %}
         </div>
     {% endif %}
@@ -228,6 +271,9 @@
 
     <!-- Custom JS -->
     <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/dark-mode.js' %}"></script>
+    <script src="{% static 'js/theme-selector.js' %}"></script>
+    <script src="{% static 'js/modern-components.js' %}"></script>
 
     <script>
         // Initialize AOS animations
@@ -258,32 +304,53 @@
                 }
             });
 
-            // Dark mode toggle
+            // Enhanced Dark mode toggle
             const darkModeToggle = document.getElementById('darkModeToggle');
-            const htmlElement = document.documentElement;
+            if (darkModeToggle) { // Check if element exists
+                const htmlElement = document.documentElement;
+                const body = document.body;
 
-            // Check for saved theme preference or respect OS preference
-            const savedTheme = localStorage.getItem('theme');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                // Check for saved theme preference or respect OS preference
+                const savedTheme = localStorage.getItem('theme');
+                const darkMode = localStorage.getItem('darkMode');
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-                htmlElement.setAttribute('data-bs-theme', 'dark');
-                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-            }
-
-            // Toggle dark/light mode
-            darkModeToggle.addEventListener('click', function(e) {
-                e.preventDefault();
-                if (htmlElement.getAttribute('data-bs-theme') === 'dark') {
-                    htmlElement.setAttribute('data-bs-theme', 'light');
-                    localStorage.setItem('theme', 'light');
-                    darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-                } else {
+                // Apply dark mode if previously enabled and no theme is selected
+                if (!localStorage.getItem('selectedTheme') && (darkMode === 'enabled' || (!darkMode && prefersDark))) {
                     htmlElement.setAttribute('data-bs-theme', 'dark');
-                    localStorage.setItem('theme', 'dark');
+                    body.classList.add('dark-mode');
                     darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
                 }
-            });
+
+                // Toggle dark/light mode
+                darkModeToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Only toggle if no theme is selected
+                    if (!localStorage.getItem('selectedTheme')) {
+                        if (body.classList.contains('dark-mode')) {
+                            // Switch to light mode
+                            htmlElement.setAttribute('data-bs-theme', 'light');
+                            body.classList.remove('dark-mode');
+                            localStorage.setItem('theme', 'light');
+                            localStorage.setItem('darkMode', null);
+                            darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                        } else {
+                            // Switch to dark mode
+                            htmlElement.setAttribute('data-bs-theme', 'dark');
+                            body.classList.add('dark-mode');
+                            localStorage.setItem('theme', 'dark');
+                            localStorage.setItem('darkMode', 'enabled');
+                            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                        }
+                    } else {
+                        // If a theme is selected, show theme selector instead
+                        const themeSelector = document.querySelector('.theme-selector-toggle');
+                        if (themeSelector) {
+                            themeSelector.click();
+                        }
+                    }
+                });
+            }
         });
     </script>
 

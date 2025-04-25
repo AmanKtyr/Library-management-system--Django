@@ -1,0 +1,167 @@
+/* Theme Variables CSS */
+
+/* Apply theme variables to components */
+
+/* General Elements */
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-color);
+}
+
+a {
+    color: var(--accent-color);
+}
+
+a:hover {
+    color: var(--button-hover-color);
+}
+
+/* Buttons */
+.btn-primary,
+.admin-pro-btn-primary,
+.member-btn-primary,
+.transaction-btn-primary {
+    background: linear-gradient(to right, var(--accent-color), var(--button-color));
+    border-color: var(--button-color);
+}
+
+.btn-primary:hover,
+.admin-pro-btn-primary:hover,
+.member-btn-primary:hover,
+.transaction-btn-primary:hover {
+    background: linear-gradient(to right, var(--button-color), var(--button-hover-color));
+    border-color: var(--button-hover-color);
+}
+
+.btn-outline-primary,
+.admin-pro-btn-outline,
+.member-btn-outline {
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.btn-outline-primary:hover,
+.admin-pro-btn-outline:hover,
+.member-btn-outline:hover {
+    background-color: rgba(var(--accent-color-rgb), 0.1);
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+/* Cards */
+.card,
+.admin-pro-card,
+.member-profile-card,
+.book-card,
+.membership-card,
+.filter-card,
+.transaction-card {
+    background-color: var(--card-background);
+    border-color: var(--border-color);
+}
+
+.card-header,
+.admin-pro-card-header,
+.member-profile-card-header,
+.transaction-card-header {
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--button-color) 100%);
+    color: white;
+    border-color: var(--border-color);
+}
+
+/* Tables */
+.table,
+.admin-pro-table,
+.member-table,
+.transaction-table {
+    color: var(--text-color);
+}
+
+.table th,
+.admin-pro-table th,
+.member-table th,
+.transaction-table th {
+    background-color: rgba(var(--accent-color-rgb), 0.1);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+.table td,
+.admin-pro-table td,
+.member-table td,
+.transaction-table td {
+    border-color: var(--border-color);
+}
+
+/* Forms */
+.form-control,
+.form-select {
+    background-color: var(--card-background);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 0.25rem rgba(var(--accent-color-rgb), 0.25);
+}
+
+/* Navbar */
+.navbar {
+    background-color: var(--accent-color);
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.navbar-dark .navbar-nav .nav-link:hover,
+.navbar-dark .navbar-nav .nav-link:focus,
+.navbar-dark .navbar-nav .nav-link.active {
+    color: white;
+}
+
+/* Sidebar */
+.admin-pro-sidebar {
+    background: linear-gradient(165deg, var(--accent-color) 0%, var(--button-color) 100%);
+}
+
+/* Stats Cards */
+.admin-pro-stats-icon {
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--button-color) 100%);
+}
+
+/* Badges */
+.badge-primary,
+.admin-pro-badge-primary,
+.status-badge-primary,
+.transaction-badge-primary {
+    background-color: rgba(var(--accent-color-rgb), 0.1);
+    color: var(--accent-color);
+}
+
+/* Footer */
+.footer-section {
+    background-color: var(--card-background);
+    color: var(--text-color);
+    border-top: 1px solid var(--border-color);
+}
+
+.footer-bottom {
+    background-color: rgba(var(--accent-color-rgb), 0.05);
+    border-top: 1px solid var(--border-color);
+}
+
+/* Dark Mode Compatibility */
+body.dark-mode {
+    --background-color: #121212;
+    --text-color: #E0E0E0;
+    --card-background: #1E1E1E;
+    --border-color: #333333;
+}

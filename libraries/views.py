@@ -41,14 +41,12 @@ def library_detail(request, slug):
     return render(request, 'libraries/library_detail.html', context)
 
 @login_required
-def manage_libraries(request):
-    """View function for managing libraries (Super Admin only)."""
+def create_library(request):
+    """View function for creating a new library (Super Admin only)."""
     user = request.user
 
     if not user.is_super_admin:
         return HttpResponseForbidden("You don't have permission to access this page.")
-
-    libraries = Library.objects.all()
 
     if request.method == 'POST':
         form = LibraryForm(request.POST, request.FILES)
@@ -61,8 +59,25 @@ def manage_libraries(request):
         form = LibraryForm()
 
     context = {
-        'libraries': libraries,
         'form': form,
+        'title': 'Create New Library',
+        'submit_text': 'Create Library',
+    }
+
+    return render(request, 'libraries/library_form.html', context)
+
+@login_required
+def manage_libraries(request):
+    """View function for managing libraries (Super Admin only)."""
+    user = request.user
+
+    if not user.is_super_admin:
+        return HttpResponseForbidden("You don't have permission to access this page.")
+
+    libraries = Library.objects.all()
+
+    context = {
+        'libraries': libraries,
     }
 
     return render(request, 'libraries/manage_libraries.html', context)

@@ -1,0 +1,382 @@
+/* Dark Mode Styles */
+:root {
+    /* Dark Mode Color Palette */
+    --dark-primary-color: #1e3a5f;
+    --dark-primary-light: #2c5282;
+    --dark-primary-dark: #162a43;
+    --dark-secondary-color: #e67e22;
+    --dark-success-color: #2ecc71;
+    --dark-danger-color: #e74c3c;
+    --dark-warning-color: #f39c12;
+    --dark-info-color: #3498db;
+    
+    /* Dark Mode Neutral Colors */
+    --dark-background: #121212;
+    --dark-surface: #1e1e1e;
+    --dark-surface-2: #2d2d2d;
+    --dark-surface-3: #333333;
+    --dark-on-background: #e0e0e0;
+    --dark-on-surface: #bdbdbd;
+    --dark-on-surface-medium: #9e9e9e;
+    --dark-on-surface-disabled: #757575;
+    --dark-divider: rgba(255, 255, 255, 0.12);
+    
+    /* Dark Mode Shadows */
+    --dark-shadow-1: 0 1px 3px rgba(0, 0, 0, 0.5);
+    --dark-shadow-2: 0 4px 6px rgba(0, 0, 0, 0.5);
+    --dark-shadow-3: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* Dark Mode Base Styles */
+body.dark-mode {
+    background-color: var(--dark-background);
+    color: var(--dark-on-background);
+}
+
+/* Dark Mode Cards */
+body.dark-mode .card,
+body.dark-mode .admin-pro-card,
+body.dark-mode .member-profile-card,
+body.dark-mode .book-card,
+body.dark-mode .membership-card {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-surface-2);
+    box-shadow: var(--dark-shadow-1);
+}
+
+body.dark-mode .card-header,
+body.dark-mode .admin-pro-card-header,
+body.dark-mode .member-profile-card-header {
+    background-color: var(--dark-surface-2);
+    border-color: var(--dark-surface-3);
+    color: var(--dark-on-background);
+}
+
+body.dark-mode .card-footer,
+body.dark-mode .admin-pro-card-footer,
+body.dark-mode .book-card-footer,
+body.dark-mode .membership-card-footer {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-surface-2);
+}
+
+/* Dark Mode Text */
+body.dark-mode h1, 
+body.dark-mode h2, 
+body.dark-mode h3, 
+body.dark-mode h4, 
+body.dark-mode h5, 
+body.dark-mode h6 {
+    color: var(--dark-on-background);
+}
+
+body.dark-mode p,
+body.dark-mode .text-muted {
+    color: var(--dark-on-surface) !important;
+}
+
+/* Dark Mode Tables */
+body.dark-mode .table,
+body.dark-mode .admin-pro-table,
+body.dark-mode .member-table {
+    color: var(--dark-on-background);
+}
+
+body.dark-mode .table th,
+body.dark-mode .admin-pro-table th,
+body.dark-mode .member-table th {
+    background-color: var(--dark-surface-2);
+    color: var(--dark-on-background);
+    border-color: var(--dark-surface-3);
+}
+
+body.dark-mode .table td,
+body.dark-mode .admin-pro-table td,
+body.dark-mode .member-table td {
+    border-color: var(--dark-surface-2);
+}
+
+body.dark-mode .table-striped tbody tr:nth-of-type(odd),
+body.dark-mode .admin-pro-table tbody tr:nth-of-type(odd),
+body.dark-mode .member-table tbody tr:nth-of-type(odd) {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+body.dark-mode .table-hover tbody tr:hover,
+body.dark-mode .admin-pro-table tbody tr:hover,
+body.dark-mode .member-table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Dark Mode Forms */
+body.dark-mode .form-control {
+    background-color: var(--dark-surface-2);
+    border-color: var(--dark-surface-3);
+    color: var(--dark-on-background);
+}
+
+body.dark-mode .form-control:focus {
+    background-color: var(--dark-surface-2);
+    border-color: var(--dark-primary-light);
+    color: var(--dark-on-background);
+}
+
+body.dark-mode .form-control::placeholder {
+    color: var(--dark-on-surface-medium);
+}
+
+body.dark-mode .form-select {
+    background-color: var(--dark-surface-2);
+    border-color: var(--dark-surface-3);
+    color: var(--dark-on-background);
+}
+
+/* Dark Mode Buttons */
+body.dark-mode .btn-primary,
+body.dark-mode .admin-pro-btn-primary,
+body.dark-mode .member-btn-primary {
+    background: linear-gradient(to right, var(--dark-primary-color), var(--dark-primary-light));
+    border-color: var(--dark-primary-dark);
+}
+
+body.dark-mode .btn-outline-primary,
+body.dark-mode .admin-pro-btn-outline,
+body.dark-mode .member-btn-outline {
+    color: var(--dark-primary-light);
+    border-color: var(--dark-primary-light);
+    background-color: transparent;
+}
+
+body.dark-mode .btn-outline-primary:hover,
+body.dark-mode .admin-pro-btn-outline:hover,
+body.dark-mode .member-btn-outline:hover {
+    background-color: rgba(44, 82, 130, 0.2);
+    color: var(--dark-primary-light);
+}
+
+/* Dark Mode Badges */
+body.dark-mode .badge,
+body.dark-mode .admin-pro-badge,
+body.dark-mode .status-badge {
+    background-color: var(--dark-surface-2);
+}
+
+body.dark-mode .badge-primary,
+body.dark-mode .admin-pro-badge-primary,
+body.dark-mode .status-badge-primary {
+    background-color: rgba(44, 82, 130, 0.2);
+    color: #5d8aa8;
+}
+
+body.dark-mode .badge-success,
+body.dark-mode .admin-pro-badge-success,
+body.dark-mode .status-badge-success {
+    background-color: rgba(46, 204, 113, 0.2);
+    color: #2ecc71;
+}
+
+body.dark-mode .badge-danger,
+body.dark-mode .admin-pro-badge-danger,
+body.dark-mode .status-badge-danger {
+    background-color: rgba(231, 76, 60, 0.2);
+    color: #e74c3c;
+}
+
+body.dark-mode .badge-warning,
+body.dark-mode .admin-pro-badge-warning,
+body.dark-mode .status-badge-warning {
+    background-color: rgba(243, 156, 18, 0.2);
+    color: #f39c12;
+}
+
+body.dark-mode .badge-info,
+body.dark-mode .admin-pro-badge-info,
+body.dark-mode .status-badge-info {
+    background-color: rgba(52, 152, 219, 0.2);
+    color: #3498db;
+}
+
+/* Dark Mode Navbar */
+body.dark-mode .navbar {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-surface-2);
+}
+
+body.dark-mode .navbar-brand {
+    color: var(--dark-on-background);
+}
+
+body.dark-mode .navbar-nav .nav-link {
+    color: var(--dark-on-surface);
+}
+
+body.dark-mode .navbar-nav .nav-link:hover,
+body.dark-mode .navbar-nav .nav-link:focus {
+    color: var(--dark-on-background);
+}
+
+body.dark-mode .navbar-nav .active > .nav-link,
+body.dark-mode .navbar-nav .nav-link.active {
+    color: var(--dark-on-background);
+}
+
+/* Dark Mode Sidebar */
+body.dark-mode .admin-pro-sidebar {
+    background: linear-gradient(165deg, var(--dark-primary-dark) 0%, var(--dark-primary-color) 100%);
+}
+
+body.dark-mode .admin-pro-menu-item {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+body.dark-mode .admin-pro-menu-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+body.dark-mode .admin-pro-menu-item.active {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+
+/* Dark Mode Stats Cards */
+body.dark-mode .admin-pro-stats-card {
+    background-color: var(--dark-surface);
+}
+
+body.dark-mode .admin-pro-stats-icon {
+    background: linear-gradient(135deg, var(--dark-primary-color) 0%, var(--dark-primary-light) 100%);
+}
+
+body.dark-mode .admin-pro-stats-value {
+    color: var(--dark-on-background);
+}
+
+body.dark-mode .admin-pro-stats-label {
+    color: var(--dark-on-surface);
+}
+
+/* Dark Mode Action Cards */
+body.dark-mode .admin-pro-action-card {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-surface-2);
+}
+
+body.dark-mode .admin-pro-action-card:hover {
+    background-color: var(--dark-surface-2);
+}
+
+body.dark-mode .admin-pro-action-content h4 {
+    color: var(--dark-on-background);
+}
+
+body.dark-mode .admin-pro-action-content p {
+    color: var(--dark-on-surface);
+}
+
+/* Dark Mode Book Cards */
+body.dark-mode .book-card-title h3 {
+    color: var(--dark-on-background);
+}
+
+body.dark-mode .book-card-title p {
+    color: var(--dark-on-surface);
+}
+
+body.dark-mode .book-card-info-label {
+    color: var(--dark-on-surface);
+}
+
+body.dark-mode .book-card-info-value {
+    color: var(--dark-on-background);
+}
+
+/* Dark Mode Membership Cards */
+body.dark-mode .membership-card.active {
+    border-top-color: var(--dark-success-color);
+}
+
+body.dark-mode .membership-card.expired {
+    border-top-color: var(--dark-danger-color);
+}
+
+body.dark-mode .membership-card-header h3 {
+    color: var(--dark-on-background);
+}
+
+body.dark-mode .membership-card-info-label {
+    color: var(--dark-on-surface);
+}
+
+body.dark-mode .membership-card-info-value {
+    color: var(--dark-on-background);
+}
+
+/* Dark Mode Empty States */
+body.dark-mode .member-empty-state .member-empty-icon,
+body.dark-mode .admin-pro-empty-state .admin-pro-empty-icon {
+    background-color: var(--dark-surface-2);
+    color: var(--dark-on-surface-medium);
+}
+
+body.dark-mode .member-empty-state h4,
+body.dark-mode .admin-pro-empty-state h4 {
+    color: var(--dark-on-background);
+}
+
+body.dark-mode .member-empty-state p,
+body.dark-mode .admin-pro-empty-state p {
+    color: var(--dark-on-surface);
+}
+
+/* Dark Mode Toggle Button */
+.dark-mode-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--dark-surface-2);
+    color: var(--dark-on-background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: var(--dark-shadow-2);
+    transition: all 0.3s ease;
+}
+
+.dark-mode-toggle:hover {
+    transform: scale(1.1);
+}
+
+body.dark-mode .dark-mode-toggle {
+    background-color: var(--light-color);
+    color: var(--dark-color);
+}
+
+/* Dark Mode Transitions */
+body, 
+.card, 
+.admin-pro-card, 
+.member-profile-card, 
+.book-card, 
+.membership-card,
+.navbar,
+.admin-pro-sidebar,
+.form-control,
+.btn,
+.admin-pro-btn,
+.member-btn,
+.badge,
+.admin-pro-badge,
+.status-badge,
+.table,
+.admin-pro-table,
+.member-table,
+h1, h2, h3, h4, h5, h6,
+p, .text-muted {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
