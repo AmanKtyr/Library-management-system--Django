@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Professional Library Management System Super Admin Panel">
+    <meta name="author" content="Library Management System">
+    <title>{% block title %}Super Admin Panel - Library Management System{% endblock %}</title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+    <link rel="stylesheet" href="{% static 'css/admin-pro.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="admin-pro-body">
+    <div class="admin-pro-wrapper d-flex" id="wrapper">
+        <!-- Sidebar -->
+        <div class="admin-pro-sidebar" id="sidebar-wrapper">
+            <div class="admin-pro-sidebar-header">
+                <div class="admin-pro-logo">
+                    <img src="/static/images/logo-white.png" alt="Library Management System" class="img-fluid">
+                </div>
+                <h4 class="admin-pro-title">Super Admin</h4>
+            </div>
+
+            <div class="admin-pro-user-info">
+                <div class="admin-pro-user-avatar">
+                    {% if user.profile_picture %}
+                        <img src="{{ user.profile_picture.url }}" alt="{{ user.get_full_name }}" class="img-fluid rounded-circle">
+                    {% else %}
+                        <div class="admin-pro-user-avatar-placeholder">
+                            {{ user.get_initials }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="admin-pro-user-details">
+                    <h5>{{ user.get_full_name|default:user.email }}</h5>
+                    <p>{{ user.email }}</p>
+                </div>
+            </div>
+
+            <div class="admin-pro-menu">
+                <div class="admin-pro-menu-category">Main</div>
+                <a href="{% url 'superadmin:dashboard' %}" class="admin-pro-menu-item {% if request.path == '/superadmin/dashboard/' %}active{% endif %}">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <div class="admin-pro-menu-category">Management</div>
+                <a href="{% url 'superadmin:libraries' %}" class="admin-pro-menu-item {% if request.path == '/superadmin/libraries/' %}active{% endif %}">
+                    <i class="fas fa-building"></i>
+                    <span>Libraries</span>
+                </a>
+                <a href="{% url 'superadmin:users' %}" class="admin-pro-menu-item {% if request.path == '/superadmin/users/' %}active{% endif %}">
+                    <i class="fas fa-users"></i>
+                    <span>Users</span>
+                </a>
+                <a href="{% url 'superadmin:books' %}" class="admin-pro-menu-item {% if request.path == '/superadmin/books/' %}active{% endif %}">
+                    <i class="fas fa-book"></i>
+                    <span>Books</span>
+                </a>
+
+                <div class="admin-pro-menu-category">Operations</div>
+                <a href="{% url 'superadmin:transactions' %}" class="admin-pro-menu-item {% if request.path == '/superadmin/transactions/' %}active{% endif %}">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>Transactions</span>
+                </a>
+                <a href="{% url 'superadmin:reports' %}" class="admin-pro-menu-item {% if request.path == '/superadmin/reports/' %}active{% endif %}">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports</span>
+                </a>
+            </div>
+
+            <div class="admin-pro-sidebar-footer">
+                <a href="{% url 'core:home' %}" class="admin-pro-menu-item">
+                    <i class="fas fa-home"></i>
+                    <span>Main Site</span>
+                </a>
+                <a href="{% url 'account_logout' %}" class="admin-pro-menu-item">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper" class="admin-pro-content">
+            <nav class="admin-pro-navbar">
+                <div class="admin-pro-navbar-left">
+                    <button class="admin-pro-toggle-btn" id="menu-toggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="admin-pro-breadcrumb">
+                        <a href="{% url 'superadmin:dashboard' %}">
+                            <i class="fas fa-home"></i>
+                        </a>
+                        <span class="separator">/</span>
+                        <span class="current">{% block breadcrumb_title %}Dashboard{% endblock %}</span>
+                    </div>
+                </div>
+
+                <div class="admin-pro-navbar-right">
+                    <div class="admin-pro-navbar-item">
+                        <button class="admin-pro-icon-btn" id="fullscreenBtn">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+
+                    <div class="admin-pro-navbar-item">
+                        <button class="admin-pro-icon-btn" id="darkModeToggle">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </div>
+
+                    <div class="admin-pro-navbar-item dropdown">
+                        <button class="admin-pro-icon-btn" id="notificationsDropdown" data-bs-toggle="dropdown">
+                            <i class="fas fa-bell"></i>
+                            <span class="admin-pro-badge">3</span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end admin-pro-dropdown-menu" aria-labelledby="notificationsDropdown">
+                            <div class="admin-pro-dropdown-header">
+                                <h6>Notifications</h6>
+                                <a href="#">Mark all as read</a>
+                            </div>
+                            <div class="admin-pro-dropdown-body">
+                                <a href="#" class="admin-pro-notification">
+                                    <div class="admin-pro-notification-icon bg-primary">
+                                        <i class="fas fa-book"></i>
+                                    </div>
+                                    <div class="admin-pro-notification-content">
+                                        <p>New book added: "The Great Gatsby"</p>
+                                        <span>2 hours ago</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="admin-pro-notification">
+                                    <div class="admin-pro-notification-icon bg-danger">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                    </div>
+                                    <div class="admin-pro-notification-content">
+                                        <p>5 books are overdue today</p>
+                                        <span>3 hours ago</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="admin-pro-notification">
+                                    <div class="admin-pro-notification-icon bg-success">
+                                        <i class="fas fa-user-plus"></i>
+                                    </div>
+                                    <div class="admin-pro-notification-content">
+                                        <p>New member registered: John Doe</p>
+                                        <span>5 hours ago</span>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="admin-pro-dropdown-footer">
+                                <a href="#">View all notifications</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-pro-navbar-item dropdown">
+                        <button class="admin-pro-user-btn" id="userDropdown" data-bs-toggle="dropdown">
+                            {% if user.profile_picture %}
+                                <img src="{{ user.profile_picture.url }}" alt="{{ user.get_full_name }}" class="admin-pro-user-img">
+                            {% else %}
+                                <div class="admin-pro-user-img-placeholder">
+                                    {{ user.get_initials }}
+                                </div>
+                            {% endif %}
+                            <span class="admin-pro-user-name">{{ user.get_full_name|default:user.email }}</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end admin-pro-dropdown-menu" aria-labelledby="userDropdown">
+                            <a class="dropdown-item" href="{% url 'core:dashboard' %}">
+                                <i class="fas fa-user me-2"></i> My Profile
+                            </a>
+                            <a class="dropdown-item" href="{% url 'account_change_password' %}">
+                                <i class="fas fa-lock me-2"></i> Change Password
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{% url 'account_logout' %}">
+                                <i class="fas fa-sign-out-alt me-2"></i> Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Messages -->
+            {% if messages %}
+                <div class="admin-pro-messages">
+                    {% for message in messages %}
+                        <div class="admin-pro-alert alert-{{ message.tags }}">
+                            <div class="admin-pro-alert-icon">
+                                {% if message.tags == 'success' %}
+                                    <i class="fas fa-check-circle"></i>
+                                {% elif message.tags == 'error' or message.tags == 'danger' %}
+                                    <i class="fas fa-exclamation-circle"></i>
+                                {% elif message.tags == 'warning' %}
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                {% elif message.tags == 'info' %}
+                                    <i class="fas fa-info-circle"></i>
+                                {% endif %}
+                            </div>
+                            <div class="admin-pro-alert-content">
+                                {{ message }}
+                            </div>
+                            <button type="button" class="admin-pro-alert-close" data-bs-dismiss="alert">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Main Content -->
+            <div class="admin-pro-main-content">
+                <div class="admin-pro-page-header">
+                    <h1 class="admin-pro-page-title">{% block page_title %}Dashboard{% endblock %}</h1>
+                    <div class="admin-pro-page-actions">
+                        {% block page_actions %}{% endblock %}
+                    </div>
+                </div>
+
+                {% block content %}{% endblock %}
+
+                <!-- Footer -->
+                <footer class="admin-pro-footer">
+                    <div class="admin-pro-footer-left">
+                        &copy; {% now "Y" %} Library Management System. All rights reserved.
+                    </div>
+                    <div class="admin-pro-footer-right">
+                        <span>Version 1.0.0</span>
+                    </div>
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom JS -->
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/admin.js' %}"></script>
+    <script src="{% static 'js/admin-pro.js' %}"></script>
+    <script src="{% static 'js/admin-animations.js' %}"></script>
+
+    <script>
+        // Toggle sidebar
+        document.getElementById("menu-toggle").addEventListener("click", function(e) {
+            e.preventDefault();
+            document.getElementById("wrapper").classList.toggle("toggled");
+        });
+
+        // Fullscreen toggle
+        document.getElementById("fullscreenBtn").addEventListener("click", function() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+                this.querySelector('i').classList.remove('fa-expand');
+                this.querySelector('i').classList.add('fa-compress');
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                    this.querySelector('i').classList.remove('fa-compress');
+                    this.querySelector('i').classList.add('fa-expand');
+                }
+            }
+        });
+
+        // Dark mode toggle
+        document.getElementById("darkModeToggle").addEventListener("click", function() {
+            document.body.classList.toggle('dark-mode');
+            const icon = this.querySelector('i');
+            if (document.body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        });
+
+        // Check for saved dark mode preference
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            document.body.classList.add('dark-mode');
+            document.getElementById("darkModeToggle").querySelector('i').classList.remove('fa-moon');
+            document.getElementById("darkModeToggle").querySelector('i').classList.add('fa-sun');
+        }
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

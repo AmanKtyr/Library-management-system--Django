@@ -52,6 +52,11 @@ INSTALLED_APPS = [
     'libraries.apps.LibrariesConfig',
     'books.apps.BooksConfig',
     'transactions.apps.TransactionsConfig',
+
+    # Role-based apps
+    'superadmin.apps.SuperadminConfig',
+    'library_admin.apps.LibraryAdminConfig',
+    'member.apps.MemberConfig',
 ]
 
 # Crispy Forms

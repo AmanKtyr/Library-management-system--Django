@@ -29,6 +29,11 @@ urlpatterns = [
     path('libraries/', include('libraries.urls')),
     path('books/', include('books.urls')),
     path('transactions/', include('transactions.urls')),
+
+    # Role-based URLs
+    path('superadmin/', include('superadmin.urls')),
+    path('library-admin/', include('library_admin.urls')),
+    path('member/', include('member.urls')),
 ]
 
 # Serve media files in development

@@ -24,8 +24,8 @@ class UserCreateView(SuccessMessageMixin, CreateView):
     """
     model = User
     form_class = CustomUserCreationForm
-    template_name = 'accounts/user_add.html'
-    success_url = reverse_lazy('core:admin_users')
+    template_name = 'superadmin/users/user_add.html'
+    success_url = reverse_lazy('superadmin:users')
     success_message = "User %(email)s was created successfully"
 
     def get_context_data(self, **kwargs):
@@ -57,7 +57,7 @@ class UserListView(ListView):
     Custom view for listing users, replacing the Django admin user list page.
     """
     model = User
-    template_name = 'accounts/user_list.html'
+    template_name = 'superadmin/users/user_list.html'
     context_object_name = 'users'
     paginate_by = 10
 

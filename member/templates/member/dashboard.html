@@ -1,0 +1,281 @@
+{% extends 'member/base.html' %}
+{% load static %}
+
+{% block title %}Member Dashboard - Library Management System{% endblock %}
+{% block member_title %}Dashboard{% endblock %}
+
+{% block member_content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="mb-0">Welcome, {{ user.get_full_name|default:user.email }}</h1>
+            <p class="text-muted">Your personal library dashboard</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{% url 'books:book_list' %}" class="btn btn-primary">
+                <i class="fas fa-search me-1"></i> Browse Books
+            </a>
+            <a href="{% url 'member:profile' %}" class="btn btn-outline-primary">
+                <i class="fas fa-user me-1"></i> My Profile
+            </a>
+        </div>
+    </div>
+
+    <!-- Membership Cards -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-id-card me-2 text-primary"></i> My Memberships
+                        </h5>
+                        <a href="{% url 'member:memberships' %}" class="btn btn-sm btn-outline-primary">
+                            View All
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for membership in memberships %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100 membership-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ membership.library.name }}</h5>
+                                    <p class="card-text">
+                                        <strong>Membership #:</strong> {{ membership.membership_number }}<br>
+                                        <strong>Plan:</strong> {{ membership.plan.name }}<br>
+                                        <strong>Valid Until:</strong> {{ membership.expiry_date|date:"M d, Y" }}
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center mt-3">
+                                        <span class="badge {% if membership.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                                            {% if membership.is_active %}Active{% else %}Expired{% endif %}
+                                        </span>
+                                        <a href="{% url 'libraries:library_detail' slug=membership.library.slug %}" class="btn btn-sm btn-outline-primary">
+                                            Visit Library
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i> You don't have any active memberships.
+                                <a href="{% url 'libraries:library_list' %}" class="alert-link">Join a library</a> to start borrowing books.
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="display-4 mb-2 text-primary">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h3>{{ borrowed_books.count }}</h3>
+                    <p class="text-muted mb-0">Books Borrowed</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="display-4 mb-2 text-warning">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3>{{ reserved_books.count }}</h3>
+                    <p class="text-muted mb-0">Books Reserved</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="display-4 mb-2 text-danger">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <h3>{{ overdue_books.count }}</h3>
+                    <p class="text-muted mb-0">Overdue Books</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="display-4 mb-2 text-success">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <h3>{{ transactions.count }}</h3>
+                    <p class="text-muted mb-0">Recent Transactions</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Borrowed Books -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-book me-2 text-primary"></i> Currently Borrowed
+                        </h5>
+                        <a href="{% url 'member:borrowed_books' %}" class="btn btn-sm btn-outline-primary">
+                            View All
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for transaction in borrowed_books|slice:":3" %}
+                        <div class="list-group-item px-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">{{ transaction.book_copy.book.title }}</h6>
+                                    <p class="text-muted small mb-0">
+                                        <i class="fas fa-calendar-alt me-1"></i> Due: {{ transaction.due_date|date:"M d, Y" }}
+                                        {% if transaction.is_overdue %}
+                                        <span class="text-danger ms-2">
+                                            <i class="fas fa-exclamation-circle"></i> Overdue
+                                        </span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <a href="{% url 'transactions:transaction_detail' transaction_id=transaction.transaction_id %}" class="btn btn-sm btn-outline-primary">
+                                    Details
+                                </a>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-3">
+                            <p class="text-muted mb-0">You don't have any borrowed books.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-clock me-2 text-warning"></i> Reserved Books
+                        </h5>
+                        <a href="{% url 'member:reserved_books' %}" class="btn btn-sm btn-outline-primary">
+                            View All
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for transaction in reserved_books|slice:":3" %}
+                        <div class="list-group-item px-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">{{ transaction.book_copy.book.title }}</h6>
+                                    <p class="text-muted small mb-0">
+                                        <i class="fas fa-building me-1"></i> {{ transaction.library.name }}
+                                        <i class="fas fa-calendar-alt ms-2 me-1"></i> Reserved: {{ transaction.transaction_date|date:"M d, Y" }}
+                                    </p>
+                                </div>
+                                <a href="{% url 'transactions:transaction_detail' transaction_id=transaction.transaction_id %}" class="btn btn-sm btn-outline-primary">
+                                    Details
+                                </a>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-3">
+                            <p class="text-muted mb-0">You don't have any reserved books.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-exchange-alt me-2 text-primary"></i> Recent Transactions
+                        </h5>
+                        <a href="{% url 'member:transactions' %}" class="btn btn-sm btn-outline-primary">
+                            View All
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Book</th>
+                                    <th>Library</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transaction in transactions %}
+                                <tr>
+                                    <td>{{ transaction.book_copy.book.title }}</td>
+                                    <td>{{ transaction.library.name }}</td>
+                                    <td>
+                                        {% if transaction.transaction_type == 'BORROW' %}
+                                        <span class="badge bg-success">Borrow</span>
+                                        {% elif transaction.transaction_type == 'RETURN' %}
+                                        <span class="badge bg-info">Return</span>
+                                        {% elif transaction.transaction_type == 'RESERVE' %}
+                                        <span class="badge bg-warning">Reserve</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">{{ transaction.transaction_type }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if transaction.status == 'COMPLETED' %}
+                                        <span class="badge bg-success">Completed</span>
+                                        {% elif transaction.status == 'PENDING' %}
+                                        <span class="badge bg-warning">Pending</span>
+                                        {% elif transaction.status == 'OVERDUE' %}
+                                        <span class="badge bg-danger">Overdue</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">{{ transaction.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ transaction.transaction_date|date:"M d, Y" }}</td>
+                                    <td>
+                                        <a href="{% url 'transactions:transaction_detail' transaction_id=transaction.transaction_id %}" class="btn btn-sm btn-outline-primary">
+                                            Details
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center">No transactions found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock member_content %}

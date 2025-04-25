@@ -34,62 +34,17 @@ def home(request):
 
 @login_required
 def dashboard(request):
-    """View function for the user dashboard."""
+    """View function for the user dashboard - redirects to role-specific dashboards."""
     user = request.user
 
-    # Different dashboard views based on user type
+    # Redirect to role-specific dashboards
     if user.is_super_admin:
-        # Super admin sees all libraries and system-wide stats
-        libraries = Library.objects.all()
-        total_users = user.__class__.objects.count()
-        total_transactions = Transaction.objects.count()
-
-        # Get database engine name
-        from django.db import connection
-        database_engine = connection.vendor
-
-        # Get Python version
-        import sys
-        python_version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
-
-        # Placeholder for recent logs
-        recent_logs = []
-
-        context = {
-            'libraries': libraries,
-            'total_users': total_users,
-            'total_transactions': total_transactions,
-            'python_version': python_version,
-            'database_engine': database_engine,
-            'recent_logs': recent_logs,
-        }
-
-        return render(request, 'core/dashboard_super_admin.html', context)
-
+        return redirect('superadmin:dashboard')
     elif user.is_library_admin:
-        # Library admin sees only their library
-        libraries = Library.objects.filter(admin=user)
-
-        if libraries.exists():
-            library = libraries.first()
-            staff_members = library.staff.all()
-            book_copies = BookCopy.objects.filter(library=library)
-            transactions = Transaction.objects.filter(library=library)
-
-            context = {
-                'library': library,
-                'staff_members': staff_members,
-                'book_copies': book_copies,
-                'transactions': transactions,
-            }
-
-            return render(request, 'core/dashboard_library_admin.html', context)
-        else:
-            messages.warning(request, "You are not assigned to any library yet.")
-            return redirect('core:home')
-
+        return redirect('library_admin:dashboard')
     elif user.is_staff_member:
-        # Staff member sees only their library
+        # For now, staff members still use the core dashboard
+        # This could be updated later with a dedicated staff dashboard
         libraries = user.staffed_libraries.all()
 
         if libraries.exists():
@@ -107,18 +62,8 @@ def dashboard(request):
         else:
             messages.warning(request, "You are not assigned to any library yet.")
             return redirect('core:home')
-
     else:  # Regular member
-        # Member sees their borrowed books and membership details
-        transactions = Transaction.objects.filter(user=user).order_by('-transaction_date')
-        memberships = Membership.objects.filter(user=user, is_active=True)
-
-        context = {
-            'transactions': transactions,
-            'memberships': memberships,
-        }
-
-        return render(request, 'core/dashboard_member.html', context)
+        return redirect('member:dashboard')
 
 def about(request):
     """View function for the about page."""
@@ -132,13 +77,13 @@ def admin_login(request):
     """View function for the custom admin login page."""
     if request.user.is_authenticated:
         if request.user.is_super_admin:
-            return redirect('core:admin_panel')
+            return redirect('superadmin:dashboard')
         elif request.user.is_library_admin:
-            return redirect('core:library_admin_panel')
+            return redirect('library_admin:dashboard')
         else:
             return redirect('core:dashboard')
 
-    return render(request, 'account/login_admin.html')
+    return render(request, 'superadmin/auth/login.html')
 
 def admin_logout(request):
     """View function for the custom admin logout page."""
@@ -159,7 +104,7 @@ def user_login(request):
     if request.user.is_authenticated:
         return redirect('core:dashboard')
 
-    return render(request, 'account/login.html')
+    return render(request, 'member/auth/login.html')
 
 # Custom Admin Panel Views
 def is_super_admin(user):
@@ -173,76 +118,8 @@ def is_library_admin(user):
 @login_required
 @user_passes_test(is_super_admin)
 def admin_panel(request):
-    """View function for the custom super admin panel."""
-    # Get statistics for the admin panel
-    total_libraries = Library.objects.count()
-    active_libraries = Library.objects.filter(is_active=True).count()
-    total_books = Book.objects.count()
-    total_book_copies = BookCopy.objects.count()
-    total_users = User.objects.count()
-    total_transactions = Transaction.objects.count()
-
-    # Get user statistics
-    super_admins = User.objects.filter(user_type='SUPER_ADMIN').count()
-    library_admins = User.objects.filter(user_type='LIBRARY_ADMIN').count()
-    staff_members = User.objects.filter(user_type='STAFF').count()
-    members = User.objects.filter(user_type='MEMBER').count()
-
-    # Get transaction statistics
-    borrows = Transaction.objects.filter(transaction_type='BORROW').count()
-    returns = Transaction.objects.filter(transaction_type='RETURN').count()
-    reserves = Transaction.objects.filter(transaction_type='RESERVE').count()
-    overdue = Transaction.objects.filter(
-        transaction_type='BORROW',
-        status='COMPLETED',
-        due_date__lt=timezone.now(),
-        return_date__isnull=True
-    ).count()
-
-    # Get total fines
-    total_fines = Transaction.objects.aggregate(total=Sum('fine_amount'))['total'] or 0
-    paid_fines = Transaction.objects.filter(fine_paid=True).aggregate(total=Sum('fine_amount'))['total'] or 0
-
-    # Get recent activities
-    recent_libraries = Library.objects.order_by('-created_at')[:5]
-    recent_users = User.objects.order_by('-date_joined')[:5]
-    recent_transactions = Transaction.objects.order_by('-transaction_date')[:10]
-
-    # Get top libraries by book count
-    top_libraries = Library.objects.annotate(
-        book_count=Count('book_copies')
-    ).order_by('-book_count')[:5]
-
-    # Get top books by borrow count
-    top_books = Book.objects.annotate(
-        borrow_count=Count('copies__transactions', filter=Q(copies__transactions__transaction_type='BORROW'))
-    ).order_by('-borrow_count')[:5]
-
-    context = {
-        'total_libraries': total_libraries,
-        'active_libraries': active_libraries,
-        'total_books': total_books,
-        'total_book_copies': total_book_copies,
-        'total_users': total_users,
-        'total_transactions': total_transactions,
-        'super_admins': super_admins,
-        'library_admins': library_admins,
-        'staff_members': staff_members,
-        'members': members,
-        'borrows': borrows,
-        'returns': returns,
-        'reserves': reserves,
-        'overdue': overdue,
-        'total_fines': total_fines,
-        'paid_fines': paid_fines,
-        'recent_libraries': recent_libraries,
-        'recent_users': recent_users,
-        'recent_transactions': recent_transactions,
-        'top_libraries': top_libraries,
-        'top_books': top_books,
-    }
-
-    return render(request, 'core/admin_panel.html', context)
+    """View function for the custom super admin panel - redirects to superadmin dashboard."""
+    return redirect('superadmin:dashboard')
 
 @login_required
 @user_passes_test(is_super_admin)
@@ -581,50 +458,5 @@ def admin_reports(request):
 @login_required
 @user_passes_test(is_library_admin)
 def library_admin_panel(request):
-    """View function for the custom library admin panel."""
-    user = request.user
-    libraries = Library.objects.filter(admin=user)
-
-    if not libraries.exists():
-        messages.warning(request, "You are not assigned to any library yet.")
-        return redirect('core:home')
-
-    library = libraries.first()
-
-    # Get statistics for the library
-    total_books = BookCopy.objects.filter(library=library).count()
-    available_books = BookCopy.objects.filter(library=library, status='AVAILABLE').count()
-    borrowed_books = BookCopy.objects.filter(library=library, status='BORROWED').count()
-    reserved_books = BookCopy.objects.filter(library=library, status='RESERVED').count()
-
-    # Get staff members
-    staff_members = library.staff.all()
-
-    # Get members
-    members = Membership.objects.filter(library=library, is_active=True)
-
-    # Get recent transactions
-    recent_transactions = Transaction.objects.filter(library=library).order_by('-transaction_date')[:10]
-
-    # Get overdue books
-    overdue_books = Transaction.objects.filter(
-        library=library,
-        transaction_type='BORROW',
-        status='COMPLETED',
-        due_date__lt=timezone.now(),
-        return_date__isnull=True
-    )
-
-    context = {
-        'library': library,
-        'total_books': total_books,
-        'available_books': available_books,
-        'borrowed_books': borrowed_books,
-        'reserved_books': reserved_books,
-        'staff_members': staff_members,
-        'members': members,
-        'recent_transactions': recent_transactions,
-        'overdue_books': overdue_books,
-    }
-
-    return render(request, 'core/library_admin_panel.html', context)
+    """View function for the custom library admin panel - redirects to library_admin dashboard."""
+    return redirect('library_admin:dashboard')

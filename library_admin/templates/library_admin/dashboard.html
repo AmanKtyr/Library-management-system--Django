@@ -1,0 +1,339 @@
+{% extends 'library_admin/base.html' %}
+{% load static %}
+
+{% block title %}Library Admin Dashboard - Library Management System{% endblock %}
+{% block breadcrumb_title %}Dashboard{% endblock %}
+{% block page_title %}Library Admin Dashboard{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'books:create_book' %}" class="admin-pro-btn admin-pro-btn-primary">
+    <i class="fas fa-plus"></i> Add Book
+</a>
+<a href="{% url 'libraries:manage_library_staff' slug=library.slug %}" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-user-plus"></i> Add Staff
+</a>
+{% endblock %}
+
+{% block content %}
+<!-- Library Info Card -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="admin-pro-card">
+            <div class="admin-pro-card-body">
+                <div class="row">
+                    <div class="col-md-2">
+                        {% if library.image %}
+                        <img src="{{ library.image.url }}" alt="{{ library.name }}" class="img-fluid rounded">
+                        {% else %}
+                        <div class="admin-pro-placeholder-img">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-10">
+                        <h2 class="mb-3">{{ library.name }}</h2>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><i class="fas fa-map-marker-alt me-2 text-primary"></i> {{ library.address }}, {{ library.city }}, {{ library.state }} {{ library.postal_code }}, {{ library.country }}</p>
+                                <p><i class="fas fa-phone me-2 text-primary"></i> {{ library.phone }}</p>
+                                <p><i class="fas fa-envelope me-2 text-primary"></i> {{ library.email }}</p>
+                                {% if library.website %}
+                                <p><i class="fas fa-globe me-2 text-primary"></i> <a href="{{ library.website }}" target="_blank">{{ library.website }}</a></p>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                {% if library.opening_hours %}
+                                <p><i class="fas fa-clock me-2 text-primary"></i> {{ library.opening_hours|linebreaksbr }}</p>
+                                {% endif %}
+                                {% if library.established_date %}
+                                <p><i class="fas fa-calendar-alt me-2 text-primary"></i> Established: {{ library.established_date|date:"F j, Y" }}</p>
+                                {% endif %}
+                                <p><i class="fas fa-users me-2 text-primary"></i> Staff Members: {{ staff_members }}</p>
+                                <p><i class="fas fa-user-friends me-2 text-primary"></i> Members: {{ members }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="admin-pro-card admin-pro-card-stats">
+            <div class="admin-pro-card-body">
+                <div class="admin-pro-stats-icon bg-primary">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="admin-pro-stats-content">
+                    <h3>{{ total_books }}</h3>
+                    <p>Total Books</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="admin-pro-card admin-pro-card-stats">
+            <div class="admin-pro-card-body">
+                <div class="admin-pro-stats-icon bg-success">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <div class="admin-pro-stats-content">
+                    <h3>{{ available_books }}</h3>
+                    <p>Available Books</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="admin-pro-card admin-pro-card-stats">
+            <div class="admin-pro-card-body">
+                <div class="admin-pro-stats-icon bg-info">
+                    <i class="fas fa-hand-holding-heart"></i>
+                </div>
+                <div class="admin-pro-stats-content">
+                    <h3>{{ borrowed_books }}</h3>
+                    <p>Borrowed Books</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="admin-pro-card admin-pro-card-stats">
+            <div class="admin-pro-card-body">
+                <div class="admin-pro-stats-icon bg-warning">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="admin-pro-stats-content">
+                    <h3>{{ reserved_books }}</h3>
+                    <p>Reserved Books</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="admin-pro-card">
+            <div class="admin-pro-card-header">
+                <h3 class="admin-pro-card-title">
+                    <i class="fas fa-bolt me-2 text-warning"></i>Quick Actions
+                </h3>
+            </div>
+            <div class="admin-pro-card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'library_admin:staff' %}" class="admin-pro-action-card">
+                            <div class="admin-pro-action-icon bg-info">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="admin-pro-action-content">
+                                <h4>Manage Staff</h4>
+                                <p>Add, edit or remove staff</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'library_admin:books' %}" class="admin-pro-action-card">
+                            <div class="admin-pro-action-icon bg-success">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="admin-pro-action-content">
+                                <h4>Manage Books</h4>
+                                <p>Add, edit or remove books</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'library_admin:members' %}" class="admin-pro-action-card">
+                            <div class="admin-pro-action-icon bg-primary">
+                                <i class="fas fa-user-friends"></i>
+                            </div>
+                            <div class="admin-pro-action-content">
+                                <h4>Manage Members</h4>
+                                <p>View and manage memberships</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'library_admin:transactions' %}" class="admin-pro-action-card">
+                            <div class="admin-pro-action-icon bg-warning">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                            <div class="admin-pro-action-content">
+                                <h4>Transactions</h4>
+                                <p>View all library transactions</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Transactions -->
+<div class="row">
+    <div class="col-12">
+        <div class="admin-pro-card">
+            <div class="admin-pro-card-header">
+                <h5 class="admin-pro-card-title">
+                    <i class="fas fa-exchange-alt me-2"></i> Recent Transactions
+                </h5>
+                <div class="dropdown">
+                    <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline admin-pro-btn-icon" data-bs-toggle="dropdown">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end admin-pro-dropdown-menu">
+                        <a class="dropdown-item" href="{% url 'library_admin:transactions' %}">
+                            <i class="fas fa-list me-2"></i> View All Transactions
+                        </a>
+                        <a class="dropdown-item" href="{% url 'library_admin:transactions' %}?type=BORROW">
+                            <i class="fas fa-arrow-circle-down me-2"></i> View Borrows
+                        </a>
+                        <a class="dropdown-item" href="{% url 'library_admin:transactions' %}?type=RETURN">
+                            <i class="fas fa-arrow-circle-up me-2"></i> View Returns
+                        </a>
+                        <a class="dropdown-item" href="{% url 'library_admin:transactions' %}?type=RESERVE">
+                            <i class="fas fa-clock me-2"></i> View Reservations
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="admin-pro-card-body">
+                <div class="admin-pro-table-responsive">
+                    <table class="table admin-pro-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Book</th>
+                                <th>User</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in recent_transactions %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'transactions:transaction_detail' transaction_id=transaction.transaction_id %}">
+                                        {{ transaction.transaction_id|truncatechars:8 }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{% url 'books:book_detail' slug=transaction.book_copy.book.slug %}">
+                                        {{ transaction.book_copy.book.title|truncatechars:30 }}
+                                    </a>
+                                </td>
+                                <td>{{ transaction.user.get_full_name|default:transaction.user.email }}</td>
+                                <td>
+                                    {% if transaction.transaction_type == 'BORROW' %}
+                                    <span class="badge bg-success">Borrow</span>
+                                    {% elif transaction.transaction_type == 'RETURN' %}
+                                    <span class="badge bg-info">Return</span>
+                                    {% elif transaction.transaction_type == 'RESERVE' %}
+                                    <span class="badge bg-warning">Reserve</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">{{ transaction.transaction_type }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if transaction.status == 'COMPLETED' %}
+                                    <span class="badge bg-success">Completed</span>
+                                    {% elif transaction.status == 'PENDING' %}
+                                    <span class="badge bg-warning">Pending</span>
+                                    {% elif transaction.status == 'OVERDUE' %}
+                                    <span class="badge bg-danger">Overdue</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">{{ transaction.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ transaction.transaction_date|date:"M d, Y" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center">No transactions found</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Overdue Books -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="admin-pro-card">
+            <div class="admin-pro-card-header">
+                <h5 class="admin-pro-card-title">
+                    <i class="fas fa-exclamation-circle me-2 text-danger"></i> Overdue Books
+                </h5>
+                <div class="dropdown">
+                    <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline admin-pro-btn-icon" data-bs-toggle="dropdown">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end admin-pro-dropdown-menu">
+                        <a class="dropdown-item" href="{% url 'library_admin:transactions' %}?status=OVERDUE">
+                            <i class="fas fa-list me-2"></i> View All Overdue Books
+                        </a>
+                        <a class="dropdown-item" href="{% url 'library_admin:reports' %}?type=overdue">
+                            <i class="fas fa-file-alt me-2"></i> Generate Overdue Report
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="admin-pro-card-body">
+                <div class="admin-pro-table-responsive">
+                    <table class="table admin-pro-table">
+                        <thead>
+                            <tr>
+                                <th>Book</th>
+                                <th>Member</th>
+                                <th>Due Date</th>
+                                <th>Days Overdue</th>
+                                <th>Fine</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in overdue_books %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'books:book_detail' slug=transaction.book_copy.book.slug %}">
+                                        {{ transaction.book_copy.book.title|truncatechars:30 }}
+                                    </a>
+                                </td>
+                                <td>{{ transaction.user.get_full_name|default:transaction.user.email }}</td>
+                                <td>{{ transaction.due_date|date:"M d, Y" }}</td>
+                                <td>{{ transaction.due_date|timeuntil }}</td>
+                                <td>${{ transaction.calculate_fine|floatformat:2 }}</td>
+                                <td>
+                                    <a href="{% url 'transactions:transaction_detail' transaction_id=transaction.transaction_id %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
+                                        <i class="fas fa-eye me-1"></i> View
+                                    </a>
+                                    <a href="#" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-danger">
+                                        <i class="fas fa-bell me-1"></i> Notify
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center">No overdue books found</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

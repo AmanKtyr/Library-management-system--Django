@@ -1,0 +1,429 @@
+{% extends 'superadmin/base.html' %}
+{% load static %}
+
+{% block title %}Add User - Library Management System{% endblock %}
+{% block breadcrumb_title %}Add User{% endblock %}
+{% block page_title %}Add New User{% endblock %}
+
+{% block extra_css %}
+<style>
+    .user-form-container {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .user-form-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    }
+    
+    .form-section {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--gray-200);
+    }
+    
+    .form-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    
+    .form-section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+    }
+    
+    .form-section-title i {
+        margin-right: 0.75rem;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--primary-light);
+        color: white;
+        border-radius: 50%;
+    }
+    
+    .form-floating {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-floating > label {
+        padding-left: 1rem;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 0.5rem;
+        border: 1px solid var(--gray-300);
+        padding: 0.75rem 1rem;
+        height: calc(3.5rem + 2px);
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(var(--primary-rgb), 0.25);
+    }
+    
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+        border-color: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(var(--primary-rgb), 0.3);
+    }
+    
+    .btn-secondary {
+        background-color: var(--gray-500);
+        border-color: var(--gray-500);
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-secondary:hover {
+        background-color: var(--gray-600);
+        border-color: var(--gray-600);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-text {
+        font-size: 0.875rem;
+        color: var(--gray-600);
+    }
+    
+    .invalid-feedback {
+        font-size: 0.875rem;
+        color: var(--danger-color);
+    }
+    
+    .profile-picture-preview {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 1rem;
+        border: 3px solid var(--primary-light);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .profile-picture-placeholder {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background-color: var(--gray-200);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        border: 3px solid var(--primary-light);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .profile-picture-placeholder i {
+        font-size: 3rem;
+        color: var(--gray-500);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="user-form-container">
+                <form method="post" enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Account Information Section -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-user"></i> Account Information
+                        </h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.email }}
+                                    <label for="{{ form.email.id_for_label }}">Email address</label>
+                                    {% if form.email.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.email.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.user_type }}
+                                    <label for="{{ form.user_type.id_for_label }}">User Type</label>
+                                    {% if form.user_type.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.user_type.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.password1 }}
+                                    <label for="{{ form.password1.id_for_label }}">Password</label>
+                                    {% if form.password1.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.password1.errors }}
+                                        </div>
+                                    {% else %}
+                                        <div class="form-text">{{ form.password1.help_text }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.password2 }}
+                                    <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
+                                    {% if form.password2.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.password2.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Personal Information Section -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-id-card"></i> Personal Information
+                        </h3>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.first_name }}
+                                    <label for="{{ form.first_name.id_for_label }}">First Name</label>
+                                    {% if form.first_name.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.first_name.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.last_name }}
+                                    <label for="{{ form.last_name.id_for_label }}">Last Name</label>
+                                    {% if form.last_name.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.last_name.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.phone_number }}
+                                    <label for="{{ form.phone_number.id_for_label }}">Phone Number</label>
+                                    {% if form.phone_number.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.phone_number.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.date_of_birth }}
+                                    <label for="{{ form.date_of_birth.id_for_label }}">Date of Birth</label>
+                                    {% if form.date_of_birth.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.date_of_birth.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-floating">
+                                    {{ form.address }}
+                                    <label for="{{ form.address.id_for_label }}">Address</label>
+                                    {% if form.address.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.address.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Profile Picture Section -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-image"></i> Profile Picture
+                        </h3>
+                        <div class="row">
+                            <div class="col-md-4 text-center">
+                                <div class="profile-picture-placeholder" id="profilePicturePlaceholder">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <img src="" alt="Profile Preview" class="profile-picture-preview d-none" id="profilePicturePreview">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="{{ form.profile_picture.id_for_label }}" class="form-label">Upload Profile Picture</label>
+                                    {{ form.profile_picture }}
+                                    {% if form.profile_picture.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.profile_picture.errors }}
+                                        </div>
+                                    {% endif %}
+                                    <div class="form-text">Upload a profile picture (optional). Recommended size: 300x300 pixels.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Account Status Section -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-toggle-on"></i> Account Status
+                        </h3>
+                        <div class="form-check form-switch">
+                            {{ form.is_active }}
+                            <label class="form-check-label" for="{{ form.is_active.id_for_label }}">Active Account</label>
+                            {% if form.is_active.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.is_active.errors }}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">If unchecked, the user will not be able to log in.</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="d-flex justify-content-end mt-4">
+                        <a href="{% url 'superadmin:users' %}" class="btn btn-secondary me-2">
+                            <i class="fas fa-times me-1"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> Create User
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Profile picture preview
+        const profilePictureInput = document.getElementById('{{ form.profile_picture.id_for_label }}');
+        const profilePicturePreview = document.getElementById('profilePicturePreview');
+        const profilePicturePlaceholder = document.getElementById('profilePicturePlaceholder');
+        
+        profilePictureInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    profilePicturePreview.src = e.target.result;
+                    profilePicturePreview.classList.remove('d-none');
+                    profilePicturePlaceholder.classList.add('d-none');
+                }
+                
+                reader.readAsDataURL(this.files[0]);
+            } else {
+                profilePicturePreview.classList.add('d-none');
+                profilePicturePlaceholder.classList.remove('d-none');
+            }
+        });
+        
+        // Password toggle
+        const togglePassword = function(inputId) {
+            const passwordInput = document.getElementById(inputId);
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+        };
+        
+        // Add password toggle buttons
+        const password1Input = document.getElementById('{{ form.password1.id_for_label }}');
+        const password2Input = document.getElementById('{{ form.password2.id_for_label }}');
+        
+        const password1Container = password1Input.parentElement;
+        const password2Container = password2Input.parentElement;
+        
+        const password1Toggle = document.createElement('button');
+        password1Toggle.type = 'button';
+        password1Toggle.className = 'btn btn-link position-absolute end-0 top-50 translate-middle-y text-decoration-none';
+        password1Toggle.innerHTML = '<i class="fas fa-eye"></i>';
+        password1Toggle.style.zIndex = '5';
+        password1Toggle.onclick = function() {
+            togglePassword('{{ form.password1.id_for_label }}');
+            this.innerHTML = password1Input.getAttribute('type') === 'password' ? 
+                '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+        };
+        
+        const password2Toggle = document.createElement('button');
+        password2Toggle.type = 'button';
+        password2Toggle.className = 'btn btn-link position-absolute end-0 top-50 translate-middle-y text-decoration-none';
+        password2Toggle.innerHTML = '<i class="fas fa-eye"></i>';
+        password2Toggle.style.zIndex = '5';
+        password2Toggle.onclick = function() {
+            togglePassword('{{ form.password2.id_for_label }}');
+            this.innerHTML = password2Input.getAttribute('type') === 'password' ? 
+                '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+        };
+        
+        password1Container.appendChild(password1Toggle);
+        password2Container.appendChild(password2Toggle);
+        
+        // Form validation
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            
+            form.classList.add('was-validated');
+        });
+    });
+</script>
+{% endblock %}
