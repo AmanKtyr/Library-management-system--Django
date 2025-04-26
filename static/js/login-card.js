@@ -47,10 +47,12 @@ document.addEventListener('DOMContentLoaded', function() {
   // Role selector functionality
   const roleInputs = document.querySelectorAll('.role-selector-input');
   const emailInput = document.getElementById('id_login');
+  const userRoleInput = document.getElementById('user_role');
 
   // Sample emails for demonstration
   const roleEmails = {
     'member': 'member@library.com',
+    'staff': 'staff@library.com',
     'library-admin': 'libraryadmin@library.com',
     'super-admin': 'superadmin@library.com'
   };
@@ -58,9 +60,22 @@ document.addEventListener('DOMContentLoaded', function() {
   roleInputs.forEach(input => {
     input.addEventListener('change', function() {
       if (this.checked) {
-        // Update the email placeholder based on role
+        // Update the hidden user_role field based on selected role
+        if (userRoleInput) {
+          const roleId = this.id;
+          if (roleId === 'member') {
+            userRoleInput.value = 'member';
+          } else if (roleId === 'staff') {
+            userRoleInput.value = 'staff';
+          } else if (roleId === 'library-admin') {
+            userRoleInput.value = 'library_admin';
+          } else if (roleId === 'super-admin') {
+            userRoleInput.value = 'super_admin';
+          }
+        }
+
+        // Add highlight animation to email field
         if (emailInput) {
-          // Add highlight animation
           emailInput.classList.add('login-input-highlight');
           setTimeout(() => {
             emailInput.classList.remove('login-input-highlight');
@@ -147,6 +162,117 @@ document.addEventListener('DOMContentLoaded', function() {
     loginButton.addEventListener('mouseleave', function() {
       this.classList.remove('login-button-pressed');
     });
+  }
+
+  // Form validation
+  const loginForm = document.getElementById('loginForm');
+  const emailFeedback = document.getElementById('email-feedback');
+  const passwordFeedback = document.getElementById('password-feedback');
+
+  if (loginForm) {
+    loginForm.addEventListener('submit', function(event) {
+      let isValid = true;
+
+      // Validate email
+      const emailInput = document.getElementById('id_login');
+      if (emailInput) {
+        const emailValue = emailInput.value.trim();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailValue) {
+          isValid = false;
+          emailInput.classList.add('login-input-error');
+          if (emailFeedback) {
+            emailFeedback.textContent = 'Email address is required';
+            emailFeedback.classList.add('login-validation-error');
+          }
+        } else if (!emailRegex.test(emailValue)) {
+          isValid = false;
+          emailInput.classList.add('login-input-error');
+          if (emailFeedback) {
+            emailFeedback.textContent = 'Please enter a valid email address';
+            emailFeedback.classList.add('login-validation-error');
+          }
+        } else {
+          emailInput.classList.remove('login-input-error');
+          if (emailFeedback) {
+            emailFeedback.textContent = '';
+            emailFeedback.classList.remove('login-validation-error');
+          }
+        }
+      }
+
+      // Validate password
+      const passwordInput = document.getElementById('id_password');
+      if (passwordInput) {
+        const passwordValue = passwordInput.value;
+
+        if (!passwordValue) {
+          isValid = false;
+          passwordInput.classList.add('login-input-error');
+          if (passwordFeedback) {
+            passwordFeedback.textContent = 'Password is required';
+            passwordFeedback.classList.add('login-validation-error');
+          }
+        } else if (passwordValue.length < 6) {
+          isValid = false;
+          passwordInput.classList.add('login-input-error');
+          if (passwordFeedback) {
+            passwordFeedback.textContent = 'Password must be at least 6 characters';
+            passwordFeedback.classList.add('login-validation-error');
+          }
+        } else {
+          passwordInput.classList.remove('login-input-error');
+          if (passwordFeedback) {
+            passwordFeedback.textContent = '';
+            passwordFeedback.classList.remove('login-validation-error');
+          }
+        }
+      }
+
+      if (!isValid) {
+        event.preventDefault();
+      } else {
+        // Show loading state on button
+        const loginButton = document.getElementById('loginButton');
+        if (loginButton) {
+          loginButton.disabled = true;
+          loginButton.querySelector('.login-button-text').textContent = 'Signing In...';
+        }
+      }
+    });
+
+    // Real-time validation
+    const emailInput = document.getElementById('id_login');
+    if (emailInput) {
+      emailInput.addEventListener('input', function() {
+        const emailValue = this.value.trim();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (emailValue && emailRegex.test(emailValue)) {
+          this.classList.remove('login-input-error');
+          if (emailFeedback) {
+            emailFeedback.textContent = '';
+            emailFeedback.classList.remove('login-validation-error');
+          }
+        }
+      });
+    }
+
+    const passwordInput = document.getElementById('id_password');
+    if (passwordInput) {
+      passwordInput.addEventListener('input', function() {
+        const passwordValue = this.value;
+
+        if (passwordValue && passwordValue.length >= 6) {
+          this.classList.remove('login-input-error');
+          if (passwordFeedback) {
+            passwordFeedback.textContent = '';
+            passwordFeedback.classList.remove('login-validation-error');
+          }
+        }
+      });
+    }
   }
 
   // Add animation to social login buttons

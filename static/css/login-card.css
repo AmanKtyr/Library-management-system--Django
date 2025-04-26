@@ -553,6 +553,29 @@
   overflow: hidden;
 }
 
+.login-input-error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.login-validation-feedback {
+  font-size: 12px;
+  margin-top: 5px;
+  min-height: 20px;
+  transition: all 0.3s ease;
+}
+
+.login-validation-error {
+  color: #ef4444;
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
 .login-input::before {
   content: '';
   position: absolute;
@@ -573,6 +596,16 @@
   background-color: var(--card-background);
   transform: translateY(-2px);
   outline: none;
+}
+
+.login-input-highlight {
+  animation: highlight 1s ease;
+}
+
+@keyframes highlight {
+  0% { box-shadow: 0 0 0 3px rgba(var(--button-color-rgb), 0); }
+  50% { box-shadow: 0 0 0 3px rgba(var(--button-color-rgb), 0.5); }
+  100% { box-shadow: 0 0 0 3px rgba(var(--button-color-rgb), 0); }
 }
 
 .login-password-toggle {

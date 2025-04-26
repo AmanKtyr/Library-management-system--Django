@@ -6,8 +6,10 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.utils.decorators import method_decorator
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.db.models import Q
+from django.contrib.auth import authenticate, login
+from django.views.decorators.http import require_http_methods
 
 from .forms import CustomUserCreationForm
 from .models import User
@@ -135,3 +137,44 @@ class UserListView(ListView):
         context['inactive_users'] = User.objects.filter(is_active=False).count()
 
         return context
+
+@require_http_methods(["POST"])
+def custom_login(request):
+    """
+    Custom login view that handles authentication and redirects to the appropriate dashboard
+    based on user role.
+    """
+    email = request.POST.get('login')
+    password = request.POST.get('password')
+    user_role = request.POST.get('user_role', 'member')  # Default to member if not specified
+
+    if not email or not password:
+        messages.error(request, "Please enter both email and password.")
+        return redirect('account_login')
+
+    # Authenticate user
+    user = authenticate(request, username=email, password=password)
+
+    if user is not None:
+        if not user.is_active:
+            messages.error(request, "Your account is inactive. Please contact the administrator.")
+            return redirect('account_login')
+
+        # Log the user in
+        login(request, user)
+
+        # Get the user role from the form
+        user_role = request.POST.get('user_role', 'member')
+
+        # Redirect based on user role
+        if user_role == 'super_admin' and user.is_super_admin:
+            return redirect('superadmin:dashboard')
+        elif user_role == 'library_admin' and user.is_library_admin:
+            return redirect('library_admin:dashboard')
+        elif user_role == 'staff' and user.is_staff_member:
+            return redirect('core:dashboard')
+        else:  # Regular member or fallback
+            return redirect('member:dashboard')
+    else:
+        messages.error(request, "Invalid email or password. Please try again.")
+        return redirect('account_login')

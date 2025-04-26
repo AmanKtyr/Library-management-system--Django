@@ -89,6 +89,12 @@
                 <span>Member</span>
               </label>
 
+              <input type="radio" class="role-selector-input" name="login-role" id="staff">
+              <label class="role-selector-label" for="staff">
+                <i class="fas fa-user-cog"></i>
+                <span>Staff</span>
+              </label>
+
               <input type="radio" class="role-selector-input" name="login-role" id="library-admin">
               <label class="role-selector-label" for="library-admin">
                 <i class="fas fa-user-tie"></i>
@@ -133,7 +139,7 @@
           </div>
           {% endif %}
 
-          <form class="login-form" method="POST" action="{% url 'account_login' %}">
+          <form class="login-form" method="POST" action="{% url 'accounts:custom_login' %}" id="loginForm" novalidate>
             {% csrf_token %}
 
             <div class="login-form-group">
@@ -142,6 +148,7 @@
                   <i class="fas fa-envelope"></i>
                 </div>
                 <input type="email" name="login" id="id_login" class="login-input" placeholder="Email address" required>
+                <div class="login-validation-feedback" id="email-feedback"></div>
               </div>
             </div>
 
@@ -154,8 +161,12 @@
                 <button type="button" class="login-password-toggle" id="togglePassword">
                   <i class="fas fa-eye"></i>
                 </button>
+                <div class="login-validation-feedback" id="password-feedback"></div>
               </div>
             </div>
+
+            <!-- Hidden field for user role -->
+            <input type="hidden" name="user_role" id="user_role" value="member">
 
             <div class="login-form-options">
               <div class="login-remember">
@@ -169,7 +180,7 @@
             <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
             {% endif %}
 
-            <button type="submit" class="login-button">
+            <button type="submit" class="login-button" id="loginButton">
               <span class="login-button-text">{% trans "Sign In" %}</span>
               <span class="login-button-icon">
                 <i class="fas fa-arrow-right"></i>
