@@ -5,9 +5,63 @@
 {% block head_title %}{% trans "Sign Out" %}{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="/static/css/logout.css">
 {% endblock %}
 
 {% block content %}
+{% if user.is_super_admin or user.is_library_admin %}
+<!-- Admin Logout -->
+<div class="admin-logout-container">
+  <!-- Theme Toggle Button -->
+  <div class="theme-toggle" id="themeToggle">
+    <i class="fas fa-moon"></i>
+  </div>
+
+  <div class="admin-logout-card" id="logoutCard">
+    <div class="admin-logout-header">
+      <div class="admin-logout-logo">
+        <img src="/static/images/logo-white.png" alt="Library Management System" class="img-fluid">
+      </div>
+      <h1>{% trans "Sign Out" %}</h1>
+    </div>
+
+    <div class="admin-logout-body">
+      <div class="admin-logout-icon" id="logoutIcon">
+        <i class="fas fa-sign-out-alt"></i>
+      </div>
+
+      <p class="admin-logout-message">
+        {% if user.is_super_admin %}
+          {% trans "Are you sure you want to sign out from the Super Admin panel?" %}
+        {% elif user.is_library_admin %}
+          {% trans "Are you sure you want to sign out from the Library Admin panel?" %}
+        {% endif %}
+      </p>
+
+      <div class="admin-logout-actions">
+        <form method="post" action="{% url 'account_logout' %}">
+          {% csrf_token %}
+          {% if redirect_field_value %}
+          <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+          {% endif %}
+          <button type="submit" class="btn btn-primary" id="logoutBtn">
+            <i class="fas fa-sign-out-alt me-2"></i>{% trans "Yes, Sign Out" %}
+          </button>
+        </form>
+
+        <a href="{% if user.is_super_admin %}{% url 'core:admin_panel' %}{% elif user.is_library_admin %}{% url 'core:library_admin_panel' %}{% else %}{% url 'core:dashboard' %}{% endif %}" class="btn btn-outline" id="cancelBtn">
+          <i class="fas fa-arrow-left me-2"></i>{% trans "No, Return to Admin Panel" %}
+        </a>
+      </div>
+
+      <div class="admin-logout-footer">
+        <p>&copy; {% now "Y" %} Library Management System. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% else %}
+<!-- Regular User Logout -->
 <div class="logout-container">
   <div class="logout-card" id="logoutCard">
     <div class="logout-header">
@@ -46,11 +100,40 @@
     </div>
   </div>
 </div>
+{% endif %}
 {% endblock %}
 
 {% block extra_js %}
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    // Dark mode toggle functionality (for admin logout)
+    const themeToggle = document.getElementById('themeToggle');
+    const container = document.querySelector('.admin-logout-container');
+
+    if (themeToggle && container) {
+      // Check for saved theme preference
+      const savedTheme = localStorage.getItem('adminTheme');
+
+      // Apply saved theme if it exists
+      if (savedTheme === 'dark') {
+        container.classList.add('dark-mode');
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+      }
+
+      // Toggle dark/light mode
+      themeToggle.addEventListener('click', function() {
+        container.classList.toggle('dark-mode');
+
+        if (container.classList.contains('dark-mode')) {
+          localStorage.setItem('adminTheme', 'dark');
+          themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        } else {
+          localStorage.setItem('adminTheme', 'light');
+          themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        }
+      });
+    }
+
     // Add 3D effect on mouse move
     const logoutCard = document.getElementById('logoutCard');
 
@@ -80,7 +163,7 @@
     if (logoutBtn) {
       logoutBtn.addEventListener('mousedown', function() {
         this.style.transform = 'translateY(2px)';
-        this.style.boxShadow = '0 5px 15px rgba(79, 70, 229, 0.2)';
+        this.style.boxShadow = '0 5px 15px rgba(30, 64, 175, 0.2)';
       });
 
       logoutBtn.addEventListener('mouseup', function() {
@@ -111,7 +194,7 @@
     }
 
     // Add icon animation on hover
-    const logoutIcon = document.querySelector('.logout-icon');
+    const logoutIcon = document.querySelector('.logout-icon, .admin-logout-icon');
     if (logoutIcon) {
       logoutIcon.addEventListener('mouseenter', function() {
         this.style.transform = 'rotate(15deg) scale(1.1)';

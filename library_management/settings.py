@@ -177,5 +177,9 @@ ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True
 ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 
+# Custom AllAuth templates
+ACCOUNT_LOGOUT_TEMPLATE = 'account/logout.html'
+ACCOUNT_LOGIN_TEMPLATE = 'account/login.html'
+
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
