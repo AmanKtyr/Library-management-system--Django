@@ -122,6 +122,34 @@
     color: var(--secondary-color);
 }
 
+.stats-highlight-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+
+.bg-primary-soft {
+    background-color: rgba(var(--button-color-rgb), 0.15);
+    color: var(--button-color);
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+
+.newsletter-exclusivity {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    justify-content: center;
+}
+
+.newsletter-exclusivity i {
+    color: #ffc107;
+}
+
 .stat-card-badge {
     position: absolute;
     bottom: 1rem;
@@ -705,6 +733,11 @@
     color: var(--medium-light);
 }
 
+[data-bs-theme="dark"] .bg-primary-soft {
+    background-color: rgba(var(--button-color-rgb), 0.25);
+    color: rgba(255, 255, 255, 0.9);
+}
+
 /* Responsive Adjustments */
 @media (max-width: 992px) {
     .featured-book-spotlight {
@@ -722,6 +755,22 @@
     .steps-pagination .swiper-pagination-bullet {
         width: 25px;
         height: 25px;
+        font-size: 0.8rem;
+    }
+
+    .stats-highlight-badges {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .stats-highlight-badges {
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .bg-primary-soft {
         font-size: 0.8rem;
     }
 }
