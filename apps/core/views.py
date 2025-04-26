@@ -30,7 +30,7 @@ def home(request):
         'featured_libraries': featured_libraries,
     }
 
-    return render(request, 'shared/home.html', context)
+    return render(request, 'core/home.html', context)
 
 @login_required
 def dashboard(request):
@@ -67,11 +67,11 @@ def dashboard(request):
 
 def about(request):
     """View function for the about page."""
-    return render(request, 'shared/about.html')
+    return render(request, 'core/about.html')
 
 def contact(request):
     """View function for the contact page."""
-    return render(request, 'shared/contact.html')
+    return render(request, 'core/contact.html')
 
 def admin_login(request):
     """View function for the custom admin login page."""

@@ -4,155 +4,1717 @@
 {% block title %}Home - Library Management System{% endblock %}
 
 {% block content %}
-<div class="container">
-    <!-- Hero Section -->
-    <div class="row align-items-center py-5">
-        <div class="col-lg-6">
-            <h1 class="display-4 fw-bold">Welcome to the Library Management System</h1>
-            <p class="lead">A modern solution for managing multiple libraries efficiently. Browse books, join libraries, and manage your reading journey.</p>
-            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-                <a href="{% url 'books:book_list' %}" class="btn btn-primary btn-lg px-4 me-md-2">Browse Books</a>
-                <a href="{% url 'libraries:library_list' %}" class="btn btn-outline-secondary btn-lg px-4">Find Libraries</a>
+<!-- Ultra-Modern Hero Section with 3D Elements and Advanced Animations -->
+<div class="hero-section position-relative overflow-hidden">
+    <div class="hero-video-bg">
+        <div class="hero-video-overlay"></div>
+        <video autoplay muted loop playsinline class="hero-video">
+            <source src="{% static 'videos/library-ambient.mp4' %}" type="video/mp4" onerror="this.parentElement.style.display='none'">
+        </video>
+    </div>
+    <div class="hero-pattern-modern"></div>
+    <div class="container position-relative z-index-1">
+        <div class="row align-items-center min-vh-75">
+            <div class="col-lg-6" data-aos="fade-up" data-aos-duration="1000">
+                <div class="hero-content-wrapper">
+                    <div class="hero-badge animate__animated animate__fadeInDown animate__delay-1s">
+                        <span class="badge-pill">
+                            <i class="fas fa-award me-1"></i> Premium Library Experience
+                        </span>
+                    </div>
+                    <h1 class="hero-title animate__animated animate__fadeIn">
+                        <span class="hero-title-line d-block">Discover the</span>
+                        <span class="hero-title-line d-block"><span class="text-gradient-primary">Ultimate</span> Library</span>
+                        <span class="hero-title-line d-block">Experience</span>
+                    </h1>
+                    <div class="hero-typed-wrapper animate__animated animate__fadeIn animate__delay-1s">
+                        <span class="typed-text"></span>
+                    </div>
+                    <p class="hero-description animate__animated animate__fadeIn animate__delay-1s">
+                        Explore millions of books across our network of premium libraries. Your gateway to endless knowledge and entertainment in one seamless platform.
+                    </p>
+                    <div class="hero-buttons animate__animated animate__fadeIn animate__delay-2s">
+                        <a href="{% url 'books:book_list' %}" class="btn btn-3d-primary btn-lg me-md-3 hover-float">
+                            <i class="fas fa-book-open me-2"></i>Explore Books
+                        </a>
+                        <a href="{% url 'libraries:library_list' %}" class="btn btn-glass-light btn-lg hover-float">
+                            <i class="fas fa-building me-2"></i>Find Libraries
+                        </a>
+                    </div>
+                    <div class="hero-features animate__animated animate__fadeIn animate__delay-3s">
+                        <div class="hero-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Millions of Books</span>
+                        </div>
+                        <div class="hero-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Premium Libraries</span>
+                        </div>
+                        <div class="hero-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Smart Recommendations</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="col-lg-6">
-            <img src="{% static 'images/library-hero.jpg' %}" alt="Library" class="img-fluid rounded shadow-lg" onerror="this.src='https://placehold.co/600x400?text=Library+Management'">
+            <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200" data-aos-duration="1000">
+                <div class="hero-image-container">
+                    <div class="hero-image-3d-wrapper">
+                        <div class="hero-image-decoration-3d"></div>
+                        <img src="{% static 'images/library-hero.jpg' %}" alt="Modern Library"
+                             class="hero-image-3d img-fluid rounded-xl shadow-2xl animate__animated animate__zoomIn"
+                             onerror="this.src='https://placehold.co/600x400?text=Premium+Library'">
+                        <div class="hero-image-floating-elements">
+                            <div class="floating-element book-element" style="animation-delay: 0.2s">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="floating-element user-element" style="animation-delay: 0.5s">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                            <div class="floating-element search-element" style="animation-delay: 0.8s">
+                                <i class="fas fa-search"></i>
+                            </div>
+                        </div>
+                        <div class="hero-image-badge animate__animated animate__fadeInRight animate__delay-2s">
+                            <div class="badge-content">
+                                <div class="badge-icon">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="badge-text">
+                                    <span class="badge-title">Premium</span>
+                                    <span class="badge-subtitle">Experience</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    
-    <!-- Stats Section -->
-    <div class="row text-center my-5">
-        <div class="col-md-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <i class="fas fa-building fa-3x text-primary mb-3"></i>
-                    <h3 class="card-title">{{ total_libraries }}</h3>
-                    <p class="card-text">Libraries</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <i class="fas fa-book fa-3x text-primary mb-3"></i>
-                    <h3 class="card-title">{{ total_books }}</h3>
-                    <p class="card-text">Books</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <i class="fas fa-copy fa-3x text-primary mb-3"></i>
-                    <h3 class="card-title">{{ total_book_copies }}</h3>
-                    <p class="card-text">Book Copies</p>
-                </div>
-            </div>
+    <div class="hero-shapes-modern">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+    </div>
+    <div class="hero-scroll-indicator animate__animated animate__fadeInUp animate__delay-3s">
+        <div class="scroll-text">Scroll Down</div>
+        <div class="scroll-icon">
+            <i class="fas fa-chevron-down"></i>
         </div>
     </div>
-    
-    <!-- Latest Books Section -->
-    <div class="my-5">
-        <h2 class="text-center mb-4">Latest Books</h2>
+</div>
+
+<!-- Ultra-Modern Stats Section with Advanced Visual Elements -->
+<div class="stats-section py-6 position-relative">
+    <div class="section-pattern-dots-3d"></div>
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <h6 class="section-subtitle" data-aos="fade-up">Impressive Numbers</h6>
+            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Our Impact at a Glance</h2>
+            <div class="section-divider" data-aos="fade-up" data-aos-delay="200"></div>
+            <p class="section-description" data-aos="fade-up" data-aos-delay="300">See how our platform is transforming the library experience with these impressive statistics</p>
+        </div>
         <div class="row">
-            {% for book in latest_books %}
-                <div class="col-md-4 col-lg-2 mb-4">
-                    <div class="card h-100">
-                        {% if book.cover_image %}
-                            <img src="{{ book.cover_image.url }}" class="card-img-top" alt="{{ book.title }}">
-                        {% else %}
-                            <img src="https://placehold.co/200x300?text=No+Cover" class="card-img-top" alt="No Cover">
-                        {% endif %}
-                        <div class="card-body">
-                            <h5 class="card-title">{{ book.title|truncatechars:25 }}</h5>
-                            <p class="card-text small">
-                                {% for author in book.authors.all %}
-                                    {% if forloop.first %}by {% endif %}
-                                    {{ author.name }}{% if not forloop.last %}, {% endif %}
-                                {% endfor %}
-                            </p>
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="stat-card-premium hover-lift-lg">
+                    <div class="stat-card-background"></div>
+                    <div class="stat-card-content">
+                        <div class="stat-card-icon-container">
+                            <div class="stat-card-icon-bg"></div>
+                            <div class="stat-card-icon">
+                                <i class="fas fa-building"></i>
+                            </div>
                         </div>
-                        <div class="card-footer bg-transparent border-top-0">
-                            <a href="{% url 'books:book_detail' slug=book.slug %}" class="btn btn-sm btn-primary w-100">View Details</a>
+                        <div class="stat-card-info">
+                            <div class="stat-card-value-container">
+                                <div class="stat-card-value counter">{{ total_libraries }}</div>
+                                <div class="stat-card-plus">+</div>
+                            </div>
+                            <p class="stat-card-label">Premium Libraries</p>
+                            <div class="stat-card-progress">
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <div class="stat-card-trend up">
+                                    <i class="fas fa-arrow-up"></i> 12% growth this year
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            {% empty %}
-                <div class="col-12 text-center">
-                    <p>No books available yet.</p>
-                </div>
-            {% endfor %}
-        </div>
-        <div class="text-center mt-3">
-            <a href="{% url 'books:book_list' %}" class="btn btn-outline-primary">View All Books</a>
-        </div>
-    </div>
-    
-    <!-- Featured Libraries Section -->
-    <div class="my-5">
-        <h2 class="text-center mb-4">Featured Libraries</h2>
-        <div class="row">
-            {% for library in featured_libraries %}
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        {% if library.image %}
-                            <img src="{{ library.image.url }}" class="card-img-top" alt="{{ library.name }}">
-                        {% else %}
-                            <img src="https://placehold.co/400x200?text=Library" class="card-img-top" alt="Library">
-                        {% endif %}
-                        <div class="card-body">
-                            <h5 class="card-title">{{ library.name }}</h5>
-                            <p class="card-text">{{ library.description|truncatechars:100 }}</p>
-                            <p class="card-text"><i class="fas fa-map-marker-alt me-2"></i>{{ library.city }}, {{ library.country }}</p>
-                        </div>
-                        <div class="card-footer bg-transparent border-top-0">
-                            <a href="{% url 'libraries:library_detail' slug=library.slug %}" class="btn btn-sm btn-primary w-100">View Library</a>
-                        </div>
-                    </div>
-                </div>
-            {% empty %}
-                <div class="col-12 text-center">
-                    <p>No libraries available yet.</p>
-                </div>
-            {% endfor %}
-        </div>
-        <div class="text-center mt-3">
-            <a href="{% url 'libraries:library_list' %}" class="btn btn-outline-primary">View All Libraries</a>
-        </div>
-    </div>
-    
-    <!-- Features Section -->
-    <div class="my-5">
-        <h2 class="text-center mb-4">Our Features</h2>
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <i class="fas fa-search fa-3x text-primary mb-3"></i>
-                        <h5 class="card-title">Easy Book Search</h5>
-                        <p class="card-text">Find books by title, author, category, or ISBN across multiple libraries.</p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <i class="fas fa-mobile-alt fa-3x text-primary mb-3"></i>
-                        <h5 class="card-title">Mobile Friendly</h5>
-                        <p class="card-text">Access the library system from any device, anywhere, anytime.</p>
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="stat-card-premium hover-lift-lg">
+                    <div class="stat-card-background"></div>
+                    <div class="stat-card-content">
+                        <div class="stat-card-icon-container">
+                            <div class="stat-card-icon-bg"></div>
+                            <div class="stat-card-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card-info">
+                            <div class="stat-card-value-container">
+                                <div class="stat-card-value counter">{{ total_books }}</div>
+                                <div class="stat-card-plus">+</div>
+                            </div>
+                            <p class="stat-card-label">Unique Books</p>
+                            <div class="stat-card-progress">
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 85%" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <div class="stat-card-trend up">
+                                    <i class="fas fa-arrow-up"></i> 24% growth this year
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <i class="fas fa-bell fa-3x text-primary mb-3"></i>
-                        <h5 class="card-title">Notifications</h5>
-                        <p class="card-text">Get reminders about due dates, reservations, and new arrivals.</p>
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="stat-card-premium hover-lift-lg">
+                    <div class="stat-card-background"></div>
+                    <div class="stat-card-content">
+                        <div class="stat-card-icon-container">
+                            <div class="stat-card-icon-bg"></div>
+                            <div class="stat-card-icon">
+                                <i class="fas fa-copy"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card-info">
+                            <div class="stat-card-value-container">
+                                <div class="stat-card-value counter">{{ total_book_copies }}</div>
+                                <div class="stat-card-plus">+</div>
+                            </div>
+                            <p class="stat-card-label">Available Copies</p>
+                            <div class="stat-card-progress">
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <div class="stat-card-trend up">
+                                    <i class="fas fa-arrow-up"></i> 18% growth this year
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Premium Books Showcase with 3D Carousel and Category Filters -->
+<div class="books-showcase-section py-6 position-relative">
+    <div class="section-pattern-dots-3d"></div>
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <h6 class="section-subtitle" data-aos="fade-up">Curated Collection</h6>
+            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Featured Books</h2>
+            <div class="section-divider" data-aos="fade-up" data-aos-delay="200"></div>
+            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Discover our handpicked selection of premium books across various categories</p>
+        </div>
+
+        <div class="books-filter-tabs" data-aos="fade-up" data-aos-delay="400">
+            <ul class="nav nav-pills justify-content-center mb-4" id="booksTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="all-books-tab" data-bs-toggle="pill" data-bs-target="#all-books" type="button" role="tab" aria-controls="all-books" aria-selected="true">All</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="fiction-tab" data-bs-toggle="pill" data-bs-target="#fiction" type="button" role="tab" aria-controls="fiction" aria-selected="false">Fiction</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="non-fiction-tab" data-bs-toggle="pill" data-bs-target="#non-fiction" type="button" role="tab" aria-controls="non-fiction" aria-selected="false">Non-Fiction</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="science-tab" data-bs-toggle="pill" data-bs-target="#science" type="button" role="tab" aria-controls="science" aria-selected="false">Science</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="history-tab" data-bs-toggle="pill" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">History</button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="tab-content" id="booksTabContent">
+            <div class="tab-pane fade show active" id="all-books" role="tabpanel" aria-labelledby="all-books-tab">
+                <div class="book-carousel-3d swiper-container" data-aos="fade-up">
+                    <div class="swiper-wrapper">
+                        {% for book in latest_books %}
+                        <div class="swiper-slide">
+                            <div class="book-card-premium">
+                                <div class="book-card-inner">
+                                    <div class="book-cover-3d">
+                                        {% if book.cover_image %}
+                                            <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
+                                        {% else %}
+                                            <img src="https://placehold.co/200x300?text=No+Cover" alt="No Cover">
+                                        {% endif %}
+                                        <div class="book-spine"></div>
+                                        <div class="book-cover-shine"></div>
+                                    </div>
+                                    <div class="book-overlay-3d">
+                                        <div class="book-overlay-content">
+                                            <div class="book-quick-actions">
+                                                <a href="{% url 'books:book_detail' slug=book.slug %}" class="book-action-btn" data-bs-toggle="tooltip" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="#" class="book-action-btn" data-bs-toggle="tooltip" title="Add to Wishlist">
+                                                    <i class="fas fa-heart"></i>
+                                                </a>
+                                                <a href="#" class="book-action-btn book-preview-btn" data-bs-toggle="tooltip" title="Quick Preview">
+                                                    <i class="fas fa-search-plus"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="book-info-premium">
+                                    <div class="book-categories">
+                                        {% with category=book.categories.first %}
+                                            {% if category %}
+                                                <span class="badge-premium">{{ category.name }}</span>
+                                            {% endif %}
+                                        {% endwith %}
+                                    </div>
+                                    <h5 class="book-title">{{ book.title|truncatechars:25 }}</h5>
+                                    <div class="book-meta">
+                                        <div class="book-authors">
+                                            <i class="fas fa-user-edit"></i>
+                                            {% for author in book.authors.all %}
+                                                {% if forloop.first %}{% endif %}
+                                                {{ author.name }}{% if not forloop.last %}, {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        <div class="book-rating">
+                                            <i class="fas fa-star"></i>
+                                            <span>4.8</span>
+                                        </div>
+                                    </div>
+                                    <a href="{% url 'books:book_detail' slug=book.slug %}" class="btn btn-primary btn-sm w-100 mt-2">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="swiper-pagination"></div>
+                </div>
+                <div class="swiper-navigation-custom">
+                    <div class="swiper-button-prev-custom">
+                        <i class="fas fa-chevron-left"></i>
+                    </div>
+                    <div class="swiper-button-next-custom">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other tabs would have similar content but filtered by category -->
+            <div class="tab-pane fade" id="fiction" role="tabpanel" aria-labelledby="fiction-tab">
+                <!-- Fiction books would be displayed here -->
+                <div class="text-center py-5">
+                    <p class="lead">Filter by Fiction category to see relevant books</p>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="non-fiction" role="tabpanel" aria-labelledby="non-fiction-tab">
+                <!-- Non-Fiction books would be displayed here -->
+                <div class="text-center py-5">
+                    <p class="lead">Filter by Non-Fiction category to see relevant books</p>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="science" role="tabpanel" aria-labelledby="science-tab">
+                <!-- Science books would be displayed here -->
+                <div class="text-center py-5">
+                    <p class="lead">Filter by Science category to see relevant books</p>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+                <!-- History books would be displayed here -->
+                <div class="text-center py-5">
+                    <p class="lead">Filter by History category to see relevant books</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-5" data-aos="fade-up">
+            <a href="{% url 'books:book_list' %}" class="btn btn-outline-primary btn-lg hover-float">
+                Explore All Books <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Interactive How It Works Section with 3D Elements -->
+<div class="how-it-works-section py-6 position-relative">
+    <div class="section-wave-pattern-3d"></div>
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <h6 class="section-subtitle" data-aos="fade-up">Seamless Process</h6>
+            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">How It Works</h2>
+            <div class="section-divider" data-aos="fade-up" data-aos-delay="200"></div>
+            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Experience our premium library system in three simple steps</p>
+        </div>
+
+        <div class="steps-timeline-wrapper" data-aos="fade-up" data-aos-delay="400">
+            <div class="steps-timeline">
+                <div class="timeline-progress-bar">
+                    <div class="timeline-progress-indicator"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="step-card-premium text-center hover-lift-lg">
+                    <div class="step-card-inner">
+                        <div class="step-icon-container">
+                            <div class="step-icon-bg"></div>
+                            <div class="step-icon-premium">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <div class="step-number-premium">1</div>
+                        </div>
+                        <h3 class="step-title-premium">Find Your Library</h3>
+                        <p class="step-description-premium">Browse our extensive network of premium libraries and find the ones closest to you with our interactive map and advanced search tools.</p>
+                        <div class="step-features">
+                            <div class="step-feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Location-based search</span>
+                            </div>
+                            <div class="step-feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Filter by amenities</span>
+                            </div>
+                            <div class="step-feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Virtual tours available</span>
+                            </div>
+                        </div>
+                        <div class="step-arrow-premium d-none d-lg-block">
+                            <i class="fas fa-long-arrow-alt-right"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="step-card-premium text-center hover-lift-lg">
+                    <div class="step-card-inner">
+                        <div class="step-icon-container">
+                            <div class="step-icon-bg"></div>
+                            <div class="step-icon-premium">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="step-number-premium">2</div>
+                        </div>
+                        <h3 class="step-title-premium">Become a Member</h3>
+                        <p class="step-description-premium">Sign up for a premium membership to get unlimited access to millions of books, digital resources, and exclusive member benefits.</p>
+                        <div class="step-features">
+                            <div class="step-feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Quick digital signup</span>
+                            </div>
+                            <div class="step-feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Multiple membership tiers</span>
+                            </div>
+                            <div class="step-feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Exclusive member events</span>
+                            </div>
+                        </div>
+                        <div class="step-arrow-premium d-none d-lg-block">
+                            <i class="fas fa-long-arrow-alt-right"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="step-card-premium text-center hover-lift-lg">
+                    <div class="step-card-inner">
+                        <div class="step-icon-container">
+                            <div class="step-icon-bg"></div>
+                            <div class="step-icon-premium">
+                                <i class="fas fa-book-reader"></i>
+                            </div>
+                            <div class="step-number-premium">3</div>
+                        </div>
+                        <h3 class="step-title-premium">Start Reading</h3>
+                        <p class="step-description-premium">Borrow physical books or access our extensive digital collection. Track your reading history and get personalized AI-powered recommendations.</p>
+                        <div class="step-features">
+                            <div class="step-feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Physical & digital books</span>
+                            </div>
+                            <div class="step-feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Reading progress tracking</span>
+                            </div>
+                            <div class="step-feature-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>AI book recommendations</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-5" data-aos="fade-up">
+            <a href="{% url 'account_signup' %}" class="btn btn-3d-primary btn-lg hover-float">
+                Get Started Now <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Premium Featured Libraries Section with Interactive Map -->
+<div class="featured-libraries-section py-6 position-relative">
+    <div class="section-pattern-grid-3d"></div>
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <h6 class="section-subtitle" data-aos="fade-up">Premium Network</h6>
+            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Featured Libraries</h2>
+            <div class="section-divider" data-aos="fade-up" data-aos-delay="200"></div>
+            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Discover our top-rated premium libraries with extensive collections and state-of-the-art facilities</p>
+        </div>
+
+        <div class="libraries-view-toggle mb-4" data-aos="fade-up" data-aos-delay="400">
+            <div class="btn-group" role="group" aria-label="Library View Toggle">
+                <button type="button" class="btn btn-outline-primary active" id="grid-view-btn">
+                    <i class="fas fa-th-large me-2"></i>Grid View
+                </button>
+                <button type="button" class="btn btn-outline-primary" id="map-view-btn">
+                    <i class="fas fa-map-marked-alt me-2"></i>Map View
+                </button>
+            </div>
+        </div>
+
+        <div class="libraries-view-container">
+            <div class="libraries-grid-view active">
+                <div class="row">
+                    {% for library in featured_libraries %}
+                    <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="{% if forloop.counter == 1 %}100{% elif forloop.counter == 2 %}200{% else %}300{% endif %}">
+                        <div class="library-card-premium hover-lift-lg">
+                            <div class="library-card-inner">
+                                <div class="library-image-premium hover-zoom-in">
+                                    {% if library.image %}
+                                        <img src="{{ library.image.url }}" alt="{{ library.name }}">
+                                    {% else %}
+                                        <img src="https://placehold.co/400x200?text=Premium+Library" alt="Library">
+                                    {% endif %}
+                                    <div class="library-badge-premium">
+                                        <span class="badge-premium">
+                                            <i class="fas fa-award me-1"></i>Featured
+                                        </span>
+                                    </div>
+                                    <div class="library-overlay-premium">
+                                        <div class="library-quick-info">
+                                            <div class="library-rating">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star-half-alt"></i>
+                                                <span>4.8</span>
+                                            </div>
+                                            <div class="library-quick-actions">
+                                                <a href="#" class="library-action-btn" data-bs-toggle="tooltip" title="Virtual Tour">
+                                                    <i class="fas fa-vr-cardboard"></i>
+                                                </a>
+                                                <a href="#" class="library-action-btn" data-bs-toggle="tooltip" title="Save to Favorites">
+                                                    <i class="far fa-heart"></i>
+                                                </a>
+                                                <a href="#" class="library-action-btn" data-bs-toggle="tooltip" title="Share">
+                                                    <i class="fas fa-share-alt"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="library-info-premium">
+                                    <h4 class="library-name-premium">{{ library.name }}</h4>
+                                    <div class="library-meta-premium">
+                                        <div class="library-meta-item-premium">
+                                            <i class="fas fa-book"></i>
+                                            <span>{{ library.books.count }} Books</span>
+                                        </div>
+                                        <div class="library-meta-item-premium">
+                                            <i class="fas fa-users"></i>
+                                            <span>{{ library.members.count }} Members</span>
+                                        </div>
+                                    </div>
+                                    <p class="library-description-premium">{{ library.description|truncatechars:100 }}</p>
+                                    <div class="library-features-premium">
+                                        <span class="library-feature-badge">
+                                            <i class="fas fa-wifi"></i> Free WiFi
+                                        </span>
+                                        <span class="library-feature-badge">
+                                            <i class="fas fa-coffee"></i> Café
+                                        </span>
+                                        <span class="library-feature-badge">
+                                            <i class="fas fa-laptop"></i> Study Rooms
+                                        </span>
+                                    </div>
+                                    <div class="library-footer-premium">
+                                        <div class="library-location-premium">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span>{{ library.city }}, {{ library.country }}</span>
+                                        </div>
+                                        <a href="{% url 'libraries:library_detail' slug=library.slug %}" class="btn btn-primary btn-sm stretched-link">
+                                            Explore Library
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="libraries-map-view">
+                <div class="libraries-map-container" id="librariesMap">
+                    <div class="map-placeholder text-center py-5">
+                        <i class="fas fa-map-marked-alt fa-5x mb-3 text-primary"></i>
+                        <h4>Interactive Map</h4>
+                        <p class="lead">Our interactive map would display here, showing the locations of all our premium libraries.</p>
+                        <p>This feature requires integration with a mapping service like Google Maps or Mapbox.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-5" data-aos="fade-up">
+            <a href="{% url 'libraries:library_list' %}" class="btn btn-outline-primary btn-lg hover-float">
+                Explore All Libraries <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Premium Testimonials Section with Advanced Design -->
+<div class="testimonials-section py-6 position-relative">
+    <div class="section-pattern-circles-3d"></div>
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <h6 class="section-subtitle" data-aos="fade-up">Success Stories</h6>
+            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">What Our Users Say</h2>
+            <div class="section-divider" data-aos="fade-up" data-aos-delay="200"></div>
+            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Discover how our premium library management system is transforming experiences for users worldwide</p>
+        </div>
+
+        <div class="testimonials-tabs" data-aos="fade-up" data-aos-delay="400">
+            <ul class="nav nav-pills justify-content-center mb-4" id="testimonialsTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="all-testimonials-tab" data-bs-toggle="pill" data-bs-target="#all-testimonials" type="button" role="tab" aria-controls="all-testimonials" aria-selected="true">All</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="librarians-tab" data-bs-toggle="pill" data-bs-target="#librarians" type="button" role="tab" aria-controls="librarians" aria-selected="false">Librarians</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="members-tab" data-bs-toggle="pill" data-bs-target="#members" type="button" role="tab" aria-controls="members" aria-selected="false">Members</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="administrators-tab" data-bs-toggle="pill" data-bs-target="#administrators" type="button" role="tab" aria-controls="administrators" aria-selected="false">Administrators</button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="tab-content" id="testimonialsTabContent">
+            <div class="tab-pane fade show active" id="all-testimonials" role="tabpanel" aria-labelledby="all-testimonials-tab">
+                <div class="testimonials-carousel-premium swiper-container" data-aos="fade-up">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide">
+                            <div class="testimonial-card-premium hover-lift-lg">
+                                <div class="testimonial-card-inner">
+                                    <div class="testimonial-quote-icon">
+                                        <i class="fas fa-quote-left"></i>
+                                    </div>
+                                    <div class="testimonial-content-premium">
+                                        <p>"The premium library management system has completely transformed how we handle our collections. It's incredibly intuitive, efficient, and has significantly improved our workflow. The user interface is clean and modern, making it a joy to use every day. The analytics dashboard provides valuable insights that help us make better decisions for our patrons."</p>
+                                    </div>
+                                    <div class="testimonial-rating-premium">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <span>5.0</span>
+                                    </div>
+                                    <div class="testimonial-author-premium">
+                                        <div class="author-image">
+                                            <img src="{% static 'images/testimonials/user1.jpg' %}" alt="Sarah Johnson" onerror="this.src='https://placehold.co/100x100?text=SJ'">
+                                        </div>
+                                        <div class="author-info-premium">
+                                            <h5 class="author-name">Sarah Johnson</h5>
+                                            <p class="author-title">Head Librarian</p>
+                                            <p class="author-location">Boston Public Library</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="swiper-slide">
+                            <div class="testimonial-card-premium hover-lift-lg">
+                                <div class="testimonial-card-inner">
+                                    <div class="testimonial-quote-icon">
+                                        <i class="fas fa-quote-left"></i>
+                                    </div>
+                                    <div class="testimonial-content-premium">
+                                        <p>"As a frequent library visitor, this system has made finding and borrowing books so much easier. I love the personalized AI-powered recommendations and the ability to track my reading history. The mobile app is a game-changer! I can search for books, place holds, and even access digital content right from my phone. The virtual bookshelf feature helps me organize my reading list efficiently."</p>
+                                    </div>
+                                    <div class="testimonial-rating-premium">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star-half-alt"></i>
+                                        <span>4.8</span>
+                                    </div>
+                                    <div class="testimonial-author-premium">
+                                        <div class="author-image">
+                                            <img src="{% static 'images/testimonials/user2.jpg' %}" alt="Michael Chen" onerror="this.src='https://placehold.co/100x100?text=MC'">
+                                        </div>
+                                        <div class="author-info-premium">
+                                            <h5 class="author-name">Michael Chen</h5>
+                                            <p class="author-title">Premium Member</p>
+                                            <p class="author-location">San Francisco, CA</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="swiper-slide">
+                            <div class="testimonial-card-premium hover-lift-lg">
+                                <div class="testimonial-card-inner">
+                                    <div class="testimonial-quote-icon">
+                                        <i class="fas fa-quote-left"></i>
+                                    </div>
+                                    <div class="testimonial-content-premium">
+                                        <p>"Managing multiple libraries has never been easier. The analytics and reporting features provide valuable insights that help us make data-driven decisions. The support team is incredibly responsive and helpful. We've seen a 30% increase in member engagement since implementing this system. The centralized dashboard gives me a complete overview of all our branches at a glance."</p>
+                                    </div>
+                                    <div class="testimonial-rating-premium">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <span>5.0</span>
+                                    </div>
+                                    <div class="testimonial-author-premium">
+                                        <div class="author-image">
+                                            <img src="{% static 'images/testimonials/user3.jpg' %}" alt="Emily Rodriguez" onerror="this.src='https://placehold.co/100x100?text=ER'">
+                                        </div>
+                                        <div class="author-info-premium">
+                                            <h5 class="author-name">Emily Rodriguez</h5>
+                                            <p class="author-title">District Library Director</p>
+                                            <p class="author-location">Chicago Public Library Network</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="swiper-slide">
+                            <div class="testimonial-card-premium hover-lift-lg">
+                                <div class="testimonial-card-inner">
+                                    <div class="testimonial-quote-icon">
+                                        <i class="fas fa-quote-left"></i>
+                                    </div>
+                                    <div class="testimonial-content-premium">
+                                        <p>"The integration capabilities of this system are outstanding. We've connected it with our university's student information system, making it seamless for students to access resources. The API documentation is comprehensive, and the development team was incredibly helpful during implementation. This has revolutionized how our academic library operates."</p>
+                                    </div>
+                                    <div class="testimonial-rating-premium">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <span>5.0</span>
+                                    </div>
+                                    <div class="testimonial-author-premium">
+                                        <div class="author-image">
+                                            <img src="{% static 'images/testimonials/user4.jpg' %}" alt="David Wilson" onerror="this.src='https://placehold.co/100x100?text=DW'">
+                                        </div>
+                                        <div class="author-info-premium">
+                                            <h5 class="author-name">David Wilson</h5>
+                                            <p class="author-title">IT Director</p>
+                                            <p class="author-location">Stanford University Library</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-pagination"></div>
+                </div>
+                <div class="testimonial-navigation-premium">
+                    <div class="swiper-button-prev-premium">
+                        <i class="fas fa-chevron-left"></i>
+                    </div>
+                    <div class="swiper-button-next-premium">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other tabs would have filtered testimonials -->
+            <div class="tab-pane fade" id="librarians" role="tabpanel" aria-labelledby="librarians-tab">
+                <!-- Librarian testimonials would be displayed here -->
+                <div class="text-center py-5">
+                    <p class="lead">Filter by Librarians to see relevant testimonials</p>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="members" role="tabpanel" aria-labelledby="members-tab">
+                <!-- Member testimonials would be displayed here -->
+                <div class="text-center py-5">
+                    <p class="lead">Filter by Members to see relevant testimonials</p>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="administrators" role="tabpanel" aria-labelledby="administrators-tab">
+                <!-- Administrator testimonials would be displayed here -->
+                <div class="text-center py-5">
+                    <p class="lead">Filter by Administrators to see relevant testimonials</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="testimonial-cta text-center mt-5" data-aos="fade-up">
+            <h4 class="mb-3">Ready to experience our premium library system?</h4>
+            <a href="{% url 'account_signup' %}" class="btn btn-3d-primary btn-lg hover-float">
+                Join Today <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Premium Newsletter Section with 3D Elements -->
+<div class="newsletter-section py-6 position-relative">
+    <div class="newsletter-bg-pattern-3d"></div>
+    <div class="container">
+        <div class="newsletter-wrapper-premium" data-aos="fade-up">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="newsletter-content-premium">
+                        <div class="section-header text-lg-start text-center mb-4">
+                            <h6 class="section-subtitle">Premium Updates</h6>
+                            <h2 class="section-title">Stay Connected</h2>
+                            <div class="section-divider mx-lg-0 mx-auto"></div>
+                            <p class="section-description">Join our exclusive newsletter for premium updates, curated book recommendations, and VIP event invitations.</p>
+                        </div>
+
+                        <div class="newsletter-benefits">
+                            <div class="newsletter-benefit-item">
+                                <div class="benefit-icon">
+                                    <i class="fas fa-book-open"></i>
+                                </div>
+                                <div class="benefit-content">
+                                    <h5>Curated Recommendations</h5>
+                                    <p>Receive personalized book recommendations based on your reading preferences and history.</p>
+                                </div>
+                            </div>
+                            <div class="newsletter-benefit-item">
+                                <div class="benefit-icon">
+                                    <i class="fas fa-ticket-alt"></i>
+                                </div>
+                                <div class="benefit-content">
+                                    <h5>VIP Event Access</h5>
+                                    <p>Get exclusive invitations to author meet-and-greets, book launches, and special library events.</p>
+                                </div>
+                            </div>
+                            <div class="newsletter-benefit-item">
+                                <div class="benefit-icon">
+                                    <i class="fas fa-percent"></i>
+                                </div>
+                                <div class="benefit-content">
+                                    <h5>Premium Discounts</h5>
+                                    <p>Enjoy special offers, discounts on premium memberships, and early access to new features.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="newsletter-form-container-premium">
+                        <div class="newsletter-form-header">
+                            <div class="newsletter-form-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <h4>Subscribe Now</h4>
+                            <p>Join thousands of satisfied members receiving our updates</p>
+                        </div>
+                        <form class="newsletter-form-premium" id="newsletterFormPremium">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="nameInput" placeholder="Your Name" required>
+                                <label for="nameInput">Your Name</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="email" class="form-control" id="emailInput" placeholder="Your Email" required>
+                                <label for="emailInput">Your Email</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <select class="form-select" id="interestSelect" required>
+                                    <option value="" selected disabled>Select your interests</option>
+                                    <option value="fiction">Fiction</option>
+                                    <option value="non-fiction">Non-Fiction</option>
+                                    <option value="science">Science & Technology</option>
+                                    <option value="history">History & Biography</option>
+                                    <option value="all">All Categories</option>
+                                </select>
+                                <label for="interestSelect">Your Interests</label>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="privacyCheck" required>
+                                <label class="form-check-label" for="privacyCheck">
+                                    I agree to the <a href="#">Privacy Policy</a> and <a href="#">Terms of Service</a>
+                                </label>
+                            </div>
+                            <button class="btn btn-3d-primary w-100" type="submit">
+                                Subscribe Now <i class="fas fa-paper-plane ms-2"></i>
+                            </button>
+                        </form>
+                        <div class="newsletter-form-footer">
+                            <div class="subscribers-count">
+                                <i class="fas fa-users"></i>
+                                <span>Join 10,000+ subscribers</span>
+                            </div>
+                            <div class="newsletter-security">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Your data is secure with us</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Mobile App Download Section -->
+<div class="app-download-section py-6 position-relative">
+    <div class="section-pattern-dots-3d"></div>
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 order-lg-2" data-aos="fade-left">
+                <div class="app-mockup-container">
+                    <div class="app-mockup-phone">
+                        <div class="phone-frame">
+                            <div class="phone-screen">
+                                <img src="{% static 'images/app-mockup.jpg' %}" alt="Library App" onerror="this.src='https://placehold.co/300x600?text=Library+App'">
+                            </div>
+                            <div class="phone-notch"></div>
+                        </div>
+                        <div class="phone-reflection"></div>
+                    </div>
+                    <div class="app-features-floating">
+                        <div class="app-feature-badge feature-1" style="animation-delay: 0.2s">
+                            <i class="fas fa-search"></i>
+                            <span>Quick Search</span>
+                        </div>
+                        <div class="app-feature-badge feature-2" style="animation-delay: 0.4s">
+                            <i class="fas fa-barcode"></i>
+                            <span>Scan Books</span>
+                        </div>
+                        <div class="app-feature-badge feature-3" style="animation-delay: 0.6s">
+                            <i class="fas fa-book-reader"></i>
+                            <span>Digital Reading</span>
+                        </div>
+                        <div class="app-feature-badge feature-4" style="animation-delay: 0.8s">
+                            <i class="fas fa-bell"></i>
+                            <span>Due Reminders</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 order-lg-1" data-aos="fade-right">
+                <div class="app-content">
+                    <div class="section-header text-lg-start text-center mb-4">
+                        <h6 class="section-subtitle">Mobile Experience</h6>
+                        <h2 class="section-title">Library in Your Pocket</h2>
+                        <div class="section-divider mx-lg-0 mx-auto"></div>
+                        <p class="section-description">Access our premium library services anytime, anywhere with our feature-rich mobile application.</p>
+                    </div>
+
+                    <div class="app-features">
+                        <div class="app-feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <div class="feature-content">
+                                <h5>Advanced Search</h5>
+                                <p>Find books instantly with our powerful search engine. Filter by genre, author, rating, and availability.</p>
+                            </div>
+                        </div>
+                        <div class="app-feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-barcode"></i>
+                            </div>
+                            <div class="feature-content">
+                                <h5>Barcode Scanner</h5>
+                                <p>Scan book barcodes to instantly check availability, place holds, or add to your reading list.</p>
+                            </div>
+                        </div>
+                        <div class="app-feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-book-reader"></i>
+                            </div>
+                            <div class="feature-content">
+                                <h5>Digital Reading</h5>
+                                <p>Access our extensive collection of e-books and audiobooks directly through the app.</p>
+                            </div>
+                        </div>
+                        <div class="app-feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div class="feature-content">
+                                <h5>Smart Notifications</h5>
+                                <p>Receive timely reminders for due dates, available holds, and upcoming events.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="app-download-buttons">
+                        <a href="#" class="app-download-btn">
+                            <i class="fab fa-apple"></i>
+                            <div class="btn-text">
+                                <span class="small-text">Download on the</span>
+                                <span class="large-text">App Store</span>
+                            </div>
+                        </a>
+                        <a href="#" class="app-download-btn">
+                            <i class="fab fa-google-play"></i>
+                            <div class="btn-text">
+                                <span class="small-text">GET IT ON</span>
+                                <span class="large-text">Google Play</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Partners Section -->
+<div class="partners-section py-6 position-relative">
+    <div class="section-pattern-grid-3d"></div>
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <h6 class="section-subtitle" data-aos="fade-up">Trusted Partners</h6>
+            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Our Collaborators</h2>
+            <div class="section-divider" data-aos="fade-up" data-aos-delay="200"></div>
+            <p class="section-description" data-aos="fade-up" data-aos-delay="300">We work with leading organizations to provide the best library experience</p>
+        </div>
+
+        <div class="partners-carousel swiper-container" data-aos="fade-up">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <div class="partner-item">
+                        <img src="{% static 'images/partners/partner1.png' %}" alt="Partner 1" onerror="this.src='https://placehold.co/200x100?text=Partner+1'">
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="partner-item">
+                        <img src="{% static 'images/partners/partner2.png' %}" alt="Partner 2" onerror="this.src='https://placehold.co/200x100?text=Partner+2'">
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="partner-item">
+                        <img src="{% static 'images/partners/partner3.png' %}" alt="Partner 3" onerror="this.src='https://placehold.co/200x100?text=Partner+3'">
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="partner-item">
+                        <img src="{% static 'images/partners/partner4.png' %}" alt="Partner 4" onerror="this.src='https://placehold.co/200x100?text=Partner+4'">
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="partner-item">
+                        <img src="{% static 'images/partners/partner5.png' %}" alt="Partner 5" onerror="this.src='https://placehold.co/200x100?text=Partner+5'">
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="partner-item">
+                        <img src="{% static 'images/partners/partner6.png' %}" alt="Partner 6" onerror="this.src='https://placehold.co/200x100?text=Partner+6'">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Call-to-Action Banner -->
+<div class="cta-banner position-relative overflow-hidden">
+    <div class="cta-banner-bg"></div>
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 text-lg-start text-center">
+                <h3 class="cta-title" data-aos="fade-right">Ready to Elevate Your Reading Experience?</h3>
+                <p class="cta-description" data-aos="fade-right" data-aos-delay="100">Join thousands of satisfied members enjoying premium library services today.</p>
+            </div>
+            <div class="col-lg-4 text-lg-end text-center mt-4 mt-lg-0">
+                <a href="{% url 'account_signup' %}" class="btn btn-3d-light btn-lg hover-float" data-aos="fade-left">
+                    <i class="fas fa-user-plus me-2"></i>Join Now
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FAQ Section with Accordion -->
+<div class="faq-section py-6 position-relative">
+    <div class="section-pattern-dots-3d"></div>
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <h6 class="section-subtitle" data-aos="fade-up">Common Questions</h6>
+            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Frequently Asked Questions</h2>
+            <div class="section-divider" data-aos="fade-up" data-aos-delay="200"></div>
+            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Find answers to the most common questions about our premium library system</p>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <div class="accordion faq-accordion" id="faqAccordion" data-aos="fade-up">
+                    <div class="accordion-item faq-item">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                <div class="faq-question-icon">
+                                    <i class="fas fa-question"></i>
+                                </div>
+                                <span class="faq-question-text">How do I become a member of the library?</span>
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <p>Becoming a member is simple! You can sign up online through our website or visit any of our library locations in person. We offer different membership tiers to suit your needs, including standard, premium, and family plans. Each membership provides access to our extensive collection of books, digital resources, and exclusive events. The registration process takes just a few minutes, and you'll receive your digital membership card instantly.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item faq-item">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                <div class="faq-question-icon">
+                                    <i class="fas fa-question"></i>
+                                </div>
+                                <span class="faq-question-text">What is the loan period for borrowed books?</span>
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <p>Our standard loan period is 21 days for physical books and 14 days for digital content. Premium members enjoy extended loan periods of 30 days. You can renew items up to three times if no one else has placed a hold on them. Renewals can be done through your online account, our mobile app, or by visiting any library location. Late returns may incur fees, but we send courtesy reminders via email or push notifications before due dates.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item faq-item">
+                        <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                <div class="faq-question-icon">
+                                    <i class="fas fa-question"></i>
+                                </div>
+                                <span class="faq-question-text">Can I access digital books and resources remotely?</span>
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <p>Yes! All members have full remote access to our digital collection, which includes e-books, audiobooks, academic journals, and research databases. You can access these resources through our website or mobile app using your membership credentials. Our digital platform is available 24/7, allowing you to read, research, and learn from anywhere in the world. We also offer offline access for downloaded content, perfect for when you're traveling or have limited internet connectivity.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item faq-item">
+                        <h2 class="accordion-header" id="headingFour">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                <div class="faq-question-icon">
+                                    <i class="fas fa-question"></i>
+                                </div>
+                                <span class="faq-question-text">How does the book recommendation system work?</span>
+                            </button>
+                        </h2>
+                        <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <p>Our AI-powered recommendation system analyzes your reading history, preferences, and ratings to suggest books you might enjoy. The more you use our system, the more personalized your recommendations become. You can also set specific preferences in your profile, such as favorite genres, authors, or topics. Additionally, our librarians curate monthly recommendation lists based on trending topics and new releases. Premium members receive custom reading plans tailored to their specific interests and reading goals.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item faq-item">
+                        <h2 class="accordion-header" id="headingFive">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                                <div class="faq-question-icon">
+                                    <i class="fas fa-question"></i>
+                                </div>
+                                <span class="faq-question-text">What special events do you host for members?</span>
+                            </button>
+                        </h2>
+                        <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <p>We host a variety of events throughout the year, including author meet-and-greets, book clubs, workshops, and educational seminars. Premium members get priority access to limited-capacity events and exclusive invitations to special gatherings like pre-release book launches and VIP author dinners. Our children's program features storytelling sessions, creative workshops, and educational activities. You can view the full calendar of events on our website or mobile app, and set up notifications for events that interest you.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Blog/News Section -->
+<div class="blog-section py-6 position-relative">
+    <div class="section-pattern-grid-3d"></div>
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <h6 class="section-subtitle" data-aos="fade-up">Latest Updates</h6>
+            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Library News & Articles</h2>
+            <div class="section-divider" data-aos="fade-up" data-aos-delay="200"></div>
+            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Stay informed with the latest news, events, and articles from our library network</p>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="blog-card-premium hover-lift-lg">
+                    <div class="blog-card-image">
+                        <img src="https://placehold.co/600x400?text=New+Book+Collection" alt="New Book Collection">
+                        <div class="blog-card-date">
+                            <span class="day">15</span>
+                            <span class="month">Apr</span>
+                        </div>
+                    </div>
+                    <div class="blog-card-content">
+                        <div class="blog-card-category">
+                            <span class="badge-premium">News</span>
+                        </div>
+                        <h4 class="blog-card-title">Exciting New Book Collection Arrives</h4>
+                        <p class="blog-card-excerpt">Our library has just received an exciting new collection of over 5,000 books spanning various genres and topics. This expansion significantly enhances our offerings in science fiction, biography, and children's literature.</p>
+                        <div class="blog-card-footer">
+                            <div class="blog-card-author">
+                                <img src="{% static 'images/testimonials/user1.jpg' %}" alt="Author" onerror="this.src='https://placehold.co/50x50?text=JD'">
+                                <span>Jane Doe</span>
+                            </div>
+                            <a href="#" class="blog-card-link">Read More <i class="fas fa-arrow-right ms-1"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="blog-card-premium hover-lift-lg">
+                    <div class="blog-card-image">
+                        <img src="https://placehold.co/600x400?text=Author+Event" alt="Author Event">
+                        <div class="blog-card-date">
+                            <span class="day">22</span>
+                            <span class="month">Apr</span>
+                        </div>
+                    </div>
+                    <div class="blog-card-content">
+                        <div class="blog-card-category">
+                            <span class="badge-premium">Events</span>
+                        </div>
+                        <h4 class="blog-card-title">Bestselling Author to Visit Next Month</h4>
+                        <p class="blog-card-excerpt">We're thrilled to announce that bestselling author Michael Johnson will be visiting our main library for a book signing and Q&A session. This exclusive event is open to all premium members.</p>
+                        <div class="blog-card-footer">
+                            <div class="blog-card-author">
+                                <img src="{% static 'images/testimonials/user2.jpg' %}" alt="Author" onerror="this.src='https://placehold.co/50x50?text=JS'">
+                                <span>John Smith</span>
+                            </div>
+                            <a href="#" class="blog-card-link">Read More <i class="fas fa-arrow-right ms-1"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="blog-card-premium hover-lift-lg">
+                    <div class="blog-card-image">
+                        <img src="https://placehold.co/600x400?text=Digital+Resources" alt="Digital Resources">
+                        <div class="blog-card-date">
+                            <span class="day">30</span>
+                            <span class="month">Apr</span>
+                        </div>
+                    </div>
+                    <div class="blog-card-content">
+                        <div class="blog-card-category">
+                            <span class="badge-premium">Resources</span>
+                        </div>
+                        <h4 class="blog-card-title">Expanded Digital Resource Access</h4>
+                        <p class="blog-card-excerpt">We've partnered with leading academic publishers to expand our digital resource collection. Members now have access to over 50 new research databases and thousands of academic journals.</p>
+                        <div class="blog-card-footer">
+                            <div class="blog-card-author">
+                                <img src="{% static 'images/testimonials/user3.jpg' %}" alt="Author" onerror="this.src='https://placehold.co/50x50?text=ER'">
+                                <span>Emily Rodriguez</span>
+                            </div>
+                            <a href="#" class="blog-card-link">Read More <i class="fas fa-arrow-right ms-1"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4" data-aos="fade-up">
+            <a href="#" class="btn btn-outline-primary btn-lg hover-float">
+                View All Articles <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Contact Button -->
+<div class="floating-contact-button">
+    <button class="contact-toggle-btn" id="contactToggleBtn">
+        <i class="fas fa-comments"></i>
+    </button>
+    <div class="contact-popup" id="contactPopup">
+        <div class="contact-popup-header">
+            <h5>Contact Us</h5>
+            <button class="contact-close-btn" id="contactCloseBtn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="contact-popup-body">
+            <p>Have questions? We're here to help!</p>
+            <div class="contact-options">
+                <a href="tel:+1234567890" class="contact-option">
+                    <i class="fas fa-phone"></i>
+                    <span>Call Us</span>
+                </a>
+                <a href="mailto:support@library.com" class="contact-option">
+                    <i class="fas fa-envelope"></i>
+                    <span>Email</span>
+                </a>
+                <a href="#" class="contact-option">
+                    <i class="fas fa-comment-dots"></i>
+                    <span>Live Chat</span>
+                </a>
+            </div>
+            <form class="contact-form mt-3">
+                <div class="mb-3">
+                    <input type="text" class="form-control" placeholder="Your Name" required>
+                </div>
+                <div class="mb-3">
+                    <input type="email" class="form-control" placeholder="Your Email" required>
+                </div>
+                <div class="mb-3">
+                    <textarea class="form-control" rows="3" placeholder="Your Message" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Send Message</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Typed.js with premium options
+        new Typed('.typed-text', {
+            strings: [
+                'Discover Premium Library Experience',
+                'Access Millions of Books Instantly',
+                'Connect with Libraries Worldwide',
+                'Personalized Reading Recommendations'
+            ],
+            typeSpeed: 50,
+            backSpeed: 30,
+            backDelay: 2000,
+            loop: true,
+            cursorChar: '|',
+            fadeOut: true,
+            smartBackspace: true
+        });
+
+        // Initialize advanced counter animation with comma formatting
+        const counterElements = document.querySelectorAll('.counter');
+        counterElements.forEach(counter => {
+            const target = parseInt(counter.textContent.replace(/,/g, ''));
+            const duration = 2500; // 2.5 seconds
+            const frameDuration = 1000 / 60; // 60fps
+            const totalFrames = Math.round(duration / frameDuration);
+            const easeOutQuad = t => t * (2 - t);
+            let frame = 0;
+
+            // Start with 0
+            counter.textContent = '0';
+
+            // Create counter animation
+            const animate = () => {
+                frame++;
+                // Calculate progress using easing function
+                const progress = easeOutQuad(frame / totalFrames);
+                // Calculate current count
+                const currentCount = Math.round(target * progress);
+                // Format with commas
+                counter.textContent = currentCount.toLocaleString();
+
+                // Continue animation if not complete
+                if (frame < totalFrames) {
+                    requestAnimationFrame(animate);
+                }
+            };
+
+            // Start animation with a slight delay based on position
+            setTimeout(() => {
+                requestAnimationFrame(animate);
+            }, 500);
+        });
+
+        // Initialize progress bars animation
+        const progressBars = document.querySelectorAll('.progress-bar');
+        progressBars.forEach(progressBar => {
+            const width = progressBar.style.width;
+            progressBar.style.width = '0';
+            setTimeout(() => {
+                progressBar.style.width = width;
+            }, 500);
+        });
+
+        // Initialize 3D Book Carousel with advanced effects
+        new Swiper('.book-carousel-3d', {
+            slidesPerView: 1,
+            spaceBetween: 30,
+            loop: true,
+            speed: 800,
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+            },
+            effect: 'coverflow',
+            coverflowEffect: {
+                rotate: 10,
+                stretch: 0,
+                depth: 200,
+                modifier: 1,
+                slideShadows: true,
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+                dynamicBullets: true
+            },
+            breakpoints: {
+                640: {
+                    slidesPerView: 2
+                },
+                768: {
+                    slidesPerView: 3
+                },
+                1024: {
+                    slidesPerView: 4
+                }
+            }
+        });
+
+        // Custom navigation for book carousel
+        document.querySelector('.swiper-button-next-custom')?.addEventListener('click', function() {
+            const swiper = document.querySelector('.book-carousel-3d').swiper;
+            swiper.slideNext();
+        });
+
+        document.querySelector('.swiper-button-prev-custom')?.addEventListener('click', function() {
+            const swiper = document.querySelector('.book-carousel-3d').swiper;
+            swiper.slidePrev();
+        });
+
+        // Initialize premium testimonials carousel
+        new Swiper('.testimonials-carousel-premium', {
+            slidesPerView: 1,
+            spaceBetween: 30,
+            loop: true,
+            speed: 800,
+            autoplay: {
+                delay: 6000,
+                disableOnInteraction: false,
+            },
+            effect: 'creative',
+            creativeEffect: {
+                prev: {
+                    translate: ['-100%', 0, -500],
+                    opacity: 0
+                },
+                next: {
+                    translate: ['100%', 0, -500],
+                    opacity: 0
+                },
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+                dynamicBullets: true
+            },
+            breakpoints: {
+                992: {
+                    slidesPerView: 2,
+                    spaceBetween: 40
+                }
+            }
+        });
+
+        // Custom navigation for testimonials carousel
+        document.querySelector('.swiper-button-next-premium')?.addEventListener('click', function() {
+            const swiper = document.querySelector('.testimonials-carousel-premium').swiper;
+            swiper.slideNext();
+        });
+
+        document.querySelector('.swiper-button-prev-premium')?.addEventListener('click', function() {
+            const swiper = document.querySelector('.testimonials-carousel-premium').swiper;
+            swiper.slidePrev();
+        });
+
+        // Initialize partners carousel
+        new Swiper('.partners-carousel', {
+            slidesPerView: 2,
+            spaceBetween: 30,
+            loop: true,
+            autoplay: {
+                delay: 3000,
+                disableOnInteraction: false,
+            },
+            breakpoints: {
+                576: {
+                    slidesPerView: 3
+                },
+                768: {
+                    slidesPerView: 4
+                },
+                992: {
+                    slidesPerView: 5
+                },
+                1200: {
+                    slidesPerView: 6
+                }
+            }
+        });
+
+        // Library view toggle functionality
+        const gridViewBtn = document.getElementById('grid-view-btn');
+        const mapViewBtn = document.getElementById('map-view-btn');
+        const gridView = document.querySelector('.libraries-grid-view');
+        const mapView = document.querySelector('.libraries-map-view');
+
+        if (gridViewBtn && mapViewBtn) {
+            gridViewBtn.addEventListener('click', function() {
+                gridViewBtn.classList.add('active');
+                mapViewBtn.classList.remove('active');
+                gridView.classList.add('active');
+                mapView.classList.remove('active');
+            });
+
+            mapViewBtn.addEventListener('click', function() {
+                mapViewBtn.classList.add('active');
+                gridViewBtn.classList.remove('active');
+                mapView.classList.add('active');
+                gridView.classList.remove('active');
+            });
+        }
+
+        // Timeline progress animation for How It Works section
+        const timelineProgress = document.querySelector('.timeline-progress-indicator');
+        if (timelineProgress) {
+            const animateTimeline = () => {
+                timelineProgress.style.width = '0%';
+                setTimeout(() => {
+                    timelineProgress.style.width = '100%';
+                }, 500);
+            };
+
+            // Animate on page load
+            animateTimeline();
+
+            // Re-animate when section comes into view
+            const timelineSection = document.querySelector('.steps-timeline-wrapper');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        animateTimeline();
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            if (timelineSection) {
+                observer.observe(timelineSection);
+            }
+        }
+
+        // Enhanced Premium Newsletter form handling
+        const newsletterFormPremium = document.getElementById('newsletterFormPremium');
+        if (newsletterFormPremium) {
+            newsletterFormPremium.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const nameInput = this.querySelector('#nameInput');
+                const emailInput = this.querySelector('#emailInput');
+                const interestSelect = this.querySelector('#interestSelect');
+
+                if (nameInput.value && emailInput.value && emailInput.value.includes('@') && interestSelect.value) {
+                    // Show success message with animation
+                    this.innerHTML = `
+                        <div class="newsletter-success-premium animate__animated animate__fadeIn">
+                            <div class="success-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <h4>Thank You, ${nameInput.value}!</h4>
+                            <p>You've been successfully subscribed to our premium newsletter.</p>
+                            <p>We've sent a confirmation email to <strong>${emailInput.value}</strong>.</p>
+                            <p class="mt-4">You'll start receiving updates about <strong>${interestSelect.options[interestSelect.selectedIndex].text}</strong> and other library news.</p>
+                        </div>
+                    `;
+
+                    // Log subscription data
+                    console.log('Subscription data:', {
+                        name: nameInput.value,
+                        email: emailInput.value,
+                        interest: interestSelect.value
+                    });
+                } else {
+                    // Validate each field
+                    if (!nameInput.value) {
+                        nameInput.classList.add('is-invalid');
+                    }
+
+                    if (!emailInput.value || !emailInput.value.includes('@')) {
+                        emailInput.classList.add('is-invalid');
+                    }
+
+                    if (!interestSelect.value) {
+                        interestSelect.classList.add('is-invalid');
+                    }
+
+                    // Add shake animation to form
+                    newsletterFormPremium.classList.add('shake');
+                    setTimeout(() => {
+                        newsletterFormPremium.classList.remove('shake');
+                    }, 500);
+                }
+            });
+
+            // Remove invalid class on input
+            const formInputs = newsletterFormPremium.querySelectorAll('input, select');
+            formInputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.classList.remove('is-invalid');
+                });
+            });
+        }
+
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Enhanced scroll reveal animation for all premium elements
+        const premiumElements = document.querySelectorAll(
+            '.section-header, .stat-card-premium, .book-card-premium, .step-card-premium, ' +
+            '.library-card-premium, .testimonial-card-premium, .newsletter-wrapper-premium, ' +
+            '.app-mockup-container, .app-content, .partner-item'
+        );
+
+        const revealOnScroll = function() {
+            for (let i = 0; i < premiumElements.length; i++) {
+                const windowHeight = window.innerHeight;
+                const elementTop = premiumElements[i].getBoundingClientRect().top;
+                const elementVisible = 150;
+
+                if (elementTop < windowHeight - elementVisible) {
+                    if (!premiumElements[i].classList.contains('animate__animated')) {
+                        premiumElements[i].classList.add('animate__animated', 'animate__fadeInUp');
+                    }
+                }
+            }
+        };
+
+        window.addEventListener('scroll', revealOnScroll);
+        revealOnScroll(); // Check on load
+
+        // Parallax effect for hero section
+        const heroSection = document.querySelector('.hero-section');
+        const heroShapes = document.querySelectorAll('.hero-shapes-modern .shape');
+
+        if (heroSection && heroShapes.length) {
+            window.addEventListener('scroll', function() {
+                const scrollTop = window.pageYOffset;
+                const heroHeight = heroSection.offsetHeight;
+                const scrollPercentage = Math.min(scrollTop / heroHeight, 1);
+
+                heroShapes.forEach((shape, index) => {
+                    const speed = 0.2 + (index * 0.1);
+                    const yPos = scrollPercentage * speed * 100;
+                    shape.style.transform = `translateY(${yPos}px)`;
+                });
+            });
+        }
+
+        // Smooth scroll for hero scroll indicator
+        const scrollIndicator = document.querySelector('.hero-scroll-indicator');
+        if (scrollIndicator) {
+            scrollIndicator.addEventListener('click', function() {
+                const statsSection = document.querySelector('.stats-section');
+                if (statsSection) {
+                    statsSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        }
+
+        // Floating Contact Button
+        const contactToggleBtn = document.getElementById('contactToggleBtn');
+        const contactCloseBtn = document.getElementById('contactCloseBtn');
+        const contactPopup = document.getElementById('contactPopup');
+
+        if (contactToggleBtn && contactPopup) {
+            contactToggleBtn.addEventListener('click', function() {
+                contactPopup.classList.toggle('active');
+                contactToggleBtn.classList.toggle('active');
+            });
+        }
+
+        if (contactCloseBtn && contactPopup) {
+            contactCloseBtn.addEventListener('click', function() {
+                contactPopup.classList.remove('active');
+                contactToggleBtn.classList.remove('active');
+            });
+        }
+
+        // Close contact popup when clicking outside
+        document.addEventListener('click', function(event) {
+            if (contactPopup && contactToggleBtn) {
+                const isClickInside = contactPopup.contains(event.target) || contactToggleBtn.contains(event.target);
+                if (!isClickInside && contactPopup.classList.contains('active')) {
+                    contactPopup.classList.remove('active');
+                    contactToggleBtn.classList.remove('active');
+                }
+            }
+        });
+
+        // Handle contact form submission
+        const contactForm = document.querySelector('.contact-form');
+        if (contactForm) {
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+
+                // Show success message (in a real application, you would send the data to a server)
+                this.innerHTML = `
+                    <div class="text-center py-4">
+                        <div class="success-icon mb-3">
+                            <i class="fas fa-check-circle fa-3x text-success"></i>
+                        </div>
+                        <h5>Thank You!</h5>
+                        <p>Your message has been sent successfully. We'll get back to you soon.</p>
+                    </div>
+                `;
+
+                // Log form data
+                console.log('Contact form submitted:', Object.fromEntries(formData));
+            });
+        }
+    });
+</script>
 {% endblock %}
