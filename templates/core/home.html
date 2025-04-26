@@ -13,46 +13,47 @@
         </video>
     </div>
     <div class="hero-pattern-modern"></div>
+    <div class="hero-particles" id="hero-particles"></div>
     <div class="container position-relative z-index-1">
         <div class="row align-items-center min-vh-75">
             <div class="col-lg-6" data-aos="fade-up" data-aos-duration="1000">
                 <div class="hero-content-wrapper">
                     <div class="hero-badge animate__animated animate__fadeInDown animate__delay-1s">
                         <span class="badge-pill">
-                            <i class="fas fa-award me-1"></i> Premium Library Experience
+                            <i class="fas fa-crown me-1"></i> World-Class Library Network
                         </span>
                     </div>
                     <h1 class="hero-title animate__animated animate__fadeIn">
-                        <span class="hero-title-line d-block">Discover the</span>
-                        <span class="hero-title-line d-block"><span class="text-gradient-primary">Ultimate</span> Library</span>
-                        <span class="hero-title-line d-block">Experience</span>
+                        <span class="hero-title-line d-block">Unlock a</span>
+                        <span class="hero-title-line d-block"><span class="text-gradient-primary">Transformative</span> Reading</span>
+                        <span class="hero-title-line d-block">Journey</span>
                     </h1>
                     <div class="hero-typed-wrapper animate__animated animate__fadeIn animate__delay-1s">
                         <span class="typed-text"></span>
                     </div>
                     <p class="hero-description animate__animated animate__fadeIn animate__delay-1s">
-                        Explore millions of books across our network of premium libraries. Your gateway to endless knowledge and entertainment in one seamless platform.
+                        Discover our curated collection of over 10 million books across our global network of state-of-the-art libraries. Experience knowledge, entertainment, and community in one revolutionary platform.
                     </p>
                     <div class="hero-buttons animate__animated animate__fadeIn animate__delay-2s">
                         <a href="{% url 'books:book_list' %}" class="btn btn-3d-primary btn-lg me-md-3 hover-float">
-                            <i class="fas fa-book-open me-2"></i>Explore Books
+                            <i class="fas fa-book-open me-2"></i>Discover Collection
                         </a>
                         <a href="{% url 'libraries:library_list' %}" class="btn btn-glass-light btn-lg hover-float">
-                            <i class="fas fa-building me-2"></i>Find Libraries
+                            <i class="fas fa-map-marker-alt me-2"></i>Find Nearby Libraries
                         </a>
                     </div>
                     <div class="hero-features animate__animated animate__fadeIn animate__delay-3s">
                         <div class="hero-feature">
                             <i class="fas fa-check-circle"></i>
-                            <span>Millions of Books</span>
+                            <span>10+ Million Books</span>
                         </div>
                         <div class="hero-feature">
                             <i class="fas fa-check-circle"></i>
-                            <span>Premium Libraries</span>
+                            <span>500+ Premium Locations</span>
                         </div>
                         <div class="hero-feature">
                             <i class="fas fa-check-circle"></i>
-                            <span>Smart Recommendations</span>
+                            <span>AI-Powered Recommendations</span>
                         </div>
                     </div>
                 </div>
@@ -61,6 +62,7 @@
                 <div class="hero-image-container">
                     <div class="hero-image-3d-wrapper">
                         <div class="hero-image-decoration-3d"></div>
+                        <div class="hero-image-glow"></div>
                         <img src="{% static 'images/library-hero.jpg' %}" alt="Modern Library"
                              class="hero-image-3d img-fluid rounded-xl shadow-2xl animate__animated animate__zoomIn"
                              onerror="this.src='https://placehold.co/600x400?text=Premium+Library'">
@@ -74,14 +76,17 @@
                             <div class="floating-element search-element" style="animation-delay: 0.8s">
                                 <i class="fas fa-search"></i>
                             </div>
+                            <div class="floating-element digital-element" style="animation-delay: 1.1s">
+                                <i class="fas fa-tablet-alt"></i>
+                            </div>
                         </div>
                         <div class="hero-image-badge animate__animated animate__fadeInRight animate__delay-2s">
                             <div class="badge-content">
                                 <div class="badge-icon">
-                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-gem"></i>
                                 </div>
                                 <div class="badge-text">
-                                    <span class="badge-title">Premium</span>
+                                    <span class="badge-title">Elite</span>
                                     <span class="badge-subtitle">Experience</span>
                                 </div>
                             </div>
@@ -97,9 +102,10 @@
         <div class="shape shape-3"></div>
         <div class="shape shape-4"></div>
         <div class="shape shape-5"></div>
+        <div class="shape shape-6"></div>
     </div>
     <div class="hero-scroll-indicator animate__animated animate__fadeInUp animate__delay-3s">
-        <div class="scroll-text">Scroll Down</div>
+        <div class="scroll-text">Explore More</div>
         <div class="scroll-icon">
             <i class="fas fa-chevron-down"></i>
         </div>
@@ -109,17 +115,19 @@
 <!-- Ultra-Modern Stats Section with Advanced Visual Elements -->
 <div class="stats-section py-6 position-relative">
     <div class="section-pattern-dots-3d"></div>
+    <div class="section-gradient-overlay"></div>
     <div class="container">
         <div class="section-header text-center mb-5">
-            <h6 class="section-subtitle" data-aos="fade-up">Impressive Numbers</h6>
-            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Our Impact at a Glance</h2>
+            <h6 class="section-subtitle" data-aos="fade-up">Remarkable Growth</h6>
+            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Redefining Library Excellence</h2>
             <div class="section-divider" data-aos="fade-up" data-aos-delay="200"></div>
-            <p class="section-description" data-aos="fade-up" data-aos-delay="300">See how our platform is transforming the library experience with these impressive statistics</p>
+            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Our revolutionary platform is transforming how people access knowledge worldwide with unprecedented scale and innovation</p>
         </div>
         <div class="row">
             <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
                 <div class="stat-card-premium hover-lift-lg">
                     <div class="stat-card-background"></div>
+                    <div class="stat-card-glow"></div>
                     <div class="stat-card-content">
                         <div class="stat-card-icon-container">
                             <div class="stat-card-icon-bg"></div>
@@ -132,14 +140,17 @@
                                 <div class="stat-card-value counter">{{ total_libraries }}</div>
                                 <div class="stat-card-plus">+</div>
                             </div>
-                            <p class="stat-card-label">Premium Libraries</p>
+                            <p class="stat-card-label">Elite Libraries</p>
                             <div class="stat-card-progress">
                                 <div class="progress">
                                     <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
                                 <div class="stat-card-trend up">
-                                    <i class="fas fa-arrow-up"></i> 12% growth this year
+                                    <i class="fas fa-arrow-up"></i> 15% growth this quarter
                                 </div>
+                            </div>
+                            <div class="stat-card-badge">
+                                <span>Global Network</span>
                             </div>
                         </div>
                     </div>
@@ -148,6 +159,7 @@
             <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
                 <div class="stat-card-premium hover-lift-lg">
                     <div class="stat-card-background"></div>
+                    <div class="stat-card-glow"></div>
                     <div class="stat-card-content">
                         <div class="stat-card-icon-container">
                             <div class="stat-card-icon-bg"></div>
@@ -160,14 +172,17 @@
                                 <div class="stat-card-value counter">{{ total_books }}</div>
                                 <div class="stat-card-plus">+</div>
                             </div>
-                            <p class="stat-card-label">Unique Books</p>
+                            <p class="stat-card-label">Curated Titles</p>
                             <div class="stat-card-progress">
                                 <div class="progress">
                                     <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 85%" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
                                 <div class="stat-card-trend up">
-                                    <i class="fas fa-arrow-up"></i> 24% growth this year
+                                    <i class="fas fa-arrow-up"></i> 28% growth this quarter
                                 </div>
+                            </div>
+                            <div class="stat-card-badge">
+                                <span>Expanding Collection</span>
                             </div>
                         </div>
                     </div>
@@ -176,6 +191,7 @@
             <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
                 <div class="stat-card-premium hover-lift-lg">
                     <div class="stat-card-background"></div>
+                    <div class="stat-card-glow"></div>
                     <div class="stat-card-content">
                         <div class="stat-card-icon-container">
                             <div class="stat-card-icon-bg"></div>
@@ -194,11 +210,27 @@
                                     <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
                                 <div class="stat-card-trend up">
-                                    <i class="fas fa-arrow-up"></i> 18% growth this year
+                                    <i class="fas fa-arrow-up"></i> 22% growth this quarter
                                 </div>
+                            </div>
+                            <div class="stat-card-badge">
+                                <span>Instant Access</span>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-5">
+            <div class="col-12 text-center" data-aos="fade-up" data-aos-delay="400">
+                <div class="stats-highlight-box">
+                    <div class="stats-highlight-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h4 class="stats-highlight-title">Unprecedented Growth</h4>
+                    <p class="stats-highlight-description">
+                        Our platform has experienced a remarkable <span class="text-gradient-primary">250% increase</span> in user engagement over the past year, with members spending an average of <span class="text-gradient-primary">45 minutes</span> per session exploring our vast collection.
+                    </p>
                 </div>
             </div>
         </div>
@@ -208,30 +240,110 @@
 <!-- Premium Books Showcase with 3D Carousel and Category Filters -->
 <div class="books-showcase-section py-6 position-relative">
     <div class="section-pattern-dots-3d"></div>
+    <div class="section-wave-pattern"></div>
     <div class="container">
         <div class="section-header text-center mb-5">
-            <h6 class="section-subtitle" data-aos="fade-up">Curated Collection</h6>
-            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Featured Books</h2>
+            <h6 class="section-subtitle" data-aos="fade-up">Exceptional Collection</h6>
+            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Discover Literary Treasures</h2>
             <div class="section-divider" data-aos="fade-up" data-aos-delay="200"></div>
-            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Discover our handpicked selection of premium books across various categories</p>
+            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Explore our meticulously curated selection of extraordinary books that inspire, educate, and transform</p>
         </div>
 
-        <div class="books-filter-tabs" data-aos="fade-up" data-aos-delay="400">
+        <!-- Featured Book Spotlight -->
+        <div class="featured-book-spotlight mb-5" data-aos="fade-up" data-aos-delay="100">
+            <div class="row align-items-center">
+                <div class="col-lg-5 mb-4 mb-lg-0">
+                    <div class="featured-book-image-container">
+                        <div class="featured-book-badge">
+                            <span><i class="fas fa-crown me-1"></i> Featured</span>
+                        </div>
+                        <div class="featured-book-3d">
+                            <img src="{% static 'images/featured-book.jpg' %}" alt="Featured Book" class="img-fluid rounded-lg shadow-lg" onerror="this.src='https://placehold.co/400x600?text=Featured+Book'">
+                            <div class="featured-book-glow"></div>
+                            <div class="featured-book-reflection"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="featured-book-content">
+                        <div class="featured-book-header">
+                            <div class="featured-book-category">
+                                <span class="badge-premium">Bestseller</span>
+                                <span class="badge-premium">Fiction</span>
+                            </div>
+                            <h3 class="featured-book-title">The Luminous Odyssey</h3>
+                            <div class="featured-book-author">
+                                <img src="{% static 'images/author-avatar.jpg' %}" alt="Author" class="author-avatar" onerror="this.src='https://placehold.co/50x50?text=Author'">
+                                <span>By <strong>Alexandra Rivers</strong></span>
+                            </div>
+                        </div>
+                        <div class="featured-book-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="rating-value">4.8</span>
+                            <span class="rating-count">(342 reviews)</span>
+                        </div>
+                        <p class="featured-book-description">
+                            A captivating journey through time and consciousness, "The Luminous Odyssey" follows protagonist Elara as she discovers hidden dimensions within our reality. This groundbreaking novel blends philosophical depth with breathtaking adventure, earning it the prestigious International Literary Award.
+                        </p>
+                        <div class="featured-book-meta">
+                            <div class="meta-item">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>Published: May 2023</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-book-open"></i>
+                                <span>Pages: 432</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-language"></i>
+                                <span>Language: English</span>
+                            </div>
+                        </div>
+                        <div class="featured-book-actions">
+                            <a href="#" class="btn btn-3d-primary hover-float">
+                                <i class="fas fa-info-circle me-2"></i>View Details
+                            </a>
+                            <a href="#" class="btn btn-outline-primary hover-float">
+                                <i class="fas fa-bookmark me-2"></i>Reserve Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="books-filter-tabs" data-aos="fade-up" data-aos-delay="200">
             <ul class="nav nav-pills justify-content-center mb-4" id="booksTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="all-books-tab" data-bs-toggle="pill" data-bs-target="#all-books" type="button" role="tab" aria-controls="all-books" aria-selected="true">All</button>
+                    <button class="nav-link active" id="all-books-tab" data-bs-toggle="pill" data-bs-target="#all-books" type="button" role="tab" aria-controls="all-books" aria-selected="true">
+                        <i class="fas fa-th me-2"></i>All Categories
+                    </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="fiction-tab" data-bs-toggle="pill" data-bs-target="#fiction" type="button" role="tab" aria-controls="fiction" aria-selected="false">Fiction</button>
+                    <button class="nav-link" id="fiction-tab" data-bs-toggle="pill" data-bs-target="#fiction" type="button" role="tab" aria-controls="fiction" aria-selected="false">
+                        <i class="fas fa-book me-2"></i>Fiction
+                    </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="non-fiction-tab" data-bs-toggle="pill" data-bs-target="#non-fiction" type="button" role="tab" aria-controls="non-fiction" aria-selected="false">Non-Fiction</button>
+                    <button class="nav-link" id="non-fiction-tab" data-bs-toggle="pill" data-bs-target="#non-fiction" type="button" role="tab" aria-controls="non-fiction" aria-selected="false">
+                        <i class="fas fa-graduation-cap me-2"></i>Non-Fiction
+                    </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="science-tab" data-bs-toggle="pill" data-bs-target="#science" type="button" role="tab" aria-controls="science" aria-selected="false">Science</button>
+                    <button class="nav-link" id="science-tab" data-bs-toggle="pill" data-bs-target="#science" type="button" role="tab" aria-controls="science" aria-selected="false">
+                        <i class="fas fa-atom me-2"></i>Science
+                    </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="history-tab" data-bs-toggle="pill" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">History</button>
+                    <button class="nav-link" id="history-tab" data-bs-toggle="pill" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">
+                        <i class="fas fa-landmark me-2"></i>History
+                    </button>
                 </li>
             </ul>
         </div>
@@ -252,6 +364,7 @@
                                         {% endif %}
                                         <div class="book-spine"></div>
                                         <div class="book-cover-shine"></div>
+                                        <div class="book-cover-glow"></div>
                                     </div>
                                     <div class="book-overlay-3d">
                                         <div class="book-overlay-content">
@@ -291,7 +404,9 @@
                                             <span>4.8</span>
                                         </div>
                                     </div>
-                                    <a href="{% url 'books:book_detail' slug=book.slug %}" class="btn btn-primary btn-sm w-100 mt-2">View Details</a>
+                                    <a href="{% url 'books:book_detail' slug=book.slug %}" class="btn btn-primary btn-sm w-100 mt-2 hover-float">
+                                        <i class="fas fa-info-circle me-1"></i>View Details
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -312,36 +427,56 @@
             <!-- Other tabs would have similar content but filtered by category -->
             <div class="tab-pane fade" id="fiction" role="tabpanel" aria-labelledby="fiction-tab">
                 <!-- Fiction books would be displayed here -->
-                <div class="text-center py-5">
-                    <p class="lead">Filter by Fiction category to see relevant books</p>
+                <div class="category-placeholder">
+                    <div class="category-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h4>Fiction Collection</h4>
+                    <p>Explore our vast collection of fiction books, from classic literature to contemporary bestsellers.</p>
+                    <button class="btn btn-primary">Load Fiction Books</button>
                 </div>
             </div>
 
             <div class="tab-pane fade" id="non-fiction" role="tabpanel" aria-labelledby="non-fiction-tab">
                 <!-- Non-Fiction books would be displayed here -->
-                <div class="text-center py-5">
-                    <p class="lead">Filter by Non-Fiction category to see relevant books</p>
+                <div class="category-placeholder">
+                    <div class="category-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h4>Non-Fiction Collection</h4>
+                    <p>Discover insightful non-fiction works covering biography, self-improvement, science, and more.</p>
+                    <button class="btn btn-primary">Load Non-Fiction Books</button>
                 </div>
             </div>
 
             <div class="tab-pane fade" id="science" role="tabpanel" aria-labelledby="science-tab">
                 <!-- Science books would be displayed here -->
-                <div class="text-center py-5">
-                    <p class="lead">Filter by Science category to see relevant books</p>
+                <div class="category-placeholder">
+                    <div class="category-icon">
+                        <i class="fas fa-atom"></i>
+                    </div>
+                    <h4>Science Collection</h4>
+                    <p>Explore fascinating scientific discoveries and theories across various disciplines.</p>
+                    <button class="btn btn-primary">Load Science Books</button>
                 </div>
             </div>
 
             <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
                 <!-- History books would be displayed here -->
-                <div class="text-center py-5">
-                    <p class="lead">Filter by History category to see relevant books</p>
+                <div class="category-placeholder">
+                    <div class="category-icon">
+                        <i class="fas fa-landmark"></i>
+                    </div>
+                    <h4>History Collection</h4>
+                    <p>Journey through time with our comprehensive collection of historical works and analyses.</p>
+                    <button class="btn btn-primary">Load History Books</button>
                 </div>
             </div>
         </div>
 
         <div class="text-center mt-5" data-aos="fade-up">
-            <a href="{% url 'books:book_list' %}" class="btn btn-outline-primary btn-lg hover-float">
-                Explore All Books <i class="fas fa-arrow-right ms-2"></i>
+            <a href="{% url 'books:book_list' %}" class="btn btn-3d-primary btn-lg hover-float">
+                Explore Complete Collection <i class="fas fa-arrow-right ms-2"></i>
             </a>
         </div>
     </div>
@@ -350,12 +485,13 @@
 <!-- Interactive How It Works Section with 3D Elements -->
 <div class="how-it-works-section py-6 position-relative">
     <div class="section-wave-pattern-3d"></div>
+    <div class="section-gradient-radial"></div>
     <div class="container">
         <div class="section-header text-center mb-5">
-            <h6 class="section-subtitle" data-aos="fade-up">Seamless Process</h6>
-            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">How It Works</h2>
+            <h6 class="section-subtitle" data-aos="fade-up">Effortless Experience</h6>
+            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Your Journey With Us</h2>
             <div class="section-divider" data-aos="fade-up" data-aos-delay="200"></div>
-            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Experience our premium library system in three simple steps</p>
+            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Discover how our revolutionary platform transforms your reading experience in four simple steps</p>
         </div>
 
         <div class="steps-timeline-wrapper" data-aos="fade-up" data-aos-delay="400">
@@ -363,108 +499,254 @@
                 <div class="timeline-progress-bar">
                     <div class="timeline-progress-indicator"></div>
                 </div>
+                <div class="timeline-nodes">
+                    <div class="timeline-node active" data-step="1"></div>
+                    <div class="timeline-node" data-step="2"></div>
+                    <div class="timeline-node" data-step="3"></div>
+                    <div class="timeline-node" data-step="4"></div>
+                </div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="step-card-premium text-center hover-lift-lg">
-                    <div class="step-card-inner">
-                        <div class="step-icon-container">
-                            <div class="step-icon-bg"></div>
-                            <div class="step-icon-premium">
-                                <i class="fas fa-search"></i>
+        <div class="steps-carousel-container">
+            <div class="steps-carousel swiper-container" data-aos="fade-up">
+                <div class="swiper-wrapper">
+                    <!-- Step 1 -->
+                    <div class="swiper-slide">
+                        <div class="step-card-premium hover-lift-lg">
+                            <div class="step-card-inner">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-5 mb-4 mb-lg-0">
+                                        <div class="step-image-container">
+                                            <div class="step-image-wrapper">
+                                                <img src="{% static 'images/step1-discover.jpg' %}" alt="Discover Libraries" class="img-fluid rounded-lg" onerror="this.src='https://placehold.co/600x400?text=Discover+Libraries'">
+                                                <div class="step-image-overlay"></div>
+                                                <div class="step-number-badge">1</div>
+                                            </div>
+                                            <div class="step-image-decoration">
+                                                <div class="decoration-element element-1"></div>
+                                                <div class="decoration-element element-2"></div>
+                                                <div class="decoration-element element-3"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-7">
+                                        <div class="step-content">
+                                            <div class="step-icon-container">
+                                                <div class="step-icon-bg"></div>
+                                                <div class="step-icon-premium">
+                                                    <i class="fas fa-map-marked-alt"></i>
+                                                </div>
+                                            </div>
+                                            <h3 class="step-title-premium">Discover Nearby Libraries</h3>
+                                            <p class="step-description-premium">
+                                                Use our interactive map to locate elite libraries in your area. Our advanced geolocation technology identifies the closest facilities with the resources you need.
+                                            </p>
+                                            <div class="step-features">
+                                                <div class="step-feature-item">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    <span>Precise location tracking</span>
+                                                </div>
+                                                <div class="step-feature-item">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    <span>Virtual 3D library tours</span>
+                                                </div>
+                                                <div class="step-feature-item">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    <span>Real-time availability updates</span>
+                                                </div>
+                                            </div>
+                                            <a href="{% url 'libraries:library_list' %}" class="btn btn-outline-primary mt-3 hover-float">
+                                                <i class="fas fa-compass me-2"></i>Find Libraries
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="step-number-premium">1</div>
                         </div>
-                        <h3 class="step-title-premium">Find Your Library</h3>
-                        <p class="step-description-premium">Browse our extensive network of premium libraries and find the ones closest to you with our interactive map and advanced search tools.</p>
-                        <div class="step-features">
-                            <div class="step-feature-item">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Location-based search</span>
-                            </div>
-                            <div class="step-feature-item">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Filter by amenities</span>
-                            </div>
-                            <div class="step-feature-item">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Virtual tours available</span>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="swiper-slide">
+                        <div class="step-card-premium hover-lift-lg">
+                            <div class="step-card-inner">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-5 mb-4 mb-lg-0">
+                                        <div class="step-image-container">
+                                            <div class="step-image-wrapper">
+                                                <img src="{% static 'images/step2-join.jpg' %}" alt="Join Membership" class="img-fluid rounded-lg" onerror="this.src='https://placehold.co/600x400?text=Join+Membership'">
+                                                <div class="step-image-overlay"></div>
+                                                <div class="step-number-badge">2</div>
+                                            </div>
+                                            <div class="step-image-decoration">
+                                                <div class="decoration-element element-1"></div>
+                                                <div class="decoration-element element-2"></div>
+                                                <div class="decoration-element element-3"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-7">
+                                        <div class="step-content">
+                                            <div class="step-icon-container">
+                                                <div class="step-icon-bg"></div>
+                                                <div class="step-icon-premium">
+                                                    <i class="fas fa-user-plus"></i>
+                                                </div>
+                                            </div>
+                                            <h3 class="step-title-premium">Join Our Elite Membership</h3>
+                                            <p class="step-description-premium">
+                                                Select from our tiered membership plans designed to fit your reading habits. Our seamless digital onboarding process takes less than 3 minutes to complete.
+                                            </p>
+                                            <div class="step-features">
+                                                <div class="step-feature-item">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    <span>Instant digital card issuance</span>
+                                                </div>
+                                                <div class="step-feature-item">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    <span>Flexible membership options</span>
+                                                </div>
+                                                <div class="step-feature-item">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    <span>Member-exclusive events</span>
+                                                </div>
+                                            </div>
+                                            <a href="{% url 'account_signup' %}" class="btn btn-outline-primary mt-3 hover-float">
+                                                <i class="fas fa-id-card me-2"></i>Become a Member
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="step-arrow-premium d-none d-lg-block">
-                            <i class="fas fa-long-arrow-alt-right"></i>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="swiper-slide">
+                        <div class="step-card-premium hover-lift-lg">
+                            <div class="step-card-inner">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-5 mb-4 mb-lg-0">
+                                        <div class="step-image-container">
+                                            <div class="step-image-wrapper">
+                                                <img src="{% static 'images/step3-explore.jpg' %}" alt="Explore Collection" class="img-fluid rounded-lg" onerror="this.src='https://placehold.co/600x400?text=Explore+Collection'">
+                                                <div class="step-image-overlay"></div>
+                                                <div class="step-number-badge">3</div>
+                                            </div>
+                                            <div class="step-image-decoration">
+                                                <div class="decoration-element element-1"></div>
+                                                <div class="decoration-element element-2"></div>
+                                                <div class="decoration-element element-3"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-7">
+                                        <div class="step-content">
+                                            <div class="step-icon-container">
+                                                <div class="step-icon-bg"></div>
+                                                <div class="step-icon-premium">
+                                                    <i class="fas fa-search"></i>
+                                                </div>
+                                            </div>
+                                            <h3 class="step-title-premium">Explore Our Vast Collection</h3>
+                                            <p class="step-description-premium">
+                                                Browse our extensive catalog using our advanced search and filtering system. Our AI-powered recommendation engine learns your preferences to suggest perfect matches.
+                                            </p>
+                                            <div class="step-features">
+                                                <div class="step-feature-item">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    <span>Advanced search capabilities</span>
+                                                </div>
+                                                <div class="step-feature-item">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    <span>Personalized recommendations</span>
+                                                </div>
+                                                <div class="step-feature-item">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    <span>Curated reading lists</span>
+                                                </div>
+                                            </div>
+                                            <a href="{% url 'books:book_list' %}" class="btn btn-outline-primary mt-3 hover-float">
+                                                <i class="fas fa-book-open me-2"></i>Browse Collection
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="swiper-slide">
+                        <div class="step-card-premium hover-lift-lg">
+                            <div class="step-card-inner">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-5 mb-4 mb-lg-0">
+                                        <div class="step-image-container">
+                                            <div class="step-image-wrapper">
+                                                <img src="{% static 'images/step4-enjoy.jpg' %}" alt="Enjoy Reading" class="img-fluid rounded-lg" onerror="this.src='https://placehold.co/600x400?text=Enjoy+Reading'">
+                                                <div class="step-image-overlay"></div>
+                                                <div class="step-number-badge">4</div>
+                                            </div>
+                                            <div class="step-image-decoration">
+                                                <div class="decoration-element element-1"></div>
+                                                <div class="decoration-element element-2"></div>
+                                                <div class="decoration-element element-3"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-7">
+                                        <div class="step-content">
+                                            <div class="step-icon-container">
+                                                <div class="step-icon-bg"></div>
+                                                <div class="step-icon-premium">
+                                                    <i class="fas fa-book-reader"></i>
+                                                </div>
+                                            </div>
+                                            <h3 class="step-title-premium">Enjoy Your Reading Journey</h3>
+                                            <p class="step-description-premium">
+                                                Access your books in multiple formats - physical copies, e-books, or audiobooks. Our synchronized platform keeps track of your progress across all devices.
+                                            </p>
+                                            <div class="step-features">
+                                                <div class="step-feature-item">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    <span>Multi-format availability</span>
+                                                </div>
+                                                <div class="step-feature-item">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    <span>Cross-device synchronization</span>
+                                                </div>
+                                                <div class="step-feature-item">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    <span>Reading analytics dashboard</span>
+                                                </div>
+                                            </div>
+                                            <a href="#" class="btn btn-outline-primary mt-3 hover-float">
+                                                <i class="fas fa-glasses me-2"></i>Start Reading
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="step-card-premium text-center hover-lift-lg">
-                    <div class="step-card-inner">
-                        <div class="step-icon-container">
-                            <div class="step-icon-bg"></div>
-                            <div class="step-icon-premium">
-                                <i class="fas fa-user-plus"></i>
-                            </div>
-                            <div class="step-number-premium">2</div>
-                        </div>
-                        <h3 class="step-title-premium">Become a Member</h3>
-                        <p class="step-description-premium">Sign up for a premium membership to get unlimited access to millions of books, digital resources, and exclusive member benefits.</p>
-                        <div class="step-features">
-                            <div class="step-feature-item">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Quick digital signup</span>
-                            </div>
-                            <div class="step-feature-item">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Multiple membership tiers</span>
-                            </div>
-                            <div class="step-feature-item">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Exclusive member events</span>
-                            </div>
-                        </div>
-                        <div class="step-arrow-premium d-none d-lg-block">
-                            <i class="fas fa-long-arrow-alt-right"></i>
-                        </div>
-                    </div>
+
+            <div class="steps-navigation">
+                <div class="steps-button-prev">
+                    <i class="fas fa-chevron-left"></i>
                 </div>
-            </div>
-            <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="300">
-                <div class="step-card-premium text-center hover-lift-lg">
-                    <div class="step-card-inner">
-                        <div class="step-icon-container">
-                            <div class="step-icon-bg"></div>
-                            <div class="step-icon-premium">
-                                <i class="fas fa-book-reader"></i>
-                            </div>
-                            <div class="step-number-premium">3</div>
-                        </div>
-                        <h3 class="step-title-premium">Start Reading</h3>
-                        <p class="step-description-premium">Borrow physical books or access our extensive digital collection. Track your reading history and get personalized AI-powered recommendations.</p>
-                        <div class="step-features">
-                            <div class="step-feature-item">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Physical & digital books</span>
-                            </div>
-                            <div class="step-feature-item">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Reading progress tracking</span>
-                            </div>
-                            <div class="step-feature-item">
-                                <i class="fas fa-check-circle"></i>
-                                <span>AI book recommendations</span>
-                            </div>
-                        </div>
-                    </div>
+                <div class="steps-pagination"></div>
+                <div class="steps-button-next">
+                    <i class="fas fa-chevron-right"></i>
                 </div>
             </div>
         </div>
 
         <div class="text-center mt-5" data-aos="fade-up">
             <a href="{% url 'account_signup' %}" class="btn btn-3d-primary btn-lg hover-float">
-                Get Started Now <i class="fas fa-arrow-right ms-2"></i>
+                Begin Your Journey Now <i class="fas fa-arrow-right ms-2"></i>
             </a>
         </div>
     </div>
@@ -1313,15 +1595,145 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize Typed.js with premium options
+        // Initialize Particles.js for hero section with theme-compatible colors
+        if (document.getElementById('hero-particles')) {
+            // Get current theme colors
+            const root = document.documentElement;
+            const textColor = getComputedStyle(root).getPropertyValue('--text-color').trim();
+
+            // Create particles configuration
+            const particlesConfig = {
+                "particles": {
+                    "number": {
+                        "value": 80,
+                        "density": {
+                            "enable": true,
+                            "value_area": 800
+                        }
+                    },
+                    "color": {
+                        "value": textColor || "#ffffff"
+                    },
+                    "shape": {
+                        "type": "circle",
+                        "stroke": {
+                            "width": 0,
+                            "color": "#000000"
+                        },
+                        "polygon": {
+                            "nb_sides": 5
+                        }
+                    },
+                    "opacity": {
+                        "value": 0.3,
+                        "random": true,
+                        "anim": {
+                            "enable": true,
+                            "speed": 1,
+                            "opacity_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "size": {
+                        "value": 3,
+                        "random": true,
+                        "anim": {
+                            "enable": true,
+                            "speed": 2,
+                            "size_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "line_linked": {
+                        "enable": true,
+                        "distance": 150,
+                        "color": textColor || "#ffffff",
+                        "opacity": 0.2,
+                        "width": 1
+                    },
+                    "move": {
+                        "enable": true,
+                        "speed": 1,
+                        "direction": "none",
+                        "random": true,
+                        "straight": false,
+                        "out_mode": "out",
+                        "bounce": false,
+                        "attract": {
+                            "enable": false,
+                            "rotateX": 600,
+                            "rotateY": 1200
+                        }
+                    }
+                },
+                "interactivity": {
+                    "detect_on": "canvas",
+                    "events": {
+                        "onhover": {
+                            "enable": true,
+                            "mode": "grab"
+                        },
+                        "onclick": {
+                            "enable": true,
+                            "mode": "push"
+                        },
+                        "resize": true
+                    },
+                    "modes": {
+                        "grab": {
+                            "distance": 140,
+                            "line_linked": {
+                                "opacity": 0.5
+                            }
+                        },
+                        "push": {
+                            "particles_nb": 4
+                        }
+                    }
+                },
+                "retina_detect": true
+            };
+
+            // Initialize particles
+            particlesJS('hero-particles', particlesConfig);
+
+            // Update particles when theme changes
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.attributeName === 'data-bs-theme' ||
+                        mutation.attributeName === 'class' && mutation.target.classList.contains('theme-change')) {
+
+                        // Get updated text color
+                        const updatedTextColor = getComputedStyle(root).getPropertyValue('--text-color').trim();
+
+                        // Destroy and recreate particles with new color
+                        if (window.pJSDom && window.pJSDom.length > 0) {
+                            // Update particles color
+                            window.pJSDom[0].pJS.particles.color.value = updatedTextColor;
+                            window.pJSDom[0].pJS.particles.line_linked.color = updatedTextColor;
+
+                            // Refresh particles
+                            window.pJSDom[0].pJS.fn.particlesRefresh();
+                        }
+                    }
+                });
+            });
+
+            // Observe theme changes on html and body elements
+            observer.observe(document.documentElement, { attributes: true });
+            observer.observe(document.body, { attributes: true });
+        }
+
+        // Initialize Typed.js with enhanced options
         new Typed('.typed-text', {
             strings: [
-                'Discover Premium Library Experience',
-                'Access Millions of Books Instantly',
-                'Connect with Libraries Worldwide',
-                'Personalized Reading Recommendations'
+                'Discover World-Class Library Network',
+                'Access 10+ Million Books Instantly',
+                'Experience AI-Powered Recommendations',
+                'Join Our Global Reading Community'
             ],
             typeSpeed: 50,
             backSpeed: 30,
@@ -1332,14 +1744,15 @@
             smartBackspace: true
         });
 
-        // Initialize advanced counter animation with comma formatting
+        // Enhanced counter animation with comma formatting and easing
         const counterElements = document.querySelectorAll('.counter');
         counterElements.forEach(counter => {
             const target = parseInt(counter.textContent.replace(/,/g, ''));
             const duration = 2500; // 2.5 seconds
             const frameDuration = 1000 / 60; // 60fps
             const totalFrames = Math.round(duration / frameDuration);
-            const easeOutQuad = t => t * (2 - t);
+            // Enhanced easing function for more dynamic animation
+            const easeOutExpo = t => (t === 1) ? 1 : 1 - Math.pow(2, -10 * t);
             let frame = 0;
 
             // Start with 0
@@ -1348,8 +1761,8 @@
             // Create counter animation
             const animate = () => {
                 frame++;
-                // Calculate progress using easing function
-                const progress = easeOutQuad(frame / totalFrames);
+                // Calculate progress using enhanced easing function
+                const progress = easeOutExpo(frame / totalFrames);
                 // Calculate current count
                 const currentCount = Math.round(target * progress);
                 // Format with commas
@@ -1358,26 +1771,51 @@
                 // Continue animation if not complete
                 if (frame < totalFrames) {
                     requestAnimationFrame(animate);
+                } else {
+                    // Add a subtle pulse animation when counter completes
+                    counter.classList.add('pulse-once');
+                    setTimeout(() => {
+                        counter.classList.remove('pulse-once');
+                    }, 1000);
                 }
             };
 
-            // Start animation with a slight delay based on position
-            setTimeout(() => {
-                requestAnimationFrame(animate);
-            }, 500);
+            // Create Intersection Observer to start animation when counter is visible
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            requestAnimationFrame(animate);
+                        }, 300);
+                        observer.unobserve(counter);
+                    }
+                });
+            }, { threshold: 0.2 });
+
+            observer.observe(counter);
         });
 
-        // Initialize progress bars animation
+        // Enhanced progress bars animation with intersection observer
         const progressBars = document.querySelectorAll('.progress-bar');
         progressBars.forEach(progressBar => {
             const width = progressBar.style.width;
             progressBar.style.width = '0';
-            setTimeout(() => {
-                progressBar.style.width = width;
-            }, 500);
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            progressBar.style.width = width;
+                        }, 300);
+                        observer.unobserve(progressBar);
+                    }
+                });
+            }, { threshold: 0.2 });
+
+            observer.observe(progressBar);
         });
 
-        // Initialize 3D Book Carousel with advanced effects
+        // Initialize 3D Book Carousel with enhanced effects
         new Swiper('.book-carousel-3d', {
             slidesPerView: 1,
             spaceBetween: 30,
@@ -1389,10 +1827,10 @@
             },
             effect: 'coverflow',
             coverflowEffect: {
-                rotate: 10,
+                rotate: 15,
                 stretch: 0,
-                depth: 200,
-                modifier: 1,
+                depth: 300,
+                modifier: 1.5,
                 slideShadows: true,
             },
             pagination: {
@@ -1410,21 +1848,97 @@
                 1024: {
                     slidesPerView: 4
                 }
+            },
+            on: {
+                slideChange: function() {
+                    // Add subtle animation to active slide
+                    setTimeout(() => {
+                        const activeSlide = document.querySelector('.book-carousel-3d .swiper-slide-active');
+                        if (activeSlide) {
+                            activeSlide.classList.add('scale-up-center');
+                            setTimeout(() => {
+                                activeSlide.classList.remove('scale-up-center');
+                            }, 500);
+                        }
+                    }, 100);
+                }
             }
         });
 
-        // Custom navigation for book carousel
+        // Custom navigation for book carousel with enhanced feedback
         document.querySelector('.swiper-button-next-custom')?.addEventListener('click', function() {
+            this.classList.add('button-pulse');
+            setTimeout(() => {
+                this.classList.remove('button-pulse');
+            }, 300);
             const swiper = document.querySelector('.book-carousel-3d').swiper;
             swiper.slideNext();
         });
 
         document.querySelector('.swiper-button-prev-custom')?.addEventListener('click', function() {
+            this.classList.add('button-pulse');
+            setTimeout(() => {
+                this.classList.remove('button-pulse');
+            }, 300);
             const swiper = document.querySelector('.book-carousel-3d').swiper;
             swiper.slidePrev();
         });
 
-        // Initialize premium testimonials carousel
+        // Initialize Steps Carousel for How It Works section
+        const stepsCarousel = new Swiper('.steps-carousel', {
+            slidesPerView: 1,
+            spaceBetween: 30,
+            speed: 800,
+            autoplay: {
+                delay: 8000,
+                disableOnInteraction: false,
+            },
+            effect: 'fade',
+            fadeEffect: {
+                crossFade: true
+            },
+            pagination: {
+                el: '.steps-pagination',
+                clickable: true,
+                renderBullet: function (index, className) {
+                    return '<span class="' + className + '">' + (index + 1) + '</span>';
+                },
+            },
+            navigation: {
+                nextEl: '.steps-button-next',
+                prevEl: '.steps-button-prev',
+            },
+            on: {
+                slideChange: function() {
+                    // Update timeline nodes
+                    const nodes = document.querySelectorAll('.timeline-node');
+                    nodes.forEach((node, index) => {
+                        if (index <= this.activeIndex) {
+                            node.classList.add('active');
+                        } else {
+                            node.classList.remove('active');
+                        }
+                    });
+
+                    // Update timeline progress
+                    const progress = document.querySelector('.timeline-progress-indicator');
+                    if (progress) {
+                        const percentage = ((this.activeIndex + 1) / nodes.length) * 100;
+                        progress.style.width = percentage + '%';
+                    }
+                }
+            }
+        });
+
+        // Timeline nodes click functionality
+        const timelineNodes = document.querySelectorAll('.timeline-node');
+        timelineNodes.forEach((node, index) => {
+            node.addEventListener('click', function() {
+                stepsCarousel.slideTo(index);
+            });
+        });
+
+        // Initialize premium testimonials carousel with enhanced effects
         new Swiper('.testimonials-carousel-premium', {
             slidesPerView: 1,
             spaceBetween: 30,
@@ -1438,11 +1952,13 @@
             creativeEffect: {
                 prev: {
                     translate: ['-100%', 0, -500],
-                    opacity: 0
+                    opacity: 0,
+                    scale: 0.8
                 },
                 next: {
                     translate: ['100%', 0, -500],
-                    opacity: 0
+                    opacity: 0,
+                    scale: 0.8
                 },
             },
             pagination: {
@@ -1458,18 +1974,26 @@
             }
         });
 
-        // Custom navigation for testimonials carousel
+        // Custom navigation for testimonials carousel with enhanced feedback
         document.querySelector('.swiper-button-next-premium')?.addEventListener('click', function() {
+            this.classList.add('button-pulse');
+            setTimeout(() => {
+                this.classList.remove('button-pulse');
+            }, 300);
             const swiper = document.querySelector('.testimonials-carousel-premium').swiper;
             swiper.slideNext();
         });
 
         document.querySelector('.swiper-button-prev-premium')?.addEventListener('click', function() {
+            this.classList.add('button-pulse');
+            setTimeout(() => {
+                this.classList.remove('button-pulse');
+            }, 300);
             const swiper = document.querySelector('.testimonials-carousel-premium').swiper;
             swiper.slidePrev();
         });
 
-        // Initialize partners carousel
+        // Initialize partners carousel with enhanced effects
         new Swiper('.partners-carousel', {
             slidesPerView: 2,
             spaceBetween: 30,
@@ -1494,7 +2018,7 @@
             }
         });
 
-        // Library view toggle functionality
+        // Library view toggle functionality with enhanced feedback
         const gridViewBtn = document.getElementById('grid-view-btn');
         const mapViewBtn = document.getElementById('map-view-btn');
         const gridView = document.querySelector('.libraries-grid-view');
@@ -1506,6 +2030,12 @@
                 mapViewBtn.classList.remove('active');
                 gridView.classList.add('active');
                 mapView.classList.remove('active');
+
+                // Add transition effect
+                gridView.classList.add('fade-in');
+                setTimeout(() => {
+                    gridView.classList.remove('fade-in');
+                }, 500);
             });
 
             mapViewBtn.addEventListener('click', function() {
@@ -1513,38 +2043,16 @@
                 gridViewBtn.classList.remove('active');
                 mapView.classList.add('active');
                 gridView.classList.remove('active');
+
+                // Add transition effect
+                mapView.classList.add('fade-in');
+                setTimeout(() => {
+                    mapView.classList.remove('fade-in');
+                }, 500);
             });
         }
 
-        // Timeline progress animation for How It Works section
-        const timelineProgress = document.querySelector('.timeline-progress-indicator');
-        if (timelineProgress) {
-            const animateTimeline = () => {
-                timelineProgress.style.width = '0%';
-                setTimeout(() => {
-                    timelineProgress.style.width = '100%';
-                }, 500);
-            };
-
-            // Animate on page load
-            animateTimeline();
-
-            // Re-animate when section comes into view
-            const timelineSection = document.querySelector('.steps-timeline-wrapper');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        animateTimeline();
-                    }
-                });
-            }, { threshold: 0.5 });
-
-            if (timelineSection) {
-                observer.observe(timelineSection);
-            }
-        }
-
-        // Enhanced Premium Newsletter form handling
+        // Enhanced Premium Newsletter form handling with improved validation and animations
         const newsletterFormPremium = document.getElementById('newsletterFormPremium');
         if (newsletterFormPremium) {
             newsletterFormPremium.addEventListener('submit', function(e) {
@@ -1552,93 +2060,205 @@
                 const nameInput = this.querySelector('#nameInput');
                 const emailInput = this.querySelector('#emailInput');
                 const interestSelect = this.querySelector('#interestSelect');
+                const privacyCheck = this.querySelector('#privacyCheck');
 
-                if (nameInput.value && emailInput.value && emailInput.value.includes('@') && interestSelect.value) {
-                    // Show success message with animation
-                    this.innerHTML = `
-                        <div class="newsletter-success-premium animate__animated animate__fadeIn">
-                            <div class="success-icon">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <h4>Thank You, ${nameInput.value}!</h4>
-                            <p>You've been successfully subscribed to our premium newsletter.</p>
-                            <p>We've sent a confirmation email to <strong>${emailInput.value}</strong>.</p>
-                            <p class="mt-4">You'll start receiving updates about <strong>${interestSelect.options[interestSelect.selectedIndex].text}</strong> and other library news.</p>
-                        </div>
-                    `;
+                // Enhanced validation
+                let isValid = true;
 
-                    // Log subscription data
-                    console.log('Subscription data:', {
-                        name: nameInput.value,
-                        email: emailInput.value,
-                        interest: interestSelect.value
-                    });
-                } else {
-                    // Validate each field
-                    if (!nameInput.value) {
-                        nameInput.classList.add('is-invalid');
-                    }
+                if (!nameInput.value) {
+                    nameInput.classList.add('is-invalid');
+                    isValid = false;
+                    // Add floating validation message
+                    showValidationMessage(nameInput, 'Please enter your name');
+                }
 
-                    if (!emailInput.value || !emailInput.value.includes('@')) {
-                        emailInput.classList.add('is-invalid');
-                    }
+                if (!emailInput.value || !emailInput.value.includes('@')) {
+                    emailInput.classList.add('is-invalid');
+                    isValid = false;
+                    // Add floating validation message
+                    showValidationMessage(emailInput, 'Please enter a valid email address');
+                }
 
-                    if (!interestSelect.value) {
-                        interestSelect.classList.add('is-invalid');
-                    }
+                if (!interestSelect.value) {
+                    interestSelect.classList.add('is-invalid');
+                    isValid = false;
+                    // Add floating validation message
+                    showValidationMessage(interestSelect, 'Please select your interests');
+                }
 
-                    // Add shake animation to form
-                    newsletterFormPremium.classList.add('shake');
+                if (privacyCheck && !privacyCheck.checked) {
+                    privacyCheck.classList.add('is-invalid');
+                    isValid = false;
+                    // Add floating validation message
+                    showValidationMessage(privacyCheck, 'Please accept the privacy policy');
+                }
+
+                if (isValid) {
+                    // Show loading state
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+                    submitBtn.disabled = true;
+
+                    // Simulate server request
                     setTimeout(() => {
-                        newsletterFormPremium.classList.remove('shake');
-                    }, 500);
+                        // Show success message with enhanced animation
+                        this.innerHTML = `
+                            <div class="newsletter-success-premium animate__animated animate__fadeIn">
+                                <div class="success-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="success-confetti"></div>
+                                <h4>Welcome to Our Community, ${nameInput.value}!</h4>
+                                <p>You've been successfully subscribed to our premium newsletter.</p>
+                                <p>We've sent a confirmation email to <strong>${emailInput.value}</strong>.</p>
+                                <p class="mt-3">You'll start receiving updates about <strong>${interestSelect.options[interestSelect.selectedIndex].text}</strong> and other library news.</p>
+                                <div class="mt-4 success-benefits">
+                                    <div class="benefit-item">
+                                        <i class="fas fa-gift"></i>
+                                        <span>Exclusive Content</span>
+                                    </div>
+                                    <div class="benefit-item">
+                                        <i class="fas fa-tag"></i>
+                                        <span>Special Offers</span>
+                                    </div>
+                                    <div class="benefit-item">
+                                        <i class="fas fa-bell"></i>
+                                        <span>Event Invitations</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+
+                        // Log subscription data
+                        console.log('Subscription data:', {
+                            name: nameInput.value,
+                            email: emailInput.value,
+                            interest: interestSelect.value
+                        });
+                    }, 1500);
+                } else {
+                    // Add shake animation to form with enhanced effect
+                    newsletterFormPremium.classList.add('animate__animated', 'animate__shakeX');
+                    setTimeout(() => {
+                        newsletterFormPremium.classList.remove('animate__animated', 'animate__shakeX');
+                    }, 800);
                 }
             });
 
-            // Remove invalid class on input
+            // Helper function to show validation messages
+            function showValidationMessage(element, message) {
+                // Remove any existing message
+                const existingMessage = element.parentElement.querySelector('.validation-message');
+                if (existingMessage) {
+                    existingMessage.remove();
+                }
+
+                // Create and add new message
+                const messageElement = document.createElement('div');
+                messageElement.className = 'validation-message animate__animated animate__fadeIn';
+                messageElement.innerHTML = message;
+                element.parentElement.appendChild(messageElement);
+
+                // Remove message after 3 seconds
+                setTimeout(() => {
+                    messageElement.classList.add('animate__fadeOut');
+                    setTimeout(() => {
+                        messageElement.remove();
+                    }, 500);
+                }, 3000);
+            }
+
+            // Remove invalid class on input with enhanced feedback
             const formInputs = newsletterFormPremium.querySelectorAll('input, select');
             formInputs.forEach(input => {
                 input.addEventListener('focus', function() {
                     this.classList.remove('is-invalid');
+                    // Add subtle highlight effect
+                    this.classList.add('input-highlight');
+                });
+
+                input.addEventListener('blur', function() {
+                    this.classList.remove('input-highlight');
+                });
+
+                // Live validation
+                input.addEventListener('input', function() {
+                    if (this.value) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    } else {
+                        this.classList.remove('is-valid');
+                    }
                 });
             });
         }
 
-        // Initialize tooltips
+        // Initialize enhanced tooltips with custom animation
         const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
+            return new bootstrap.Tooltip(tooltipTriggerEl, {
+                animation: true,
+                delay: { show: 100, hide: 100 },
+                template: '<div class="tooltip tooltip-premium" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
+            });
         });
 
-        // Enhanced scroll reveal animation for all premium elements
+        // Enhanced scroll reveal animation with more sophisticated effects
         const premiumElements = document.querySelectorAll(
             '.section-header, .stat-card-premium, .book-card-premium, .step-card-premium, ' +
             '.library-card-premium, .testimonial-card-premium, .newsletter-wrapper-premium, ' +
-            '.app-mockup-container, .app-content, .partner-item'
+            '.app-mockup-container, .app-content, .partner-item, .featured-book-spotlight, ' +
+            '.stats-highlight-box, .category-placeholder'
         );
 
-        const revealOnScroll = function() {
-            for (let i = 0; i < premiumElements.length; i++) {
-                const windowHeight = window.innerHeight;
-                const elementTop = premiumElements[i].getBoundingClientRect().top;
-                const elementVisible = 150;
-
-                if (elementTop < windowHeight - elementVisible) {
-                    if (!premiumElements[i].classList.contains('animate__animated')) {
-                        premiumElements[i].classList.add('animate__animated', 'animate__fadeInUp');
-                    }
-                }
-            }
+        // Use Intersection Observer for better performance
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.15
         };
 
-        window.addEventListener('scroll', revealOnScroll);
-        revealOnScroll(); // Check on load
+        const elementObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const element = entry.target;
 
-        // Parallax effect for hero section
+                    // Determine animation based on element type
+                    let animationClass = 'animate__fadeInUp';
+
+                    if (element.classList.contains('stat-card-premium')) {
+                        animationClass = 'animate__zoomIn';
+                    } else if (element.classList.contains('featured-book-spotlight')) {
+                        animationClass = 'animate__fadeIn';
+                    } else if (element.classList.contains('step-card-premium')) {
+                        animationClass = 'animate__fadeInRight';
+                    } else if (element.classList.contains('library-card-premium')) {
+                        animationClass = 'animate__fadeInUp';
+                    }
+
+                    // Add animation with delay based on index
+                    setTimeout(() => {
+                        element.classList.add('animate__animated', animationClass);
+                    }, 100);
+
+                    // Stop observing after animation
+                    observer.unobserve(element);
+                }
+            });
+        }, observerOptions);
+
+        // Start observing elements
+        premiumElements.forEach(element => {
+            elementObserver.observe(element);
+        });
+
+        // Enhanced parallax effect for hero section with mouse movement
         const heroSection = document.querySelector('.hero-section');
         const heroShapes = document.querySelectorAll('.hero-shapes-modern .shape');
+        const heroImage = document.querySelector('.hero-image-3d');
 
         if (heroSection && heroShapes.length) {
+            // Scroll parallax
             window.addEventListener('scroll', function() {
                 const scrollTop = window.pageYOffset;
                 const heroHeight = heroSection.offsetHeight;
@@ -1647,72 +2267,440 @@
                 heroShapes.forEach((shape, index) => {
                     const speed = 0.2 + (index * 0.1);
                     const yPos = scrollPercentage * speed * 100;
-                    shape.style.transform = `translateY(${yPos}px)`;
+                    shape.style.transform = `translateY(${yPos}px) rotate(${yPos / 10}deg)`;
                 });
             });
-        }
 
-        // Smooth scroll for hero scroll indicator
-        const scrollIndicator = document.querySelector('.hero-scroll-indicator');
-        if (scrollIndicator) {
-            scrollIndicator.addEventListener('click', function() {
-                const statsSection = document.querySelector('.stats-section');
-                if (statsSection) {
-                    statsSection.scrollIntoView({ behavior: 'smooth' });
+            // Mouse movement parallax
+            heroSection.addEventListener('mousemove', function(e) {
+                const xPos = (e.clientX / window.innerWidth - 0.5) * 20;
+                const yPos = (e.clientY / window.innerHeight - 0.5) * 20;
+
+                heroShapes.forEach((shape, index) => {
+                    const speed = 0.5 + (index * 0.2);
+                    shape.style.transform = `translate(${xPos * speed}px, ${yPos * speed}px)`;
+                });
+
+                if (heroImage) {
+                    heroImage.style.transform = `translate(${xPos * 0.3}px, ${yPos * 0.3}px) rotateY(${xPos * 0.2}deg) rotateX(${-yPos * 0.2}deg)`;
                 }
             });
         }
 
-        // Floating Contact Button
+        // Enhanced smooth scroll for hero scroll indicator with animation
+        const scrollIndicator = document.querySelector('.hero-scroll-indicator');
+        if (scrollIndicator) {
+            // Add pulse animation
+            setInterval(() => {
+                scrollIndicator.classList.add('pulse');
+                setTimeout(() => {
+                    scrollIndicator.classList.remove('pulse');
+                }, 1000);
+            }, 3000);
+
+            scrollIndicator.addEventListener('click', function() {
+                const statsSection = document.querySelector('.stats-section');
+                if (statsSection) {
+                    // Add click feedback
+                    this.classList.add('clicked');
+                    setTimeout(() => {
+                        this.classList.remove('clicked');
+                    }, 300);
+
+                    // Smooth scroll with enhanced behavior
+                    window.scrollTo({
+                        top: statsSection.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        }
+
+        // Function to update theme-dependent elements
+        function updateThemeElements() {
+            // Get current theme colors
+            const root = document.documentElement;
+            const buttonColor = getComputedStyle(root).getPropertyValue('--button-color').trim();
+            const accentColor = getComputedStyle(root).getPropertyValue('--accent-color').trim();
+            const buttonColorRgb = getComputedStyle(root).getPropertyValue('--button-color-rgb').trim();
+            const accentColorRgb = getComputedStyle(root).getPropertyValue('--accent-color-rgb').trim();
+            const textColorRgb = getComputedStyle(root).getPropertyValue('--text-color-rgb').trim();
+
+            // Update gradient backgrounds
+            const gradientElements = document.querySelectorAll('.category-icon, .stats-highlight-icon, .step-number-badge, .featured-book-badge span, .stat-card-badge, .steps-button-prev, .steps-button-next, .steps-pagination .swiper-pagination-bullet-active, .timeline-node.active, .step-icon, .benefit-icon, .hero-image-badge');
+            gradientElements.forEach(element => {
+                element.style.background = `linear-gradient(135deg, ${buttonColor} 0%, ${accentColor} 100%)`;
+                element.style.boxShadow = `0 5px 15px rgba(${buttonColorRgb}, 0.3)`;
+            });
+
+            // Update glow effects
+            const glowElements = document.querySelectorAll('.hero-image-glow, .book-cover-glow, .featured-book-glow, .stat-card-glow');
+            glowElements.forEach(element => {
+                element.style.background = `radial-gradient(circle at center, rgba(${buttonColorRgb}, 0.5), transparent 70%)`;
+            });
+
+            // Update color elements
+            const colorElements = document.querySelectorAll('.step-arrow, .swiper-button-prev-custom, .swiper-button-next-custom');
+            colorElements.forEach(element => {
+                element.style.color = buttonColor;
+            });
+
+            // Update newsletter form container
+            const newsletterFormContainer = document.querySelector('.newsletter-form-container-premium');
+            if (newsletterFormContainer) {
+                newsletterFormContainer.style.background = `linear-gradient(145deg, ${buttonColor}, ${accentColor})`;
+            }
+
+            // Update step card inner
+            const stepCardInner = document.querySelectorAll('.step-card-inner');
+            stepCardInner.forEach(element => {
+                element.style.boxShadow = `0 10px 30px rgba(${textColorRgb}, 0.08)`;
+            });
+
+            // Update hero video overlay
+            const heroVideoOverlay = document.querySelector('.hero-video-overlay');
+            if (heroVideoOverlay) {
+                heroVideoOverlay.style.background = `linear-gradient(135deg, rgba(${buttonColorRgb}, 0.9) 0%, rgba(${accentColorRgb}, 0.9) 100%)`;
+            }
+
+            // Update 3D primary buttons
+            const btn3dPrimary = document.querySelectorAll('.btn-3d-primary');
+            if (btn3dPrimary.length > 0) {
+                btn3dPrimary.forEach(button => {
+                    button.style.background = `linear-gradient(145deg, ${buttonColor}, ${accentColor})`;
+                    button.style.boxShadow = `0 10px 20px rgba(${buttonColorRgb}, 0.3), 0 6px 6px rgba(${buttonColorRgb}, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.1) inset`;
+                });
+            }
+
+            // Update text gradient
+            const textGradient = document.querySelectorAll('.text-gradient-primary');
+            if (textGradient.length > 0) {
+                textGradient.forEach(element => {
+                    element.style.background = `linear-gradient(to right, #fff, ${accentColor})`;
+                    element.style.webkitBackgroundClip = 'text';
+                    element.style.backgroundClip = 'text';
+                    element.style.webkitTextFillColor = 'transparent';
+                });
+            }
+        }
+
+        // Update theme elements on initial load
+        updateThemeElements();
+
+        // Update navigation buttons on initial load
+        const testimonialNavButtons = document.querySelectorAll('.testimonial-navigation .swiper-button-next, .testimonial-navigation .swiper-button-prev');
+        if (testimonialNavButtons.length > 0) {
+            const buttonColor = getComputedStyle(document.documentElement).getPropertyValue('--button-color').trim();
+            testimonialNavButtons.forEach(button => {
+                button.style.backgroundColor = buttonColor;
+            });
+        }
+
+        // Update swiper buttons on initial load
+        const swiperButtons = document.querySelectorAll('.swiper-button-prev-custom, .swiper-button-next-custom');
+        if (swiperButtons.length > 0) {
+            const buttonColor = getComputedStyle(document.documentElement).getPropertyValue('--button-color').trim();
+            const cardBackground = getComputedStyle(document.documentElement).getPropertyValue('--card-background').trim();
+            swiperButtons.forEach(button => {
+                button.style.color = buttonColor;
+                button.style.backgroundColor = cardBackground;
+            });
+        }
+
+        // Update hero section elements on initial load
+        const heroVideoOverlay = document.querySelector('.hero-video-overlay');
+        if (heroVideoOverlay) {
+            const buttonColorRgb = getComputedStyle(document.documentElement).getPropertyValue('--button-color-rgb').trim();
+            const accentColorRgb = getComputedStyle(document.documentElement).getPropertyValue('--accent-color-rgb').trim();
+            heroVideoOverlay.style.background = `linear-gradient(135deg, rgba(${buttonColorRgb}, 0.9) 0%, rgba(${accentColorRgb}, 0.9) 100%)`;
+        }
+
+        // Update hero image badge on initial load
+        const heroImageBadge = document.querySelector('.hero-image-badge');
+        if (heroImageBadge) {
+            const buttonColor = getComputedStyle(document.documentElement).getPropertyValue('--button-color').trim();
+            const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim();
+            heroImageBadge.style.background = `linear-gradient(145deg, ${buttonColor}, ${accentColor})`;
+        }
+
+        // Update 3D primary buttons on initial load
+        const btn3dPrimary = document.querySelectorAll('.btn-3d-primary');
+        if (btn3dPrimary.length > 0) {
+            const buttonColor = getComputedStyle(document.documentElement).getPropertyValue('--button-color').trim();
+            const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim();
+            const buttonColorRgb = getComputedStyle(document.documentElement).getPropertyValue('--button-color-rgb').trim();
+            btn3dPrimary.forEach(button => {
+                button.style.background = `linear-gradient(145deg, ${buttonColor}, ${accentColor})`;
+                button.style.boxShadow = `0 10px 20px rgba(${buttonColorRgb}, 0.3), 0 6px 6px rgba(${buttonColorRgb}, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.1) inset`;
+            });
+        }
+
+        // Update text gradient on initial load
+        const textGradient = document.querySelectorAll('.text-gradient-primary');
+        if (textGradient.length > 0) {
+            const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim();
+            textGradient.forEach(element => {
+                element.style.background = `linear-gradient(to right, #fff, ${accentColor})`;
+                element.style.webkitBackgroundClip = 'text';
+                element.style.backgroundClip = 'text';
+                element.style.webkitTextFillColor = 'transparent';
+            });
+        }
+
+        // Update theme elements when theme changes
+        document.addEventListener('themeChanged', function() {
+            updateThemeElements();
+
+            // Update testimonial navigation buttons
+            const testimonialNavButtons = document.querySelectorAll('.testimonial-navigation .swiper-button-next, .testimonial-navigation .swiper-button-prev');
+            if (testimonialNavButtons.length > 0) {
+                const buttonColor = getComputedStyle(document.documentElement).getPropertyValue('--button-color').trim();
+                testimonialNavButtons.forEach(button => {
+                    button.style.backgroundColor = buttonColor;
+                });
+            }
+
+            // Update swiper buttons
+            const swiperButtons = document.querySelectorAll('.swiper-button-prev-custom, .swiper-button-next-custom');
+            if (swiperButtons.length > 0) {
+                const buttonColor = getComputedStyle(document.documentElement).getPropertyValue('--button-color').trim();
+                const cardBackground = getComputedStyle(document.documentElement).getPropertyValue('--card-background').trim();
+                swiperButtons.forEach(button => {
+                    button.style.color = buttonColor;
+                    button.style.backgroundColor = cardBackground;
+                });
+            }
+
+            // Update hero section elements
+            const heroVideoOverlay = document.querySelector('.hero-video-overlay');
+            if (heroVideoOverlay) {
+                const buttonColorRgb = getComputedStyle(document.documentElement).getPropertyValue('--button-color-rgb').trim();
+                const accentColorRgb = getComputedStyle(document.documentElement).getPropertyValue('--accent-color-rgb').trim();
+                heroVideoOverlay.style.background = `linear-gradient(135deg, rgba(${buttonColorRgb}, 0.9) 0%, rgba(${accentColorRgb}, 0.9) 100%)`;
+            }
+
+            // Update hero image badge
+            const heroImageBadge = document.querySelector('.hero-image-badge');
+            if (heroImageBadge) {
+                const buttonColor = getComputedStyle(document.documentElement).getPropertyValue('--button-color').trim();
+                const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim();
+                heroImageBadge.style.background = `linear-gradient(145deg, ${buttonColor}, ${accentColor})`;
+            }
+
+            // Update 3D primary buttons
+            const btn3dPrimary = document.querySelectorAll('.btn-3d-primary');
+            if (btn3dPrimary.length > 0) {
+                const buttonColor = getComputedStyle(document.documentElement).getPropertyValue('--button-color').trim();
+                const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim();
+                const buttonColorRgb = getComputedStyle(document.documentElement).getPropertyValue('--button-color-rgb').trim();
+                btn3dPrimary.forEach(button => {
+                    button.style.background = `linear-gradient(145deg, ${buttonColor}, ${accentColor})`;
+                    button.style.boxShadow = `0 10px 20px rgba(${buttonColorRgb}, 0.3), 0 6px 6px rgba(${buttonColorRgb}, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.1) inset`;
+                });
+            }
+
+            // Update text gradient
+            const textGradient = document.querySelectorAll('.text-gradient-primary');
+            if (textGradient.length > 0) {
+                const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim();
+                textGradient.forEach(element => {
+                    element.style.background = `linear-gradient(to right, #fff, ${accentColor})`;
+                    element.style.webkitBackgroundClip = 'text';
+                    element.style.backgroundClip = 'text';
+                    element.style.webkitTextFillColor = 'transparent';
+                });
+            }
+        });
+
+        // Listen for theme changes
+        const themeObserver = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.attributeName === 'data-bs-theme' ||
+                    (mutation.attributeName === 'class' &&
+                     (mutation.target.classList.contains('theme-classic-light') ||
+                      mutation.target.classList.contains('theme-elegant-dark') ||
+                      mutation.target.classList.contains('theme-earthy') ||
+                      mutation.target.classList.contains('theme-royal-purple') ||
+                      mutation.target.classList.contains('theme-ocean-blue')))) {
+
+                    // Dispatch custom event
+                    document.dispatchEvent(new CustomEvent('themeChanged'));
+
+                    // Update theme elements
+                    updateThemeElements();
+                }
+            });
+        });
+
+        // Observe theme changes on html and body elements
+        themeObserver.observe(document.documentElement, { attributes: true });
+        themeObserver.observe(document.body, { attributes: true });
+
+        // Enhanced Floating Contact Button with animations
         const contactToggleBtn = document.getElementById('contactToggleBtn');
         const contactCloseBtn = document.getElementById('contactCloseBtn');
         const contactPopup = document.getElementById('contactPopup');
 
         if (contactToggleBtn && contactPopup) {
+            // Add initial animation
+            setTimeout(() => {
+                contactToggleBtn.classList.add('animate__animated', 'animate__bounceIn');
+                setTimeout(() => {
+                    contactToggleBtn.classList.remove('animate__animated', 'animate__bounceIn');
+
+                    // Add attention animation after 5 seconds
+                    setTimeout(() => {
+                        contactToggleBtn.classList.add('animate__animated', 'animate__heartBeat');
+                        setTimeout(() => {
+                            contactToggleBtn.classList.remove('animate__animated', 'animate__heartBeat');
+                        }, 1000);
+                    }, 5000);
+                }, 1000);
+            }, 2000);
+
             contactToggleBtn.addEventListener('click', function() {
                 contactPopup.classList.toggle('active');
                 contactToggleBtn.classList.toggle('active');
+
+                if (contactPopup.classList.contains('active')) {
+                    contactPopup.classList.add('animate__animated', 'animate__fadeInUp');
+                    setTimeout(() => {
+                        contactPopup.classList.remove('animate__animated', 'animate__fadeInUp');
+                    }, 500);
+                } else {
+                    contactPopup.classList.add('animate__animated', 'animate__fadeOutDown');
+                    setTimeout(() => {
+                        contactPopup.classList.remove('animate__animated', 'animate__fadeOutDown');
+                    }, 500);
+                }
             });
         }
 
         if (contactCloseBtn && contactPopup) {
             contactCloseBtn.addEventListener('click', function() {
-                contactPopup.classList.remove('active');
-                contactToggleBtn.classList.remove('active');
+                contactPopup.classList.add('animate__animated', 'animate__fadeOutDown');
+                setTimeout(() => {
+                    contactPopup.classList.remove('active');
+                    contactPopup.classList.remove('animate__animated', 'animate__fadeOutDown');
+                    contactToggleBtn.classList.remove('active');
+                }, 500);
             });
         }
 
-        // Close contact popup when clicking outside
+        // Close contact popup when clicking outside with enhanced animation
         document.addEventListener('click', function(event) {
             if (contactPopup && contactToggleBtn) {
                 const isClickInside = contactPopup.contains(event.target) || contactToggleBtn.contains(event.target);
                 if (!isClickInside && contactPopup.classList.contains('active')) {
-                    contactPopup.classList.remove('active');
-                    contactToggleBtn.classList.remove('active');
+                    contactPopup.classList.add('animate__animated', 'animate__fadeOutDown');
+                    setTimeout(() => {
+                        contactPopup.classList.remove('active');
+                        contactPopup.classList.remove('animate__animated', 'animate__fadeOutDown');
+                        contactToggleBtn.classList.remove('active');
+                    }, 500);
                 }
             }
         });
 
-        // Handle contact form submission
+        // Enhanced contact form submission with validation and animations
         const contactForm = document.querySelector('.contact-form');
         if (contactForm) {
             contactForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                const formData = new FormData(this);
 
-                // Show success message (in a real application, you would send the data to a server)
-                this.innerHTML = `
-                    <div class="text-center py-4">
-                        <div class="success-icon mb-3">
-                            <i class="fas fa-check-circle fa-3x text-success"></i>
-                        </div>
-                        <h5>Thank You!</h5>
-                        <p>Your message has been sent successfully. We'll get back to you soon.</p>
-                    </div>
-                `;
+                // Validate form
+                const nameInput = this.querySelector('input[type="text"]');
+                const emailInput = this.querySelector('input[type="email"]');
+                const messageInput = this.querySelector('textarea');
+                let isValid = true;
 
-                // Log form data
-                console.log('Contact form submitted:', Object.fromEntries(formData));
+                if (!nameInput.value) {
+                    nameInput.classList.add('is-invalid');
+                    isValid = false;
+                }
+
+                if (!emailInput.value || !emailInput.value.includes('@')) {
+                    emailInput.classList.add('is-invalid');
+                    isValid = false;
+                }
+
+                if (!messageInput.value) {
+                    messageInput.classList.add('is-invalid');
+                    isValid = false;
+                }
+
+                if (isValid) {
+                    const formData = new FormData(this);
+                    const submitBtn = this.querySelector('button[type="submit"]');
+
+                    // Show loading state
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
+                    submitBtn.disabled = true;
+
+                    // Simulate server request
+                    setTimeout(() => {
+                        // Show enhanced success message with animation
+                        this.innerHTML = `
+                            <div class="text-center py-4 animate__animated animate__fadeIn">
+                                <div class="success-icon mb-3">
+                                    <i class="fas fa-check-circle fa-3x text-success"></i>
+                                </div>
+                                <h5>Message Sent Successfully!</h5>
+                                <p>Thank you for reaching out. Our team will respond to your inquiry within 24 hours.</p>
+                                <div class="success-actions mt-4">
+                                    <button class="btn btn-sm btn-outline-primary new-message-btn">
+                                        <i class="fas fa-pen me-2"></i>Send Another Message
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+
+                        // Add event listener to "Send Another Message" button
+                        const newMessageBtn = document.querySelector('.new-message-btn');
+                        if (newMessageBtn) {
+                            newMessageBtn.addEventListener('click', function() {
+                                contactForm.innerHTML = `
+                                    <div class="mb-3">
+                                        <input type="text" class="form-control" placeholder="Your Name" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="email" class="form-control" placeholder="Your Email" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <textarea class="form-control" rows="3" placeholder="Your Message" required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100">Send Message</button>
+                                `;
+                            });
+                        }
+
+                        // Log form data
+                        console.log('Contact form submitted:', Object.fromEntries(formData));
+                    }, 1500);
+                } else {
+                    // Add shake animation to form
+                    contactForm.classList.add('animate__animated', 'animate__shakeX');
+                    setTimeout(() => {
+                        contactForm.classList.remove('animate__animated', 'animate__shakeX');
+                    }, 800);
+                }
+            });
+
+            // Live validation for contact form
+            const formInputs = contactForm.querySelectorAll('input, textarea');
+            formInputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.classList.remove('is-invalid');
+                });
+
+                input.addEventListener('input', function() {
+                    if (this.value) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    } else {
+                        this.classList.remove('is-valid');
+                    }
+                });
             });
         }
     });

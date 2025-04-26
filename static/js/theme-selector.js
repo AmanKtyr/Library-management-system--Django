@@ -519,6 +519,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (themeTooltip) {
             themeTooltip.textContent = theme.name;
         }
+
+        // Dispatch custom event for theme change
+        document.dispatchEvent(new CustomEvent('themeChanged', {
+            detail: {
+                theme: themeKey,
+                colors: theme.colors
+            }
+        }));
     }
 
     // Create theme slider
