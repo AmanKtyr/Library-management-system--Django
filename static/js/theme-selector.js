@@ -1,17 +1,16 @@
-// Theme Selector Functionality
+/**
+ * Theme Selector Functionality
+ * Provides theme cycling and selection capabilities
+ */
 let cycleToNextTheme; // Declare globally so it can be accessed from other scripts
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Helper function to convert hex to RGB
+    // Helper function to convert hex to RGB for CSS variables
     function hexToRgb(hex) {
-        // Remove the hash if it exists
         hex = hex.replace('#', '');
-
-        // Parse the hex values
         const r = parseInt(hex.substring(0, 2), 16);
         const g = parseInt(hex.substring(2, 4), 16);
         const b = parseInt(hex.substring(4, 6), 16);
-
         return `${r}, ${g}, ${b}`;
     }
 
@@ -499,13 +498,11 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.className = document.body.className.replace(/theme-\w+/g, '').trim();
         document.body.classList.add(`theme-${themeKey}`);
 
-        // Update dark mode status based on theme
+        // Update data-bs-theme attribute based on theme
         if (themeKey === 'elegant-dark') {
             document.documentElement.setAttribute('data-bs-theme', 'dark');
-            document.body.classList.add('dark-mode');
         } else {
             document.documentElement.setAttribute('data-bs-theme', 'light');
-            document.body.classList.remove('dark-mode');
         }
 
         // Update theme selector button color
