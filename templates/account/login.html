@@ -5,164 +5,211 @@
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="/static/css/login.css">
+<link rel="stylesheet" href="/static/css/login-card.css">
 {% endblock %}
 
 {% block content %}
 <div class="login-container">
-  <div class="login-wrapper">
-    <div class="login-left">
-      <div class="login-overlay"></div>
-      <!-- Animated particles -->
-      <div class="login-particles">
-        <div class="login-particle"></div>
-        <div class="login-particle"></div>
-        <div class="login-particle"></div>
-        <div class="login-particle"></div>
-        <div class="login-particle"></div>
-      </div>
-      <div class="login-content">
-        <div class="login-logo">
-          <img src="/static/images/logo-white.png" alt="Library Management System" class="img-fluid">
+  <!-- Animated background elements -->
+  <div class="login-bg-circle login-bg-circle-1"></div>
+  <div class="login-bg-circle login-bg-circle-2"></div>
+  <div class="login-bg-circle login-bg-circle-3"></div>
+
+  <!-- Floating particles -->
+  <div class="login-particles">
+    <div class="login-particle"></div>
+    <div class="login-particle"></div>
+    <div class="login-particle"></div>
+    <div class="login-particle"></div>
+    <div class="login-particle"></div>
+    <div class="login-particle"></div>
+    <div class="login-particle"></div>
+    <div class="login-particle"></div>
+  </div>
+
+  <div class="login-card">
+    <div class="login-card-inner">
+      <!-- Left side - Branding -->
+      <div class="login-brand">
+        <div class="login-brand-content">
+          <div class="login-logo">
+            <img src="/static/images/logo-white.png" alt="Library Management System" class="img-fluid">
+          </div>
+          <h1 class="login-title">Library Management System</h1>
+          <p class="login-subtitle">Your complete solution for modern library management</p>
+
+          <div class="login-features">
+            <div class="login-feature">
+              <div class="login-feature-icon">
+                <i class="fas fa-book-reader"></i>
+              </div>
+              <div class="login-feature-text">
+                <h3>Digital Catalogs</h3>
+                <p>Manage your entire collection digitally</p>
+              </div>
+            </div>
+
+            <div class="login-feature">
+              <div class="login-feature-icon">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <div class="login-feature-text">
+                <h3>Analytics Dashboard</h3>
+                <p>Track usage and optimize your library</p>
+              </div>
+            </div>
+
+            <div class="login-feature">
+              <div class="login-feature-icon">
+                <i class="fas fa-users"></i>
+              </div>
+              <div class="login-feature-text">
+                <h3>Member Management</h3>
+                <p>Streamline member services and engagement</p>
+              </div>
+            </div>
+          </div>
         </div>
-        <h1>Library Management System</h1>
-        <p class="lead">A complete solution for managing libraries, books, and members</p>
-        <div class="login-features">
-          <div class="feature-item">
-            <i class="fas fa-book"></i>
-            <span>Extensive Collection</span>
-          </div>
-          <div class="feature-item">
-            <i class="fas fa-search"></i>
-            <span>Easy Search</span>
-          </div>
-          <div class="feature-item">
-            <i class="fas fa-clock"></i>
-            <span>24/7 Access</span>
-          </div>
-          <div class="feature-item">
-            <i class="fas fa-mobile-alt"></i>
-            <span>Mobile Friendly</span>
-          </div>
-          <div class="feature-item">
-            <i class="fas fa-building"></i>
-            <span>Multiple Libraries</span>
-          </div>
-          <div class="feature-item">
-            <i class="fas fa-chart-bar"></i>
-            <span>Advanced Reports</span>
-          </div>
-        </div>
       </div>
-    </div>
-    <div class="login-right">
-      <div class="login-form-container">
-        <div class="login-header">
-          <h2>{% trans "Sign In" %}</h2>
-          <p>Welcome! Please enter your credentials to continue</p>
+
+      <!-- Right side - Login form -->
+      <div class="login-form-side">
+        <div class="login-form-wrapper">
+          <div class="login-header">
+            <h2>{% trans "Welcome Back" %}</h2>
+            <p>Sign in to access your library dashboard</p>
+          </div>
 
           <!-- User Role Selector -->
-          <div class="login-role-selector mt-4">
-            <div class="btn-group w-100" role="group">
-              <input type="radio" class="btn-check" name="login-role" id="member" autocomplete="off" checked>
-              <label class="btn" for="member">
-                <i class="fas fa-user me-1"></i> Member
+          <div class="login-role-selector">
+            <div class="role-selector-tabs">
+              <input type="radio" class="role-selector-input" name="login-role" id="member" checked>
+              <label class="role-selector-label" for="member">
+                <i class="fas fa-user"></i>
+                <span>Member</span>
               </label>
 
-              <input type="radio" class="btn-check" name="login-role" id="library-admin" autocomplete="off">
-              <label class="btn" for="library-admin">
-                <i class="fas fa-user-tie me-1"></i> Library Admin
+              <input type="radio" class="role-selector-input" name="login-role" id="library-admin">
+              <label class="role-selector-label" for="library-admin">
+                <i class="fas fa-user-tie"></i>
+                <span>Library Admin</span>
               </label>
 
-              <input type="radio" class="btn-check" name="login-role" id="super-admin" autocomplete="off">
-              <label class="btn" for="super-admin">
-                <i class="fas fa-user-shield me-1"></i> Super Admin
+              <input type="radio" class="role-selector-input" name="login-role" id="super-admin">
+              <label class="role-selector-label" for="super-admin">
+                <i class="fas fa-user-shield"></i>
+                <span>Super Admin</span>
               </label>
-            </div>
-          </div>
-        </div>
 
-        {% if messages %}
-        <div class="messages">
-          {% for message in messages %}
-          <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
-          {% endfor %}
-        </div>
-        {% endif %}
-
-        <form class="login-form" method="POST" action="{% url 'account_login' %}">
-          {% csrf_token %}
-
-          <div class="form-floating mb-3">
-            <input type="email" name="login" class="form-control" id="id_login" placeholder="name@example.com" required>
-            <label for="id_login">Email address</label>
-            <div class="form-icon">
-              <i class="fas fa-envelope"></i>
+              <div class="role-selector-glider"></div>
             </div>
           </div>
 
-          <div class="form-floating mb-3">
-            <input type="password" name="password" class="form-control" id="id_password" placeholder="Password" required>
-            <label for="id_password">Password</label>
-            <div class="password-toggle">
-              <i class="fas fa-eye" id="togglePassword"></i>
+          {% if messages %}
+          <div class="login-messages">
+            {% for message in messages %}
+            <div class="login-message {% if message.tags == 'error' %}login-message-error{% else %}login-message-{{ message.tags }}{% endif %}">
+              <div class="login-message-icon">
+                {% if message.tags == 'error' %}
+                <i class="fas fa-exclamation-circle"></i>
+                {% elif message.tags == 'success' %}
+                <i class="fas fa-check-circle"></i>
+                {% elif message.tags == 'info' %}
+                <i class="fas fa-info-circle"></i>
+                {% elif message.tags == 'warning' %}
+                <i class="fas fa-exclamation-triangle"></i>
+                {% else %}
+                <i class="fas fa-bell"></i>
+                {% endif %}
+              </div>
+              <div class="login-message-content">
+                {{ message }}
+              </div>
+              <button type="button" class="login-message-close" aria-label="Close">
+                <i class="fas fa-times"></i>
+              </button>
             </div>
-            <div class="form-icon">
-              <i class="fas fa-lock"></i>
-            </div>
-          </div>
-
-          <div class="form-check mb-3">
-            <input class="form-check-input" type="checkbox" name="remember" id="id_remember">
-            <label class="form-check-label" for="id_remember">
-              Remember me
-            </label>
-          </div>
-
-          {% if redirect_field_value %}
-          <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-          {% endif %}
-
-          <div class="d-grid gap-2">
-            <button class="btn btn-primary btn-lg btn-ripple" type="submit">
-              <i class="fas fa-sign-in-alt me-2"></i>{% trans "Sign In" %}
-            </button>
-          </div>
-
-          <div class="login-links mt-3">
-            <a href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
-            <span class="separator">|</span>
-            <a href="{% url 'account_signup' %}">{% trans "Create Account" %}</a>
-          </div>
-        </form>
-
-        {% if socialaccount_providers %}
-        <div class="social-login">
-          <div class="social-login-divider">
-            <span>Or sign in with</span>
-          </div>
-          <div class="social-login-buttons">
-            {% for provider in socialaccount_providers %}
-              {% if provider.id == 'google' %}
-                <a href="{% provider_login_url provider.id process='login' %}" class="social-btn google">
-                  <i class="fab fa-google"></i>
-                </a>
-              {% elif provider.id == 'facebook' %}
-                <a href="{% provider_login_url provider.id process='login' %}" class="social-btn facebook">
-                  <i class="fab fa-facebook-f"></i>
-                </a>
-              {% elif provider.id == 'twitter' %}
-                <a href="{% provider_login_url provider.id process='login' %}" class="social-btn twitter">
-                  <i class="fab fa-twitter"></i>
-                </a>
-              {% endif %}
             {% endfor %}
           </div>
+          {% endif %}
+
+          <form class="login-form" method="POST" action="{% url 'account_login' %}">
+            {% csrf_token %}
+
+            <div class="login-form-group">
+              <div class="login-input-wrapper">
+                <div class="login-input-icon">
+                  <i class="fas fa-envelope"></i>
+                </div>
+                <input type="email" name="login" id="id_login" class="login-input" placeholder="Email address" required>
+              </div>
+            </div>
+
+            <div class="login-form-group">
+              <div class="login-input-wrapper">
+                <div class="login-input-icon">
+                  <i class="fas fa-lock"></i>
+                </div>
+                <input type="password" name="password" id="id_password" class="login-input" placeholder="Password" required>
+                <button type="button" class="login-password-toggle" id="togglePassword">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="login-form-options">
+              <div class="login-remember">
+                <input type="checkbox" name="remember" id="id_remember" class="login-checkbox">
+                <label for="id_remember" class="login-checkbox-label">Remember me</label>
+              </div>
+              <a href="{% url 'account_reset_password' %}" class="login-forgot-link">{% trans "Forgot Password?" %}</a>
+            </div>
+
+            {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+            {% endif %}
+
+            <button type="submit" class="login-button">
+              <span class="login-button-text">{% trans "Sign In" %}</span>
+              <span class="login-button-icon">
+                <i class="fas fa-arrow-right"></i>
+              </span>
+            </button>
+
+            <div class="login-signup">
+              <span>Don't have an account?</span>
+              <a href="{% url 'account_signup' %}" class="login-signup-link">{% trans "Create Account" %}</a>
+            </div>
+          </form>
+
+          {% if socialaccount_providers %}
+          <div class="login-social">
+            <div class="login-social-divider">
+              <span>Or continue with</span>
+            </div>
+            <div class="login-social-buttons">
+              {% for provider in socialaccount_providers %}
+                {% if provider.id == 'google' %}
+                <a href="{% provider_login_url provider.id process='login' %}" class="login-social-button login-social-google">
+                  <i class="fab fa-google"></i>
+                  <span>Google</span>
+                </a>
+                {% elif provider.id == 'facebook' %}
+                <a href="{% provider_login_url provider.id process='login' %}" class="login-social-button login-social-facebook">
+                  <i class="fab fa-facebook-f"></i>
+                  <span>Facebook</span>
+                </a>
+                {% elif provider.id == 'twitter' %}
+                <a href="{% provider_login_url provider.id process='login' %}" class="login-social-button login-social-twitter">
+                  <i class="fab fa-twitter"></i>
+                  <span>Twitter</span>
+                </a>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
         </div>
-        {% endif %}
 
         <div class="login-footer">
           <p>&copy; {% now "Y" %} Library Management System. All rights reserved.</p>
@@ -174,135 +221,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Password toggle functionality
-    const togglePassword = document.querySelector('#togglePassword');
-    const password = document.querySelector('#id_password');
-
-    if (togglePassword && password) {
-      togglePassword.addEventListener('click', function() {
-        // Toggle the type attribute
-        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-        password.setAttribute('type', type);
-
-        // Toggle the icon
-        this.classList.toggle('fa-eye');
-        this.classList.toggle('fa-eye-slash');
-      });
-    }
-
-    // Role selector functionality
-    const roleSelectors = document.querySelectorAll('input[name="login-role"]');
-    const emailInput = document.querySelector('#id_login');
-
-    // Sample emails for demonstration
-    const roleEmails = {
-      'member': 'member@library.com',
-      'library-admin': 'libraryadmin@library.com',
-      'super-admin': 'superadmin@library.com'
-    };
-
-    roleSelectors.forEach(selector => {
-      selector.addEventListener('change', function() {
-        if (this.checked) {
-          emailInput.value = roleEmails[this.id];
-          // Add a subtle animation to highlight the change
-          emailInput.classList.add('highlight-input');
-          setTimeout(() => {
-            emailInput.classList.remove('highlight-input');
-          }, 1000);
-        }
-      });
-    });
-
-    // Add subtle hover effect to the login card
-    const loginWrapper = document.querySelector('.login-wrapper');
-    if (loginWrapper) {
-      loginWrapper.addEventListener('mousemove', function(e) {
-        const rect = this.getBoundingClientRect();
-        const x = e.clientX - rect.left; // x position within the element
-        const y = e.clientY - rect.top;  // y position within the element
-
-        // Calculate rotation based on mouse position
-        // Limit the rotation to a small amount (3deg)
-        const rotateY = ((x / rect.width) - 0.5) * 3;
-        const rotateX = ((y / rect.height) - 0.5) * -3;
-
-        // Apply the transform
-        this.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-      });
-
-      // Reset transform when mouse leaves
-      loginWrapper.addEventListener('mouseleave', function() {
-        this.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
-      });
-    }
-
-    // Add focus animation to form fields
-    const formControls = document.querySelectorAll('.form-control');
-    formControls.forEach(input => {
-      input.addEventListener('focus', function() {
-        this.classList.add('highlight-input');
-        setTimeout(() => {
-          this.classList.remove('highlight-input');
-        }, 1000);
-      });
-    });
-
-    // Add button press effect
-    const submitBtn = document.querySelector('.btn-primary');
-    if (submitBtn) {
-      submitBtn.addEventListener('mousedown', function() {
-        this.style.transform = 'translateY(2px)';
-        this.style.boxShadow = '0 5px 15px rgba(59, 130, 246, 0.2)';
-      });
-
-      submitBtn.addEventListener('mouseup', function() {
-        this.style.transform = '';
-        this.style.boxShadow = '';
-      });
-
-      submitBtn.addEventListener('mouseleave', function() {
-        this.style.transform = '';
-        this.style.boxShadow = '';
-      });
-    }
-
-    // Add ripple effect to buttons
-    const rippleButtons = document.querySelectorAll('.btn-ripple');
-    rippleButtons.forEach(button => {
-      button.addEventListener('click', function(e) {
-        const x = e.clientX - e.target.getBoundingClientRect().left;
-        const y = e.clientY - e.target.getBoundingClientRect().top;
-
-        const ripple = document.createElement('span');
-        ripple.style.left = `${x}px`;
-        ripple.style.top = `${y}px`;
-        ripple.classList.add('ripple-effect');
-
-        this.appendChild(ripple);
-
-        setTimeout(() => {
-          ripple.remove();
-        }, 600);
-      });
-    });
-
-    // Animate login particles
-    const particles = document.querySelectorAll('.login-particle');
-    particles.forEach((particle, index) => {
-      // Randomize initial positions slightly
-      const randomX = Math.random() * 10 - 5; // -5 to 5
-      const randomY = Math.random() * 10 - 5; // -5 to 5
-      particle.style.transform = `translate(${randomX}px, ${randomY}px)`;
-    });
-
-    // Add staggered animation to feature items
-    const featureItems = document.querySelectorAll('.feature-item');
-    featureItems.forEach((item, index) => {
-      item.style.animationDelay = `${0.2 * index}s`;
-    });
-  });
-</script>
+<script src="/static/js/login-card.js"></script>
 {% endblock %}

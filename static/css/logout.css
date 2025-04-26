@@ -1,13 +1,14 @@
 /* Enhanced logout page styles */
 .logout-container {
   min-height: 100vh;
-  background: linear-gradient(-45deg, #f0f9ff, #e0f2fe, #dbeafe, #ede9fe);
+  background: linear-gradient(-45deg, var(--background-color), var(--card-background), var(--accent-color), var(--button-color));
   background-size: 400% 400%;
   animation: gradientBG 15s ease infinite;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
+  transition: background 0.3s ease;
 }
 
 @keyframes gradientBG {
@@ -25,12 +26,13 @@
 .logout-card {
   width: 500px;
   max-width: 95%;
-  background-color: white;
+  background-color: var(--card-background);
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
   transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
   animation: fadeIn 0.8s ease-out;
+  border: 1px solid rgba(var(--border-color-rgb), 0.1);
 }
 
 @keyframes fadeIn {
@@ -45,10 +47,11 @@
 }
 
 .logout-header {
-  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, var(--accent-color) 0%, var(--button-color) 100%);
   padding: 30px;
   text-align: center;
   color: white;
+  transition: background 0.3s ease;
 }
 
 .logout-logo {
@@ -61,6 +64,7 @@
   font-size: 24px;
   font-weight: 700;
   margin: 0;
+  color: white;
 }
 
 .logout-body {
@@ -71,21 +75,23 @@
 .logout-icon {
   width: 80px;
   height: 80px;
-  background-color: #f3f4f6;
+  background-color: rgba(var(--background-color-rgb), 0.8);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 30px;
   font-size: 32px;
-  color: #2563eb;
+  color: var(--button-color);
   transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(var(--button-color-rgb), 0.2);
 }
 
 .logout-message {
   font-size: 18px;
-  color: #4b5563;
+  color: var(--text-color);
   margin-bottom: 30px;
+  transition: color 0.3s ease;
 }
 
 .logout-actions {
@@ -102,63 +108,70 @@
 }
 
 .btn-primary {
-  background: linear-gradient(to right, #2563eb, #7c3aed);
+  background: linear-gradient(to right, var(--accent-color), var(--button-color));
   border: none;
   color: white;
+  transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .btn-primary:hover {
-  background: linear-gradient(to right, #1d4ed8, #6d28d9);
+  background: linear-gradient(to right, var(--button-hover-color), var(--button-color));
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 10px 25px rgba(var(--button-color-rgb), 0.3);
 }
 
 .btn-outline {
   background: transparent;
-  border: 1px solid #d1d5db;
-  color: #4b5563;
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  transition: border-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
 }
 
 .btn-outline:hover {
-  border-color: #2563eb;
-  color: #2563eb;
+  border-color: var(--button-color);
+  color: var(--button-color);
   transform: translateY(-2px);
 }
 
 .logout-footer {
   margin-top: 40px;
   font-size: 12px;
-  color: #9ca3af;
+  color: var(--text-color);
+  opacity: 0.6;
+  transition: color 0.3s ease;
 }
 
 /* Admin specific styles */
 .admin-logout-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #1e40af 0%, #4f46e5 50%, #7e22ce 100%);
+  background: linear-gradient(135deg, var(--accent-color) 0%, var(--button-color) 50%, var(--button-hover-color) 100%);
   background-size: 200% 200%;
   animation: gradientBG 15s ease infinite;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
+  transition: background 0.3s ease;
 }
 
 .admin-logout-card {
   width: 500px;
   max-width: 95%;
-  background-color: white;
+  background-color: var(--card-background);
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
   transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
   animation: fadeIn 0.8s ease-out;
+  border: 1px solid rgba(var(--border-color-rgb), 0.1);
 }
 
 .admin-logout-header {
-  background: linear-gradient(135deg, #1e40af 0%, #7e22ce 100%);
+  background: linear-gradient(135deg, var(--accent-color) 0%, var(--button-color) 100%);
   padding: 30px;
   text-align: center;
   color: white;
+  transition: background 0.3s ease;
 }
 
 .admin-logout-logo {
@@ -181,21 +194,23 @@
 .admin-logout-icon {
   width: 80px;
   height: 80px;
-  background-color: #f3f4f6;
+  background-color: rgba(var(--background-color-rgb), 0.8);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 30px;
   font-size: 32px;
-  color: #1e40af;
+  color: var(--button-color);
   transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(var(--button-color-rgb), 0.2);
 }
 
 .admin-logout-message {
   font-size: 18px;
-  color: #4b5563;
+  color: var(--text-color);
   margin-bottom: 30px;
+  transition: color 0.3s ease;
 }
 
 .admin-logout-actions {
@@ -207,7 +222,9 @@
 .admin-logout-footer {
   margin-top: 40px;
   font-size: 12px;
-  color: #9ca3af;
+  color: var(--text-color);
+  opacity: 0.6;
+  transition: color 0.3s ease;
 }
 
 /* Theme toggle button */
@@ -226,46 +243,56 @@
   cursor: pointer;
   transition: all 0.3s ease;
   z-index: 10;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .theme-toggle:hover {
   background-color: rgba(255, 255, 255, 0.3);
   transform: rotate(15deg);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Dark mode styles */
+/* Dark mode styles - these will be overridden by theme variables */
 .dark-mode {
-  background: linear-gradient(135deg, #111827 0%, #1f2937 50%, #374151 100%);
+  background: linear-gradient(135deg, var(--background-color) 0%, var(--accent-color) 50%, var(--button-color) 100%);
+  transition: background 0.3s ease;
 }
 
 .dark-mode .admin-logout-card {
-  background-color: #1f2937;
+  background-color: var(--card-background);
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .dark-mode .admin-logout-header {
-  background: linear-gradient(135deg, #111827 0%, #312e81 100%);
+  background: linear-gradient(135deg, var(--accent-color) 0%, var(--button-color) 100%);
+  transition: background 0.3s ease;
 }
 
 .dark-mode .admin-logout-icon {
-  background-color: #374151;
-  color: #93c5fd;
+  background-color: rgba(var(--background-color-rgb), 0.2);
+  color: var(--button-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .dark-mode .admin-logout-message {
-  color: #e5e7eb;
+  color: var(--text-color);
+  transition: color 0.3s ease;
 }
 
 .dark-mode .btn-outline {
-  border-color: #4b5563;
-  color: #e5e7eb;
+  border-color: var(--border-color);
+  color: var(--text-color);
+  transition: border-color 0.3s ease, color 0.3s ease;
 }
 
 .dark-mode .btn-outline:hover {
-  border-color: #93c5fd;
-  color: #93c5fd;
+  border-color: var(--button-color);
+  color: var(--button-color);
 }
 
 .dark-mode .admin-logout-footer {
-  color: #9ca3af;
+  color: var(--text-color);
+  opacity: 0.6;
+  transition: color 0.3s ease;
 }
