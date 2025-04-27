@@ -19,12 +19,17 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.shortcuts import redirect
+from apps.accounts import views as accounts_views
 
 urlpatterns = [
     path('admin/accounts/user/add/', lambda request: redirect('accounts:user_add')),
     path('admin/', admin.site.urls),
-    path('accounts/', include('allauth.urls')),
+    # Override specific allauth URLs with our custom views
+    path('accounts/signup/', accounts_views.SimpleSignupView.as_view(), name='account_signup'),
+    # Include our accounts URLs
     path('accounts/', include('apps.accounts.urls')),
+    # Include remaining allauth URLs
+    path('accounts/', include('allauth.urls')),
     path('', include('apps.core.urls')),
     path('libraries/', include('apps.libraries.urls')),
     path('books/', include('apps.books.urls')),

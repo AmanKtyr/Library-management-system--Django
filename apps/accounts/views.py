@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.urls import reverse_lazy
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.views.generic.list import ListView
 from django.utils.decorators import method_decorator
 from django.contrib.messages.views import SuccessMessageMixin
@@ -11,8 +11,34 @@ from django.db.models import Q
 from django.contrib.auth import authenticate, login
 from django.views.decorators.http import require_http_methods
 
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, SimpleSignupForm
 from .models import User
+
+class SimpleSignupView(FormView):
+    """
+    A completely custom signup view that doesn't rely on allauth.
+    This view uses our custom SimpleSignupForm to create new users and membership requests.
+    """
+    form_class = SimpleSignupForm
+    template_name = 'account/signup.html'
+    success_url = reverse_lazy('account_login')
+
+    def form_valid(self, form):
+        # Create the user and membership request
+        user = form.save()
+
+        # Get the library name for the success message
+        library_name = form.cleaned_data['library'].name
+
+        # Add a success message
+        messages.success(
+            self.request,
+            f"Your account has been created and your membership request for {library_name} has been submitted. "
+            f"You will receive an email when your request is approved by the library administrator."
+        )
+
+        # Redirect to login page
+        return super().form_valid(form)
 
 def is_admin(user):
     """Check if user is a super admin or library admin."""
@@ -142,7 +168,7 @@ class UserListView(ListView):
 def custom_login(request):
     """
     Custom login view that handles authentication and redirects to the appropriate dashboard
-    based on user role.
+    based on user role. Also checks if the user's account has been approved.
     """
     email = request.POST.get('login')
     password = request.POST.get('password')
@@ -158,6 +184,20 @@ def custom_login(request):
     if user is not None:
         if not user.is_active:
             messages.error(request, "Your account is inactive. Please contact the administrator.")
+            return redirect('account_login')
+
+        # Check if the user's account has been approved (except for admins and staff)
+        if user.user_type == 'MEMBER' and user.approval_status != 'APPROVED':
+            if user.approval_status == 'PENDING':
+                messages.error(request,
+                    "Your account is pending approval by the library administrator. "
+                    "You will receive an email when your account is approved."
+                )
+            elif user.approval_status == 'REJECTED':
+                messages.error(request,
+                    "Your account registration has been rejected. "
+                    "Please contact the library administrator for more information."
+                )
             return redirect('account_login')
 
         # Log the user in

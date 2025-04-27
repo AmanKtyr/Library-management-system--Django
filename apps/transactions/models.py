@@ -108,3 +108,33 @@ class Membership(models.Model):
             # Generate a unique membership number
             self.membership_number = f"MEM-{uuid.uuid4().hex[:8].upper()}"
         super().save(*args, **kwargs)
+
+
+class MembershipRequest(models.Model):
+    """Model representing a pending membership request for a library."""
+    STATUS_CHOICES = (
+        ('PENDING', 'Pending'),
+        ('APPROVED', 'Approved'),
+        ('REJECTED', 'Rejected'),
+    )
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='membership_requests')
+    library = models.ForeignKey(Library, on_delete=models.CASCADE, related_name='membership_requests')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    request_date = models.DateTimeField(auto_now_add=True)
+    processed_date = models.DateTimeField(blank=True, null=True)
+    processed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='processed_membership_requests',
+        limit_choices_to={'user_type__in': ['SUPER_ADMIN', 'LIBRARY_ADMIN', 'STAFF']}
+    )
+    notes = models.TextField(blank=True, null=True)
+
+    class Meta:
+        unique_together = ('user', 'library')
+        ordering = ['-request_date']
+
+    def __str__(self):
+        return f"{self.user.email} - {self.library.name} - {self.status}"

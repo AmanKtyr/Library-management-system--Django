@@ -1,0 +1,286 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load account socialaccount %}
+
+{% block head_title %}{% trans "Sign Up" %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/signup-enhanced.css">
+{% endblock %}
+
+{% block content %}
+<div class="signup-container">
+  <!-- Subtle background shapes -->
+  <div class="signup-bg-shape signup-bg-shape-1"></div>
+  <div class="signup-bg-shape signup-bg-shape-2"></div>
+
+  <div class="signup-card">
+    <div class="signup-card-inner">
+      <!-- Left side - Branding -->
+      <div class="signup-brand">
+        <div class="signup-brand-content">
+          <div class="signup-logo">
+            <img src="https://static.vecteezy.com/system/resources/previews/020/402/234/non_2x/library-book-reading-abstract-icon-or-emblem-vector.jpg" alt="Library Management System" class="img-fluid">
+          </div>
+          <h1 class="signup-title">LibraryHub</h1>
+          <p class="signup-subtitle">Join our network of libraries and access a world of knowledge</p>
+
+          <!-- Features section -->
+          <div class="signup-features">
+            <div class="signup-feature">
+              <div class="signup-feature-icon">
+                <i class="fas fa-book-reader"></i>
+              </div>
+              <div class="signup-feature-text">
+                <h3>Access Thousands of Books</h3>
+                <p>Browse and borrow from extensive collections</p>
+              </div>
+            </div>
+
+            <div class="signup-feature">
+              <div class="signup-feature-icon">
+                <i class="fas fa-mobile-alt"></i>
+              </div>
+              <div class="signup-feature-text">
+                <h3>Digital Library Card</h3>
+                <p>Manage your account from anywhere</p>
+              </div>
+            </div>
+
+            <div class="signup-feature">
+              <div class="signup-feature-icon">
+                <i class="fas fa-bell"></i>
+              </div>
+              <div class="signup-feature-text">
+                <h3>Notifications & Reminders</h3>
+                <p>Never miss a due date again</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right side - Signup form -->
+      <div class="signup-form-side">
+        <div class="signup-form-wrapper">
+          <div class="signup-header">
+            <h2>{% trans "Create Your Account" %}</h2>
+            <p>Join a library and start your reading journey</p>
+          </div>
+
+          {% if messages %}
+          <div class="signup-messages">
+            {% for message in messages %}
+            <div class="signup-message {% if message.tags == 'error' %}signup-message-error{% else %}signup-message-{{ message.tags }}{% endif %}">
+              <div class="signup-message-icon">
+                {% if message.tags == 'error' %}
+                <i class="fas fa-exclamation-circle"></i>
+                {% elif message.tags == 'success' %}
+                <i class="fas fa-check-circle"></i>
+                {% elif message.tags == 'info' %}
+                <i class="fas fa-info-circle"></i>
+                {% elif message.tags == 'warning' %}
+                <i class="fas fa-exclamation-triangle"></i>
+                {% else %}
+                <i class="fas fa-bell"></i>
+                {% endif %}
+              </div>
+              <div class="signup-message-content">
+                {{ message }}
+              </div>
+              <button type="button" class="signup-message-close" aria-label="Close">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <form class="signup-form" method="POST" action="" id="signupForm" novalidate>
+            {% csrf_token %}
+
+            <div class="signup-form-columns">
+              <!-- Column 1: Personal Information -->
+              <div class="signup-form-column">
+                <div class="signup-form-section">
+                  <h3 class="signup-section-title">Personal Information</h3>
+
+                  <div class="signup-form-group">
+                    <div class="signup-input-wrapper">
+                      <div class="signup-input-icon">
+                        <i class="fas fa-envelope"></i>
+                      </div>
+                      <input type="email" name="email" id="id_email" class="signup-input" placeholder="Email address" required>
+                      <div class="signup-validation-feedback" id="email-feedback"></div>
+                    </div>
+                  </div>
+
+                  <div class="signup-form-row">
+                    <div class="signup-form-group">
+                      <div class="signup-input-wrapper">
+                        <div class="signup-input-icon">
+                          <i class="fas fa-user"></i>
+                        </div>
+                        <input type="text" name="first_name" id="id_first_name" class="signup-input" placeholder="First name" required>
+                        <div class="signup-validation-feedback" id="first-name-feedback"></div>
+                      </div>
+                    </div>
+
+                    <div class="signup-form-group">
+                      <div class="signup-input-wrapper">
+                        <div class="signup-input-icon">
+                          <i class="fas fa-user"></i>
+                        </div>
+                        <input type="text" name="last_name" id="id_last_name" class="signup-input" placeholder="Last name" required>
+                        <div class="signup-validation-feedback" id="last-name-feedback"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="signup-form-group">
+                    <div class="signup-input-wrapper">
+                      <div class="signup-input-icon">
+                        <i class="fas fa-phone"></i>
+                      </div>
+                      <input type="text" name="phone_number" id="id_phone_number" class="signup-input" placeholder="Phone number (optional)">
+                    </div>
+                  </div>
+
+                  <div class="signup-form-group">
+                    <div class="signup-input-wrapper">
+                      <div class="signup-input-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                      </div>
+                      <textarea name="address" id="id_address" class="signup-input textarea" placeholder="Address (optional)" rows="2"></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Column 2: Library Selection -->
+              <div class="signup-form-column">
+                <div class="signup-form-section">
+                  <h3 class="signup-section-title">Select Your Library</h3>
+
+                  <div class="library-selection">
+                    <div class="signup-input-wrapper">
+                      <div class="signup-input-icon">
+                        <i class="fas fa-building"></i>
+                      </div>
+                      <select name="library" id="id_library" class="signup-input select" required>
+                        <option value="" selected disabled>Select a library to join</option>
+                        {% for library in form.library.field.queryset %}
+                        <option value="{{ library.id }}">{{ library.name }} - {{ library.city }}</option>
+                        {% endfor %}
+                      </select>
+                      <div class="signup-validation-feedback" id="library-feedback"></div>
+                    </div>
+                    <div class="library-selection-note">
+                      <i class="fas fa-info-circle"></i> Your membership request will be reviewed by the library administrator before approval.
+                    </div>
+                  </div>
+
+                  {% if socialaccount_providers %}
+                  <div class="signup-social" style="margin-top: auto;">
+                    <div class="signup-social-divider">
+                      <span>Or continue with</span>
+                    </div>
+                    <div class="signup-social-buttons">
+                      {% for provider in socialaccount_providers %}
+                        {% if provider.id == 'google' %}
+                        <a href="{% provider_login_url provider.id process='login' %}" class="signup-social-button signup-social-google">
+                          <i class="fab fa-google"></i>
+                          <span>Google</span>
+                        </a>
+                        {% elif provider.id == 'facebook' %}
+                        <a href="{% provider_login_url provider.id process='login' %}" class="signup-social-button signup-social-facebook">
+                          <i class="fab fa-facebook-f"></i>
+                          <span>Facebook</span>
+                        </a>
+                        {% elif provider.id == 'twitter' %}
+                        <a href="{% provider_login_url provider.id process='login' %}" class="signup-social-button signup-social-twitter">
+                          <i class="fab fa-twitter"></i>
+                          <span>Twitter</span>
+                        </a>
+                        {% endif %}
+                      {% endfor %}
+                    </div>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Column 3: Password -->
+              <div class="signup-form-column">
+                <div class="signup-form-section">
+                  <h3 class="signup-section-title">Create Password</h3>
+
+                  <div class="signup-form-group">
+                    <div class="signup-input-wrapper">
+                      <div class="signup-input-icon">
+                        <i class="fas fa-lock"></i>
+                      </div>
+                      <input type="password" name="password1" id="id_password1" class="signup-input" placeholder="Password" required>
+                      <button type="button" class="toggle-password" data-target="id_password1">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                      <div class="signup-validation-feedback" id="password1-feedback"></div>
+                    </div>
+
+                    <!-- Password strength meter -->
+                    <div class="password-strength-container" id="password-strength-container">
+                      <div class="password-strength">
+                        <div class="password-strength-meter" id="password-strength-meter"></div>
+                      </div>
+                      <div class="password-strength-text" id="password-strength-text"></div>
+                    </div>
+                  </div>
+
+                  <div class="signup-form-group">
+                    <div class="signup-input-wrapper">
+                      <div class="signup-input-icon">
+                        <i class="fas fa-lock"></i>
+                      </div>
+                      <input type="password" name="password2" id="id_password2" class="signup-input" placeholder="Confirm Password" required>
+                      <button type="button" class="toggle-password" data-target="id_password2">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                      <div class="signup-validation-feedback" id="password2-feedback"></div>
+                    </div>
+                  </div>
+
+                  <div style="margin-top: auto;">
+                    {% if redirect_field_value %}
+                    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                    {% endif %}
+
+                    <button type="submit" class="signup-button" id="signupButton">
+                      <span class="signup-button-text">{% trans "Create Account" %}</span>
+                      <span class="signup-button-icon">
+                        <i class="fas fa-arrow-right"></i>
+                      </span>
+                    </button>
+
+                    <div class="signup-signin">
+                      <span>Already have an account?</span>
+                      <a href="{% url 'account_login' %}" class="signup-signin-link">{% trans "Sign In" %}</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="signup-footer">
+          <p>&copy; {% now "Y" %} LibraryHub. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/signup-enhanced.js"></script>
+{% endblock %}

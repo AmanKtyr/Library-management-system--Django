@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 class UserManager(BaseUserManager):
     """Define a model manager for User model with no username field."""
@@ -54,6 +55,22 @@ class User(AbstractUser):
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
 
+    # Fields for approval system
+    APPROVAL_STATUS_CHOICES = (
+        ('PENDING', 'Pending Approval'),
+        ('APPROVED', 'Approved'),
+        ('REJECTED', 'Rejected'),
+    )
+    approval_status = models.CharField(max_length=20, choices=APPROVAL_STATUS_CHOICES, default='PENDING')
+    approved_by = models.ForeignKey(
+        'self',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='approved_users'
+    )
+    approval_date = models.DateTimeField(blank=True, null=True)
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
@@ -77,3 +94,29 @@ class User(AbstractUser):
     @property
     def is_library_member(self):
         return self.user_type == 'MEMBER'
+
+    @property
+    def is_pending_approval(self):
+        return self.approval_status == 'PENDING'
+
+    @property
+    def is_approved(self):
+        return self.approval_status == 'APPROVED'
+
+    @property
+    def is_rejected(self):
+        return self.approval_status == 'REJECTED'
+
+    def approve(self, approver):
+        """Approve this user's account"""
+        self.approval_status = 'APPROVED'
+        self.approved_by = approver
+        self.approval_date = timezone.now()
+        self.save()
+
+    def reject(self, approver):
+        """Reject this user's account"""
+        self.approval_status = 'REJECTED'
+        self.approved_by = approver
+        self.approval_date = timezone.now()
+        self.save()

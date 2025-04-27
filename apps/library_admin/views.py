@@ -9,7 +9,7 @@ from django.http import HttpResponseForbidden
 from apps.accounts.models import User
 from apps.libraries.models import Library
 from apps.books.models import Book, BookCopy, Author, Category
-from apps.transactions.models import Transaction, Membership, MembershipPlan
+from apps.transactions.models import Transaction, Membership, MembershipPlan, MembershipRequest
 
 def is_library_admin(user):
     """Check if user is a library admin."""
@@ -278,3 +278,181 @@ def reports(request):
         context['book_copies'] = book_copies
 
     return render(request, 'library_admin/transactions/transaction_reports.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def membership_requests(request):
+    """View function for managing membership requests."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    # Get all membership requests for this library
+    membership_requests = MembershipRequest.objects.filter(library=library).order_by('-request_date')
+
+    # Search functionality
+    search_query = request.GET.get('q', '')
+    if search_query:
+        membership_requests = membership_requests.filter(
+            Q(user__email__icontains=search_query) |
+            Q(user__first_name__icontains=search_query) |
+            Q(user__last_name__icontains=search_query)
+        )
+
+    # Filter by status
+    status = request.GET.get('status', '')
+    if status:
+        membership_requests = membership_requests.filter(status=status)
+
+    # Pagination
+    paginator = Paginator(membership_requests, 10)  # Show 10 requests per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'library': library,
+        'membership_requests': page_obj,
+        'search_query': search_query,
+        'status': status,
+    }
+
+    return render(request, 'library_admin/membership_requests.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def approve_membership_request(request):
+    """View function for approving a membership request."""
+    if request.method != 'POST':
+        return redirect('library_admin:membership_requests')
+
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    # Get the membership request
+    request_id = request.POST.get('request_id')
+    notes = request.POST.get('notes', '')
+
+    try:
+        membership_request = MembershipRequest.objects.get(id=request_id, library=library)
+    except MembershipRequest.DoesNotExist:
+        messages.error(request, "Membership request not found.")
+        return redirect('library_admin:membership_requests')
+
+    # Check if the request is already processed
+    if membership_request.status != 'PENDING':
+        messages.warning(request, "This membership request has already been processed.")
+        return redirect('library_admin:membership_requests')
+
+    # Approve the request
+    membership_request.status = 'APPROVED'
+    membership_request.processed_by = user
+    membership_request.processed_date = timezone.now()
+    membership_request.notes = notes
+    membership_request.save()
+
+    # Update the user's approval status
+    member = membership_request.user
+    member.approval_status = 'APPROVED'
+    member.approved_by = user
+    member.approval_date = timezone.now()
+    member.save()
+
+    # Create a membership for the user
+    # Get the default membership plan (you might want to let the admin choose a plan)
+    default_plan = MembershipPlan.objects.filter(is_active=True).first()
+
+    if default_plan:
+        # Calculate start and end dates
+        start_date = timezone.now().date()
+        end_date = start_date + timezone.timedelta(days=default_plan.duration_days)
+
+        # Create the membership
+        membership = Membership(
+            user=member,
+            library=library,
+            plan=default_plan,
+            start_date=start_date,
+            end_date=end_date,
+            is_active=True
+        )
+        membership.save()
+
+        messages.success(
+            request,
+            f"Membership request for {member.first_name} {member.last_name} has been approved. "
+            f"A new membership has been created."
+        )
+    else:
+        messages.warning(
+            request,
+            f"Membership request for {member.first_name} {member.last_name} has been approved, "
+            f"but no active membership plan was found. Please create a membership manually."
+        )
+
+    return redirect('library_admin:membership_requests')
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def reject_membership_request(request):
+    """View function for rejecting a membership request."""
+    if request.method != 'POST':
+        return redirect('library_admin:membership_requests')
+
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    # Get the membership request
+    request_id = request.POST.get('request_id')
+    notes = request.POST.get('notes', '')
+
+    try:
+        membership_request = MembershipRequest.objects.get(id=request_id, library=library)
+    except MembershipRequest.DoesNotExist:
+        messages.error(request, "Membership request not found.")
+        return redirect('library_admin:membership_requests')
+
+    # Check if the request is already processed
+    if membership_request.status != 'PENDING':
+        messages.warning(request, "This membership request has already been processed.")
+        return redirect('library_admin:membership_requests')
+
+    # Reject the request
+    membership_request.status = 'REJECTED'
+    membership_request.processed_by = user
+    membership_request.processed_date = timezone.now()
+    membership_request.notes = notes
+    membership_request.save()
+
+    # Update the user's approval status
+    member = membership_request.user
+    member.approval_status = 'REJECTED'
+    member.approved_by = user
+    member.approval_date = timezone.now()
+    member.save()
+
+    messages.success(
+        request,
+        f"Membership request for {member.first_name} {member.last_name} has been rejected."
+    )
+
+    return redirect('library_admin:membership_requests')

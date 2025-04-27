@@ -1,0 +1,343 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Membership Requests | Library Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        {% include 'library_admin/partials/sidebar.html' %}
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Membership Requests</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="refreshBtn">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Membership Requests Table -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Pending Membership Requests</h6>
+                    <div class="input-group" style="width: 300px;">
+                        <input type="text" class="form-control" id="searchInput" placeholder="Search...">
+                        <button class="btn btn-outline-secondary" type="button" id="searchBtn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" id="requestsTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Request Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for request in membership_requests %}
+                                <tr>
+                                    <td>{{ request.user.first_name }} {{ request.user.last_name }}</td>
+                                    <td>{{ request.user.email }}</td>
+                                    <td>{{ request.user.phone_number|default:"Not provided" }}</td>
+                                    <td>{{ request.request_date|date:"M d, Y" }}</td>
+                                    <td>
+                                        <span class="badge {% if request.status == 'PENDING' %}bg-warning{% elif request.status == 'APPROVED' %}bg-success{% else %}bg-danger{% endif %}">
+                                            {{ request.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if request.status == 'PENDING' %}
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-sm btn-success approve-btn" 
+                                                    data-bs-toggle="modal" data-bs-target="#approveModal" 
+                                                    data-request-id="{{ request.id }}"
+                                                    data-user-name="{{ request.user.first_name }} {{ request.user.last_name }}">
+                                                <i class="fas fa-check"></i> Approve
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-danger reject-btn"
+                                                    data-bs-toggle="modal" data-bs-target="#rejectModal"
+                                                    data-request-id="{{ request.id }}"
+                                                    data-user-name="{{ request.user.first_name }} {{ request.user.last_name }}">
+                                                <i class="fas fa-times"></i> Reject
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-info view-btn"
+                                                    data-bs-toggle="modal" data-bs-target="#viewModal"
+                                                    data-request-id="{{ request.id }}"
+                                                    data-user-name="{{ request.user.first_name }} {{ request.user.last_name }}"
+                                                    data-user-email="{{ request.user.email }}"
+                                                    data-user-phone="{{ request.user.phone_number|default:'Not provided' }}"
+                                                    data-user-address="{{ request.user.address|default:'Not provided' }}"
+                                                    data-request-date="{{ request.request_date|date:'M d, Y' }}">
+                                                <i class="fas fa-eye"></i> View
+                                            </button>
+                                        </div>
+                                        {% else %}
+                                        <button type="button" class="btn btn-sm btn-info view-btn"
+                                                data-bs-toggle="modal" data-bs-target="#viewModal"
+                                                data-request-id="{{ request.id }}"
+                                                data-user-name="{{ request.user.first_name }} {{ request.user.last_name }}"
+                                                data-user-email="{{ request.user.email }}"
+                                                data-user-phone="{{ request.user.phone_number|default:'Not provided' }}"
+                                                data-user-address="{{ request.user.address|default:'Not provided' }}"
+                                                data-request-date="{{ request.request_date|date:'M d, Y' }}">
+                                            <i class="fas fa-eye"></i> View
+                                        </button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center">No membership requests found.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    {% if membership_requests.has_other_pages %}
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center mt-4">
+                            {% if membership_requests.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ membership_requests.previous_page_number }}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            {% endif %}
+                            
+                            {% for i in membership_requests.paginator.page_range %}
+                                {% if membership_requests.number == i %}
+                                <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+                                {% else %}
+                                <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if membership_requests.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ membership_requests.next_page_number }}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                            {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Approve Modal -->
+<div class="modal fade" id="approveModal" tabindex="-1" aria-labelledby="approveModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="approveModalLabel">Approve Membership Request</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{% url 'library_admin:approve_membership_request' %}" method="post">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <input type="hidden" name="request_id" id="approveRequestId">
+                    <p>Are you sure you want to approve the membership request for <strong id="approveUserName"></strong>?</p>
+                    <div class="mb-3">
+                        <label for="approveNotes" class="form-label">Notes (optional)</label>
+                        <textarea class="form-control" id="approveNotes" name="notes" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Approve</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rejectModalLabel">Reject Membership Request</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{% url 'library_admin:reject_membership_request' %}" method="post">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <input type="hidden" name="request_id" id="rejectRequestId">
+                    <p>Are you sure you want to reject the membership request for <strong id="rejectUserName"></strong>?</p>
+                    <div class="mb-3">
+                        <label for="rejectNotes" class="form-label">Reason for rejection</label>
+                        <textarea class="form-control" id="rejectNotes" name="notes" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Reject</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- View Modal -->
+<div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewModalLabel">Membership Request Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-4 fw-bold">Name:</div>
+                    <div class="col-8" id="viewUserName"></div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-4 fw-bold">Email:</div>
+                    <div class="col-8" id="viewUserEmail"></div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-4 fw-bold">Phone:</div>
+                    <div class="col-8" id="viewUserPhone"></div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-4 fw-bold">Address:</div>
+                    <div class="col-8" id="viewUserAddress"></div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-4 fw-bold">Request Date:</div>
+                    <div class="col-8" id="viewRequestDate"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const table = document.getElementById('requestsTable');
+        const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+        
+        function filterTable() {
+            const filter = searchInput.value.toLowerCase();
+            
+            for (let i = 0; i < rows.length; i++) {
+                const nameCol = rows[i].getElementsByTagName('td')[0];
+                const emailCol = rows[i].getElementsByTagName('td')[1];
+                
+                if (nameCol && emailCol) {
+                    const nameText = nameCol.textContent || nameCol.innerText;
+                    const emailText = emailCol.textContent || emailCol.innerText;
+                    
+                    if (nameText.toLowerCase().indexOf(filter) > -1 || emailText.toLowerCase().indexOf(filter) > -1) {
+                        rows[i].style.display = '';
+                    } else {
+                        rows[i].style.display = 'none';
+                    }
+                }
+            }
+        }
+        
+        searchBtn.addEventListener('click', filterTable);
+        searchInput.addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                filterTable();
+            }
+        });
+        
+        // Refresh button
+        document.getElementById('refreshBtn').addEventListener('click', function() {
+            window.location.reload();
+        });
+        
+        // Modal data population
+        const approveButtons = document.querySelectorAll('.approve-btn');
+        const rejectButtons = document.querySelectorAll('.reject-btn');
+        const viewButtons = document.querySelectorAll('.view-btn');
+        
+        approveButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const requestId = this.getAttribute('data-request-id');
+                const userName = this.getAttribute('data-user-name');
+                
+                document.getElementById('approveRequestId').value = requestId;
+                document.getElementById('approveUserName').textContent = userName;
+            });
+        });
+        
+        rejectButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const requestId = this.getAttribute('data-request-id');
+                const userName = this.getAttribute('data-user-name');
+                
+                document.getElementById('rejectRequestId').value = requestId;
+                document.getElementById('rejectUserName').textContent = userName;
+            });
+        });
+        
+        viewButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const userName = this.getAttribute('data-user-name');
+                const userEmail = this.getAttribute('data-user-email');
+                const userPhone = this.getAttribute('data-user-phone');
+                const userAddress = this.getAttribute('data-user-address');
+                const requestDate = this.getAttribute('data-request-date');
+                
+                document.getElementById('viewUserName').textContent = userName;
+                document.getElementById('viewUserEmail').textContent = userEmail;
+                document.getElementById('viewUserPhone').textContent = userPhone;
+                document.getElementById('viewUserAddress').textContent = userAddress;
+                document.getElementById('viewRequestDate').textContent = requestDate;
+            });
+        });
+    });
+</script>
+{% endblock %}
