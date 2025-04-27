@@ -44,10 +44,16 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Role selector functionality
+  // Role selector functionality - Enhanced Design
   const roleInputs = document.querySelectorAll('.role-selector-input');
   const emailInput = document.getElementById('id_login');
+  const passwordInput = document.getElementById('id_password');
   const userRoleInput = document.getElementById('user_role');
+  const roleLabels = document.querySelectorAll('.role-selector-label');
+  const roleTitle = document.querySelector('.role-selector-title h3');
+  const roleSubtitle = document.querySelector('.role-selector-title p');
+  const loginForm = document.getElementById('loginForm');
+  const loginButton = document.getElementById('loginButton');
 
   // Sample emails for demonstration
   const roleEmails = {
@@ -57,12 +63,162 @@ document.addEventListener('DOMContentLoaded', function() {
     'super-admin': 'superadmin@library.com'
   };
 
+  // Role descriptions for dynamic title updates
+  const roleTitles = {
+    'member': {
+      title: 'Sign in as Member',
+      subtitle: 'Access your library account and manage your books',
+      buttonText: 'Sign in as Member',
+      formClass: 'member-form'
+    },
+    'staff': {
+      title: 'Sign in as Staff',
+      subtitle: 'Access library operations and assist members',
+      buttonText: 'Sign in as Staff',
+      formClass: 'staff-form'
+    },
+    'library-admin': {
+      title: 'Sign in as Library Admin',
+      subtitle: 'Manage your library and staff accounts',
+      buttonText: 'Sign in as Library Admin',
+      formClass: 'library-admin-form'
+    },
+    'super-admin': {
+      title: 'Sign in as Super Admin',
+      subtitle: 'Manage all libraries in the system',
+      buttonText: 'Sign in as Super Admin',
+      formClass: 'super-admin-form'
+    }
+  };
+
+  // Function to update UI based on selected role
+  function updateUIForRole(roleId) {
+    if (!roleTitles[roleId]) return;
+
+    // Update the title and subtitle with fade effect
+    if (roleTitle && roleSubtitle) {
+      // Fade out
+      roleTitle.style.opacity = 0;
+      roleSubtitle.style.opacity = 0;
+
+      // Update text and fade in after a short delay
+      setTimeout(() => {
+        roleTitle.textContent = roleTitles[roleId].title;
+        roleSubtitle.textContent = roleTitles[roleId].subtitle;
+        roleTitle.style.opacity = 1;
+        roleSubtitle.style.opacity = 1;
+      }, 200);
+    }
+
+    // Update button text
+    if (loginButton) {
+      const buttonTextElement = loginButton.querySelector('.login-button-text');
+      if (buttonTextElement) {
+        buttonTextElement.textContent = roleTitles[roleId].buttonText;
+      }
+    }
+
+    // Update form class for styling
+    if (loginForm) {
+      // Remove all role-specific classes
+      Object.values(roleTitles).forEach(role => {
+        if (role.formClass) {
+          loginForm.classList.remove(role.formClass);
+        }
+      });
+
+      // Add the current role class
+      loginForm.classList.add(roleTitles[roleId].formClass);
+    }
+
+    // Update placeholder text in email field
+    if (emailInput && roleEmails[roleId]) {
+      emailInput.placeholder = `Email (e.g., ${roleEmails[roleId]})`;
+    }
+  }
+
+  // Initialize with the default selected role
+  const initialSelectedRole = document.querySelector('.role-selector-input:checked');
+  if (initialSelectedRole) {
+    const roleId = initialSelectedRole.id;
+    updateUIForRole(roleId);
+
+    // Set initial user role value
+    if (userRoleInput) {
+      if (roleId === 'member') {
+        userRoleInput.value = 'member';
+      } else if (roleId === 'staff') {
+        userRoleInput.value = 'staff';
+      } else if (roleId === 'library-admin') {
+        userRoleInput.value = 'library_admin';
+      } else if (roleId === 'super-admin') {
+        userRoleInput.value = 'super_admin';
+      }
+    }
+  }
+
+  // Create and add particles to role cards for visual effect
+  roleLabels.forEach(label => {
+    // Create particles for decoration
+    for (let i = 0; i < 3; i++) {
+      const particle = document.createElement('span');
+      particle.classList.add('role-particle');
+      particle.style.left = `${Math.random() * 100}%`;
+      particle.style.top = `${Math.random() * 100}%`;
+      particle.style.animationDelay = `${Math.random() * 2}s`;
+      particle.style.width = `${Math.random() * 6 + 2}px`;
+      particle.style.height = particle.style.width;
+      label.appendChild(particle);
+    }
+
+    // Add hover effects
+    label.addEventListener('mouseenter', function() {
+      const iconWrapper = this.querySelector('.role-icon-wrapper');
+      if (iconWrapper) {
+        iconWrapper.style.transform = 'scale(1.1) rotate(5deg)';
+      }
+
+      // Animate particles on hover
+      const particles = this.querySelectorAll('.role-particle');
+      particles.forEach(particle => {
+        particle.style.animationDuration = '1s';
+      });
+    });
+
+    label.addEventListener('mouseleave', function() {
+      const iconWrapper = this.querySelector('.role-icon-wrapper');
+      if (iconWrapper) {
+        iconWrapper.style.transform = '';
+      }
+
+      // Reset particle animation
+      const particles = this.querySelectorAll('.role-particle');
+      particles.forEach(particle => {
+        particle.style.animationDuration = '3s';
+      });
+    });
+  });
+
+  // Function to handle role selection
+  function selectRole(roleId) {
+    const input = document.getElementById(roleId);
+    if (input) {
+      input.checked = true;
+
+      // Trigger the change event
+      const event = new Event('change');
+      input.dispatchEvent(event);
+    }
+  }
+
+  // Add event listeners to role inputs
   roleInputs.forEach(input => {
     input.addEventListener('change', function() {
       if (this.checked) {
+        const roleId = this.id;
+
         // Update the hidden user_role field based on selected role
         if (userRoleInput) {
-          const roleId = this.id;
           if (roleId === 'member') {
             userRoleInput.value = 'member';
           } else if (roleId === 'staff') {
@@ -74,12 +230,155 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         }
 
-        // Add highlight animation to email field
+        // Update UI elements for the selected role
+        updateUIForRole(roleId);
+
+        // Add highlight animation to input fields
         if (emailInput) {
           emailInput.classList.add('login-input-highlight');
           setTimeout(() => {
             emailInput.classList.remove('login-input-highlight');
           }, 1000);
+        }
+
+        if (passwordInput) {
+          setTimeout(() => {
+            passwordInput.classList.add('login-input-highlight');
+            setTimeout(() => {
+              passwordInput.classList.remove('login-input-highlight');
+            }, 1000);
+          }, 200); // Slight delay for sequential animation
+        }
+
+        // Add a subtle animation to the selected label
+        const label = this.nextElementSibling;
+        if (label) {
+          // Remove selected class from all labels first
+          roleLabels.forEach(l => l.classList.remove('role-selector-label-selected'));
+
+          // Add selected class to current label
+          label.classList.add('role-selector-label-selected');
+
+          // Add a ripple effect
+          const ripple = document.createElement('span');
+          ripple.classList.add('role-selector-ripple');
+          label.appendChild(ripple);
+
+          // Remove the ripple after animation completes
+          setTimeout(() => {
+            ripple.remove();
+          }, 800);
+
+          // Animate particles more intensely on selection
+          const particles = label.querySelectorAll('.role-particle');
+          particles.forEach(particle => {
+            particle.classList.add('role-particle-active');
+            setTimeout(() => {
+              particle.classList.remove('role-particle-active');
+            }, 1000);
+          });
+        }
+      }
+    });
+
+    // Add click event to labels for better touch device support
+    const label = input.nextElementSibling;
+    if (label) {
+      label.addEventListener('click', function(e) {
+        // Prevent default to avoid double triggering with the label's native behavior
+        e.preventDefault();
+        input.checked = true;
+
+        // Manually trigger change event
+        const event = new Event('change');
+        input.dispatchEvent(event);
+      });
+    }
+  });
+
+  // Add keyboard navigation for accessibility
+  document.addEventListener('keydown', function(e) {
+    // Only handle arrow keys if role selector is in focus
+    const roleSelector = document.querySelector('.role-selector-tabs');
+    const activeElement = document.activeElement;
+    const isRoleSelectorFocused = roleSelector.contains(activeElement) ||
+                                 activeElement.classList.contains('role-selector-label') ||
+                                 activeElement.classList.contains('role-selector-input');
+
+    if (!isRoleSelectorFocused && e.key !== 'Tab') {
+      return;
+    }
+
+    const currentRole = document.querySelector('.role-selector-input:checked');
+    if (!currentRole) return;
+
+    const roleIds = ['member', 'staff', 'library-admin', 'super-admin'];
+    const currentIndex = roleIds.indexOf(currentRole.id);
+
+    if (currentIndex === -1) return;
+
+    let newIndex;
+
+    switch (e.key) {
+      case 'ArrowRight':
+      case 'ArrowDown':
+        e.preventDefault();
+        newIndex = (currentIndex + 1) % roleIds.length;
+        selectRole(roleIds[newIndex]);
+        break;
+
+      case 'ArrowLeft':
+      case 'ArrowUp':
+        e.preventDefault();
+        newIndex = (currentIndex - 1 + roleIds.length) % roleIds.length;
+        selectRole(roleIds[newIndex]);
+        break;
+
+      case '1':
+        e.preventDefault();
+        selectRole('member');
+        break;
+
+      case '2':
+        e.preventDefault();
+        selectRole('staff');
+        break;
+
+      case '3':
+        e.preventDefault();
+        selectRole('library-admin');
+        break;
+
+      case '4':
+        e.preventDefault();
+        selectRole('super-admin');
+        break;
+    }
+  });
+
+  // Add focus indicators for accessibility
+  roleLabels.forEach(label => {
+    label.setAttribute('tabindex', '0');
+
+    label.addEventListener('focus', function() {
+      this.style.outline = '2px solid rgba(79, 70, 229, 0.5)';
+      this.style.outlineOffset = '2px';
+    });
+
+    label.addEventListener('blur', function() {
+      this.style.outline = 'none';
+      this.style.outlineOffset = '0';
+    });
+
+    // Handle Enter and Space key presses
+    label.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const input = document.getElementById(this.getAttribute('for'));
+        if (input) {
+          input.checked = true;
+          const event = new Event('change');
+          input.dispatchEvent(event);
         }
       }
     });
