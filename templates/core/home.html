@@ -1445,132 +1445,277 @@
     </div>
 </div>
 
-<!-- Contact Section -->
+<!-- Contact Section - Modern & Professional Design -->
 <div class="contact-section py-6 position-relative" id="contact">
-    <div class="section-pattern-dots-3d"></div>
+    <!-- Modern Background Elements -->
+    <div class="contact-bg-elements">
+        <div class="contact-bg-gradient"></div>
+        <div class="contact-bg-pattern"></div>
+        <div class="contact-floating-shape shape-1"></div>
+        <div class="contact-floating-shape shape-2"></div>
+        <div class="contact-floating-shape shape-3"></div>
+    </div>
+
     <div class="container">
+        <!-- Modern Section Header -->
         <div class="section-header text-center mb-5">
-            <h6 class="section-subtitle" data-aos="fade-up">Get In Touch</h6>
-            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Schedule Your Demo</h2>
-            <div class="section-divider" data-aos="fade-up" data-aos-delay="200"></div>
-            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Contact us to learn more about our library management SAAS platform and how it can transform your operations</p>
+            <div class="section-badge" data-aos="fade-up">
+                <span><i class="fas fa-headset me-2"></i>Get In Touch</span>
+            </div>
+            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">
+                Schedule Your <span class="text-gradient">Personalized Demo</span>
+            </h2>
+            <div class="section-divider modern-divider" data-aos="fade-up" data-aos-delay="200"></div>
+            <p class="section-description" data-aos="fade-up" data-aos-delay="300">
+                Experience how our enterprise platform can revolutionize your library operations with a customized demonstration tailored to your specific needs
+            </p>
         </div>
 
-        <div class="row">
-            <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-up">
-                <div class="contact-info-card">
-                    <div class="contact-info-header">
-                        <h4>Contact Information</h4>
-                        <p>Reach out to our team for personalized assistance</p>
-                    </div>
-                    <div class="contact-info-body">
-                        <div class="contact-info-item">
-                            <div class="contact-icon">
-                                <i class="fas fa-map-marker-alt"></i>
+        <!-- Modern Contact Card Design -->
+        <div class="contact-container">
+            <div class="contact-card-wrapper" data-aos="fade-up" data-aos-delay="100">
+                <div class="contact-card">
+                    <div class="contact-card-inner">
+                        <div class="row g-0">
+                            <!-- Contact Information Side -->
+                            <div class="col-lg-5">
+                                <div class="contact-info-side">
+                                    <div class="contact-info-header">
+                                        <div class="contact-header-icon">
+                                            <i class="fas fa-comments"></i>
+                                        </div>
+                                        <h4>Contact Information</h4>
+                                        <p>We're here to help you transform your library</p>
+                                    </div>
+
+                                    <div class="contact-info-body">
+                                        <div class="contact-info-item">
+                                            <div class="contact-icon pulse-animation">
+                                                <i class="fas fa-map-marker-alt"></i>
+                                            </div>
+                                            <div class="contact-text">
+                                                <h5>Our Location</h5>
+                                                <p>123 Library Avenue, Tech Park<br>New Delhi, India 110001</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="contact-info-item">
+                                            <div class="contact-icon pulse-animation">
+                                                <i class="fas fa-phone-alt"></i>
+                                            </div>
+                                            <div class="contact-text">
+                                                <h5>Call Us</h5>
+                                                <p>+91 98765 43210<br>Mon-Fri, 9am-6pm IST</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="contact-info-item">
+                                            <div class="contact-icon pulse-animation">
+                                                <i class="fas fa-envelope"></i>
+                                            </div>
+                                            <div class="contact-text">
+                                                <h5>Email Us</h5>
+                                                <p>sales@librarymanagement.com<br>support@librarymanagement.com</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Modern Map Placeholder -->
+                                    <div class="contact-info-map">
+                                        <div class="map-placeholder">
+                                            <div class="map-overlay"></div>
+                                            <img src="{% static 'images/map-placeholder.jpg' %}" alt="Location Map" class="img-fluid" onerror="this.src='https://placehold.co/600x300?text=Our+Location'">
+                                            <div class="map-pin">
+                                                <i class="fas fa-map-pin"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Modern Social Links -->
+                                    <div class="contact-info-footer">
+                                        <h6>Connect With Us</h6>
+                                        <div class="social-links-modern">
+                                            <a href="#" class="social-link-modern" aria-label="Facebook">
+                                                <i class="fab fa-facebook-f"></i>
+                                            </a>
+                                            <a href="#" class="social-link-modern" aria-label="Twitter">
+                                                <i class="fab fa-twitter"></i>
+                                            </a>
+                                            <a href="#" class="social-link-modern" aria-label="LinkedIn">
+                                                <i class="fab fa-linkedin-in"></i>
+                                            </a>
+                                            <a href="#" class="social-link-modern" aria-label="Instagram">
+                                                <i class="fab fa-instagram"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="contact-text">
-                                <h5>Our Location</h5>
-                                <p>123 Library Avenue, Tech Park<br>San Francisco, CA 94107</p>
+
+                            <!-- Contact Form Side - Modern Design -->
+                            <div class="col-lg-7">
+                                <div class="contact-form-side">
+                                    <div class="contact-form-header">
+                                        <h4>Request a Demo</h4>
+                                        <p>Fill out the form below and our team will contact you within 24 hours</p>
+                                    </div>
+
+                                    <form class="contact-form-modern" id="demoRequestForm">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-floating mb-3">
+                                                    <input type="text" class="form-control" id="nameInput" placeholder="Your Name" required>
+                                                    <label for="nameInput"><i class="fas fa-user me-2"></i>Your Name</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating mb-3">
+                                                    <input type="email" class="form-control" id="emailInput" placeholder="Your Email" required>
+                                                    <label for="emailInput"><i class="fas fa-envelope me-2"></i>Your Email</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-floating mb-3">
+                                                    <input type="text" class="form-control" id="phoneInput" placeholder="Phone Number">
+                                                    <label for="phoneInput"><i class="fas fa-phone me-2"></i>Phone Number</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating mb-3">
+                                                    <input type="text" class="form-control" id="libraryInput" placeholder="Library Name" required>
+                                                    <label for="libraryInput"><i class="fas fa-landmark me-2"></i>Library Name</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-floating mb-3">
+                                                    <select class="form-select" id="libraryTypeSelect" required>
+                                                        <option value="" selected disabled>Select library type</option>
+                                                        <option value="public">Public Library</option>
+                                                        <option value="academic">Academic Library</option>
+                                                        <option value="school">School Library</option>
+                                                        <option value="special">Special Library</option>
+                                                        <option value="other">Other</option>
+                                                    </select>
+                                                    <label for="libraryTypeSelect"><i class="fas fa-building me-2"></i>Library Type</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating mb-3">
+                                                    <select class="form-select" id="librarySize" required>
+                                                        <option value="" selected disabled>Select library size</option>
+                                                        <option value="small">Small (up to 20,000 items)</option>
+                                                        <option value="medium">Medium (20,000-100,000 items)</option>
+                                                        <option value="large">Large (100,000+ items)</option>
+                                                    </select>
+                                                    <label for="librarySize"><i class="fas fa-chart-bar me-2"></i>Library Size</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-floating mb-3">
+                                            <textarea class="form-control" id="messageInput" placeholder="Your Message" style="height: 120px"></textarea>
+                                            <label for="messageInput"><i class="fas fa-comment-alt me-2"></i>Additional Information</label>
+                                        </div>
+
+                                        <!-- Modern Demo Format Selection -->
+                                        <div class="demo-options mb-3">
+                                            <p class="demo-options-title">Preferred Demo Format:</p>
+                                            <div class="demo-option-buttons">
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="demoFormat" id="demoLive" value="live" checked>
+                                                    <label class="form-check-label" for="demoLive">
+                                                        <i class="fas fa-video me-1"></i> Live Demo
+                                                    </label>
+                                                </div>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="demoFormat" id="demoRecorded" value="recorded">
+                                                    <label class="form-check-label" for="demoRecorded">
+                                                        <i class="fas fa-play-circle me-1"></i> Recorded Demo
+                                                    </label>
+                                                </div>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="demoFormat" id="demoInPerson" value="inperson">
+                                                    <label class="form-check-label" for="demoInPerson">
+                                                        <i class="fas fa-handshake me-1"></i> In-Person
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Modern Privacy Check -->
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" id="privacyCheck" required>
+                                            <label class="form-check-label" for="privacyCheck">
+                                                I agree to the <a href="#" class="text-decoration-underline">Privacy Policy</a> and <a href="#" class="text-decoration-underline">Terms of Service</a>
+                                            </label>
+                                        </div>
+
+                                        <!-- Modern 3D Button -->
+                                        <button class="btn btn-3d-primary w-100" type="submit">
+                                            <i class="fas fa-calendar-check me-2"></i>Schedule Your Demo
+                                            <span class="btn-hover-effect"></span>
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
-                        </div>
-                        <div class="contact-info-item">
-                            <div class="contact-icon">
-                                <i class="fas fa-phone-alt"></i>
-                            </div>
-                            <div class="contact-text">
-                                <h5>Call Us</h5>
-                                <p>+1 (555) 123-4567<br>Mon-Fri, 9am-6pm PST</p>
-                            </div>
-                        </div>
-                        <div class="contact-info-item">
-                            <div class="contact-icon">
-                                <i class="fas fa-envelope"></i>
-                            </div>
-                            <div class="contact-text">
-                                <h5>Email Us</h5>
-                                <p>sales@librarymanagement.com<br>support@librarymanagement.com</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="contact-info-footer">
-                        <div class="social-links">
-                            <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
-                            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                            <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
-                            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
-                <div class="contact-form-card">
-                    <div class="contact-form-header">
-                        <h4>Request a Demo</h4>
-                        <p>Fill out the form below and our team will contact you shortly</p>
+        </div>
+
+        <!-- Trust Indicators -->
+        <div class="contact-trust-indicators" data-aos="fade-up" data-aos-delay="200">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="trust-indicators-container">
+                        <div class="trust-indicator">
+                            <div class="trust-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="trust-text">
+                                <span>Secure Demo</span>
+                            </div>
+                        </div>
+                        <div class="trust-indicator">
+                            <div class="trust-icon">
+                                <i class="fas fa-user-lock"></i>
+                            </div>
+                            <div class="trust-text">
+                                <span>Privacy Protected</span>
+                            </div>
+                        </div>
+                        <div class="trust-indicator">
+                            <div class="trust-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div class="trust-text">
+                                <span>Flexible Scheduling</span>
+                            </div>
+                        </div>
+                        <div class="trust-indicator">
+                            <div class="trust-icon">
+                                <i class="fas fa-headset"></i>
+                            </div>
+                            <div class="trust-text">
+                                <span>Expert Guidance</span>
+                            </div>
+                        </div>
+                        <div class="trust-indicator">
+                            <div class="trust-icon">
+                                <i class="fas fa-hand-holding-usd"></i>
+                            </div>
+                            <div class="trust-text">
+                                <span>No Obligation</span>
+                            </div>
+                        </div>
                     </div>
-                    <form class="contact-form" id="demoRequestForm">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="nameInput" placeholder="Your Name" required>
-                                    <label for="nameInput">Your Name</label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="email" class="form-control" id="emailInput" placeholder="Your Email" required>
-                                    <label for="emailInput">Your Email</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="phoneInput" placeholder="Phone Number">
-                                    <label for="phoneInput">Phone Number</label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="libraryInput" placeholder="Library Name" required>
-                                    <label for="libraryInput">Library Name</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-floating mb-3">
-                            <select class="form-select" id="libraryTypeSelect" required>
-                                <option value="" selected disabled>Select library type</option>
-                                <option value="public">Public Library</option>
-                                <option value="academic">Academic Library</option>
-                                <option value="school">School Library</option>
-                                <option value="special">Special Library</option>
-                                <option value="other">Other</option>
-                            </select>
-                            <label for="libraryTypeSelect">Library Type</label>
-                        </div>
-                        <div class="form-floating mb-3">
-                            <select class="form-select" id="librarySize" required>
-                                <option value="" selected disabled>Select library size</option>
-                                <option value="small">Small (up to 20,000 items)</option>
-                                <option value="medium">Medium (20,000-100,000 items)</option>
-                                <option value="large">Large (100,000+ items)</option>
-                            </select>
-                            <label for="librarySize">Library Size</label>
-                        </div>
-                        <div class="form-floating mb-3">
-                            <textarea class="form-control" id="messageInput" placeholder="Your Message" style="height: 120px"></textarea>
-                            <label for="messageInput">Additional Information</label>
-                        </div>
-                        <div class="form-check mb-3">
-                            <input class="form-check-input" type="checkbox" id="privacyCheck" required>
-                            <label class="form-check-label" for="privacyCheck">
-                                I agree to the <a href="#">Privacy Policy</a> and <a href="#">Terms of Service</a>
-                            </label>
-                        </div>
-                        <button class="btn btn-3d-primary w-100" type="submit">
-                            Request Demo <i class="fas fa-arrow-right ms-2"></i>
-                        </button>
-                    </form>
                 </div>
             </div>
         </div>
@@ -1582,33 +1727,89 @@
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 <script>
-    // Demo Request Form Handling
+    // Modern Demo Request Form Handling
     document.addEventListener('DOMContentLoaded', function() {
         const demoRequestForm = document.getElementById('demoRequestForm');
         if (demoRequestForm) {
             demoRequestForm.addEventListener('submit', function(e) {
                 e.preventDefault();
 
+                // Form validation
+                let isValid = true;
+                const requiredFields = this.querySelectorAll('[required]');
+
+                requiredFields.forEach(field => {
+                    if (!field.value) {
+                        isValid = false;
+                        field.classList.add('is-invalid');
+
+                        // Create validation message if it doesn't exist
+                        let validationMessage = field.parentElement.querySelector('.invalid-feedback');
+                        if (!validationMessage) {
+                            validationMessage = document.createElement('div');
+                            validationMessage.className = 'invalid-feedback';
+                            field.parentElement.appendChild(validationMessage);
+                        }
+
+                        validationMessage.textContent = 'This field is required';
+                    } else {
+                        field.classList.remove('is-invalid');
+                        field.classList.add('is-valid');
+                    }
+                });
+
+                // Email validation
+                const emailInput = this.querySelector('#emailInput');
+                if (emailInput && emailInput.value && !emailInput.value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                    isValid = false;
+                    emailInput.classList.add('is-invalid');
+
+                    let validationMessage = emailInput.parentElement.querySelector('.invalid-feedback');
+                    if (!validationMessage) {
+                        validationMessage = document.createElement('div');
+                        validationMessage.className = 'invalid-feedback';
+                        emailInput.parentElement.appendChild(validationMessage);
+                    }
+
+                    validationMessage.textContent = 'Please enter a valid email address';
+                }
+
+                if (!isValid) {
+                    // Add shake animation to form
+                    this.classList.add('animate__animated', 'animate__shakeX');
+                    setTimeout(() => {
+                        this.classList.remove('animate__animated', 'animate__shakeX');
+                    }, 1000);
+                    return;
+                }
+
                 // Show loading state
                 const submitBtn = this.querySelector('button[type="submit"]');
+                const originalBtnContent = submitBtn.innerHTML;
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
                 submitBtn.disabled = true;
 
                 // Simulate form submission
                 setTimeout(() => {
+                    // Get form data for personalized success message
+                    const nameValue = this.querySelector('#nameInput').value;
+
                     // Create success message
-                    const formCard = document.querySelector('.contact-form-card');
-                    formCard.innerHTML = `
-                        <div class="demo-success text-center py-5">
-                            <div class="success-icon mb-4">
-                                <i class="fas fa-check-circle fa-5x text-success"></i>
+                    const formSide = document.querySelector('.contact-form-side');
+                    formSide.innerHTML = `
+                        <div class="form-response-message text-center py-4 animate__animated animate__fadeIn">
+                            <div class="success-checkmark">
+                                <div class="check-icon">
+                                    <span class="icon-line line-tip"></span>
+                                    <span class="icon-line line-long"></span>
+                                </div>
                             </div>
-                            <h3 class="mb-3">Thank You!</h3>
+                            <h3 class="mb-3">Thank You, ${nameValue}!</h3>
                             <p class="lead mb-4">Your demo request has been successfully submitted.</p>
                             <p>One of our library management specialists will contact you within 24 hours to schedule your personalized demo.</p>
                             <div class="mt-4 pt-3">
                                 <p class="text-muted">In the meantime, you might be interested in:</p>
-                                <div class="d-flex justify-content-center gap-3 mt-3">
+                                <div class="d-flex justify-content-center flex-wrap gap-3 mt-3">
                                     <a href="#" class="btn btn-outline-primary">
                                         <i class="fas fa-file-pdf me-2"></i>Download Brochure
                                     </a>
@@ -1619,7 +1820,25 @@
                             </div>
                         </div>
                     `;
+
+                    // Scroll to success message
+                    formSide.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }, 2000);
+            });
+
+            // Remove validation styling on input
+            const formInputs = demoRequestForm.querySelectorAll('input, select, textarea');
+            formInputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.classList.remove('is-invalid');
+                });
+
+                input.addEventListener('input', function() {
+                    if (this.hasAttribute('required') && this.value) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    }
+                });
             });
         }
     });
