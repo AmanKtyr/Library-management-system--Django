@@ -1,6 +1,65 @@
 // Enhanced Signup Page JavaScript
 
 document.addEventListener('DOMContentLoaded', function() {
+  // Initialize RGB variables for theme colors
+  const initializeRgbVariables = () => {
+    // Convert hex colors to RGB for rgba usage
+    const hexToRgb = (hex) => {
+      if (!hex) return null;
+      const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+      hex = hex.replace(shorthandRegex, (m, r, g, b) => r + r + g + g + b + b);
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : null;
+    };
+
+    // Get computed styles
+    const computedStyle = getComputedStyle(document.documentElement);
+    const accentColor = computedStyle.getPropertyValue('--accent-color').trim();
+    const buttonColor = computedStyle.getPropertyValue('--button-color').trim();
+    const backgroundColor = computedStyle.getPropertyValue('--background-color').trim();
+
+    // Set default colors if not available
+    const accentRgb = hexToRgb(accentColor) || {r: 79, g: 70, b: 229}; // Default accent color
+    const buttonRgb = hexToRgb(buttonColor) || {r: 46, g: 139, b: 87}; // Default button color
+    const backgroundRgb = hexToRgb(backgroundColor) || {r: 249, g: 249, b: 249}; // Default background color
+    const successRgb = {r: 16, g: 185, b: 129}; // Default success color
+    const warningRgb = {r: 245, g: 158, b: 11}; // Default warning color
+
+    // Set RGB variables
+    document.documentElement.style.setProperty('--accent-color-rgb', `${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}`);
+    document.documentElement.style.setProperty('--button-color-rgb', `${buttonRgb.r}, ${buttonRgb.g}, ${buttonRgb.b}`);
+    document.documentElement.style.setProperty('--background-color-rgb', `${backgroundRgb.r}, ${backgroundRgb.g}, ${backgroundRgb.b}`);
+    document.documentElement.style.setProperty('--success-color-rgb', `${successRgb.r}, ${successRgb.g}, ${successRgb.b}`);
+    document.documentElement.style.setProperty('--warning-color-rgb', `${warningRgb.r}, ${warningRgb.g}, ${warningRgb.b}`);
+  };
+
+  // Initialize branding section gradient
+  const initializeBrandingGradient = () => {
+    // Create a custom style element for the pseudo-element
+    let styleElement = document.getElementById('brandGradientStyle');
+    if (!styleElement) {
+      styleElement = document.createElement('style');
+      styleElement.id = 'brandGradientStyle';
+      document.head.appendChild(styleElement);
+    }
+
+    // Update the style for the pseudo-element
+    styleElement.textContent = `
+      .signup-brand::before {
+        background: linear-gradient(135deg,
+          rgba(var(--accent-color-rgb), 0.9) 0%,
+          rgba(var(--button-color-rgb), 0.8) 100%) !important;
+      }
+    `;
+  };
+
+  // Initialize RGB variables and branding gradient
+  initializeRgbVariables();
+  initializeBrandingGradient();
   // Initialize elements
   const form = document.getElementById('signupForm');
   const emailInput = document.getElementById('id_email');
@@ -176,6 +235,84 @@ document.addEventListener('DOMContentLoaded', function() {
         icon.classList.add('fa-eye');
       }
     });
+  });
+
+  // Listen for theme changes
+  document.addEventListener('themeChanged', function(e) {
+    // Get the theme details
+    const themeKey = e.detail.theme;
+    const colors = e.detail.colors;
+
+    // Convert hex colors to RGB for rgba usage
+    const hexToRgb = (hex) => {
+      const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+      hex = hex.replace(shorthandRegex, (m, r, g, b) => r + r + g + g + b + b);
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : null;
+    };
+
+    // Set RGB variables for rgba usage
+    const accentRgb = hexToRgb(colors.accent);
+    const buttonRgb = hexToRgb(colors.button);
+    const successRgb = hexToRgb('#10b981'); // Default success color
+    const warningRgb = hexToRgb('#f59e0b'); // Default warning color
+
+    if (accentRgb) {
+      document.documentElement.style.setProperty('--accent-color-rgb', `${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}`);
+    }
+
+    if (buttonRgb) {
+      document.documentElement.style.setProperty('--button-color-rgb', `${buttonRgb.r}, ${buttonRgb.g}, ${buttonRgb.b}`);
+    }
+
+    if (successRgb) {
+      document.documentElement.style.setProperty('--success-color-rgb', `${successRgb.r}, ${successRgb.g}, ${successRgb.b}`);
+    }
+
+    if (warningRgb) {
+      document.documentElement.style.setProperty('--warning-color-rgb', `${warningRgb.r}, ${warningRgb.g}, ${warningRgb.b}`);
+    }
+
+    // Set background color RGB
+    const backgroundRgb = hexToRgb(colors.background);
+    if (backgroundRgb) {
+      document.documentElement.style.setProperty('--background-color-rgb', `${backgroundRgb.r}, ${backgroundRgb.g}, ${backgroundRgb.b}`);
+    }
+
+    // Update branding section gradient
+    let styleElement = document.getElementById('brandGradientStyle');
+    if (!styleElement) {
+      styleElement = document.createElement('style');
+      styleElement.id = 'brandGradientStyle';
+      document.head.appendChild(styleElement);
+    }
+
+    styleElement.textContent = `
+      .signup-brand::before {
+        background: linear-gradient(135deg,
+          rgba(var(--accent-color-rgb), 0.9) 0%,
+          rgba(var(--button-color-rgb), 0.8) 100%) !important;
+      }
+    `;
+
+    // Update text colors for dark themes
+    if (themeKey === 'elegant-dark') {
+      document.querySelectorAll('.signup-feature-text h3, .signup-feature-text p').forEach(el => {
+        el.style.color = 'rgba(255, 255, 255, 0.9)';
+      });
+    } else {
+      document.querySelectorAll('.signup-feature-text h3').forEach(el => {
+        el.style.color = 'white';
+      });
+
+      document.querySelectorAll('.signup-feature-text p').forEach(el => {
+        el.style.color = 'rgba(255, 255, 255, 0.8)';
+      });
+    }
   });
 });
 

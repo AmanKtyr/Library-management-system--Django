@@ -5,19 +5,32 @@
 {% block head_title %}{% trans "Sign Up" %}{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="/static/css/signup-enhanced.css">
+<link rel="stylesheet" href="/static/css/signup.css">
 {% endblock %}
 
 {% block content %}
 <div class="signup-container">
-  <!-- Subtle background shapes -->
-  <div class="signup-bg-shape signup-bg-shape-1"></div>
-  <div class="signup-bg-shape signup-bg-shape-2"></div>
+  <!-- Animated background elements -->
+  <div class="signup-bg-circle signup-bg-circle-1"></div>
+  <div class="signup-bg-circle signup-bg-circle-2"></div>
+  <div class="signup-bg-circle signup-bg-circle-3"></div>
+
+  <!-- Floating particles -->
+  <div class="signup-particles">
+    <div class="signup-particle"></div>
+    <div class="signup-particle"></div>
+    <div class="signup-particle"></div>
+    <div class="signup-particle"></div>
+    <div class="signup-particle"></div>
+    <div class="signup-particle"></div>
+    <div class="signup-particle"></div>
+    <div class="signup-particle"></div>
+  </div>
 
   <div class="signup-card">
     <div class="signup-card-inner">
       <!-- Left side - Branding -->
-      <div class="signup-brand">
+      <div class="signup-brand" id="signupBrand">
         <div class="signup-brand-content">
           <div class="signup-logo">
             <img src="https://static.vecteezy.com/system/resources/previews/020/402/234/non_2x/library-book-reading-abstract-icon-or-emblem-vector.jpg" alt="Library Management System" class="img-fluid">

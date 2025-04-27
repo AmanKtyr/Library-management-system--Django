@@ -74,7 +74,7 @@
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-underline" href="#pricing"><i class="fas fa-tag nav-icon"></i> Pricing</a>
+                        <a class="nav-link nav-underline" href="{% url 'core:home' %}#pricing"><i class="fas fa-tag nav-icon"></i> Pricing</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link nav-underline" href="#contact"><i class="fas fa-headset nav-icon"></i> Demo</a>
@@ -161,7 +161,7 @@
 
     <!-- Modern Messages -->
     {% if messages %}
-        <div class="container mt-3">
+        <div class="container mt-1">
             {% for message in messages %}
                 {% with message.tags as tags %}
                     <div class="alert-modern alert-modern-{{ tags }} fade-in" data-auto-close="true">
@@ -204,12 +204,12 @@
     {% endif %}
 
     <!-- Main Content -->
-    <main class="py-4">
+    <main class="py-1">
         {% block content %}{% endblock %}
     </main>
 
     <!-- Modern Professional Footer -->
-    <footer class="footer-section mt-5">
+    <footer class="footer-section mt-2">
         <div class="footer-top">
             <div class="container">
                 <div class="row">

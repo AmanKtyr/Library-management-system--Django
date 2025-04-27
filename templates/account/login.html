@@ -5,7 +5,7 @@
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="/static/css/login-card.css">
+<link rel="stylesheet" href="/static/css/login.css">
 {% endblock %}
 
 {% block content %}
@@ -30,12 +30,12 @@
   <div class="login-card">
     <div class="login-card-inner">
       <!-- Left side - Branding -->
-      <div class="login-brand">
+      <div class="login-brand" id="loginBrand">
         <div class="login-brand-content">
           <div class="login-logo">
             <img src="https://static.vecteezy.com/system/resources/previews/020/402/234/non_2x/library-book-reading-abstract-icon-or-emblem-vector.jpg" alt="Library Management System" class="img-fluid">
           </div>
-          <h1 class="login-title">Library Management System</h1>
+          <h1 class="login-title">LibraryHub</h1>
           <p class="login-subtitle">Your complete solution for modern library management</p>
 
           <div class="login-features">
@@ -80,59 +80,6 @@
             <p>Sign in to access your library dashboard</p>
           </div>
 
-          <!-- User Role Selector - New Design -->
-          <div class="login-role-selector">
-            <div class="role-selector-title">
-              <h3>Select Your Role</h3>
-              <p>Choose the appropriate role to sign in</p>
-            </div>
-            <div class="role-selector-tabs">
-              <div>
-                <input type="radio" class="role-selector-input" name="login-role" id="member" checked>
-                <label class="role-selector-label" for="member">
-                  <div class="role-icon-wrapper member-icon">
-                    <i class="fas fa-user"></i>
-                  </div>
-                  {% comment %} <span>Member</span> {% endcomment %}
-                  <small>Regular library user</small>
-                </label>
-              </div>
-
-              <div>
-                <input type="radio" class="role-selector-input" name="login-role" id="staff">
-                <label class="role-selector-label" for="staff">
-                  <div class="role-icon-wrapper staff-icon">
-                    <i class="fas fa-user-cog"></i>
-                  </div>
-                  {% comment %} <span>Staff</span> {% endcomment %}
-                  <small>Library employee</small>
-                </label>
-              </div>
-
-              <div>
-                <input type="radio" class="role-selector-input" name="login-role" id="library-admin">
-                <label class="role-selector-label" for="library-admin">
-                  <div class="role-icon-wrapper library-admin-icon">
-                    <i class="fas fa-user-tie"></i>
-                  </div>
-                  {% comment %} <span>Library Admin</span> {% endcomment %}
-                  <small>Library manager</small>
-                </label>
-              </div>
-
-              <div>
-                <input type="radio" class="role-selector-input" name="login-role" id="super-admin">
-                <label class="role-selector-label" for="super-admin">
-                  <div class="role-icon-wrapper super-admin-icon">
-                    <i class="fas fa-user-shield"></i>
-                  </div>
-                  {% comment %} <span>Super Admin</span> {% endcomment %}
-                  <small>System administrator</small>
-                </label>
-              </div>
-            </div>
-          </div>
-
           {% if messages %}
           <div class="login-messages">
             {% for message in messages %}
@@ -164,87 +111,173 @@
           <form class="login-form" method="POST" action="{% url 'accounts:custom_login' %}" id="loginForm" novalidate>
             {% csrf_token %}
 
-            <div class="login-form-group">
-              <div class="login-input-wrapper">
-                <div class="login-input-icon">
-                  <i class="fas fa-envelope"></i>
+            <div class="login-form-columns">
+              <!-- Column 1: User Role Selection -->
+              <div class="login-form-column">
+                <div class="login-form-section">
+                  <h3 class="login-section-title">Select Your Role</h3>
+                  <p style="font-size: 13px; color: #64748b; margin-bottom: 15px;">Choose the appropriate role to sign in</p>
+
+                  <div class="role-selector-tabs">
+                    <div>
+                      <input type="radio" class="role-selector-input" name="login-role" id="member" checked>
+                      <label class="role-selector-label" for="member">
+                        <div class="role-icon-wrapper member-icon">
+                          <i class="fas fa-user"></i>
+                        </div>
+                        <span style="font-size: 14px; font-weight: 500; margin-top: 2px;">Member</span>
+                      </label>
+                    </div>
+
+                    <div>
+                      <input type="radio" class="role-selector-input" name="login-role" id="staff">
+                      <label class="role-selector-label" for="staff">
+                        <div class="role-icon-wrapper staff-icon">
+                          <i class="fas fa-user-cog"></i>
+                        </div>
+                        <span style="font-size: 14px; font-weight: 500; margin-top: 2px;">Staff</span>
+                      </label>
+                    </div>
+
+                    <div>
+                      <input type="radio" class="role-selector-input" name="login-role" id="library-admin">
+                      <label class="role-selector-label" for="library-admin">
+                        <div class="role-icon-wrapper library-admin-icon">
+                          <i class="fas fa-user-tie"></i>
+                        </div>
+                        <span style="font-size: 14px; font-weight: 500; margin-top: 2px;">Library Admin</span>
+                      </label>
+                    </div>
+
+                    <div>
+                      <input type="radio" class="role-selector-input" name="login-role" id="super-admin">
+                      <label class="role-selector-label" for="super-admin">
+                        <div class="role-icon-wrapper super-admin-icon">
+                          <i class="fas fa-user-shield"></i>
+                        </div>
+                        <span style="font-size: 14px; font-weight: 500; margin-top: 2px;">Super Admin</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  {% if socialaccount_providers %}
+                  <div class="login-social" style="margin-top: auto;">
+                    <div class="login-social-divider">
+                      <span>Or continue with</span>
+                    </div>
+                    <div class="login-social-buttons">
+                      {% for provider in socialaccount_providers %}
+                        {% if provider.id == 'google' %}
+                        <a href="{% provider_login_url provider.id process='login' %}" class="login-social-button login-social-google">
+                          <i class="fab fa-google"></i>
+                          <span>Google</span>
+                        </a>
+                        {% elif provider.id == 'facebook' %}
+                        <a href="{% provider_login_url provider.id process='login' %}" class="login-social-button login-social-facebook">
+                          <i class="fab fa-facebook-f"></i>
+                          <span>Facebook</span>
+                        </a>
+                        {% elif provider.id == 'twitter' %}
+                        <a href="{% provider_login_url provider.id process='login' %}" class="login-social-button login-social-twitter">
+                          <i class="fab fa-twitter"></i>
+                          <span>Twitter</span>
+                        </a>
+                        {% endif %}
+                      {% endfor %}
+                    </div>
+                  </div>
+                  {% endif %}
                 </div>
-                <input type="email" name="login" id="id_login" class="login-input" placeholder="Email address" required>
-                <div class="login-validation-feedback" id="email-feedback"></div>
               </div>
-            </div>
 
-            <div class="login-form-group">
-              <div class="login-input-wrapper">
-                <div class="login-input-icon">
-                  <i class="fas fa-lock"></i>
+              <!-- Column 2: Login Credentials -->
+              <div class="login-form-column">
+                <div class="login-form-section">
+                  <h3 class="login-section-title">Login Credentials</h3>
+
+                  <div class="login-form-group">
+                    <div class="login-input-wrapper">
+                      <div class="login-input-icon">
+                        <i class="fas fa-envelope"></i>
+                      </div>
+                      <input type="email" name="login" id="id_login" class="login-input" placeholder="Email address" required>
+                      <div class="login-validation-feedback" id="email-feedback"></div>
+                    </div>
+                  </div>
+
+                  <div class="login-form-group">
+                    <div class="login-input-wrapper">
+                      <div class="login-input-icon">
+                        <i class="fas fa-lock"></i>
+                      </div>
+                      <input type="password" name="password" id="id_password" class="login-input" placeholder="Password" required>
+                      <button type="button" class="login-password-toggle" id="togglePassword">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                      <div class="login-validation-feedback" id="password-feedback"></div>
+                    </div>
+                  </div>
+
+                  <div class="login-form-options">
+                    <div class="login-remember">
+                      <input type="checkbox" name="remember" id="id_remember" class="login-checkbox">
+                      <label for="id_remember" class="login-checkbox-label">Remember me</label>
+                    </div>
+                    <a href="{% url 'account_reset_password' %}" class="login-forgot-link">{% trans "Forgot Password?" %}</a>
+                  </div>
+
+                  <input type="hidden" name="user_role" id="user_role" value="member">
+
+                  {% if redirect_field_value %}
+                  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                  {% endif %}
                 </div>
-                <input type="password" name="password" id="id_password" class="login-input" placeholder="Password" required>
-                <button type="button" class="login-password-toggle" id="togglePassword">
-                  <i class="fas fa-eye"></i>
-                </button>
-                <div class="login-validation-feedback" id="password-feedback"></div>
               </div>
-            </div>
 
-            <input type="hidden" name="user_role" id="user_role" value="member">
+              <!-- Column 3: Login Button and Help -->
+              <div class="login-form-column">
+                <div class="login-form-section">
+                  <h3 class="login-section-title">Sign In</h3>
 
-            <div class="login-form-options">
-              <div class="login-remember">
-                <input type="checkbox" name="remember" id="id_remember" class="login-checkbox">
-                <label for="id_remember" class="login-checkbox-label">Remember me</label>
+                  <div style="margin-top: 20px;">
+                    <button type="submit" class="login-button" id="loginButton">
+                      <span class="login-button-text">{% trans "Sign In" %}</span>
+                      <span class="login-button-icon">
+                        <i class="fas fa-arrow-right"></i>
+                      </span>
+                    </button>
+
+                    <div class="login-signup">
+                      <span>Don't have an account?</span>
+                      <a href="{% url 'account_signup' %}" class="login-signup-link">{% trans "Create Account" %}</a>
+                    </div>
+                  </div>
+
+                  <div style="margin-top: auto;">
+                    <div class="login-form-section" style="background-color: #f0f9ff; margin-top: 20px; box-shadow: none;">
+                      <h4 style="font-size: 15px; font-weight: 600; color: #3b82f6; margin-bottom: 10px;">Need Help?</h4>
+                      <p style="font-size: 13px; color: #64748b; margin-bottom: 10px;">
+                        <i class="fas fa-info-circle" style="color: #3b82f6; margin-right: 5px;"></i>
+                        Select your role from the left panel
+                      </p>
+                      <p style="font-size: 13px; color: #64748b; margin-bottom: 10px;">
+                        <i class="fas fa-info-circle" style="color: #3b82f6; margin-right: 5px;"></i>
+                        Enter your credentials in the middle panel
+                      </p>
+                      <p style="font-size: 13px; color: #64748b;">
+                        <i class="fas fa-info-circle" style="color: #3b82f6; margin-right: 5px;"></i>
+                        Click the Sign In button to access your dashboard
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <a href="{% url 'account_reset_password' %}" class="login-forgot-link">{% trans "Forgot Password?" %}</a>
-            </div>
-
-            {% if redirect_field_value %}
-            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-            {% endif %}
-
-            <button type="submit" class="login-button" id="loginButton">
-              <span class="login-button-text">{% trans "Sign In" %}</span>
-              <span class="login-button-icon">
-                <i class="fas fa-arrow-right"></i>
-              </span>
-            </button>
-
-            <div class="login-signup">
-              <span>Don't have an account?</span>
-              <a href="{% url 'account_signup' %}" class="login-signup-link">{% trans "Create Account" %}</a>
             </div>
           </form>
-
-          {% if socialaccount_providers %}
-          <div class="login-social">
-            <div class="login-social-divider">
-              <span>Or continue with</span>
-            </div>
-            <div class="login-social-buttons">
-              {% for provider in socialaccount_providers %}
-                {% if provider.id == 'google' %}
-                <a href="{% provider_login_url provider.id process='login' %}" class="login-social-button login-social-google">
-                  <i class="fab fa-google"></i>
-                  <span>Google</span>
-                </a>
-                {% elif provider.id == 'facebook' %}
-                <a href="{% provider_login_url provider.id process='login' %}" class="login-social-button login-social-facebook">
-                  <i class="fab fa-facebook-f"></i>
-                  <span>Facebook</span>
-                </a>
-                {% elif provider.id == 'twitter' %}
-                <a href="{% provider_login_url provider.id process='login' %}" class="login-social-button login-social-twitter">
-                  <i class="fab fa-twitter"></i>
-                  <span>Twitter</span>
-                </a>
-                {% endif %}
-              {% endfor %}
-            </div>
-          </div>
-          {% endif %}
         </div>
 
         <div class="login-footer">
-          <p>&copy; {% now "Y" %} Library Management System. All rights reserved.</p>
+          <p>&copy; {% now "Y" %} LibraryHub. All rights reserved.</p>
         </div>
       </div>
     </div>
@@ -253,5 +286,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="/static/js/login-card.js"></script>
+<script src="/static/js/login-redesigned.js"></script>
 {% endblock %}

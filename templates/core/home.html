@@ -233,7 +233,7 @@
                     </div>
                     <h4 class="stats-highlight-title">Enterprise-Grade ROI</h4>
                     <p class="stats-highlight-description">
-                        Libraries implementing our enterprise SAAS platform report an average <span class="text-gradient-primary">42% reduction</span> in administrative workload, <span class="text-gradient-primary">53% increase</span> in resource utilization, and <span class="text-gradient-primary">47% improvement</span> in member engagement metrics within the first year.
+                        Libraries implementing our enterprise SAAS platform report an average <span class="highlight-stat">42% reduction</span> in administrative workload, <span class="highlight-stat">53% increase</span> in resource utilization, and <span class="highlight-stat">47% improvement</span> in member engagement metrics within the first year.
                     </p>
                     <div class="stats-highlight-badges mt-3">
                         <span class="badge bg-primary-soft"><i class="fas fa-clock me-1"></i> Fast Implementation</span>
@@ -246,254 +246,7 @@
     </div>
 </div>
 
-<!-- Premium Features Showcase with 3D Carousel -->
-<div class="books-showcase-section py-6 position-relative" id="features">
-    <div class="section-pattern-dots-3d"></div>
-    <div class="section-wave-pattern"></div>
-    <div class="container">
-        <div class="section-header text-center mb-5">
-            <h6 class="section-subtitle" data-aos="fade-up">Enterprise Solutions</h6>
-            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Unified Library Ecosystem</h2>
-            <div class="section-divider" data-aos="fade-up" data-aos-delay="200"></div>
-            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Our enterprise SAAS platform delivers a comprehensive suite of integrated modules designed to unify and optimize operations across multiple libraries and branches</p>
-        </div>
 
-        <!-- Featured Module Spotlight -->
-        <div class="featured-book-spotlight mb-5" data-aos="fade-up" data-aos-delay="100">
-            <div class="row align-items-center">
-                <div class="col-lg-5 mb-4 mb-lg-0">
-                    <div class="featured-book-image-container">
-                        <div class="featured-book-badge">
-                            <span><i class="fas fa-crown me-1"></i> Premium Module</span>
-                        </div>
-                        <div class="featured-book-3d">
-                            <img src="{% static 'images/featured-book.jpg' %}" alt="Circulation Module" class="img-fluid rounded-lg shadow-lg" onerror="this.src='https://placehold.co/400x600?text=Circulation+Module'">
-                            <div class="featured-book-glow"></div>
-                            <div class="featured-book-reflection"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-7">
-                    <div class="featured-book-content">
-                        <div class="featured-book-header">
-                            <div class="featured-book-category">
-                                <span class="badge-premium">Core Module</span>
-                                <span class="badge-premium">Most Popular</span>
-                            </div>
-                            <h3 class="featured-book-title">Advanced Circulation Management</h3>
-                            <div class="featured-book-author">
-                                <i class="fas fa-shield-alt author-avatar"></i>
-                                <span>With <strong>Enterprise Support</strong></span>
-                            </div>
-                        </div>
-                        <div class="featured-book-rating">
-                            <div class="stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                            </div>
-                            <span class="rating-value">4.9</span>
-                            <span class="rating-count">(215 libraries)</span>
-                        </div>
-                        <p class="featured-book-description">
-                            Our flagship enterprise circulation module unifies lending operations across all your library branches. Featuring advanced RFID integration, AI-powered recommendations, automated workflows, and centralized fine management, this solution delivers a seamless experience for both staff and members while providing real-time analytics across your entire network.
-                        </p>
-                        <div class="featured-book-meta">
-                            <div class="meta-item">
-                                <i class="fas fa-bolt"></i>
-                                <span>Processing: Real-time Distributed</span>
-                            </div>
-                            <div class="meta-item">
-                                <i class="fas fa-mobile-alt"></i>
-                                <span>Mobile Apps: Cross-platform</span>
-                            </div>
-                            <div class="meta-item">
-                                <i class="fas fa-chart-line"></i>
-                                <span>Analytics: Enterprise BI</span>
-                            </div>
-                            <div class="meta-item">
-                                <i class="fas fa-network-wired"></i>
-                                <span>Multi-branch: Unlimited</span>
-                            </div>
-                        </div>
-                        <div class="featured-book-actions">
-                            <a href="#features" class="btn btn-3d-primary hover-float">
-                                <i class="fas fa-info-circle me-2"></i>View All Features
-                            </a>
-                            <a href="#pricing" class="btn btn-outline-primary hover-float">
-                                <i class="fas fa-tag me-2"></i>See Pricing
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="books-filter-tabs" data-aos="fade-up" data-aos-delay="200">
-            <ul class="nav nav-pills justify-content-center mb-4" id="booksTab" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="all-modules-tab" data-bs-toggle="pill" data-bs-target="#all-modules" type="button" role="tab" aria-controls="all-modules" aria-selected="true">
-                        <i class="fas fa-th me-2"></i>All Modules
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="circulation-tab" data-bs-toggle="pill" data-bs-target="#circulation" type="button" role="tab" aria-controls="circulation" aria-selected="false">
-                        <i class="fas fa-exchange-alt me-2"></i>Circulation
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="catalog-tab" data-bs-toggle="pill" data-bs-target="#catalog" type="button" role="tab" aria-controls="catalog" aria-selected="false">
-                        <i class="fas fa-book me-2"></i>Catalog
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="members-tab" data-bs-toggle="pill" data-bs-target="#members" type="button" role="tab" aria-controls="members" aria-selected="false">
-                        <i class="fas fa-users me-2"></i>Members
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="reports-tab" data-bs-toggle="pill" data-bs-target="#reports" type="button" role="tab" aria-controls="reports" aria-selected="false">
-                        <i class="fas fa-chart-bar me-2"></i>Reports
-                    </button>
-                </li>
-            </ul>
-        </div>
-
-        <div class="tab-content" id="booksTabContent">
-            <div class="tab-pane fade show active" id="all-modules" role="tabpanel" aria-labelledby="all-modules-tab">
-                <div class="book-carousel-3d swiper-container" data-aos="fade-up">
-                    <div class="swiper-wrapper">
-                        {% for book in latest_books %}
-                        <div class="swiper-slide">
-                            <div class="book-card-premium">
-                                <div class="book-card-inner">
-                                    <div class="book-cover-3d">
-                                        {% if book.cover_image %}
-                                            <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
-                                        {% else %}
-                                            <img src="https://placehold.co/200x300?text=No+Cover" alt="No Cover">
-                                        {% endif %}
-                                        <div class="book-spine"></div>
-                                        <div class="book-cover-shine"></div>
-                                        <div class="book-cover-glow"></div>
-                                    </div>
-                                    <div class="book-overlay-3d">
-                                        <div class="book-overlay-content">
-                                            <div class="book-quick-actions">
-                                                <a href="{% url 'books:book_detail' slug=book.slug %}" class="book-action-btn" data-bs-toggle="tooltip" title="View Details">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="#" class="book-action-btn" data-bs-toggle="tooltip" title="Add to Wishlist">
-                                                    <i class="fas fa-heart"></i>
-                                                </a>
-                                                <a href="#" class="book-action-btn book-preview-btn" data-bs-toggle="tooltip" title="Quick Preview">
-                                                    <i class="fas fa-search-plus"></i>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="book-info-premium">
-                                    <div class="book-categories">
-                                        {% with category=book.categories.first %}
-                                            {% if category %}
-                                                <span class="badge-premium">{{ category.name }}</span>
-                                            {% endif %}
-                                        {% endwith %}
-                                    </div>
-                                    <h5 class="book-title">{{ book.title|truncatechars:25 }}</h5>
-                                    <div class="book-meta">
-                                        <div class="book-authors">
-                                            <i class="fas fa-user-edit"></i>
-                                            {% for author in book.authors.all %}
-                                                {% if forloop.first %}{% endif %}
-                                                {{ author.name }}{% if not forloop.last %}, {% endif %}
-                                            {% endfor %}
-                                        </div>
-                                        <div class="book-rating">
-                                            <i class="fas fa-star"></i>
-                                            <span>4.8</span>
-                                        </div>
-                                    </div>
-                                    <a href="{% url 'books:book_detail' slug=book.slug %}" class="btn btn-primary btn-sm w-100 mt-2 hover-float">
-                                        <i class="fas fa-info-circle me-1"></i>View Details
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    <div class="swiper-pagination"></div>
-                </div>
-                <div class="swiper-navigation-custom">
-                    <div class="swiper-button-prev-custom">
-                        <i class="fas fa-chevron-left"></i>
-                    </div>
-                    <div class="swiper-button-next-custom">
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Other tabs would have similar content but filtered by module -->
-            <div class="tab-pane fade" id="circulation" role="tabpanel" aria-labelledby="circulation-tab">
-                <!-- Circulation module would be displayed here -->
-                <div class="category-placeholder">
-                    <div class="category-icon">
-                        <i class="fas fa-exchange-alt"></i>
-                    </div>
-                    <h4>Circulation Management</h4>
-                    <p>Streamline lending operations with barcode scanning, RFID integration, automated notifications, and fine management.</p>
-                    <button class="btn btn-primary">View Circulation Features</button>
-                </div>
-            </div>
-
-            <div class="tab-pane fade" id="catalog" role="tabpanel" aria-labelledby="catalog-tab">
-                <!-- Catalog module would be displayed here -->
-                <div class="category-placeholder">
-                    <div class="category-icon">
-                        <i class="fas fa-book"></i>
-                    </div>
-                    <h4>Catalog Management</h4>
-                    <p>Efficiently manage your entire collection with advanced cataloging, search, and metadata management tools.</p>
-                    <button class="btn btn-primary">View Catalog Features</button>
-                </div>
-            </div>
-
-            <div class="tab-pane fade" id="members" role="tabpanel" aria-labelledby="members-tab">
-                <!-- Members module would be displayed here -->
-                <div class="category-placeholder">
-                    <div class="category-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <h4>Member Management</h4>
-                    <p>Simplify member registration, profile management, and communication with our comprehensive member tools.</p>
-                    <button class="btn btn-primary">View Member Features</button>
-                </div>
-            </div>
-
-            <div class="tab-pane fade" id="reports" role="tabpanel" aria-labelledby="reports-tab">
-                <!-- Reports module would be displayed here -->
-                <div class="category-placeholder">
-                    <div class="category-icon">
-                        <i class="fas fa-chart-bar"></i>
-                    </div>
-                    <h4>Advanced Reporting</h4>
-                    <p>Gain valuable insights with customizable reports, dashboards, and analytics tools designed for libraries.</p>
-                    <button class="btn btn-primary">View Reporting Features</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="text-center mt-5" data-aos="fade-up">
-            <a href="#pricing" class="btn btn-3d-primary btn-lg hover-float">
-                View All Features & Pricing <i class="fas fa-arrow-right ms-2"></i>
-            </a>
-        </div>
-    </div>
-</div>
 
 <!-- Interactive How It Works Section with 3D Elements -->
 <div class="how-it-works-section py-6 position-relative">
@@ -624,7 +377,7 @@
                                                     <span>Integration with existing systems</span>
                                                 </div>
                                             </div>
-                                            <a href="#features" class="btn btn-outline-primary mt-3 hover-float">
+                                            <a href="#pricing" class="btn btn-outline-primary mt-3 hover-float">
                                                 <i class="fas fa-cogs me-2"></i>View Implementation Details
                                             </a>
                                         </div>
@@ -1081,7 +834,7 @@
             </div>
         </div>
 
-        <div class="testimonial-cta text-center mt-5" data-aos="fade-up" id="pricing">
+        <div class="testimonial-cta text-center mt-5" data-aos="fade-up">
             <h4 class="mb-3">Ready to transform your library operations?</h4>
             <a href="#contact" class="btn btn-3d-primary btn-lg hover-float">
                 Schedule a Demo <i class="fas fa-arrow-right ms-2"></i>
@@ -1090,116 +843,7 @@
     </div>
 </div>
 
-<!-- Pricing Plans Section -->
-<div class="pricing-section py-6 position-relative">
-    <div class="section-pattern-dots-3d"></div>
-    <div class="container">
-        <div class="section-header text-center mb-5">
-            <h6 class="section-subtitle" data-aos="fade-up">Enterprise Pricing</h6>
-            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Scalable Solutions for Every Library</h2>
-            <div class="section-divider" data-aos="fade-up" data-aos-delay="200"></div>
-            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Our transparent enterprise pricing scales with your library network, ensuring you only pay for what you need while maintaining access to our full feature set</p>
-        </div>
 
-        <div class="row justify-content-center" data-aos="fade-up" data-aos-delay="400">
-            <!-- Basic Plan -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="pricing-card">
-                    <div class="pricing-card-header">
-                        <h3 class="pricing-card-title">Professional</h3>
-                        <div class="pricing-card-price">
-                            <span class="currency">$</span>
-                            <span class="amount">499</span>
-                            <span class="period">/month</span>
-                        </div>
-                        <p class="pricing-card-subtitle">For single libraries</p>
-                    </div>
-                    <div class="pricing-card-body">
-                        <ul class="pricing-features-list">
-                            <li><i class="fas fa-check-circle text-success"></i> Up to 50,000 books</li>
-                            <li><i class="fas fa-check-circle text-success"></i> 10 staff accounts</li>
-                            <li><i class="fas fa-check-circle text-success"></i> All core modules</li>
-                            <li><i class="fas fa-check-circle text-success"></i> Email & chat support</li>
-                            <li><i class="fas fa-check-circle text-success"></i> Standard reporting</li>
-                            <li><i class="fas fa-check-circle text-success"></i> Basic analytics</li>
-                            <li><i class="fas fa-times-circle text-muted"></i> Multi-branch support</li>
-                            <li><i class="fas fa-times-circle text-muted"></i> Dedicated account manager</li>
-                        </ul>
-                    </div>
-                    <div class="pricing-card-footer">
-                        <a href="#contact" class="btn btn-outline-primary btn-block hover-float">Get Started</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Professional Plan -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="pricing-card featured">
-                    <div class="pricing-card-badge">Most Popular</div>
-                    <div class="pricing-card-header">
-                        <h3 class="pricing-card-title">Business</h3>
-                        <div class="pricing-card-price">
-                            <span class="currency">$</span>
-                            <span class="amount">999</span>
-                            <span class="period">/month</span>
-                        </div>
-                        <p class="pricing-card-subtitle">For multi-branch libraries</p>
-                    </div>
-                    <div class="pricing-card-body">
-                        <ul class="pricing-features-list">
-                            <li><i class="fas fa-check-circle text-success"></i> Up to 250,000 books</li>
-                            <li><i class="fas fa-check-circle text-success"></i> 25 staff accounts</li>
-                            <li><i class="fas fa-check-circle text-success"></i> All modules included</li>
-                            <li><i class="fas fa-check-circle text-success"></i> Priority support</li>
-                            <li><i class="fas fa-check-circle text-success"></i> Advanced reporting</li>
-                            <li><i class="fas fa-check-circle text-success"></i> Full analytics suite</li>
-                            <li><i class="fas fa-check-circle text-success"></i> Multi-branch support (up to 5)</li>
-                            <li><i class="fas fa-check-circle text-success"></i> API access</li>
-                        </ul>
-                    </div>
-                    <div class="pricing-card-footer">
-                        <a href="#contact" class="btn btn-3d-primary btn-block hover-float">Get Started</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Enterprise Plan -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="pricing-card">
-                    <div class="pricing-card-header">
-                        <h3 class="pricing-card-title">Enterprise</h3>
-                        <div class="pricing-card-price">
-                            <span class="currency">$</span>
-                            <span class="amount">2499</span>
-                            <span class="period">/month</span>
-                        </div>
-                        <p class="pricing-card-subtitle">For large library systems</p>
-                    </div>
-                    <div class="pricing-card-body">
-                        <ul class="pricing-features-list">
-                            <li><i class="fas fa-check-circle text-success"></i> Unlimited books & collections</li>
-                            <li><i class="fas fa-check-circle text-success"></i> Unlimited staff accounts</li>
-                            <li><i class="fas fa-check-circle text-success"></i> All modules + enterprise features</li>
-                            <li><i class="fas fa-check-circle text-success"></i> 24/7 priority support with SLA</li>
-                            <li><i class="fas fa-check-circle text-success"></i> Custom reporting & dashboards</li>
-                            <li><i class="fas fa-check-circle text-success"></i> Enterprise analytics & BI tools</li>
-                            <li><i class="fas fa-check-circle text-success"></i> Unlimited multi-branch support</li>
-                            <li><i class="fas fa-check-circle text-success"></i> Dedicated account executive</li>
-                            <li><i class="fas fa-check-circle text-success"></i> Custom integrations</li>
-                        </ul>
-                    </div>
-                    <div class="pricing-card-footer">
-                        <a href="#contact" class="btn btn-outline-primary btn-block hover-float">Contact Sales</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="pricing-note text-center mt-4" data-aos="fade-up">
-            <p>All plans include free setup and training. Need a custom solution? <a href="#contact">Contact our sales team</a>.</p>
-        </div>
-    </div>
-</div>
 
 <!-- Premium Newsletter Section with 3D Elements -->
 <div class="newsletter-section py-6 position-relative">
@@ -2046,21 +1690,21 @@
     <div class="section-pattern-grid-3d"></div>
     <div class="container">
         <div class="section-header text-center mb-5">
-            <h6 class="section-subtitle" data-aos="fade-up">Pricing Plans</h6>
-            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Choose Your Plan</h2>
+            <h6 class="section-subtitle" data-aos="fade-up">Affordable Pricing</h6>
+            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Transparent & Flexible Plans</h2>
             <div class="section-divider" data-aos="fade-up" data-aos-delay="200"></div>
-            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Select the perfect plan for your library's needs with our flexible pricing options</p>
+            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Choose from our cost-effective plans designed specifically for Indian libraries of all sizes. No hidden fees, just straightforward pricing with all the features you need.</p>
         </div>
 
         <div class="row">
             <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="100">
                 <div class="pricing-card">
                     <div class="pricing-card-header">
-                        <h3 class="pricing-card-title">Standard</h3>
-                        <p class="pricing-card-subtitle">For small libraries</p>
+                        <h3 class="pricing-card-title">Basic</h3>
+                        <p class="pricing-card-subtitle">Perfect for small libraries & schools</p>
                         <div class="pricing-card-price">
-                            <span class="currency">$</span>
-                            <span class="amount">99</span>
+                            <span class="currency">₹</span>
+                            <span class="amount">2,999</span>
                             <span class="period">/month</span>
                         </div>
                     </div>
@@ -2088,10 +1732,10 @@
                     <div class="pricing-card-badge">Most Popular</div>
                     <div class="pricing-card-header">
                         <h3 class="pricing-card-title">Professional</h3>
-                        <p class="pricing-card-subtitle">For medium libraries</p>
+                        <p class="pricing-card-subtitle">Ideal for growing libraries & institutions</p>
                         <div class="pricing-card-price">
-                            <span class="currency">$</span>
-                            <span class="amount">249</span>
+                            <span class="currency">₹</span>
+                            <span class="amount">5,999</span>
                             <span class="period">/month</span>
                         </div>
                     </div>
@@ -2118,10 +1762,10 @@
                 <div class="pricing-card">
                     <div class="pricing-card-header">
                         <h3 class="pricing-card-title">Enterprise</h3>
-                        <p class="pricing-card-subtitle">For large library networks</p>
+                        <p class="pricing-card-subtitle">Complete solution for large library networks</p>
                         <div class="pricing-card-price">
-                            <span class="currency">$</span>
-                            <span class="amount">499</span>
+                            <span class="currency">₹</span>
+                            <span class="amount">11,999</span>
                             <span class="period">/month</span>
                         </div>
                     </div>
@@ -2147,7 +1791,7 @@
         </div>
 
         <div class="text-center mt-4" data-aos="fade-up">
-            <p class="pricing-note mb-4">All plans include a 14-day free trial. No credit card required.</p>
+            <p class="pricing-note mb-4">All plans include a 30-day free trial with full access to all features. 18% GST applicable as per government regulations. No credit card required to start your trial.</p>
 
             <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#pricingComparisonTable" aria-expanded="false" aria-controls="pricingComparisonTable">
                 <i class="fas fa-table me-2"></i>View Full Comparison
@@ -2160,7 +1804,7 @@
                             <thead>
                                 <tr>
                                     <th scope="col">Features</th>
-                                    <th scope="col">Standard</th>
+                                    <th scope="col">Basic</th>
                                     <th scope="col">Professional</th>
                                     <th scope="col">Enterprise</th>
                                 </tr>
@@ -2328,6 +1972,25 @@
                                     <td>10 GB</td>
                                     <td>50 GB</td>
                                     <td>Unlimited</td>
+                                </tr>
+                                <tr class="category-header">
+                                    <td colspan="4">Pricing (INR)</td>
+                                </tr>
+                                <tr>
+                                    <td>Monthly Price</td>
+                                    <td>₹2,999/month</td>
+                                    <td>₹5,999/month</td>
+                                    <td>₹11,999/month</td>
+                                </tr>
+                                <tr>
+                                    <td>Annual Price (Save 20%)</td>
+                                    <td>₹28,790/year</td>
+                                    <td>₹57,590/year</td>
+                                    <td>₹115,190/year</td>
+                                </tr>
+                                <tr>
+                                    <td>GST</td>
+                                    <td colspan="3">18% GST applicable on all plans</td>
                                 </tr>
                             </tbody>
                             <tfoot>

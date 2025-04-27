@@ -123,7 +123,7 @@ a:hover {
 }
 
 .navbar-spacer {
-    height: 76px; /* Adjusted for new navbar height */
+    height: 60px; /* Further reduced height by 10px */
 }
 
 /* Navbar with glass effect when scrolled */
