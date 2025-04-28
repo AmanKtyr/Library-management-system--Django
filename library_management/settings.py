@@ -187,9 +187,9 @@ ACCOUNT_FORMS = {
 }
 
 # Custom AllAuth templates
-ACCOUNT_LOGOUT_TEMPLATE = 'account/logout.html'
-ACCOUNT_LOGIN_TEMPLATE = 'account/login.html'
-ACCOUNT_SIGNUP_TEMPLATE = 'account/signup.html'
+ACCOUNT_LOGOUT_TEMPLATE = 'accounts/logout.html'
+ACCOUNT_LOGIN_TEMPLATE = 'accounts/login.html'
+ACCOUNT_SIGNUP_TEMPLATE = 'accounts/signup.html'
 
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

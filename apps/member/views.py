@@ -14,6 +14,14 @@ def dashboard(request):
     """View function for the member dashboard."""
     user = request.user
 
+    # Check if the user is a library admin or super admin
+    if user.is_library_admin:
+        messages.warning(request, "You are logged in as a Library Admin. Please use the Library Admin dashboard.")
+        return redirect('library_admin:dashboard')
+    elif user.is_super_admin:
+        messages.warning(request, "You are logged in as a Super Admin. Please use the Super Admin dashboard.")
+        return redirect('superadmin:dashboard')
+
     # Get user's memberships
     memberships = Membership.objects.filter(user=user, is_active=True)
 
@@ -52,35 +60,68 @@ def dashboard(request):
         'overdue_books': overdue_books,
     }
 
-    return render(request, 'members/dashboard/index.html', context)
+    # Add welcome back message
+    messages.success(request, f"Welcome back, {user.get_full_name() or user.email}! We're glad to see you again.")
+
+    return render(request, 'member/dashboard.html', context)
+
+def is_member(user):
+    """Check if user is a regular member (not a library admin or super admin)."""
+    return not (user.is_library_admin or user.is_super_admin)
 
 @login_required
 def profile(request):
     """View function for the member profile."""
     user = request.user
 
+    # Check if the user is a library admin or super admin
+    if user.is_library_admin:
+        messages.warning(request, "You are logged in as a Library Admin. Please use the Library Admin dashboard.")
+        return redirect('library_admin:dashboard')
+    elif user.is_super_admin:
+        messages.warning(request, "You are logged in as a Super Admin. Please use the Super Admin dashboard.")
+        return redirect('superadmin:dashboard')
+
     context = {
         'user': user,
     }
 
-    return render(request, 'members/dashboard/profile.html', context)
+    return render(request, 'member/profile.html', context)
 
 @login_required
 def memberships(request):
     """View function for the member's library memberships."""
     user = request.user
+
+    # Check if the user is a library admin or super admin
+    if user.is_library_admin:
+        messages.warning(request, "You are logged in as a Library Admin. Please use the Library Admin dashboard.")
+        return redirect('library_admin:dashboard')
+    elif user.is_super_admin:
+        messages.warning(request, "You are logged in as a Super Admin. Please use the Super Admin dashboard.")
+        return redirect('superadmin:dashboard')
+
     memberships = Membership.objects.filter(user=user)
 
     context = {
         'memberships': memberships,
     }
 
-    return render(request, 'members/transactions/membership_list.html', context)
+    return render(request, 'member/memberships.html', context)
 
 @login_required
 def transactions(request):
     """View function for the member's transactions."""
     user = request.user
+
+    # Check if the user is a library admin or super admin
+    if user.is_library_admin:
+        messages.warning(request, "You are logged in as a Library Admin. Please use the Library Admin dashboard.")
+        return redirect('library_admin:dashboard')
+    elif user.is_super_admin:
+        messages.warning(request, "You are logged in as a Super Admin. Please use the Super Admin dashboard.")
+        return redirect('superadmin:dashboard')
+
     transactions = Transaction.objects.filter(user=user).order_by('-transaction_date')
 
     # Filter by transaction type if provided
@@ -99,12 +140,21 @@ def transactions(request):
         'status': status,
     }
 
-    return render(request, 'members/transactions/transaction_list.html', context)
+    return render(request, 'member/transactions.html', context)
 
 @login_required
 def borrowed_books(request):
     """View function for the member's borrowed books."""
     user = request.user
+
+    # Check if the user is a library admin or super admin
+    if user.is_library_admin:
+        messages.warning(request, "You are logged in as a Library Admin. Please use the Library Admin dashboard.")
+        return redirect('library_admin:dashboard')
+    elif user.is_super_admin:
+        messages.warning(request, "You are logged in as a Super Admin. Please use the Super Admin dashboard.")
+        return redirect('superadmin:dashboard')
+
     borrowed_books = Transaction.objects.filter(
         user=user,
         transaction_type='BORROW',
@@ -116,12 +166,21 @@ def borrowed_books(request):
         'borrowed_books': borrowed_books,
     }
 
-    return render(request, 'members/books/borrowed_books.html', context)
+    return render(request, 'member/borrowed_books.html', context)
 
 @login_required
 def reserved_books(request):
     """View function for the member's reserved books."""
     user = request.user
+
+    # Check if the user is a library admin or super admin
+    if user.is_library_admin:
+        messages.warning(request, "You are logged in as a Library Admin. Please use the Library Admin dashboard.")
+        return redirect('library_admin:dashboard')
+    elif user.is_super_admin:
+        messages.warning(request, "You are logged in as a Super Admin. Please use the Super Admin dashboard.")
+        return redirect('superadmin:dashboard')
+
     reserved_books = Transaction.objects.filter(
         user=user,
         transaction_type='RESERVE',
@@ -132,12 +191,21 @@ def reserved_books(request):
         'reserved_books': reserved_books,
     }
 
-    return render(request, 'members/books/reserved_books.html', context)
+    return render(request, 'member/reserved_books.html', context)
 
 @login_required
 def fines(request):
     """View function for the member's fines."""
     user = request.user
+
+    # Check if the user is a library admin or super admin
+    if user.is_library_admin:
+        messages.warning(request, "You are logged in as a Library Admin. Please use the Library Admin dashboard.")
+        return redirect('library_admin:dashboard')
+    elif user.is_super_admin:
+        messages.warning(request, "You are logged in as a Super Admin. Please use the Super Admin dashboard.")
+        return redirect('superadmin:dashboard')
+
     fines = Transaction.objects.filter(
         user=user,
         fine_amount__gt=0
@@ -155,4 +223,4 @@ def fines(request):
         'unpaid_fines': unpaid_fines,
     }
 
-    return render(request, 'member/transactions/fines.html', context)
+    return render(request, 'member/fines.html', context)

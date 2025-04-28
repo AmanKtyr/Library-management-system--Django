@@ -198,18 +198,12 @@ document.addEventListener('DOMContentLoaded', function() {
     input.addEventListener('change', function() {
       if (this.checked) {
         const roleId = this.id;
+        const roleValue = this.value;
 
         // Update the hidden user_role field based on selected role
         if (userRoleInput) {
-          if (roleId === 'member') {
-            userRoleInput.value = 'member';
-          } else if (roleId === 'staff') {
-            userRoleInput.value = 'staff';
-          } else if (roleId === 'library-admin') {
-            userRoleInput.value = 'library_admin';
-          } else if (roleId === 'super-admin') {
-            userRoleInput.value = 'super_admin';
-          }
+          userRoleInput.value = roleValue;
+          console.log("Role selected:", roleValue);
         }
 
         // Update UI elements for the selected role

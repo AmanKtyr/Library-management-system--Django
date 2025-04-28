@@ -26,6 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # Override specific allauth URLs with our custom views
     path('accounts/signup/', accounts_views.SimpleSignupView.as_view(), name='account_signup'),
+    path('accounts/login/', accounts_views.login_view, name='account_login'),
     # Include our accounts URLs
     path('accounts/', include('apps.accounts.urls')),
     # Include remaining allauth URLs

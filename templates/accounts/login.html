@@ -108,7 +108,7 @@
           </div>
           {% endif %}
 
-          <form class="login-form" method="POST" action="{% url 'accounts:custom_login' %}" id="loginForm" novalidate>
+          <form class="login-form" method="POST" action="{% url 'account_login' %}" id="loginForm" novalidate>
             {% csrf_token %}
 
             <div class="login-form-columns">
@@ -118,9 +118,19 @@
                   <h3 class="login-section-title">Select Your Role</h3>
                   <p style="font-size: 13px; color: #64748b; margin-bottom: 15px;">Choose the appropriate role to sign in</p>
 
-                  <div class="role-selector-tabs">
+                  {% if role_error %}
+                  <div class="role-error-message">
+                    <div class="role-error-icon">
+                      <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <div class="role-error-text">
+                      The selected role does not match your account type. Please select the correct role.
+                    </div>
+                  </div>
+                  {% endif %}
+                  <div class="role-selector-tabs {% if role_error %}role-error{% endif %}">
                     <div>
-                      <input type="radio" class="role-selector-input" name="login-role" id="member" checked>
+                      <input type="radio" class="role-selector-input" name="login-role" id="member" value="member" checked>
                       <label class="role-selector-label" for="member">
                         <div class="role-icon-wrapper member-icon">
                           <i class="fas fa-user"></i>
@@ -130,7 +140,7 @@
                     </div>
 
                     <div>
-                      <input type="radio" class="role-selector-input" name="login-role" id="staff">
+                      <input type="radio" class="role-selector-input" name="login-role" id="staff" value="staff">
                       <label class="role-selector-label" for="staff">
                         <div class="role-icon-wrapper staff-icon">
                           <i class="fas fa-user-cog"></i>
@@ -140,7 +150,7 @@
                     </div>
 
                     <div>
-                      <input type="radio" class="role-selector-input" name="login-role" id="library-admin">
+                      <input type="radio" class="role-selector-input" name="login-role" id="library-admin" value="library_admin">
                       <label class="role-selector-label" for="library-admin">
                         <div class="role-icon-wrapper library-admin-icon">
                           <i class="fas fa-user-tie"></i>
@@ -150,7 +160,7 @@
                     </div>
 
                     <div>
-                      <input type="radio" class="role-selector-input" name="login-role" id="super-admin">
+                      <input type="radio" class="role-selector-input" name="login-role" id="super-admin" value="super_admin">
                       <label class="role-selector-label" for="super-admin">
                         <div class="role-icon-wrapper super-admin-icon">
                           <i class="fas fa-user-shield"></i>
@@ -200,8 +210,11 @@
                       <div class="login-input-icon">
                         <i class="fas fa-envelope"></i>
                       </div>
-                      <input type="email" name="login" id="id_login" class="login-input" placeholder="Email address" required>
-                      <div class="login-validation-feedback" id="email-feedback"></div>
+                      <input type="email" name="login" id="id_login" class="login-input {% if email_error or auth_error %}is-invalid{% endif %}" placeholder="Email address" value="{{ email|default:'' }}" required>
+                      <div class="login-validation-feedback" id="email-feedback">
+                        {% if email_error %}Please enter your email address.{% endif %}
+                        {% if auth_error %}Invalid email or password combination.{% endif %}
+                      </div>
                     </div>
                   </div>
 
@@ -210,11 +223,13 @@
                       <div class="login-input-icon">
                         <i class="fas fa-lock"></i>
                       </div>
-                      <input type="password" name="password" id="id_password" class="login-input" placeholder="Password" required>
+                      <input type="password" name="password" id="id_password" class="login-input {% if password_error or auth_error %}is-invalid{% endif %}" placeholder="Password" required>
                       <button type="button" class="login-password-toggle" id="togglePassword">
                         <i class="fas fa-eye"></i>
                       </button>
-                      <div class="login-validation-feedback" id="password-feedback"></div>
+                      <div class="login-validation-feedback" id="password-feedback">
+                        {% if password_error %}Please enter your password.{% endif %}
+                      </div>
                     </div>
                   </div>
 

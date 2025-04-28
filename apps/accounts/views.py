@@ -1,15 +1,13 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.urls import reverse_lazy
-from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
+from django.views.generic.edit import CreateView, FormView
 from django.views.generic.list import ListView
 from django.utils.decorators import method_decorator
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import HttpResponseRedirect, JsonResponse
 from django.db.models import Q
 from django.contrib.auth import authenticate, login
-from django.views.decorators.http import require_http_methods
 
 from .forms import CustomUserCreationForm, SimpleSignupForm
 from .models import User
@@ -20,12 +18,12 @@ class SimpleSignupView(FormView):
     This view uses our custom SimpleSignupForm to create new users and membership requests.
     """
     form_class = SimpleSignupForm
-    template_name = 'account/signup.html'
+    template_name = 'accounts/signup.html'
     success_url = reverse_lazy('account_login')
 
     def form_valid(self, form):
         # Create the user and membership request
-        user = form.save()
+        form.save()
 
         # Get the library name for the success message
         library_name = form.cleaned_data['library'].name
@@ -165,58 +163,120 @@ class UserListView(ListView):
 
         return context
 
-@require_http_methods(["POST"])
-def custom_login(request):
+def login_view(request):
     """
-    Custom login view that handles authentication and redirects to the appropriate dashboard
-    based on user role. Also checks if the user's account has been approved.
+    View function for the custom login page.
+    Handles both GET and POST requests.
     """
-    email = request.POST.get('login')
-    password = request.POST.get('password')
-    user_role = request.POST.get('user_role', 'member')  # Default to member if not specified
+    if request.user.is_authenticated:
+        # Redirect to appropriate dashboard based on user role
+        if request.user.is_super_admin:
+            return redirect('superadmin:dashboard')
+        elif request.user.is_library_admin:
+            return redirect('library_admin:dashboard')
+        elif request.user.is_staff_member:
+            return redirect('staff:dashboard')
+        else:  # Regular member
+            return redirect('member:dashboard')
 
-    if not email or not password:
-        messages.error(request, "Please enter both email and password.")
-        return redirect('account_login')
-
-    # Authenticate user
-    user = authenticate(request, username=email, password=password)
-
-    if user is not None:
-        if not user.is_active:
-            messages.error(request, "Your account is inactive. Please contact the administrator.")
-            return redirect('account_login')
-
-        # Check if the user's account has been approved (except for admins and staff)
-        if user.user_type == 'MEMBER' and user.approval_status != 'APPROVED':
-            if user.approval_status == 'PENDING':
-                messages.warning(request,
-                    "Your membership request is pending approval by the library administrator. "
-                    "You will receive an email when your request is approved. "
-                    "Please check back later or contact the library for more information."
-                )
-            elif user.approval_status == 'REJECTED':
-                messages.error(request,
-                    "Your membership request has been rejected. "
-                    "Please contact the library administrator for more information."
-                )
-            return redirect('account_login')
-
-        # Log the user in
-        login(request, user)
+    if request.method == 'POST':
+        email = request.POST.get('login')
+        password = request.POST.get('password')
 
         # Get the user role from the form
+        # First try to get it from the hidden input field
         user_role = request.POST.get('user_role', 'member')
 
-        # Redirect based on user role
-        if user_role == 'super_admin' and user.is_super_admin:
-            return redirect('superadmin:dashboard')
-        elif user_role == 'library_admin' and user.is_library_admin:
-            return redirect('library_admin:dashboard')
-        elif user_role == 'staff' and user.is_staff_member:
-            return redirect('staff:dashboard')
-        else:  # Regular member or fallback
-            return redirect('member:dashboard')
-    else:
-        messages.error(request, "Invalid email or password. Please try again.")
-        return redirect('account_login')
+        # If that's not set, try to get it from the radio buttons
+        if not user_role or user_role == '':
+            login_role = request.POST.get('login-role')
+            if login_role:
+                user_role = login_role
+
+        print(f"Form data: {request.POST}")
+        print(f"Selected user_role: {user_role}")
+
+        # Validate input
+        if not email:
+            messages.error(request, "Please enter your email address.")
+            return render(request, 'accounts/login.html', {'email_error': True})
+
+        if not password:
+            messages.error(request, "Please enter your password.")
+            return render(request, 'accounts/login.html', {'password_error': True, 'email': email})
+
+        # Authenticate user
+        user = authenticate(request, username=email, password=password)
+
+        if user is not None:
+            if not user.is_active:
+                messages.error(request, "Your account is inactive. Please contact the administrator.")
+                return render(request, 'accounts/login.html', {'email': email})
+
+            # Check if the user's account has been approved (except for admins and staff)
+            if user.user_type == 'MEMBER' and user.approval_status != 'APPROVED':
+                if user.approval_status == 'PENDING':
+                    messages.warning(request,
+                        "Your membership request is pending approval by the library administrator. "
+                        "You will receive an email when your request is approved. "
+                        "Please check back later or contact the library for more information."
+                    )
+                elif user.approval_status == 'REJECTED':
+                    messages.error(request,
+                        "Your membership request has been rejected. "
+                        "Please contact the library administrator for more information."
+                    )
+                return render(request, 'accounts/login.html', {'email': email})
+
+            # Print debug information
+            print(f"User role from form: {user_role}")
+            print(f"User is_super_admin: {user.is_super_admin}")
+            print(f"User is_library_admin: {user.is_library_admin}")
+            print(f"User is_staff_member: {user.is_staff_member}")
+
+            # Check if the selected role matches the user's actual role
+            role_mismatch = False
+
+            # Only check role match if the user explicitly selected a role other than their highest role
+            if user.is_super_admin:
+                # Super admin can log in as any role
+                role_mismatch = False
+            elif user.is_library_admin:
+                # Library admin can't log in as super admin
+                if user_role == 'super_admin':
+                    role_mismatch = True
+            elif user.is_staff_member:
+                # Staff can't log in as super admin or library admin
+                if user_role in ['super_admin', 'library_admin']:
+                    role_mismatch = True
+            else:  # Regular member
+                # Member can only log in as member
+                if user_role in ['super_admin', 'library_admin', 'staff']:
+                    role_mismatch = True
+
+            if role_mismatch:
+                messages.error(request,
+                    "The selected role does not match your account type. "
+                    "Please select the correct role and try again."
+                )
+                return render(request, 'accounts/login.html', {'email': email, 'role_error': True})
+
+            # Log the user in
+            login(request, user)
+
+            # Redirect based on user role
+            if user_role == 'super_admin' and user.is_super_admin:
+                return redirect('superadmin:dashboard')
+            elif user_role == 'library_admin' and user.is_library_admin:
+                return redirect('library_admin:dashboard')
+            elif user_role == 'staff' and user.is_staff_member:
+                return redirect('staff:dashboard')
+            else:  # Regular member or fallback
+                return redirect('member:dashboard')
+        else:
+            messages.error(request, "Invalid email or password. Please try again.")
+            return render(request, 'accounts/login.html', {'email': email, 'auth_error': True})
+
+    # GET request
+    return render(request, 'accounts/login.html')
+

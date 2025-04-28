@@ -102,7 +102,7 @@
                         <i class="fas fa-ellipsis-v"></i>
                     </button>
                     <div class="dropdown-menu dropdown-menu-end admin-pro-dropdown-menu">
-                        <a class="dropdown-item" href="{% url 'superadmin:libraries' %}">
+                        <a class="dropdown-item" href="{% url 'core:admin_libraries' %}">
                             <i class="fas fa-list me-2"></i> View All Libraries
                         </a>
                         <a class="dropdown-item" href="{% url 'libraries:manage_libraries' %}">
@@ -168,7 +168,7 @@
                         <i class="fas fa-ellipsis-v"></i>
                     </button>
                     <div class="dropdown-menu dropdown-menu-end admin-pro-dropdown-menu">
-                        <a class="dropdown-item" href="{% url 'superadmin:users' %}">
+                        <a class="dropdown-item" href="{% url 'core:admin_users' %}">
                             <i class="fas fa-list me-2"></i> View All Users
                         </a>
                         <a class="dropdown-item" href="{% url 'accounts:user_add' %}">
@@ -232,16 +232,16 @@
                         <i class="fas fa-ellipsis-v"></i>
                     </button>
                     <div class="dropdown-menu dropdown-menu-end admin-pro-dropdown-menu">
-                        <a class="dropdown-item" href="{% url 'superadmin:transactions' %}">
+                        <a class="dropdown-item" href="{% url 'core:admin_transactions' %}">
                             <i class="fas fa-list me-2"></i> View All Transactions
                         </a>
-                        <a class="dropdown-item" href="{% url 'superadmin:transactions' %}?type=BORROW">
+                        <a class="dropdown-item" href="{% url 'core:admin_transactions' %}?type=BORROW">
                             <i class="fas fa-arrow-circle-down me-2"></i> View Borrows
                         </a>
-                        <a class="dropdown-item" href="{% url 'superadmin:transactions' %}?type=RETURN">
+                        <a class="dropdown-item" href="{% url 'core:admin_transactions' %}?type=RETURN">
                             <i class="fas fa-arrow-circle-up me-2"></i> View Returns
                         </a>
-                        <a class="dropdown-item" href="{% url 'superadmin:transactions' %}?type=RESERVE">
+                        <a class="dropdown-item" href="{% url 'core:admin_transactions' %}?type=RESERVE">
                             <i class="fas fa-clock me-2"></i> View Reservations
                         </a>
                     </div>

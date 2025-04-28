@@ -39,7 +39,7 @@ def dashboard(request):
 
     # Redirect to role-specific dashboards
     if user.is_super_admin:
-        return redirect('superadmin:dashboard')
+        return redirect('core:admin_panel')
     elif user.is_library_admin:
         return redirect('library_admin:dashboard')
     elif user.is_staff_member:
@@ -60,34 +60,34 @@ def admin_login(request):
     """View function for the custom admin login page."""
     if request.user.is_authenticated:
         if request.user.is_super_admin:
-            return redirect('superadmin:dashboard')
+            return redirect('core:admin_panel')
         elif request.user.is_library_admin:
             return redirect('library_admin:dashboard')
         else:
             return redirect('core:dashboard')
 
-    return render(request, 'account/login.html')
+    return render(request, 'accounts/login.html')
 
 def admin_logout(request):
     """View function for the custom admin logout page."""
     if not request.user.is_authenticated:
         return redirect('core:admin_login')
 
-    return render(request, 'account/logout.html')
+    return render(request, 'accounts/logout.html')
 
 def user_logout(request):
     """View function for the custom user logout page."""
     if not request.user.is_authenticated:
         return redirect('account_login')
 
-    return render(request, 'account/logout.html')
+    return render(request, 'accounts/logout.html')
 
 def user_login(request):
     """View function for the custom user login page."""
     if request.user.is_authenticated:
         return redirect('core:dashboard')
 
-    return render(request, 'account/login.html')
+    return render(request, 'accounts/login.html')
 
 # Custom Admin Panel Views
 def is_super_admin(user):
@@ -102,7 +102,7 @@ def is_library_admin(user):
 @user_passes_test(is_super_admin)
 def admin_panel(request):
     """View function for the custom super admin panel - redirects to superadmin dashboard."""
-    return redirect('superadmin:dashboard')
+    return redirect('super_admin:dashboard')
 
 @login_required
 @user_passes_test(is_super_admin)
@@ -151,7 +151,7 @@ def admin_libraries(request):
         'sort': sort,
     }
 
-    return render(request, 'superadmin/libraries/library_list.html', context)
+    return render(request, 'super_admin/libraries/library_list.html', context)
 
 @login_required
 @user_passes_test(is_super_admin)
@@ -201,7 +201,7 @@ def admin_books(request):
         'query': query,
     }
 
-    return render(request, 'superadmin/books/book_list.html', context)
+    return render(request, 'super_admin/books/book_list.html', context)
 
 @login_required
 @user_passes_test(is_super_admin)
@@ -255,7 +255,7 @@ def admin_transactions(request):
         'status': status,
     }
 
-    return render(request, 'superadmin/transactions/transaction_list.html', context)
+    return render(request, 'super_admin/transactions/transaction_list.html', context)
 
 @login_required
 @user_passes_test(is_super_admin)

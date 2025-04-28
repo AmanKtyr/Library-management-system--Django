@@ -87,6 +87,9 @@ def dashboard(request):
         'pending_requests_count': pending_requests_count,
     }
 
+    # Add welcome back message
+    messages.success(request, f"Welcome back, {user.get_full_name() or user.email}! You are logged in as a Library Admin.")
+
     return render(request, 'library_admin/dashboard/index.html', context)
 
 @login_required
