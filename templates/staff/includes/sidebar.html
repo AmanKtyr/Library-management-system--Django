@@ -1,0 +1,55 @@
+<div class="admin-pro-menu-category">Main</div>
+<a href="{% url 'staff:dashboard' %}" class="admin-pro-menu-item {% if request.path == '/staff/dashboard/' %}active{% endif %}">
+    <i class="fas fa-tachometer-alt"></i>
+    <span>Dashboard</span>
+</a>
+
+<div class="admin-pro-menu-category">Circulation</div>
+<a href="{% url 'staff:issue_book' %}" class="admin-pro-menu-item {% if request.path == '/staff/issue-book/' %}active{% endif %}">
+    <i class="fas fa-arrow-circle-right"></i>
+    <span>Issue Book</span>
+</a>
+<a href="{% url 'staff:return_book' %}" class="admin-pro-menu-item {% if request.path == '/staff/return-book/' %}active{% endif %}">
+    <i class="fas fa-arrow-circle-left"></i>
+    <span>Return Book</span>
+</a>
+<a href="{% url 'staff:transactions' %}" class="admin-pro-menu-item {% if request.path == '/staff/transactions/' %}active{% endif %}">
+    <i class="fas fa-exchange-alt"></i>
+    <span>Transactions</span>
+</a>
+
+<div class="admin-pro-menu-category">Catalog</div>
+<a href="{% url 'staff:books' %}" class="admin-pro-menu-item {% if request.path == '/staff/books/' %}active{% endif %}">
+    <i class="fas fa-book"></i>
+    <span>Books</span>
+</a>
+<a href="{% url 'staff:book_copies' %}" class="admin-pro-menu-item {% if request.path == '/staff/book-copies/' %}active{% endif %}">
+    <i class="fas fa-copy"></i>
+    <span>Book Copies</span>
+</a>
+
+<div class="admin-pro-menu-category">Members</div>
+<a href="{% url 'staff:members' %}" class="admin-pro-menu-item {% if request.path == '/staff/members/' %}active{% endif %}">
+    <i class="fas fa-users"></i>
+    <span>Members</span>
+</a>
+<a href="{% url 'staff:membership_requests' %}" class="admin-pro-menu-item {% if request.path == '/staff/membership-requests/' %}active{% endif %}">
+    <i class="fas fa-user-clock"></i>
+    <span>Membership Requests</span>
+</a>
+
+<div class="admin-pro-menu-category">Reports</div>
+<a href="{% url 'staff:reports' %}" class="admin-pro-menu-item {% if request.path == '/staff/reports/' %}active{% endif %}">
+    <i class="fas fa-chart-bar"></i>
+    <span>Reports</span>
+</a>
+
+<div class="admin-pro-menu-category">Settings</div>
+<a href="{% url 'staff:profile' %}" class="admin-pro-menu-item {% if request.path == '/staff/profile/' %}active{% endif %}">
+    <i class="fas fa-user"></i>
+    <span>My Profile</span>
+</a>
+<a href="{% url 'staff:help' %}" class="admin-pro-menu-item {% if request.path == '/staff/help/' %}active{% endif %}">
+    <i class="fas fa-question-circle"></i>
+    <span>Help</span>
+</a>

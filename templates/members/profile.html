@@ -1,0 +1,229 @@
+{% extends 'members/base.html' %}
+{% load static %}
+
+{% block title %}My Profile - Library Management System{% endblock %}
+{% block member_title %}My Profile{% endblock %}
+
+{% block member_actions %}
+<a href="{% url 'account_change_password' %}" class="btn btn-outline-primary">
+    <i class="fas fa-lock me-1"></i> Change Password
+</a>
+{% endblock %}
+
+{% block member_content %}
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+                {% if user.profile_picture %}
+                    <img src="{{ user.profile_picture.url }}" alt="{{ user.get_full_name }}" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                {% else %}
+                    <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 150px; height: 150px;">
+                        <span class="display-4 text-secondary">{{ user.get_initials }}</span>
+                    </div>
+                {% endif %}
+                <h4>{{ user.get_full_name|default:user.email }}</h4>
+                <p class="text-muted">{{ user.email }}</p>
+
+                <div class="d-grid gap-2 mt-3">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                        <i class="fas fa-edit me-1"></i> Edit Profile
+                    </button>
+                    <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#uploadPhotoModal">
+                        <i class="fas fa-camera me-1"></i> Change Photo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Personal Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <p class="text-muted mb-0">Full Name</p>
+                    </div>
+                    <div class="col-md-8">
+                        <p class="mb-0">{{ user.get_full_name|default:"Not provided" }}</p>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <p class="text-muted mb-0">Email Address</p>
+                    </div>
+                    <div class="col-md-8">
+                        <p class="mb-0">{{ user.email }}</p>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <p class="text-muted mb-0">Phone Number</p>
+                    </div>
+                    <div class="col-md-8">
+                        <p class="mb-0">{{ user.phone_number|default:"Not provided" }}</p>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <p class="text-muted mb-0">Date of Birth</p>
+                    </div>
+                    <div class="col-md-8">
+                        <p class="mb-0">{{ user.date_of_birth|date:"F j, Y"|default:"Not provided" }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <p class="text-muted mb-0">Address</p>
+                    </div>
+                    <div class="col-md-8">
+                        <p class="mb-0">{{ user.address|default:"Not provided"|linebreaksbr }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Account Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <p class="text-muted mb-0">Account Type</p>
+                    </div>
+                    <div class="col-md-8">
+                        <p class="mb-0">
+                            {% if user.is_super_admin %}
+                            <span class="badge bg-primary">Super Admin</span>
+                            {% elif user.is_library_admin %}
+                            <span class="badge bg-success">Library Admin</span>
+                            {% elif user.is_staff_member %}
+                            <span class="badge bg-info">Staff</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Member</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <p class="text-muted mb-0">Account Status</p>
+                    </div>
+                    <div class="col-md-8">
+                        <p class="mb-0">
+                            {% if user.is_active %}
+                            <span class="badge bg-success">Active</span>
+                            {% else %}
+                            <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <p class="text-muted mb-0">Member Since</p>
+                    </div>
+                    <div class="col-md-8">
+                        <p class="mb-0">{{ user.date_joined|date:"F j, Y" }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <p class="text-muted mb-0">Last Login</p>
+                    </div>
+                    <div class="col-md-8">
+                        <p class="mb-0">{{ user.last_login|date:"F j, Y g:i A"|default:"Never" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="first_name" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.first_name }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="last_name" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user.last_name }}">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" readonly>
+                        <div class="form-text">Email address cannot be changed.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone_number" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone_number" name="phone_number" value="{{ user.phone_number }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="date_of_birth" class="form-label">Date of Birth</label>
+                        <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" value="{{ user.date_of_birth|date:'Y-m-d' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <textarea class="form-control" id="address" name="address" rows="3">{{ user.address }}</textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Photo Modal -->
+<div class="modal fade" id="uploadPhotoModal" tabindex="-1" aria-labelledby="uploadPhotoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadPhotoModalLabel">Change Profile Photo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="profile_picture" class="form-label">Select a new profile picture</label>
+                        <input class="form-control" type="file" id="profile_picture" name="profile_picture" accept="image/*">
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="remove_picture" name="remove_picture">
+                            <label class="form-check-label" for="remove_picture">
+                                Remove current profile picture
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Upload</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

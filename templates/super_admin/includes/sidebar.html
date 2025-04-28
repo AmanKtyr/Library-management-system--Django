@@ -1,0 +1,29 @@
+<div class="admin-pro-menu-category">Main</div>
+<a href="{% url 'core:admin_panel' %}" class="admin-pro-menu-item {% if request.path == '/admin-panel/' %}active{% endif %}">
+    <i class="fas fa-tachometer-alt"></i>
+    <span>Dashboard</span>
+</a>
+
+<div class="admin-pro-menu-category">Management</div>
+<a href="{% url 'core:admin_libraries' %}" class="admin-pro-menu-item {% if request.path == '/admin-panel/libraries/' %}active{% endif %}">
+    <i class="fas fa-building"></i>
+    <span>Libraries</span>
+</a>
+<a href="{% url 'core:admin_users' %}" class="admin-pro-menu-item {% if request.path == '/admin-panel/users/' %}active{% endif %}">
+    <i class="fas fa-users"></i>
+    <span>Users</span>
+</a>
+<a href="{% url 'core:admin_books' %}" class="admin-pro-menu-item {% if request.path == '/admin-panel/books/' %}active{% endif %}">
+    <i class="fas fa-book"></i>
+    <span>Books</span>
+</a>
+
+<div class="admin-pro-menu-category">Operations</div>
+<a href="{% url 'core:admin_transactions' %}" class="admin-pro-menu-item {% if request.path == '/admin-panel/transactions/' %}active{% endif %}">
+    <i class="fas fa-exchange-alt"></i>
+    <span>Transactions</span>
+</a>
+<a href="{% url 'core:admin_reports' %}" class="admin-pro-menu-item {% if request.path == '/admin-panel/reports/' %}active{% endif %}">
+    <i class="fas fa-chart-bar"></i>
+    <span>Reports</span>
+</a>

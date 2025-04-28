@@ -82,7 +82,7 @@ def dashboard(request):
         'top_books': top_books,
     }
 
-    return render(request, 'superadmin/dashboard/index.html', context)
+    return render(request, 'super_admin/dashboard/index.html', context)
 
 @login_required
 @user_passes_test(is_super_admin)
@@ -123,7 +123,7 @@ def manage_users(request):
         'user_type': user_type,
     }
 
-    return render(request, 'superadmin/users/user_list.html', context)
+    return render(request, 'super_admin/users/user_list.html', context)
 
 @login_required
 @user_passes_test(is_super_admin)

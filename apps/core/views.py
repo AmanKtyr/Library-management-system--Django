@@ -436,7 +436,7 @@ def admin_reports(request):
         'daily_data': daily_data,
     }
 
-    return render(request, 'superadmin/transactions/transaction_reports.html', context)
+    return render(request, 'super_admin/transactions/transaction_reports.html', context)
 
 @login_required
 @user_passes_test(is_library_admin)
