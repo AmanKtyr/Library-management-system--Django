@@ -60,6 +60,15 @@ def dashboard(request):
         return_date__isnull=True
     )
 
+    # Get pending membership requests
+    pending_requests = MembershipRequest.objects.filter(
+        library=library,
+        status='PENDING'
+    ).order_by('-request_date')
+
+    # Count of pending membership requests
+    pending_requests_count = pending_requests.count()
+
     context = {
         'library': library,
         'total_books': total_books,
@@ -74,6 +83,8 @@ def dashboard(request):
         'recent_transactions': recent_transactions,
         'transactions_count': transactions_count,
         'overdue_books': overdue_books,
+        'pending_requests': pending_requests[:5],
+        'pending_requests_count': pending_requests_count,
     }
 
     return render(request, 'library_admin/dashboard/index.html', context)
@@ -300,6 +311,11 @@ def membership_requests(request):
     # Get all membership requests for this library
     membership_requests = MembershipRequest.objects.filter(library=library).order_by('-request_date')
 
+    # Get counts for different statuses
+    pending_requests_count = MembershipRequest.objects.filter(library=library, status='PENDING').count()
+    approved_requests_count = MembershipRequest.objects.filter(library=library, status='APPROVED').count()
+    rejected_requests_count = MembershipRequest.objects.filter(library=library, status='REJECTED').count()
+
     # Search functionality
     search_query = request.GET.get('q', '')
     if search_query:
@@ -324,6 +340,9 @@ def membership_requests(request):
         'membership_requests': page_obj,
         'search_query': search_query,
         'status': status,
+        'pending_requests_count': pending_requests_count,
+        'approved_requests_count': approved_requests_count,
+        'rejected_requests_count': rejected_requests_count,
     }
 
     return render(request, 'library_admin/membership_requests.html', context)

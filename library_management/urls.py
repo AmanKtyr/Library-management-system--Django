@@ -38,6 +38,7 @@ urlpatterns = [
     # Role-based URLs
     path('superadmin/', include('apps.superadmin.urls')),
     path('library-admin/', include('apps.library_admin.urls')),
+    path('staff/', include('apps.staff.urls')),
     path('member/', include('apps.member.urls')),
 ]
 

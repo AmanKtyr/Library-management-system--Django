@@ -43,25 +43,8 @@ def dashboard(request):
     elif user.is_library_admin:
         return redirect('library_admin:dashboard')
     elif user.is_staff_member:
-        # For now, staff members still use the core dashboard
-        # This could be updated later with a dedicated staff dashboard
-        libraries = user.staffed_libraries.all()
-
-        if libraries.exists():
-            library = libraries.first()
-            book_copies = BookCopy.objects.filter(library=library)
-            transactions = Transaction.objects.filter(library=library, processed_by=user)
-
-            context = {
-                'library': library,
-                'book_copies': book_copies,
-                'transactions': transactions,
-            }
-
-            return render(request, 'member/dashboard/staff.html', context)
-        else:
-            messages.warning(request, "You are not assigned to any library yet.")
-            return redirect('core:home')
+        # Redirect to the dedicated staff dashboard
+        return redirect('staff:dashboard')
     else:  # Regular member
         return redirect('member:dashboard')
 

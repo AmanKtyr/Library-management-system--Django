@@ -1,0 +1,242 @@
+{% extends 'staff/base.html' %}
+{% load static %}
+
+{% block title %}Staff Dashboard - Library Management System{% endblock %}
+{% block breadcrumb_title %}Dashboard{% endblock %}
+{% block page_title %}{{ library.name }} Dashboard{% endblock %}
+
+{% block content %}
+<div class="staff-welcome-message mb-4">
+    <div class="staff-welcome-icon">
+        <i class="fas fa-tachometer-alt"></i>
+    </div>
+    <div class="staff-welcome-content">
+        <h2>Welcome back, {{ user.get_full_name|default:"Staff Member" }}!</h2>
+        <p>Here's what's happening at {{ library.name }} today.</p>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-6 col-lg-3 mb-3">
+        <div class="staff-card">
+            <div class="staff-card-body">
+                <div class="staff-card-icon bg-primary">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="staff-card-info">
+                    <h5 class="staff-card-title">Total Books</h5>
+                    <h3 class="staff-card-value">{{ total_books }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3 mb-3">
+        <div class="staff-card">
+            <div class="staff-card-body">
+                <div class="staff-card-icon bg-success">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="staff-card-info">
+                    <h5 class="staff-card-title">Active Members</h5>
+                    <h3 class="staff-card-value">{{ total_members }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3 mb-3">
+        <div class="staff-card">
+            <div class="staff-card-body">
+                <div class="staff-card-icon bg-warning">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="staff-card-info">
+                    <h5 class="staff-card-title">Due Today</h5>
+                    <h3 class="staff-card-value">{{ due_today.count }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3 mb-3">
+        <div class="staff-card">
+            <div class="staff-card-body">
+                <div class="staff-card-icon bg-info">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <div class="staff-card-info">
+                    <h5 class="staff-card-title">Your Transactions</h5>
+                    <h3 class="staff-card-value">{{ recent_transactions.count }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="staff-card">
+            <div class="staff-card-header">
+                <h5 class="staff-card-title">Quick Actions</h5>
+            </div>
+            <div class="staff-card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'staff:issue_book' %}" class="staff-quick-action">
+                            <div class="staff-quick-action-icon bg-primary">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                            <div class="staff-quick-action-text">
+                                <h6>Issue Book</h6>
+                                <p>Issue a book to a member</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'staff:return_book' %}" class="staff-quick-action">
+                            <div class="staff-quick-action-icon bg-success">
+                                <i class="fas fa-arrow-left"></i>
+                            </div>
+                            <div class="staff-quick-action-text">
+                                <h6>Return Book</h6>
+                                <p>Process a book return</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'staff:members' %}" class="staff-quick-action">
+                            <div class="staff-quick-action-icon bg-info">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="staff-quick-action-text">
+                                <h6>Manage Members</h6>
+                                <p>View and manage members</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'staff:books' %}" class="staff-quick-action">
+                            <div class="staff-quick-action-icon bg-warning">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="staff-quick-action-text">
+                                <h6>Manage Books</h6>
+                                <p>View and manage books</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Transactions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="staff-card">
+            <div class="staff-card-header">
+                <h5 class="staff-card-title">Recent Transactions</h5>
+                <div class="staff-card-actions">
+                    <a href="{% url 'staff:transactions' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+            </div>
+            <div class="staff-card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Member</th>
+                                <th>Book</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in recent_transactions %}
+                            <tr>
+                                <td>{{ transaction.transaction_number }}</td>
+                                <td>{{ transaction.user.get_full_name }}</td>
+                                <td>{{ transaction.book_copy.book.title }}</td>
+                                <td>
+                                    {% if transaction.transaction_type == 'BORROW' %}
+                                    <span class="badge bg-primary">Borrow</span>
+                                    {% elif transaction.transaction_type == 'RETURN' %}
+                                    <span class="badge bg-success">Return</span>
+                                    {% elif transaction.transaction_type == 'RESERVE' %}
+                                    <span class="badge bg-warning">Reserve</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">{{ transaction.transaction_type }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ transaction.transaction_date|date:"M d, Y" }}</td>
+                                <td>
+                                    {% if transaction.status == 'COMPLETED' %}
+                                    <span class="badge bg-success">Completed</span>
+                                    {% elif transaction.status == 'PENDING' %}
+                                    <span class="badge bg-warning">Pending</span>
+                                    {% elif transaction.status == 'CANCELLED' %}
+                                    <span class="badge bg-danger">Cancelled</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">{{ transaction.status }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center">No recent transactions found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Books Due Today -->
+<div class="row">
+    <div class="col-12">
+        <div class="staff-card">
+            <div class="staff-card-header">
+                <h5 class="staff-card-title">Books Due Today</h5>
+            </div>
+            <div class="staff-card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Book</th>
+                                <th>Member</th>
+                                <th>Borrowed On</th>
+                                <th>Due Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in due_today %}
+                            <tr>
+                                <td>{{ transaction.book_copy.book.title }}</td>
+                                <td>{{ transaction.user.get_full_name }}</td>
+                                <td>{{ transaction.transaction_date|date:"M d, Y" }}</td>
+                                <td>{{ transaction.due_date|date:"M d, Y" }}</td>
+                                <td>
+                                    <a href="{% url 'staff:return_book' %}?transaction={{ transaction.transaction_number }}" class="btn btn-sm btn-primary">Process Return</a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">No books due today.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

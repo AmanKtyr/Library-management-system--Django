@@ -34,7 +34,8 @@ class SimpleSignupView(FormView):
         messages.success(
             self.request,
             f"Your account has been created and your membership request for {library_name} has been submitted. "
-            f"You will receive an email when your request is approved by the library administrator."
+            f"IMPORTANT: You will not be able to login until your request is approved by the library administrator. "
+            f"You will receive an email when your request is approved."
         )
 
         # Redirect to login page
@@ -189,13 +190,14 @@ def custom_login(request):
         # Check if the user's account has been approved (except for admins and staff)
         if user.user_type == 'MEMBER' and user.approval_status != 'APPROVED':
             if user.approval_status == 'PENDING':
-                messages.error(request,
-                    "Your account is pending approval by the library administrator. "
-                    "You will receive an email when your account is approved."
+                messages.warning(request,
+                    "Your membership request is pending approval by the library administrator. "
+                    "You will receive an email when your request is approved. "
+                    "Please check back later or contact the library for more information."
                 )
             elif user.approval_status == 'REJECTED':
                 messages.error(request,
-                    "Your account registration has been rejected. "
+                    "Your membership request has been rejected. "
                     "Please contact the library administrator for more information."
                 )
             return redirect('account_login')
@@ -212,7 +214,7 @@ def custom_login(request):
         elif user_role == 'library_admin' and user.is_library_admin:
             return redirect('library_admin:dashboard')
         elif user_role == 'staff' and user.is_staff_member:
-            return redirect('core:dashboard')
+            return redirect('staff:dashboard')
         else:  # Regular member or fallback
             return redirect('member:dashboard')
     else:

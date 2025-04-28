@@ -530,6 +530,24 @@
     </div>
 </div>
 
+{% if pending_requests_count > 0 %}
+<!-- Pending Membership Requests Alert -->
+<div class="alert alert-warning mb-4 fade-in-up d-flex align-items-center" style="animation-delay: 0.15s">
+    <div style="font-size: 24px; margin-right: 15px;">
+        <i class="fas fa-user-plus"></i>
+    </div>
+    <div class="flex-grow-1">
+        <h4 class="alert-heading mb-1">Pending Membership Requests</h4>
+        <p class="mb-0">You have <strong>{{ pending_requests_count }}</strong> pending membership {% if pending_requests_count == 1 %}request{% else %}requests{% endif %} that {% if pending_requests_count == 1 %}requires{% else %}require{% endif %} your approval.</p>
+    </div>
+    <div>
+        <a href="{% url 'library_admin:membership_requests' %}" class="btn btn-warning">
+            <i class="fas fa-eye me-1"></i> View Requests
+        </a>
+    </div>
+</div>
+{% endif %}
+
     <!-- Library Info -->
     <div class="row mb-4">
         <div class="col-12">
@@ -793,61 +811,61 @@
             </div>
         </div>
 
-        <!-- System Health Section -->
+        <!-- Pending Membership Requests Section -->
         <div class="col-md-4 fade-in-up" style="animation-delay: 0.4s">
             <div class="admin-pro-card">
-                <div class="admin-pro-card-header">
+                <div class="admin-pro-card-header d-flex justify-content-between align-items-center">
                     <h3 class="admin-pro-card-title">
-                        <i class="fas fa-heartbeat me-2 text-danger"></i>System Health
+                        <i class="fas fa-user-plus me-2 text-warning"></i>Pending Requests
                     </h3>
+                    <a href="{% url 'library_admin:membership_requests' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
+                        <i class="fas fa-external-link-alt"></i> View All
+                    </a>
                 </div>
-                <div class="admin-pro-card-body">
-                    <div class="system-health-item mb-3">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span>Server Status</span>
-                            <span class="badge bg-success">Operational</span>
+                <div class="admin-pro-card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for request in pending_requests %}
+                        <div class="list-group-item d-flex align-items-center p-3">
+                            <div class="flex-shrink-0 me-3">
+                                {% if request.user.profile_picture %}
+                                <img src="{{ request.user.profile_picture.url }}" alt="{{ request.user.get_full_name }}" class="rounded-circle" width="40" height="40">
+                                {% else %}
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0">{{ request.user.get_full_name }}</h6>
+                                <small class="text-muted">{{ request.user.email }}</small>
+                                <div>
+                                    <small class="text-muted">Requested: {{ request.request_date|date:"M d, Y" }}</small>
+                                </div>
+                            </div>
+                            <div class="ms-2">
+                                <a href="{% url 'library_admin:membership_requests' %}?id={{ request.id }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </div>
                         </div>
-                        <div class="progress" style="height: 8px;">
-                            <div class="progress-bar bg-success" role="progressbar" style="width: 95%"></div>
+                        {% empty %}
+                        <div class="p-4 text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-check-circle text-success" style="font-size: 48px;"></i>
+                            </div>
+                            <h5>No Pending Requests</h5>
+                            <p class="text-muted">All membership requests have been processed.</p>
                         </div>
+                        {% endfor %}
                     </div>
 
-                    <div class="system-health-item mb-3">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span>Database Performance</span>
-                            <span class="badge bg-success">Excellent</span>
-                        </div>
-                        <div class="progress" style="height: 8px;">
-                            <div class="progress-bar bg-success" role="progressbar" style="width: 90%"></div>
-                        </div>
+                    {% if pending_requests_count > 5 %}
+                    <div class="p-3 text-center border-top">
+                        <a href="{% url 'library_admin:membership_requests' %}" class="text-decoration-none">
+                            View all {{ pending_requests_count }} pending requests <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
                     </div>
-
-                    <div class="system-health-item mb-3">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span>Storage Usage</span>
-                            <span class="badge bg-warning">65%</span>
-                        </div>
-                        <div class="progress" style="height: 8px;">
-                            <div class="progress-bar bg-warning" role="progressbar" style="width: 65%"></div>
-                        </div>
-                    </div>
-
-                    <div class="system-health-item mb-3">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span>Memory Usage</span>
-                            <span class="badge bg-info">42%</span>
-                        </div>
-                        <div class="progress" style="height: 8px;">
-                            <div class="progress-bar bg-info" role="progressbar" style="width: 42%"></div>
-                        </div>
-                    </div>
-
-                    <div class="d-flex justify-content-between align-items-center mt-4">
-                        <span class="text-muted small">Last updated: {% now "g:i A" %}</span>
-                        <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
-                            <i class="fas fa-sync-alt"></i> Refresh
-                        </button>
-                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -905,6 +923,17 @@
                                 <div>
                                     <h4 class="h6 mb-1">Manage Members</h4>
                                     <small class="text-muted">Add, edit or remove members</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="{% url 'library_admin:membership_requests' %}" class="quick-action-card d-flex align-items-center p-3 rounded-3 text-decoration-none">
+                                <div class="quick-action-icon bg-warning rounded-circle p-3 me-3">
+                                    <i class="fas fa-user-plus text-white"></i>
+                                </div>
+                                <div>
+                                    <h4 class="h6 mb-1">Membership Requests</h4>
+                                    <small class="text-muted">{% if pending_requests_count > 0 %}<span class="text-danger">{{ pending_requests_count }} pending</span>{% else %}No pending requests{% endif %}</small>
                                 </div>
                             </a>
                         </div>

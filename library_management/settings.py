@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     # Role-based apps
     'apps.superadmin',
     'apps.library_admin',
+    'apps.staff',
     'apps.member',
 ]
 

@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage {{ library.name }} Members - Library Management System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'core:home' %}">Home</a></li>
+                    {% if user.is_super_admin %}
+                        <li class="breadcrumb-item"><a href="{% url 'libraries:manage_libraries' %}">Manage Libraries</a></li>
+                    {% endif %}
+                    <li class="breadcrumb-item"><a href="{% url 'libraries:manage_library' slug=library.slug %}">Manage {{ library.name }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Members</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="mb-2">{{ library.name }} Members</h1>
+            <p class="lead">Manage all members of this library</p>
+        </div>
+        <div class="col-md-4 text-end d-flex align-items-center justify-content-end">
+            <form class="d-flex" method="GET" action="">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search members..." name="q" value="{{ search_query }}">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Library Members</h5>
+            <span class="badge bg-light text-dark">Total: {{ memberships.count }}</span>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Member</th>
+                            <th>Membership #</th>
+                            <th>Plan</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for membership in memberships %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if membership.user.profile_picture %}
+                                            <img src="{{ membership.user.profile_picture.url }}" alt="{{ membership.user.get_full_name }}" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                        {% else %}
+                                            <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                                <span class="text-white">{{ membership.user.get_initials }}</span>
+                                            </div>
+                                        {% endif %}
+                                        <div>
+                                            <h6 class="mb-0">{{ membership.user.get_full_name|default:membership.user.email }}</h6>
+                                            <small class="text-muted">{{ membership.user.email }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ membership.membership_number }}</td>
+                                <td>{{ membership.plan.name }}</td>
+                                <td>{{ membership.start_date|date:"M d, Y" }}</td>
+                                <td>{{ membership.end_date|date:"M d, Y" }}</td>
+                                <td>
+                                    {% if membership.is_expired %}
+                                        <span class="badge bg-danger">Expired</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="{% url 'transactions:membership_detail' membership_number=membership.membership_number %}" class="btn btn-sm btn-info">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{% url 'admin:transactions_membership_change' membership.id %}" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center">No members in this library yet.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Membership Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h3>{{ memberships.count }}</h3>
+                                    <p class="mb-0">Total Members</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card bg-success text-white">
+                                <div class="card-body text-center">
+                                    <h3>
+                                        {% with active_count=0 %}
+                                            {% for membership in memberships %}
+                                                {% if not membership.is_expired and membership.is_active %}
+                                                    {% with active_count=active_count|add:1 %}{% endwith %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            {{ active_count }}
+                                        {% endwith %}
+                                    </h3>
+                                    <p class="mb-0">Active Members</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card bg-danger text-white">
+                                <div class="card-body text-center">
+                                    <h3>
+                                        {% with expired_count=0 %}
+                                            {% for membership in memberships %}
+                                                {% if membership.is_expired %}
+                                                    {% with expired_count=expired_count|add:1 %}{% endwith %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            {{ expired_count }}
+                                        {% endwith %}
+                                    </h3>
+                                    <p class="mb-0">Expired Memberships</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card bg-info text-white">
+                                <div class="card-body text-center">
+                                    <h3>{{ library.membership_requests.count }}</h3>
+                                    <p class="mb-0">Pending Requests</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

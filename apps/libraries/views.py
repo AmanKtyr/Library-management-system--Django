@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponseForbidden
+from django.db.models import Q
 from .models import Library
 from apps.books.models import BookCopy
 from apps.transactions.models import Membership
@@ -147,9 +148,20 @@ def manage_library_members(request, slug):
     # Get all memberships for this library
     memberships = Membership.objects.filter(library=library)
 
+    # Search functionality
+    search_query = request.GET.get('q', '')
+    if search_query:
+        memberships = memberships.filter(
+            Q(user__email__icontains=search_query) |
+            Q(user__first_name__icontains=search_query) |
+            Q(user__last_name__icontains=search_query) |
+            Q(membership_number__icontains=search_query)
+        )
+
     context = {
         'library': library,
         'memberships': memberships,
+        'search_query': search_query,
     }
 
     return render(request, 'libraries/manage_library_members.html', context)
