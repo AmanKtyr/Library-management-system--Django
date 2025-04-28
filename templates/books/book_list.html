@@ -3,111 +3,508 @@
 
 {% block title %}Books - Library Management System{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Modern Book List Page Styles */
+    .book-list-container {
+        padding: 2rem 0;
+    }
+
+    .book-list-header {
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .book-list-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+        position: relative;
+        display: inline-block;
+    }
+
+    .book-list-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+        border-radius: 2px;
+    }
+
+    .book-list-subtitle {
+        font-size: 1.25rem;
+        color: var(--medium);
+        margin-top: 1rem;
+    }
+
+    .book-search-card {
+        border: none;
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        margin-bottom: 2.5rem;
+        transition: all var(--transition-normal);
+        background-color: var(--surface);
+    }
+
+    .book-search-card:hover {
+        box-shadow: var(--shadow-lg);
+    }
+
+    .book-search-form {
+        padding: 1.5rem;
+    }
+
+    .book-search-input-group {
+        position: relative;
+        margin-bottom: 1.25rem;
+    }
+
+    .book-search-input {
+        width: 100%;
+        padding: 1rem 1.25rem 1rem 3rem;
+        border-radius: var(--border-radius-lg);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        background-color: var(--surface);
+        transition: all var(--transition-normal);
+        font-size: 1rem;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .book-search-input:focus {
+        border-color: var(--primary-color);
+        box-shadow: var(--shadow-md), 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
+        outline: none;
+    }
+
+    .book-search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--medium);
+        font-size: 1.2rem;
+    }
+
+    .book-filter-select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: var(--border-radius-md);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        background-color: var(--surface);
+        transition: all var(--transition-normal);
+        font-size: 0.95rem;
+        color: var(--medium-dark);
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%234b5563' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 16px 12px;
+        padding-right: 2.5rem;
+    }
+
+    .book-filter-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
+        outline: none;
+    }
+
+    .book-search-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .book-search-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--border-radius-md);
+        font-size: 0.95rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all var(--transition-normal);
+        border: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .book-search-btn i {
+        margin-right: 0.5rem;
+    }
+
+    .book-search-btn-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+    }
+
+    .book-search-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(var(--primary-color-rgb), 0.3);
+        color: white;
+    }
+
+    .book-search-btn-outline {
+        background-color: transparent;
+        border: 1px solid var(--medium-light);
+        color: var(--medium-dark);
+    }
+
+    .book-search-btn-outline:hover {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        transform: translateY(-2px);
+    }
+
+    .book-card {
+        border: none;
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        height: 100%;
+        transition: all var(--transition-normal);
+        background-color: var(--surface);
+        position: relative;
+    }
+
+    .book-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .book-card-cover {
+        position: relative;
+        height: 280px;
+        overflow: hidden;
+    }
+
+    .book-card-cover img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: all 0.5s ease;
+    }
+
+    .book-card:hover .book-card-cover img {
+        transform: scale(1.05);
+    }
+
+    .book-card-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 100%);
+        opacity: 0;
+        transition: all var(--transition-normal);
+    }
+
+    .book-card:hover .book-card-overlay {
+        opacity: 1;
+    }
+
+    .book-card-content {
+        padding: 1.5rem;
+    }
+
+    .book-card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        transition: all var(--transition-fast);
+    }
+
+    .book-card:hover .book-card-title {
+        color: var(--primary-color);
+    }
+
+    .book-card-author {
+        font-size: 0.95rem;
+        color: var(--medium);
+        margin-bottom: 0.75rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .book-card-author a {
+        color: var(--primary-color);
+        text-decoration: none;
+        transition: all var(--transition-fast);
+    }
+
+    .book-card-author a:hover {
+        color: var(--primary-dark);
+        text-decoration: underline;
+    }
+
+    .book-card-categories {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .book-card-category {
+        display: inline-block;
+        padding: 0.3em 0.6em;
+        border-radius: 50rem;
+        font-size: 0.7rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        background-color: rgba(var(--secondary-color-rgb), 0.1);
+        color: var(--secondary-color);
+        transition: all var(--transition-fast);
+    }
+
+    .book-card-category:hover {
+        background-color: var(--secondary-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .book-card-isbn {
+        font-size: 0.85rem;
+        color: var(--medium-light);
+        margin-bottom: 1rem;
+    }
+
+    .book-card-action {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 0;
+        text-align: center;
+        border-radius: var(--border-radius-md);
+        font-weight: 500;
+        text-decoration: none;
+        transition: all var(--transition-normal);
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+    }
+
+    .book-card-action:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(var(--primary-color-rgb), 0.3);
+        color: white;
+    }
+
+    .book-card-action i {
+        margin-right: 0.5rem;
+    }
+
+    .book-empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        background-color: var(--surface);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .book-empty-icon {
+        font-size: 3rem;
+        color: var(--medium-light);
+        margin-bottom: 1.5rem;
+    }
+
+    .book-empty-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--dark);
+    }
+
+    .book-empty-text {
+        font-size: 1.1rem;
+        color: var(--medium);
+        margin-bottom: 0;
+    }
+
+    .book-back-to-top {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: var(--shadow-md);
+        transition: all var(--transition-normal);
+        z-index: 100;
+    }
+
+    .book-back-to-top:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .ripple-effect {
+        position: absolute;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.3);
+        animation: ripple 0.6s linear;
+        transform: scale(0);
+        pointer-events: none;
+    }
+
+    @keyframes ripple {
+        to {
+            transform: scale(2.5);
+            opacity: 0;
+        }
+    }
+
+    /* Dark mode adjustments */
+    [data-bs-theme="dark"] .book-search-input,
+    [data-bs-theme="dark"] .book-filter-select {
+        border-color: rgba(255, 255, 255, 0.1);
+        background-color: rgba(255, 255, 255, 0.05);
+        color: var(--light);
+    }
+
+    [data-bs-theme="dark"] .book-search-btn-outline {
+        border-color: rgba(255, 255, 255, 0.2);
+        color: var(--light);
+    }
+
+    [data-bs-theme="dark"] .book-search-btn-outline:hover {
+        border-color: var(--primary-light);
+        color: var(--primary-light);
+    }
+
+    [data-bs-theme="dark"] .book-filter-select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23e5e7eb' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="mb-4">Books</h1>
-            <p class="lead">Browse our collection of books across all libraries.</p>
-        </div>
+<div class="container book-list-container">
+    <!-- Header -->
+    <div class="book-list-header">
+        <h1 class="book-list-title">Books Collection</h1>
+        <p class="book-list-subtitle">Browse our extensive collection of books across all libraries.</p>
     </div>
 
     <!-- Search Form -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card card-glass fade-in-up">
-                <div class="card-body">
-                    <form method="get" action="{% url 'books:book_list' %}" id="book-search-form">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="search-form">
-                                    <input type="text" name="q" id="search-input" class="form-control" placeholder="Search by title, author, or ISBN" value="{{ query }}">
-                                    <i class="fas fa-search search-icon"></i>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <select name="category" class="form-select">
-                                    <option value="">All Categories</option>
-                                    {% for category in categories %}
-                                        <option value="{{ category.slug }}" {% if selected_category == category.slug %}selected{% endif %}>
-                                            {{ category.name }} ({{ category.book_count }})
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <select name="author" class="form-select">
-                                    <option value="">All Authors</option>
-                                    {% for author in authors %}
-                                        <option value="{{ author.slug }}" {% if selected_author == author.slug %}selected{% endif %}>
-                                            {{ author.name }} ({{ author.book_count }})
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-12 text-end">
-                                <button type="submit" class="btn btn-gradient-primary">
-                                    <i class="fas fa-search me-2"></i> Search Books
-                                </button>
-                                <button type="reset" class="btn btn-outline-secondary ms-2">
-                                    <i class="fas fa-redo me-2"></i> Reset
-                                </button>
-                            </div>
+    <div class="book-search-card">
+        <div class="book-search-form">
+            <form method="get" action="{% url 'books:book_list' %}" id="book-search-form">
+                <div class="row">
+                    <div class="col-lg-6 col-md-12">
+                        <div class="book-search-input-group">
+                            <input type="text" name="q" id="search-input" class="book-search-input" placeholder="Search by title, author, or ISBN" value="{{ query }}">
+                            <i class="fas fa-search book-search-icon"></i>
                         </div>
-                    </form>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="mb-3">
+                            <select name="category" class="book-filter-select">
+                                <option value="">All Categories</option>
+                                {% for category in categories %}
+                                    <option value="{{ category.slug }}" {% if selected_category == category.slug %}selected{% endif %}>
+                                        {{ category.name }} ({{ category.book_count }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="mb-3">
+                            <select name="author" class="book-filter-select">
+                                <option value="">All Authors</option>
+                                {% for author in authors %}
+                                    <option value="{{ author.slug }}" {% if selected_author == author.slug %}selected{% endif %}>
+                                        {{ author.name }} ({{ author.book_count }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
                 </div>
-            </div>
+                <div class="book-search-actions">
+                    <button type="reset" class="book-search-btn book-search-btn-outline">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+                    <button type="submit" class="book-search-btn book-search-btn-primary">
+                        <i class="fas fa-search"></i> Search Books
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- Books List -->
+    <!-- Books Grid -->
     <div class="row">
         {% for book in books %}
-            <div class="col-md-3 mb-4">
-                <div class="card card-floating h-100 hover-lift stagger-item fade-in-up">
-                    <div class="card-img-overlay-hover">
+            <div class="col-xl-3 col-lg-4 col-md-6 mb-4 book-card-wrapper">
+                <div class="book-card">
+                    <div class="book-card-cover">
                         {% if book.cover_image %}
-                            <img src="{{ book.cover_image.url }}" class="card-img-top" alt="{{ book.title }}">
+                            <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
                         {% else %}
-                            <img src="https://placehold.co/200x300?text=No+Cover" class="card-img-top" alt="No Cover">
+                            <img src="https://placehold.co/400x600?text=No+Cover" alt="No Cover">
                         {% endif %}
+                        <div class="book-card-overlay"></div>
                     </div>
-                    <div class="card-body">
-                        <h5 class="card-title hover-color-change">{{ book.title|truncatechars:30 }}</h5>
-                        <p class="card-text">
+                    <div class="book-card-content">
+                        <h3 class="book-card-title">{{ book.title }}</h3>
+                        <div class="book-card-author">
                             {% for author in book.authors.all %}
                                 {% if forloop.first %}by {% endif %}
-                                <a href="{% url 'books:author_detail' slug=author.slug %}" class="hover-underline">{{ author.name }}</a>{% if not forloop.last %}, {% endif %}
+                                <a href="{% url 'books:author_detail' slug=author.slug %}">{{ author.name }}</a>{% if not forloop.last %}, {% endif %}
                             {% endfor %}
-                        </p>
-                        <p class="card-text">
+                        </div>
+                        <div class="book-card-categories">
                             {% for category in book.categories.all %}
-                                <a href="{% url 'books:category_detail' slug=category.slug %}" class="badge bg-secondary text-decoration-none hover-grow">{{ category.name }}</a>
+                                <a href="{% url 'books:category_detail' slug=category.slug %}" class="book-card-category">{{ category.name }}</a>
                             {% endfor %}
-                        </p>
-                        <p class="card-text"><small class="text-muted">ISBN: {{ book.isbn }}</small></p>
-                    </div>
-                    <div class="card-footer bg-transparent border-top-0">
-                        <a href="{% url 'books:book_detail' slug=book.slug %}" class="btn btn-gradient-primary w-100 btn-ripple">
-                            <i class="fas fa-book-open me-2"></i> View Details
+                        </div>
+                        <div class="book-card-isbn">ISBN: {{ book.isbn }}</div>
+                        <a href="{% url 'books:book_detail' slug=book.slug %}" class="book-card-action btn-ripple">
+                            <i class="fas fa-book-open"></i> View Details
                         </a>
                     </div>
                 </div>
             </div>
         {% empty %}
-            <div class="col-12 text-center">
-                <div class="alert alert-info fade-in">
-                    <i class="fas fa-info-circle me-2 fa-2x"></i>
-                    <p class="mb-0">No books found matching your criteria. Try a different search or filter.</p>
+            <div class="col-12">
+                <div class="book-empty-state">
+                    <div class="book-empty-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3 class="book-empty-title">No Books Found</h3>
+                    <p class="book-empty-text">No books found matching your criteria. Try a different search or filter.</p>
                 </div>
             </div>
         {% endfor %}
     </div>
 
-    <!-- Floating Action Button -->
-    <a href="#" class="btn-floating btn-gradient-primary" id="backToTop">
+    <!-- Back to Top Button -->
+    <div class="book-back-to-top" id="backToTop" style="opacity: 0; visibility: hidden;">
         <i class="fas fa-arrow-up"></i>
-    </a>
+    </div>
 </div>
 {% endblock %}
 
@@ -116,10 +513,6 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Back to top button functionality
         const backToTopButton = document.getElementById('backToTop');
-
-        // Initially hide the button
-        backToTopButton.style.opacity = '0';
-        backToTopButton.style.visibility = 'hidden';
 
         // Show/hide the button based on scroll position
         window.addEventListener('scroll', function() {
@@ -142,9 +535,17 @@
         });
 
         // Add staggered animation to book cards
-        const bookCards = document.querySelectorAll('.stagger-item');
+        const bookCards = document.querySelectorAll('.book-card-wrapper');
         bookCards.forEach((card, index) => {
-            card.style.animationDelay = `${0.1 * (index % 4)}s`;
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            card.style.transitionDelay = `${0.05 * (index % 8)}s`;
+
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
         });
 
         // Add ripple effect to buttons
@@ -155,6 +556,8 @@
                 const y = e.clientY - e.target.getBoundingClientRect().top;
 
                 const ripple = document.createElement('span');
+                ripple.style.width = '100px';
+                ripple.style.height = '100px';
                 ripple.style.left = `${x}px`;
                 ripple.style.top = `${y}px`;
                 ripple.classList.add('ripple-effect');

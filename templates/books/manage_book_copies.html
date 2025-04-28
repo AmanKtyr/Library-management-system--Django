@@ -1,0 +1,1115 @@
+{% extends 'core/admin_base.html' %}
+{% load static %}
+
+{% block title %}Manage Book Copies - Library Management System{% endblock %}
+{% block breadcrumb_title %}Manage Book Copies{% endblock %}
+{% block page_title %}Manage Book Copies{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'books:manage_books' %}" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-arrow-left"></i> Back to Books
+</a>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Modern Book Copies Management Styles */
+    .copy-card {
+        background-color: var(--surface);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+        margin-bottom: 2rem;
+        border: none;
+        transition: all var(--transition-normal);
+    }
+
+    .copy-card:hover {
+        box-shadow: var(--shadow-lg);
+    }
+
+    .copy-form-container {
+        background-color: var(--surface);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+        margin-bottom: 2rem;
+        border: none;
+        transition: all var(--transition-normal);
+    }
+
+    .copy-form-container:hover {
+        box-shadow: var(--shadow-lg);
+    }
+
+    .copy-form-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .copy-form-header::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 150px;
+        height: 150px;
+        background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+        border-radius: 50%;
+        transform: translate(50%, -50%);
+    }
+
+    .copy-form-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0;
+        position: relative;
+        z-index: 1;
+    }
+
+    .copy-form-body {
+        padding: 1.75rem;
+    }
+
+    .copy-form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .copy-form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: var(--medium-dark);
+        display: block;
+        transition: all var(--transition-normal);
+    }
+
+    .copy-form-control {
+        border-radius: var(--border-radius-md);
+        padding: 0.75rem 1rem;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        transition: all var(--transition-normal);
+        background-color: var(--surface);
+        color: var(--medium-dark);
+        font-size: 1rem;
+        width: 100%;
+        height: auto;
+    }
+
+    .copy-form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
+        outline: none;
+    }
+
+    /* Fix for select inputs */
+    select.copy-form-control {
+        appearance: auto;
+        padding-right: 2rem;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%234b5563' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 16px 12px;
+    }
+
+    /* Fix for textarea */
+    textarea.copy-form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    /* Fix for date inputs */
+    input[type="date"].copy-form-control {
+        padding-right: 0.5rem;
+    }
+
+    .copy-form-help {
+        font-size: 0.85rem;
+        color: var(--medium);
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .copy-form-help::before {
+        content: '\f05a';
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        margin-right: 0.5rem;
+        color: var(--primary-color);
+    }
+
+    .copy-form-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 1.5rem;
+    }
+
+    .copy-form-submit {
+        min-width: 150px;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        border: none;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--border-radius-md);
+        font-weight: 500;
+        transition: all var(--transition-normal);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .copy-form-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(var(--primary-color-rgb), 0.3);
+    }
+
+    .copy-form-submit::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+        transform: rotate(45deg);
+        transition: all 0.5s ease;
+        opacity: 0;
+    }
+
+    .copy-form-submit:hover::after {
+        animation: shine 1.5s ease;
+    }
+
+    @keyframes shine {
+        0% {
+            opacity: 0;
+            transform: rotate(45deg) translateX(-100%);
+        }
+        50% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0;
+            transform: rotate(45deg) translateX(100%);
+        }
+    }
+
+    .copy-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .copy-table th {
+        background-color: rgba(var(--primary-color-rgb), 0.05);
+        padding: 1rem 1.25rem;
+        font-weight: 600;
+        text-align: left;
+        border-bottom: 2px solid rgba(var(--primary-color-rgb), 0.1);
+        color: var(--medium-dark);
+    }
+
+    .copy-table td {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        vertical-align: middle;
+        color: var(--medium);
+    }
+
+    .copy-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .copy-table tr:hover td {
+        background-color: rgba(var(--primary-color-rgb), 0.02);
+    }
+
+    .copy-table-cover {
+        width: 40px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: var(--border-radius-sm);
+        box-shadow: var(--shadow-sm);
+        transition: all var(--transition-normal);
+    }
+
+    .copy-table tr:hover .copy-table-cover {
+        transform: scale(1.05);
+        box-shadow: var(--shadow-md);
+    }
+
+    .copy-table-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .copy-table-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: var(--border-radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-decoration: none;
+        transition: all var(--transition-normal);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .copy-table-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .copy-table-btn-view {
+        background: linear-gradient(135deg, var(--info-color) 0%, var(--secondary-color) 100%);
+    }
+
+    .copy-table-btn-edit {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    }
+
+    .copy-table-btn-delete {
+        background: linear-gradient(135deg, var(--danger-color) 0%, #e74c3c 100%);
+    }
+
+    .copy-status {
+        display: inline-block;
+        padding: 0.4em 0.8em;
+        border-radius: 50rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .copy-status-available {
+        background-color: rgba(var(--success-color-rgb), 0.1);
+        color: var(--success-color);
+    }
+
+    .copy-status-borrowed {
+        background-color: rgba(var(--primary-color-rgb), 0.1);
+        color: var(--primary-color);
+    }
+
+    .copy-status-reserved {
+        background-color: rgba(var(--warning-color-rgb), 0.1);
+        color: var(--warning-color);
+    }
+
+    .copy-status-maintenance {
+        background-color: rgba(var(--danger-color-rgb), 0.1);
+        color: var(--danger-color);
+    }
+
+    .copy-condition {
+        display: inline-block;
+        padding: 0.4em 0.8em;
+        border-radius: 50rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .copy-condition-new {
+        background-color: rgba(var(--success-color-rgb), 0.1);
+        color: var(--success-color);
+    }
+
+    .copy-condition-good {
+        background-color: rgba(var(--info-color-rgb), 0.1);
+        color: var(--info-color);
+    }
+
+    .copy-condition-fair {
+        background-color: rgba(var(--warning-color-rgb), 0.1);
+        color: var(--warning-color);
+    }
+
+    .copy-condition-poor {
+        background-color: rgba(var(--danger-color-rgb), 0.1);
+        color: var(--danger-color);
+    }
+
+    .copy-search-form {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+
+    .copy-search-form .input-group {
+        box-shadow: var(--shadow-sm);
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        transition: all var(--transition-normal);
+    }
+
+    .copy-search-form .input-group:focus-within {
+        box-shadow: var(--shadow-md);
+    }
+
+    .copy-search-form .input-group-text {
+        border-radius: 0;
+        border: none;
+        padding: 0.75rem 1.25rem;
+        font-size: 1.1rem;
+    }
+
+    .copy-search-form .form-control {
+        border-radius: 0;
+        border: none;
+        padding: 0.75rem 1.25rem;
+        font-size: 1rem;
+    }
+
+    .copy-search-form .form-control:focus {
+        box-shadow: none;
+    }
+
+    .copy-search-form .admin-pro-btn {
+        border-radius: 0;
+        padding: 0.75rem 1.5rem;
+    }
+
+    .copy-empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        background-color: var(--surface);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-sm);
+        border: 1px dashed rgba(var(--primary-color-rgb), 0.2);
+    }
+
+    .copy-empty-icon {
+        font-size: 3rem;
+        color: var(--medium-light);
+        margin-bottom: 1.5rem;
+    }
+
+    .copy-empty-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--dark);
+    }
+
+    .copy-empty-text {
+        color: var(--medium);
+        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+    }
+
+    .copy-pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+
+    .copy-pagination .page-item .page-link {
+        border-radius: var(--border-radius-md);
+        margin: 0 0.3rem;
+        color: var(--medium-dark);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        transition: all var(--transition-normal);
+        padding: 0.5rem 1rem;
+    }
+
+    .copy-pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        border-color: var(--primary-color);
+        color: white;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .copy-pagination .page-item .page-link:hover:not(.active) {
+        background-color: rgba(var(--primary-color-rgb), 0.05);
+        transform: translateY(-2px);
+    }
+
+    /* Modal Styles */
+    .copy-modal .modal-content {
+        border: none;
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .copy-modal .modal-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        border-bottom: none;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .copy-modal .modal-body {
+        padding: 1.5rem;
+    }
+
+    .copy-modal .modal-footer {
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 1.25rem 1.5rem;
+    }
+
+    .copy-modal .btn-close {
+        color: white;
+        opacity: 0.8;
+        transition: all var(--transition-fast);
+    }
+
+    .copy-modal .btn-close:hover {
+        opacity: 1;
+        transform: rotate(90deg);
+    }
+
+    /* Dark Mode Adjustments */
+    [data-bs-theme="dark"] .copy-table th {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+
+    [data-bs-theme="dark"] .copy-table td {
+        border-bottom-color: rgba(255, 255, 255, 0.05);
+    }
+
+    [data-bs-theme="dark"] .copy-table tr:hover td {
+        background-color: rgba(255, 255, 255, 0.03);
+    }
+
+    [data-bs-theme="dark"] .copy-form-control {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: var(--light);
+    }
+
+    [data-bs-theme="dark"] .copy-search-form .input-group-text,
+    [data-bs-theme="dark"] .copy-search-form .form-control {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: var(--light);
+    }
+
+    [data-bs-theme="dark"] .copy-pagination .page-item .page-link {
+        border-color: rgba(255, 255, 255, 0.1);
+        color: var(--light);
+    }
+
+    [data-bs-theme="dark"] .copy-pagination .page-item .page-link:hover:not(.active) {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    [data-bs-theme="dark"] .copy-modal .modal-footer {
+        border-top-color: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Animation Styles */
+    .fade-in-up {
+        animation: fadeInUp 0.5s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-pro-container fade-in-up">
+    <div class="row">
+        <!-- Add Book Copy Form -->
+        <div class="col-md-4">
+            <div class="copy-form-container">
+                <div class="copy-form-header">
+                    <h2 class="copy-form-title">Add New Book Copy</h2>
+                </div>
+                <div class="copy-form-body">
+                    <form method="post" id="copy-form">
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <div class="copy-form-group">
+                            <label for="{{ form.book.id_for_label }}" class="copy-form-label">Book *</label>
+                            {{ form.book }}
+                            {% if form.book.errors %}
+                                <div class="text-danger">{{ form.book.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="copy-form-group">
+                            <label for="{{ form.inventory_number.id_for_label }}" class="copy-form-label">Inventory Number *</label>
+                            {{ form.inventory_number }}
+                            {% if form.inventory_number.errors %}
+                                <div class="text-danger">{{ form.inventory_number.errors }}</div>
+                            {% endif %}
+                            <div class="copy-form-help">Unique identifier for this copy</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="copy-form-group">
+                                    <label for="{{ form.condition.id_for_label }}" class="copy-form-label">Condition *</label>
+                                    {{ form.condition }}
+                                    {% if form.condition.errors %}
+                                        <div class="text-danger">{{ form.condition.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="copy-form-group">
+                                    <label for="{{ form.status.id_for_label }}" class="copy-form-label">Status *</label>
+                                    {{ form.status }}
+                                    {% if form.status.errors %}
+                                        <div class="text-danger">{{ form.status.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="copy-form-group">
+                                    <label for="{{ form.acquisition_date.id_for_label }}" class="copy-form-label">Acquisition Date</label>
+                                    {{ form.acquisition_date }}
+                                    {% if form.acquisition_date.errors %}
+                                        <div class="text-danger">{{ form.acquisition_date.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="copy-form-group">
+                                    <label for="{{ form.price.id_for_label }}" class="copy-form-label">Price</label>
+                                    {{ form.price }}
+                                    {% if form.price.errors %}
+                                        <div class="text-danger">{{ form.price.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="copy-form-group">
+                            <label for="{{ form.notes.id_for_label }}" class="copy-form-label">Notes</label>
+                            {{ form.notes }}
+                            {% if form.notes.errors %}
+                                <div class="text-danger">{{ form.notes.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="copy-form-actions">
+                            <button type="submit" class="admin-pro-btn admin-pro-btn-primary copy-form-submit">
+                                <i class="fas fa-plus me-2"></i> Add Copy
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Book Copies List -->
+        <div class="col-md-8">
+            <div class="copy-card">
+                <div class="admin-pro-card-header d-flex justify-content-between align-items-center">
+                    <h5 class="admin-pro-card-title">Book Copies in {{ library.name }}</h5>
+                    <div class="copy-search-form">
+                        <form method="get" action="{% url 'books:manage_book_copies' %}">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" name="q" class="form-control border-start-0" placeholder="Search by book title or inventory number" value="{{ request.GET.q|default:'' }}">
+                                <button type="submit" class="admin-pro-btn admin-pro-btn-primary">Search</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="admin-pro-card-body p-0">
+                    <div class="table-responsive">
+                        <table class="copy-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">Book</th>
+                                    <th>Title</th>
+                                    <th>Inventory #</th>
+                                    <th>Status</th>
+                                    <th>Condition</th>
+                                    <th>Acquisition Date</th>
+                                    <th style="width: 100px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for copy in book_copies %}
+                                <tr>
+                                    <td>
+                                        {% if copy.book.cover_image %}
+                                        <img src="{{ copy.book.cover_image.url }}" alt="{{ copy.book.title }}" class="copy-table-cover">
+                                        {% else %}
+                                        <img src="https://placehold.co/40x60?text=No+Cover" alt="No Cover" class="copy-table-cover">
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            <span class="fw-medium">{{ copy.book.title|truncatechars:30 }}</span>
+                                            <small class="text-muted">
+                                                {% for author in copy.book.authors.all %}
+                                                {{ author.name }}{% if not forloop.last %}, {% endif %}
+                                                {% endfor %}
+                                            </small>
+                                        </div>
+                                    </td>
+                                    <td>{{ copy.inventory_number }}</td>
+                                    <td>
+                                        <span class="copy-status copy-status-{{ copy.status|lower }}">
+                                            {{ copy.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="copy-condition copy-condition-{{ copy.condition|lower }}">
+                                            {{ copy.get_condition_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ copy.acquisition_date|date:"M d, Y"|default:"-" }}</td>
+                                    <td>
+                                        <div class="copy-table-actions">
+                                            <a href="#" class="copy-table-btn copy-table-btn-view" title="View Details" data-bs-toggle="modal" data-bs-target="#copyDetailsModal{{ copy.id }}">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="#" class="copy-table-btn copy-table-btn-edit" title="Edit Copy" data-bs-toggle="modal" data-bs-target="#editCopyModal{{ copy.id }}">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="#" class="copy-table-btn copy-table-btn-delete" title="Delete Copy" data-bs-toggle="modal" data-bs-target="#deleteCopyModal" data-copy-id="{{ copy.id }}" data-copy-inventory="{{ copy.inventory_number }}">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center py-5">
+                                        <div class="copy-empty-icon">
+                                            <i class="fas fa-copy"></i>
+                                        </div>
+                                        <h3 class="copy-empty-title">No Book Copies Found</h3>
+                                        <p class="copy-empty-text">There are no book copies in your library yet. Add your first book copy using the form.</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            {% if book_copies.has_other_pages %}
+            <div class="copy-pagination">
+                <ul class="pagination">
+                    {% if book_copies.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="First">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ book_copies.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for i in book_copies.paginator.page_range %}
+                    {% if book_copies.number == i %}
+                    <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+                    {% elif i > book_copies.number|add:'-3' and i < book_copies.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ i }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ i }}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if book_copies.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ book_copies.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ book_copies.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Last">
+                            <span aria-hidden="true">&raquo;&raquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteCopyModal" tabindex="-1" aria-labelledby="deleteCopyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteCopyModalLabel">
+                    <i class="fas fa-trash-alt me-2 text-danger"></i> Confirm Delete
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <div class="delete-icon-container mb-3">
+                        <i class="fas fa-exclamation-triangle fa-3x text-warning"></i>
+                    </div>
+                    <h4 class="mb-3">Are you sure?</h4>
+                    <p>You are about to delete the book copy with inventory number "<span id="copyInventory" class="fw-bold"></span>".</p>
+                    <div class="alert alert-danger d-flex align-items-center mt-3">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <div>This action cannot be undone and may affect borrowing records.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="admin-pro-btn admin-pro-btn-outline" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i> Cancel
+                </button>
+                <form id="deleteCopyForm" method="post" action="">
+                    {% csrf_token %}
+                    <button type="submit" class="admin-pro-btn admin-pro-btn-danger">
+                        <i class="fas fa-trash me-2"></i> Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .delete-icon-container {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background-color: rgba(var(--warning-color-rgb), 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
+
+    .admin-pro-btn-danger {
+        background: linear-gradient(135deg, var(--danger-color) 0%, #e74c3c 100%);
+        color: white;
+        border: none;
+    }
+
+    .admin-pro-btn-danger:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(var(--danger-color-rgb), 0.3);
+    }
+</style>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize form controls
+        function initializeFormControls() {
+            // Add form-control class to all form inputs
+            const formInputs = document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], input[type="email"], input[type="url"], textarea, select');
+            formInputs.forEach(input => {
+                // Remove any existing classes that might interfere
+                input.classList.remove('form-control-plaintext');
+
+                // Add our custom classes
+                input.classList.add('form-control', 'copy-form-control');
+
+                // Ensure the input has proper attributes
+                if (input.hasAttribute('required')) {
+                    input.setAttribute('aria-required', 'true');
+                }
+
+                // Fix date inputs
+                if (input.type === 'date') {
+                    // Ensure date inputs have a placeholder
+                    if (!input.hasAttribute('placeholder')) {
+                        input.setAttribute('placeholder', 'YYYY-MM-DD');
+                    }
+                }
+
+                // Fix number inputs
+                if (input.type === 'number') {
+                    // Add step attribute if not present
+                    if (!input.hasAttribute('step')) {
+                        input.setAttribute('step', '1');
+                    }
+                }
+
+                // Fix select inputs
+                if (input.tagName.toLowerCase() === 'select') {
+                    // Ensure select inputs have proper styling
+                    input.style.backgroundImage = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'16\' height=\'16\' fill=\'%234b5563\' viewBox=\'0 0 16 16\'%3E%3Cpath d=\'M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z\'/%3E%3C/svg%3E")';
+                    input.style.backgroundRepeat = 'no-repeat';
+                    input.style.backgroundPosition = 'right 0.75rem center';
+                    input.style.backgroundSize = '16px 12px';
+                }
+
+                // Add focus and blur events for enhanced UX
+                input.addEventListener('focus', function() {
+                    this.parentElement.classList.add('focused');
+                });
+
+                input.addEventListener('blur', function() {
+                    this.parentElement.classList.remove('focused');
+                });
+            });
+        }
+
+        // Initialize form controls
+        initializeFormControls();
+
+        // Form validation enhancement
+        const copyForm = document.getElementById('copy-form');
+        if (copyForm) {
+            copyForm.addEventListener('submit', function(e) {
+                let isValid = true;
+                const requiredInputs = copyForm.querySelectorAll('input[required], select[required], textarea[required]');
+
+                requiredInputs.forEach(input => {
+                    if (!input.value.trim()) {
+                        isValid = false;
+                        input.classList.add('is-invalid');
+
+                        // Add shake animation
+                        input.classList.add('shake');
+                        setTimeout(() => {
+                            input.classList.remove('shake');
+                        }, 600);
+
+                        // Create or update error message
+                        let errorMsg = input.parentNode.querySelector('.text-danger');
+                        if (!errorMsg) {
+                            errorMsg = document.createElement('div');
+                            errorMsg.classList.add('text-danger');
+                            input.parentNode.appendChild(errorMsg);
+                        }
+                        errorMsg.textContent = 'This field is required';
+                    } else {
+                        input.classList.remove('is-invalid');
+                        const errorMsg = input.parentNode.querySelector('.text-danger');
+                        if (errorMsg) {
+                            errorMsg.remove();
+                        }
+                    }
+                });
+
+                if (!isValid) {
+                    e.preventDefault();
+                    showNotification('Please fill in all required fields', 'error');
+
+                    // Scroll to first error
+                    const firstError = copyForm.querySelector('.is-invalid');
+                    if (firstError) {
+                        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        firstError.focus();
+                    }
+                }
+            });
+        }
+
+        // Delete modal functionality with enhanced UX
+        const deleteCopyModal = document.getElementById('deleteCopyModal');
+        if (deleteCopyModal) {
+            // Add copy-modal class for styling
+            deleteCopyModal.classList.add('copy-modal');
+
+            deleteCopyModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const copyId = button.getAttribute('data-copy-id');
+                const copyInventory = button.getAttribute('data-copy-inventory');
+
+                // Set inventory number in modal
+                const inventorySpan = document.getElementById('copyInventory');
+                inventorySpan.textContent = copyInventory;
+                inventorySpan.style.fontWeight = 'bold';
+
+                // Set form action
+                document.getElementById('deleteCopyForm').action = `{% url 'books:delete_book_copy' pk=0 %}`.replace('0', copyId);
+
+                // Add animation to modal content
+                const modalContent = this.querySelector('.modal-content');
+                modalContent.style.transform = 'scale(0.9)';
+                modalContent.style.opacity = '0';
+
+                setTimeout(() => {
+                    modalContent.style.transition = 'all 0.3s ease';
+                    modalContent.style.transform = 'scale(1)';
+                    modalContent.style.opacity = '1';
+                }, 50);
+            });
+
+            // Style delete button
+            const deleteBtn = deleteCopyModal.querySelector('.btn-danger');
+            if (deleteBtn) {
+                deleteBtn.classList.add('admin-pro-btn', 'admin-pro-btn-danger');
+                deleteBtn.innerHTML = '<i class="fas fa-trash me-2"></i> Delete';
+            }
+
+            // Style cancel button
+            const cancelBtn = deleteCopyModal.querySelector('.btn-secondary');
+            if (cancelBtn) {
+                cancelBtn.classList.add('admin-pro-btn', 'admin-pro-btn-outline');
+                cancelBtn.innerHTML = '<i class="fas fa-times me-2"></i> Cancel';
+            }
+        }
+
+        // Add row hover effect
+        const tableRows = document.querySelectorAll('.copy-table tbody tr');
+        tableRows.forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.style.transition = 'all 0.3s ease';
+                this.style.transform = 'translateY(-2px)';
+                this.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+            });
+
+            row.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = 'none';
+            });
+        });
+
+        // Add animation to table rows on page load
+        setTimeout(() => {
+            tableRows.forEach((row, index) => {
+                row.style.opacity = '0';
+                row.style.transform = 'translateY(20px)';
+                row.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                row.style.transitionDelay = `${0.05 * index}s`;
+
+                setTimeout(() => {
+                    row.style.opacity = '1';
+                    row.style.transform = 'translateY(0)';
+                }, 100);
+            });
+        }, 300);
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            // Create notification element if it doesn't exist
+            let notification = document.querySelector('.copy-notification');
+            if (!notification) {
+                notification = document.createElement('div');
+                notification.classList.add('copy-notification');
+                document.body.appendChild(notification);
+            }
+
+            // Set notification content and type
+            notification.textContent = message;
+            notification.className = 'copy-notification';
+            notification.classList.add(`copy-notification-${type}`);
+
+            // Show notification
+            notification.classList.add('show');
+
+            // Hide notification after 3 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Add CSS for notification
+        const style = document.createElement('style');
+        style.textContent = `
+            .copy-notification {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                padding: 15px 25px;
+                border-radius: var(--border-radius-md);
+                color: white;
+                font-weight: 500;
+                box-shadow: var(--shadow-lg);
+                transform: translateY(100px);
+                opacity: 0;
+                transition: all 0.3s ease;
+                z-index: 9999;
+            }
+
+            .copy-notification.show {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            .copy-notification-success {
+                background: linear-gradient(135deg, var(--success-color) 0%, #2ecc71 100%);
+            }
+
+            .copy-notification-error {
+                background: linear-gradient(135deg, var(--danger-color) 0%, #e74c3c 100%);
+            }
+
+            .copy-notification-info {
+                background: linear-gradient(135deg, var(--info-color) 0%, #3498db 100%);
+            }
+
+            .copy-notification-warning {
+                background: linear-gradient(135deg, var(--warning-color) 0%, #f39c12 100%);
+            }
+
+            .shake {
+                animation: shake 0.6s cubic-bezier(.36,.07,.19,.97) both;
+            }
+
+            @keyframes shake {
+                10%, 90% {
+                    transform: translate3d(-1px, 0, 0);
+                }
+                20%, 80% {
+                    transform: translate3d(2px, 0, 0);
+                }
+                30%, 50%, 70% {
+                    transform: translate3d(-3px, 0, 0);
+                }
+                40%, 60% {
+                    transform: translate3d(3px, 0, 0);
+                }
+            }
+
+            .focused {
+                position: relative;
+            }
+
+            .focused::after {
+                content: '';
+                position: absolute;
+                bottom: -3px;
+                left: 0;
+                width: 100%;
+                height: 2px;
+                background: linear-gradient(90deg, var(--primary-color) 0%, var(--accent-color) 100%);
+                transform: scaleX(0);
+                transition: transform 0.3s ease;
+                transform-origin: left;
+            }
+
+            .focused.focused::after {
+                transform: scaleX(1);
+            }
+        `;
+        document.head.appendChild(style);
+    });
+</script>
+{% endblock %}
+{% endblock %}

@@ -78,6 +78,10 @@
                     <i class="fas fa-book"></i>
                     <span>Books</span>
                 </a>
+                <a href="{% url 'library_admin:categories' %}" class="admin-pro-menu-item {% if request.path == '/library-admin/categories/' %}active{% endif %}">
+                    <i class="fas fa-folder"></i>
+                    <span>Categories</span>
+                </a>
                 <a href="{% url 'books:manage_book_copies' %}" class="admin-pro-menu-item">
                     <i class="fas fa-copy"></i>
                     <span>Book Copies</span>

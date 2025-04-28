@@ -1,0 +1,1332 @@
+{% extends 'core/admin_base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - Library Management System{% endblock %}
+{% block breadcrumb_title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'books:manage_books' %}" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-arrow-left"></i> Back to Books
+</a>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Modern Professional Book Form Styles */
+    .book-form-container {
+        background-color: var(--surface);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+        transition: all var(--transition-normal);
+        border: none;
+    }
+
+    .book-form-container:hover {
+        box-shadow: var(--shadow-lg);
+    }
+
+    .book-form-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .book-form-header::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 150px;
+        height: 150px;
+        background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+        border-radius: 50%;
+        transform: translate(50%, -50%);
+    }
+
+    .book-form-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0;
+        position: relative;
+        z-index: 1;
+    }
+
+    .book-form-body {
+        padding: 2rem;
+    }
+
+    .book-form-section {
+        margin-bottom: 2.5rem;
+        animation: fadeInUp 0.5s ease forwards;
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    .book-form-section:nth-child(1) {
+        animation-delay: 0.1s;
+    }
+
+    .book-form-section:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .book-form-section:nth-child(3) {
+        animation-delay: 0.3s;
+    }
+
+    .book-form-section:last-child {
+        margin-bottom: 0;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .book-form-section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: var(--dark);
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid rgba(var(--primary-color-rgb), 0.1);
+        position: relative;
+    }
+
+    .book-form-section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+        border-radius: 3px;
+    }
+
+    .book-form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .book-form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: var(--medium-dark);
+        display: block;
+        transition: all var(--transition-normal);
+    }
+
+    .book-form-control {
+        border-radius: var(--border-radius-md);
+        padding: 0.75rem 1rem;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        transition: all var(--transition-normal);
+        background-color: var(--surface);
+        color: var(--medium-dark);
+        font-size: 1rem;
+        width: 100%;
+        height: auto;
+    }
+
+    .book-form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
+        outline: none;
+    }
+
+    /* Fix for select inputs */
+    select.book-form-control {
+        appearance: auto;
+        padding-right: 2rem;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%234b5563' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 16px 12px;
+    }
+
+    /* Fix for textarea */
+    textarea.book-form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    /* Fix for date inputs */
+    input[type="date"].book-form-control {
+        padding-right: 0.5rem;
+    }
+
+    /* Fix for number inputs */
+    input[type="number"].book-form-control {
+        padding-right: 0.5rem;
+    }
+
+    /* Invalid state styling */
+    .book-form-control.is-invalid {
+        border-color: var(--danger-color);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23dc3545' viewBox='0 0 16 16'%3E%3Cpath d='M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z'/%3E%3Cpath d='M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 16px 16px;
+        padding-right: 2.5rem;
+    }
+
+    .book-form-help {
+        font-size: 0.85rem;
+        color: var(--medium);
+        margin-top: 0.5rem;
+    }
+
+    .book-form-check-group {
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: var(--border-radius-md);
+        padding: 1rem;
+        background-color: var(--surface);
+    }
+
+    .book-form-check {
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        position: relative;
+        padding-left: 1.75rem;
+    }
+
+    .book-form-check:last-child {
+        margin-bottom: 0;
+    }
+
+    .book-form-check-input {
+        position: absolute;
+        left: 0;
+        top: 0.25rem;
+        width: 18px;
+        height: 18px;
+        margin: 0;
+        opacity: 0;
+        z-index: 1;
+        cursor: pointer;
+    }
+
+    .book-form-check-label {
+        font-size: 0.95rem;
+        color: var(--medium-dark);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        position: relative;
+        margin: 0;
+        user-select: none;
+    }
+
+    .book-form-check-label:hover {
+        color: var(--primary-color);
+    }
+
+    .book-form-check-label::before {
+        content: '';
+        position: absolute;
+        left: -1.75rem;
+        top: 0.15rem;
+        width: 18px;
+        height: 18px;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        border-radius: 3px;
+        background-color: var(--surface);
+        transition: all var(--transition-fast);
+    }
+
+    .book-form-check-label::after {
+        content: '';
+        position: absolute;
+        left: -1.75rem;
+        top: 0.15rem;
+        width: 18px;
+        height: 18px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z'/%3E%3C/svg%3E");
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: 12px;
+        transform: scale(0);
+        transition: all var(--transition-fast);
+    }
+
+    .book-form-check-input:checked + .book-form-check-label::before {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .book-form-check-input:checked + .book-form-check-label::after {
+        transform: scale(1);
+    }
+
+    .book-form-check-input:focus + .book-form-check-label::before {
+        box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
+    }
+
+    .book-form-cover-preview {
+        width: 100%;
+        height: 300px;
+        border: 2px dashed rgba(var(--primary-color-rgb), 0.2);
+        border-radius: var(--border-radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        overflow: hidden;
+        position: relative;
+        transition: all var(--transition-normal);
+        background-color: rgba(var(--primary-color-rgb), 0.02);
+    }
+
+    .book-form-cover-preview:hover {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
+    }
+
+    .book-form-cover-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: all var(--transition-normal);
+    }
+
+    .book-form-cover-preview:hover img {
+        transform: scale(1.05);
+    }
+
+    .book-form-cover-placeholder {
+        font-size: 3rem;
+        color: rgba(var(--primary-color-rgb), 0.3);
+        transition: all var(--transition-normal);
+    }
+
+    .book-form-cover-preview:hover .book-form-cover-placeholder {
+        transform: scale(1.1);
+        color: var(--primary-color);
+    }
+
+    .book-form-cover-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: all var(--transition-normal);
+    }
+
+    .book-form-cover-preview:hover .book-form-cover-overlay {
+        opacity: 1;
+    }
+
+    .book-form-cover-overlay-text {
+        color: white;
+        font-size: 1rem;
+        font-weight: 500;
+        padding: 0.75rem 1.25rem;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: var(--border-radius-md);
+        backdrop-filter: blur(4px);
+        transform: translateY(20px);
+        transition: all var(--transition-normal);
+    }
+
+    .book-form-cover-preview:hover .book-form-cover-overlay-text {
+        transform: translateY(0);
+    }
+
+    .book-form-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 2rem;
+        animation: fadeInUp 0.5s ease forwards;
+        animation-delay: 0.4s;
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    .book-form-submit {
+        min-width: 150px;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        border: none;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--border-radius-md);
+        font-weight: 500;
+        transition: all var(--transition-normal);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .book-form-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(var(--primary-color-rgb), 0.3);
+    }
+
+    .book-form-submit::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+        transform: rotate(45deg);
+        transition: all 0.5s ease;
+        opacity: 0;
+    }
+
+    .book-form-submit:hover::after {
+        animation: shine 1.5s ease;
+    }
+
+    @keyframes shine {
+        0% {
+            opacity: 0;
+            transform: rotate(45deg) translateX(-100%);
+        }
+        50% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0;
+            transform: rotate(45deg) translateX(100%);
+        }
+    }
+
+    .book-form-error {
+        color: var(--danger-color);
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .book-form-error::before {
+        content: '\f071';
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        margin-right: 0.5rem;
+    }
+
+    .book-form-success {
+        color: var(--success-color);
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .book-form-success::before {
+        content: '\f00c';
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        margin-right: 0.5rem;
+    }
+
+    /* Dark mode adjustments */
+    [data-bs-theme="dark"] .book-form-control {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: var(--light);
+    }
+
+    [data-bs-theme="dark"] .book-form-check-group {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    [data-bs-theme="dark"] .book-form-check-label::before {
+        border-color: rgba(255, 255, 255, 0.2);
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    [data-bs-theme="dark"] .book-form-check-input:checked + .book-form-check-label::before {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    [data-bs-theme="dark"] .book-form-cover-preview {
+        border-color: rgba(255, 255, 255, 0.2);
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    [data-bs-theme="dark"] .book-form-section-title {
+        border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Page Header Styles */
+    .book-form-page-header {
+        margin-bottom: 2rem;
+    }
+
+    .book-form-page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+    }
+
+    .book-form-page-title i {
+        color: var(--primary-color);
+    }
+
+    .breadcrumb {
+        background-color: transparent;
+        padding: 0;
+        margin: 0;
+    }
+
+    .breadcrumb-item a {
+        color: var(--primary-color);
+        text-decoration: none;
+        transition: all var(--transition-fast);
+    }
+
+    .breadcrumb-item a:hover {
+        color: var(--primary-dark);
+        text-decoration: underline;
+    }
+
+    .breadcrumb-item.active {
+        color: var(--medium);
+    }
+
+    .book-form-page-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    /* Section Header Styles */
+    .book-form-section-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .book-form-section-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.2rem;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .book-form-header-subtitle {
+        color: rgba(255, 255, 255, 0.8);
+        margin-top: 0.5rem;
+        font-size: 1rem;
+    }
+
+    /* Help Card Styles */
+    .book-form-help-card {
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        background-color: var(--surface);
+        transition: all var(--transition-normal);
+        border: 1px solid rgba(var(--primary-color-rgb), 0.1);
+    }
+
+    .book-form-help-card:hover {
+        box-shadow: var(--shadow-md);
+        border-color: var(--primary-color);
+    }
+
+    .book-form-help-card-header {
+        padding: 1rem 1.5rem;
+        background-color: rgba(var(--primary-color-rgb), 0.05);
+        color: var(--primary-color);
+        font-weight: 600;
+        font-size: 1.1rem;
+        border-bottom: 1px solid rgba(var(--primary-color-rgb), 0.1);
+    }
+
+    .book-form-help-card-body {
+        padding: 1.5rem;
+    }
+
+    .book-form-help-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 1.5rem 0;
+    }
+
+    .book-form-help-list li {
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .book-form-help-list li i {
+        color: var(--success-color);
+        margin-top: 0.25rem;
+    }
+
+    .book-form-help-link {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all var(--transition-fast);
+    }
+
+    .book-form-help-link:hover {
+        color: var(--primary-dark);
+        text-decoration: underline;
+    }
+
+    /* Dark Mode Adjustments for New Elements */
+    [data-bs-theme="dark"] .book-form-page-title {
+        color: var(--light);
+    }
+
+    [data-bs-theme="dark"] .breadcrumb-item.active {
+        color: var(--medium-light);
+    }
+
+    [data-bs-theme="dark"] .book-form-help-card {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    [data-bs-theme="dark"] .book-form-help-card-header {
+        background-color: rgba(255, 255, 255, 0.08);
+        border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .book-form-body {
+            padding: 1.5rem;
+        }
+
+        .book-form-actions {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .book-form-actions .admin-pro-btn {
+            width: 100%;
+        }
+
+        .book-form-cover-preview {
+            height: 250px;
+        }
+
+        .book-form-page-header {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .book-form-page-actions {
+            width: 100%;
+        }
+
+        .book-form-page-actions .admin-pro-btn {
+            width: 100%;
+        }
+
+        .book-form-section-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .book-form-section-icon {
+            margin-right: 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-pro-container fade-in-up">
+    <!-- Page Header with Breadcrumbs -->
+    <div class="book-form-page-header">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="book-form-page-title">
+                    {% if book %}
+                        <i class="fas fa-edit me-2"></i> Edit Book
+                    {% else %}
+                        <i class="fas fa-plus-circle me-2"></i> Add New Book
+                    {% endif %}
+                </h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="{% url 'core:home' %}">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'books:manage_books' %}">Books</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            {% if book %}Edit: {{ book.title }}{% else %}Add New Book{% endif %}
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="book-form-page-actions">
+                <a href="{% url 'books:manage_books' %}" class="admin-pro-btn admin-pro-btn-outline">
+                    <i class="fas fa-arrow-left me-2"></i> Back to Books
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Form Container -->
+    <div class="row">
+        <div class="col-lg-9 col-md-10 mx-auto">
+            <div class="book-form-container">
+                <div class="book-form-header">
+                    <h2 class="book-form-title">
+                        {% if book %}
+                            Edit Book: {{ book.title }}
+                        {% else %}
+                            Add New Book
+                        {% endif %}
+                    </h2>
+                    <div class="book-form-header-subtitle">
+                        Fill in the details below to {% if book %}update{% else %}create{% endif %} a book in your library
+                    </div>
+                </div>
+                <div class="book-form-body">
+                    <form method="post" enctype="multipart/form-data" id="book-form">
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger d-flex align-items-center">
+                                <i class="fas fa-exclamation-triangle me-3 fa-lg"></i>
+                                <div>
+                                    {% for error in form.non_field_errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <!-- Basic Information Section -->
+                        <div class="book-form-section">
+                            <div class="book-form-section-header">
+                                <div class="book-form-section-icon">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
+                                <h3 class="book-form-section-title">Basic Information</h3>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="book-form-group">
+                                        <label for="{{ form.title.id_for_label }}" class="book-form-label">
+                                            <i class="fas fa-book-open me-2 text-primary"></i>Title <span class="text-danger">*</span>
+                                        </label>
+                                        {{ form.title }}
+                                        {% if form.title.errors %}
+                                            <div class="book-form-error">{{ form.title.errors }}</div>
+                                        {% endif %}
+                                        {% if form.title.help_text %}
+                                            <div class="book-form-help">{{ form.title.help_text }}</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="book-form-group">
+                                        <label for="{{ form.isbn.id_for_label }}" class="book-form-label">
+                                            <i class="fas fa-barcode me-2 text-primary"></i>ISBN <span class="text-danger">*</span>
+                                        </label>
+                                        {{ form.isbn }}
+                                        {% if form.isbn.errors %}
+                                            <div class="book-form-error">{{ form.isbn.errors }}</div>
+                                        {% endif %}
+                                        {% if form.isbn.help_text %}
+                                            <div class="book-form-help">{{ form.isbn.help_text }}</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="book-form-group">
+                                                <label for="{{ form.publisher.id_for_label }}" class="book-form-label">
+                                                    <i class="fas fa-building me-2 text-primary"></i>Publisher
+                                                </label>
+                                                {{ form.publisher }}
+                                                {% if form.publisher.errors %}
+                                                    <div class="book-form-error">{{ form.publisher.errors }}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="book-form-group">
+                                                <label for="{{ form.publication_date.id_for_label }}" class="book-form-label">
+                                                    <i class="fas fa-calendar-alt me-2 text-primary"></i>Publication Date
+                                                </label>
+                                                {{ form.publication_date }}
+                                                {% if form.publication_date.errors %}
+                                                    <div class="book-form-error">{{ form.publication_date.errors }}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="book-form-group">
+                                                <label for="{{ form.language.id_for_label }}" class="book-form-label">
+                                                    <i class="fas fa-language me-2 text-primary"></i>Language
+                                                </label>
+                                                {{ form.language }}
+                                                {% if form.language.errors %}
+                                                    <div class="book-form-error">{{ form.language.errors }}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="book-form-group">
+                                                <label for="{{ form.pages.id_for_label }}" class="book-form-label">
+                                                    <i class="fas fa-file-alt me-2 text-primary"></i>Pages
+                                                </label>
+                                                {{ form.pages }}
+                                                {% if form.pages.errors %}
+                                                    <div class="book-form-error">{{ form.pages.errors }}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="book-form-group">
+                                        <label for="{{ form.cover_image.id_for_label }}" class="book-form-label">
+                                            <i class="fas fa-image me-2 text-primary"></i>Cover Image
+                                        </label>
+                                        <div class="book-form-cover-preview" id="cover-preview">
+                                            {% if book.cover_image %}
+                                                <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
+                                            {% else %}
+                                                <div class="book-form-cover-placeholder">
+                                                    <i class="fas fa-book"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div class="book-form-cover-overlay">
+                                                <div class="book-form-cover-overlay-text">
+                                                    <i class="fas fa-upload me-2"></i> Change Cover
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input type="file" name="cover_image" id="{{ form.cover_image.id_for_label }}" class="form-control" accept="image/*" style="display: none;">
+                                        <button type="button" class="admin-pro-btn admin-pro-btn-outline admin-pro-btn-block" id="cover-upload-btn">
+                                            <i class="fas fa-upload me-2"></i> Upload Cover Image
+                                        </button>
+                                        <div class="book-form-help mt-2">
+                                            <i class="fas fa-info-circle me-1"></i> Recommended size: 400x600px, max 5MB
+                                        </div>
+                                        {% if form.cover_image.errors %}
+                                            <div class="book-form-error">{{ form.cover_image.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Content Section -->
+                        <div class="book-form-section">
+                            <div class="book-form-section-header">
+                                <div class="book-form-section-icon">
+                                    <i class="fas fa-align-left"></i>
+                                </div>
+                                <h3 class="book-form-section-title">Content</h3>
+                            </div>
+                            <div class="book-form-group">
+                                <label for="{{ form.summary.id_for_label }}" class="book-form-label">
+                                    <i class="fas fa-paragraph me-2 text-primary"></i>Summary
+                                </label>
+                                {{ form.summary }}
+                                {% if form.summary.errors %}
+                                    <div class="book-form-error">{{ form.summary.errors }}</div>
+                                {% endif %}
+                                <div class="book-form-help">
+                                    <i class="fas fa-info-circle me-1"></i> Provide a brief summary of the book's content
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Categories & Authors Section -->
+                        <div class="book-form-section">
+                            <div class="book-form-section-header">
+                                <div class="book-form-section-icon">
+                                    <i class="fas fa-tags"></i>
+                                </div>
+                                <h3 class="book-form-section-title">Categories & Authors</h3>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="book-form-group">
+                                        <label for="{{ form.categories.id_for_label }}" class="book-form-label">
+                                            <i class="fas fa-folder me-2 text-primary"></i>Categories <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="book-form-check-group">
+                                            {{ form.categories }}
+                                        </div>
+                                        {% if form.categories.errors %}
+                                            <div class="book-form-error">{{ form.categories.errors }}</div>
+                                        {% endif %}
+                                        <div class="book-form-help">
+                                            <i class="fas fa-info-circle me-1"></i> Select at least one category
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="book-form-group">
+                                        <label for="{{ form.authors.id_for_label }}" class="book-form-label">
+                                            <i class="fas fa-user-edit me-2 text-primary"></i>Authors <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="book-form-check-group">
+                                            {{ form.authors }}
+                                        </div>
+                                        {% if form.authors.errors %}
+                                            <div class="book-form-error">{{ form.authors.errors }}</div>
+                                        {% endif %}
+                                        <div class="book-form-help">
+                                            <i class="fas fa-info-circle me-1"></i> Select at least one author
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="book-form-actions">
+                            <div>
+                                <a href="{% url 'books:manage_books' %}" class="admin-pro-btn admin-pro-btn-outline">
+                                    <i class="fas fa-times me-2"></i> Cancel
+                                </a>
+                            </div>
+                            <div>
+                                <button type="submit" class="admin-pro-btn admin-pro-btn-primary book-form-submit">
+                                    <i class="fas fa-save me-2"></i>
+                                    {% if book %}
+                                        Update Book
+                                    {% else %}
+                                        Add Book
+                                    {% endif %}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Form Help Card -->
+            <div class="book-form-help-card mt-4">
+                <div class="book-form-help-card-header">
+                    <i class="fas fa-question-circle me-2"></i> Need Help?
+                </div>
+                <div class="book-form-help-card-body">
+                    <p>Here are some tips for adding books:</p>
+                    <ul class="book-form-help-list">
+                        <li><i class="fas fa-check-circle me-2"></i> Make sure to provide accurate ISBN numbers</li>
+                        <li><i class="fas fa-check-circle me-2"></i> Add a high-quality cover image when possible</li>
+                        <li><i class="fas fa-check-circle me-2"></i> Select appropriate categories for better discoverability</li>
+                        <li><i class="fas fa-check-circle me-2"></i> Include a detailed summary to help readers</li>
+                    </ul>
+                    <p class="mb-0">For more information, check the <a href="#" class="book-form-help-link">documentation</a> or <a href="#" class="book-form-help-link">contact support</a>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Fix form inputs and add proper styling
+        function initializeFormControls() {
+            // Add form-control class to all form inputs
+            const formInputs = document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], input[type="email"], input[type="url"], textarea, select');
+            formInputs.forEach(input => {
+                // Remove any existing classes that might interfere
+                input.classList.remove('form-control-plaintext');
+
+                // Add our custom classes
+                input.classList.add('form-control', 'book-form-control');
+
+                // Ensure the input has proper attributes
+                if (input.hasAttribute('required')) {
+                    input.setAttribute('aria-required', 'true');
+                }
+
+                // Fix date inputs
+                if (input.type === 'date') {
+                    // Ensure date inputs have a placeholder
+                    if (!input.hasAttribute('placeholder')) {
+                        input.setAttribute('placeholder', 'YYYY-MM-DD');
+                    }
+                }
+
+                // Fix number inputs
+                if (input.type === 'number') {
+                    // Add step attribute if not present
+                    if (!input.hasAttribute('step')) {
+                        input.setAttribute('step', '1');
+                    }
+                }
+
+                // Fix select inputs
+                if (input.tagName.toLowerCase() === 'select') {
+                    // Ensure select inputs have proper styling
+                    input.style.backgroundImage = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'16\' height=\'16\' fill=\'%234b5563\' viewBox=\'0 0 16 16\'%3E%3Cpath d=\'M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z\'/%3E%3C/svg%3E")';
+                    input.style.backgroundRepeat = 'no-repeat';
+                    input.style.backgroundPosition = 'right 0.75rem center';
+                    input.style.backgroundSize = '16px 12px';
+                }
+            });
+        }
+
+        // Initialize form controls
+        initializeFormControls();
+
+        // Fix checkboxes
+        function initializeCheckboxes() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                // Add our custom class
+                checkbox.classList.add('book-form-check-input');
+
+                // Get the parent element
+                const parent = checkbox.parentNode;
+
+                // Add form-check class to parent if not already present
+                if (!parent.classList.contains('book-form-check')) {
+                    parent.classList.add('book-form-check');
+                }
+
+                // Find or create label
+                let label = parent.querySelector('label');
+                if (!label) {
+                    // If no label exists, create one
+                    label = document.createElement('label');
+                    label.setAttribute('for', checkbox.id || `checkbox-${Math.random().toString(36).substr(2, 9)}`);
+
+                    // If checkbox has a next sibling that's text, use that as label text
+                    if (checkbox.nextSibling && checkbox.nextSibling.nodeType === 3) {
+                        label.textContent = checkbox.nextSibling.textContent.trim();
+                        parent.removeChild(checkbox.nextSibling);
+                    } else {
+                        label.textContent = checkbox.value || 'Option';
+                    }
+
+                    // Insert label after checkbox
+                    parent.insertBefore(label, checkbox.nextSibling);
+                }
+
+                // Add our custom class to label
+                label.classList.add('book-form-check-label');
+
+                // Ensure checkbox has an ID and label has a for attribute
+                if (!checkbox.id) {
+                    const newId = `checkbox-${Math.random().toString(36).substr(2, 9)}`;
+                    checkbox.id = newId;
+                    label.setAttribute('for', newId);
+                } else {
+                    label.setAttribute('for', checkbox.id);
+                }
+
+                // Add ripple effect on click
+                checkbox.addEventListener('click', function(e) {
+                    // Create ripple element
+                    const ripple = document.createElement('span');
+                    ripple.classList.add('checkbox-ripple');
+
+                    // Position ripple
+                    const rect = this.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+
+                    ripple.style.left = `${x}px`;
+                    ripple.style.top = `${y}px`;
+
+                    // Add ripple to parent
+                    parent.appendChild(ripple);
+
+                    // Remove ripple after animation
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+        }
+
+        // Initialize checkboxes
+        initializeCheckboxes();
+
+        // Cover image preview with enhanced UX
+        const coverInput = document.getElementById('{{ form.cover_image.id_for_label }}');
+        const coverPreview = document.getElementById('cover-preview');
+        const coverUploadBtn = document.getElementById('cover-upload-btn');
+
+        coverUploadBtn.addEventListener('click', function() {
+            coverInput.click();
+        });
+
+        coverPreview.addEventListener('click', function() {
+            coverInput.click();
+        });
+
+        // Add drag and drop functionality
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            coverPreview.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            coverPreview.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            coverPreview.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            coverPreview.classList.add('highlight');
+        }
+
+        function unhighlight() {
+            coverPreview.classList.remove('highlight');
+        }
+
+        coverPreview.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+
+            if (files && files.length) {
+                coverInput.files = files;
+                handleFiles(files);
+            }
+        }
+
+        function handleFiles(files) {
+            if (files && files[0]) {
+                const file = files[0];
+
+                // Check if file is an image
+                if (!file.type.match('image.*')) {
+                    showNotification('Please select an image file', 'error');
+                    return;
+                }
+
+                // Check file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    showNotification('Image size should be less than 5MB', 'error');
+                    return;
+                }
+
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    // Remove placeholder if exists
+                    const placeholder = coverPreview.querySelector('.book-form-cover-placeholder');
+                    if (placeholder) {
+                        placeholder.remove();
+                    }
+
+                    // Check if image already exists
+                    let img = coverPreview.querySelector('img');
+                    if (!img) {
+                        img = document.createElement('img');
+                        coverPreview.prepend(img);
+                    }
+
+                    img.src = e.target.result;
+                    img.alt = 'Book Cover Preview';
+
+                    showNotification('Cover image uploaded successfully', 'success');
+                };
+
+                reader.readAsDataURL(file);
+            }
+        }
+
+        coverInput.addEventListener('change', function() {
+            handleFiles(this.files);
+        });
+
+        // Form validation enhancement
+        const bookForm = document.getElementById('book-form');
+        bookForm.addEventListener('submit', function(e) {
+            let isValid = true;
+            const requiredInputs = bookForm.querySelectorAll('input[required], select[required], textarea[required]');
+
+            requiredInputs.forEach(input => {
+                if (!input.value.trim()) {
+                    isValid = false;
+                    input.classList.add('is-invalid');
+
+                    // Add shake animation
+                    input.classList.add('shake');
+                    setTimeout(() => {
+                        input.classList.remove('shake');
+                    }, 600);
+
+                    // Create or update error message
+                    let errorMsg = input.parentNode.querySelector('.book-form-error');
+                    if (!errorMsg) {
+                        errorMsg = document.createElement('div');
+                        errorMsg.classList.add('book-form-error');
+                        input.parentNode.appendChild(errorMsg);
+                    }
+                    errorMsg.textContent = 'This field is required';
+                } else {
+                    input.classList.remove('is-invalid');
+                    const errorMsg = input.parentNode.querySelector('.book-form-error');
+                    if (errorMsg) {
+                        errorMsg.remove();
+                    }
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+                showNotification('Please fill in all required fields', 'error');
+
+                // Scroll to first error
+                const firstError = bookForm.querySelector('.is-invalid');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    firstError.focus();
+                }
+            }
+        });
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            // Create notification element if it doesn't exist
+            let notification = document.querySelector('.book-form-notification');
+            if (!notification) {
+                notification = document.createElement('div');
+                notification.classList.add('book-form-notification');
+                document.body.appendChild(notification);
+            }
+
+            // Set notification content and type
+            notification.textContent = message;
+            notification.className = 'book-form-notification';
+            notification.classList.add(`book-form-notification-${type}`);
+
+            // Show notification
+            notification.classList.add('show');
+
+            // Hide notification after 3 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Add CSS for notification
+        const style = document.createElement('style');
+        style.textContent = `
+            .book-form-notification {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                padding: 15px 25px;
+                border-radius: var(--border-radius-md);
+                color: white;
+                font-weight: 500;
+                box-shadow: var(--shadow-lg);
+                transform: translateY(100px);
+                opacity: 0;
+                transition: all 0.3s ease;
+                z-index: 9999;
+            }
+
+            .book-form-notification.show {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            .book-form-notification-success {
+                background: linear-gradient(135deg, var(--success-color) 0%, #2ecc71 100%);
+            }
+
+            .book-form-notification-error {
+                background: linear-gradient(135deg, var(--danger-color) 0%, #e74c3c 100%);
+            }
+
+            .book-form-notification-info {
+                background: linear-gradient(135deg, var(--info-color) 0%, #3498db 100%);
+            }
+
+            .book-form-notification-warning {
+                background: linear-gradient(135deg, var(--warning-color) 0%, #f39c12 100%);
+            }
+
+            .checkbox-ripple {
+                position: absolute;
+                border-radius: 50%;
+                background-color: rgba(var(--primary-color-rgb), 0.3);
+                animation: ripple 0.6s linear;
+                transform: scale(0);
+                pointer-events: none;
+                width: 40px;
+                height: 40px;
+                z-index: 0;
+                left: -10px;
+                top: -10px;
+            }
+
+            @keyframes ripple {
+                to {
+                    transform: scale(2.5);
+                    opacity: 0;
+                }
+            }
+
+            .shake {
+                animation: shake 0.6s cubic-bezier(.36,.07,.19,.97) both;
+            }
+
+            @keyframes shake {
+                10%, 90% {
+                    transform: translate3d(-1px, 0, 0);
+                }
+                20%, 80% {
+                    transform: translate3d(2px, 0, 0);
+                }
+                30%, 50%, 70% {
+                    transform: translate3d(-3px, 0, 0);
+                }
+                40%, 60% {
+                    transform: translate3d(3px, 0, 0);
+                }
+            }
+
+            .book-form-cover-preview.highlight {
+                border-color: var(--primary-color);
+                background-color: rgba(var(--primary-color-rgb), 0.05);
+                box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
+            }
+        `;
+        document.head.appendChild(style);
+    });
+</script>
+{% endblock %}

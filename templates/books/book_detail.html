@@ -3,93 +3,426 @@
 
 {% block title %}{{ book.title }} - Library Management System{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Modern Book Detail Page Styles */
+    .book-detail-container {
+        padding: 2rem 0;
+    }
+
+    .book-breadcrumb {
+        margin-bottom: 1.5rem;
+        padding: 0.75rem 1rem;
+        background-color: rgba(var(--primary-color-rgb), 0.05);
+        border-radius: var(--border-radius-md);
+        transition: all var(--transition-normal);
+    }
+
+    .book-cover-container {
+        position: relative;
+        margin-bottom: 1.5rem;
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        transition: all var(--transition-normal);
+    }
+
+    .book-cover-container:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .book-cover-image {
+        width: 100%;
+        height: auto;
+        border-radius: var(--border-radius-lg);
+        transition: all var(--transition-normal);
+    }
+
+    .book-info-card {
+        border: none;
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 1.5rem;
+        transition: all var(--transition-normal);
+    }
+
+    .book-info-card:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    .book-info-header {
+        padding: 1rem 1.5rem;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+    }
+
+    .book-info-header i {
+        margin-right: 0.75rem;
+        font-size: 1.1rem;
+    }
+
+    .book-info-body {
+        padding: 1.5rem;
+    }
+
+    .book-info-item {
+        display: flex;
+        margin-bottom: 0.75rem;
+    }
+
+    .book-info-label {
+        font-weight: 600;
+        min-width: 120px;
+        color: var(--medium-dark);
+    }
+
+    .book-info-value {
+        color: var(--medium);
+    }
+
+    .book-title {
+        font-size: 2.25rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+        line-height: 1.2;
+    }
+
+    .book-authors {
+        font-size: 1.25rem;
+        color: var(--medium);
+        margin-bottom: 1.5rem;
+    }
+
+    .book-author-link {
+        color: var(--primary-color);
+        text-decoration: none;
+        transition: all var(--transition-fast);
+    }
+
+    .book-author-link:hover {
+        color: var(--primary-dark);
+        text-decoration: underline;
+    }
+
+    .book-summary {
+        line-height: 1.7;
+        color: var(--medium);
+    }
+
+    .book-category-badge {
+        display: inline-block;
+        padding: 0.4em 0.8em;
+        margin: 0.2rem;
+        border-radius: 50rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        background-color: rgba(var(--secondary-color-rgb), 0.1);
+        color: var(--secondary-color);
+        transition: all var(--transition-fast);
+    }
+
+    .book-category-badge:hover {
+        background-color: var(--secondary-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .book-copies-accordion {
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+    }
+
+    .book-copies-accordion .accordion-item {
+        border: none;
+        margin-bottom: 0.5rem;
+    }
+
+    .book-copies-accordion .accordion-button {
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+        color: var(--dark);
+        background-color: rgba(var(--primary-color-rgb), 0.05);
+        border-radius: var(--border-radius-md) !important;
+    }
+
+    .book-copies-accordion .accordion-button:not(.collapsed) {
+        color: white;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    }
+
+    .book-copies-accordion .accordion-button:focus {
+        box-shadow: none;
+    }
+
+    .book-copies-accordion .accordion-body {
+        padding: 1.5rem;
+        background-color: var(--surface);
+        border-radius: 0 0 var(--border-radius-md) var(--border-radius-md);
+    }
+
+    .book-copies-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .book-copies-table th {
+        padding: 1rem;
+        font-weight: 600;
+        color: var(--medium-dark);
+        border-bottom: 2px solid rgba(var(--primary-color-rgb), 0.1);
+    }
+
+    .book-copies-table td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .book-copies-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .book-copies-table tr:hover td {
+        background-color: rgba(var(--primary-color-rgb), 0.02);
+    }
+
+    .book-status-badge {
+        display: inline-block;
+        padding: 0.4em 0.8em;
+        border-radius: 50rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .book-status-available {
+        background-color: rgba(var(--success-color-rgb), 0.1);
+        color: var(--success-color);
+    }
+
+    .book-status-borrowed {
+        background-color: rgba(var(--danger-color-rgb), 0.1);
+        color: var(--danger-color);
+    }
+
+    .book-status-reserved {
+        background-color: rgba(var(--warning-color-rgb), 0.1);
+        color: var(--warning-color);
+    }
+
+    .book-status-maintenance {
+        background-color: rgba(var(--medium-light-rgb), 0.1);
+        color: var(--medium);
+    }
+
+    .book-action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 1rem;
+        border-radius: var(--border-radius-md);
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all var(--transition-normal);
+        margin-right: 0.5rem;
+        border: none;
+    }
+
+    .book-action-btn i {
+        margin-right: 0.5rem;
+    }
+
+    .book-action-btn-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+    }
+
+    .book-action-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(var(--primary-color-rgb), 0.3);
+        color: white;
+    }
+
+    .book-action-btn-info {
+        background: linear-gradient(135deg, var(--info-color) 0%, var(--secondary-color) 100%);
+        color: white;
+    }
+
+    .book-action-btn-info:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(var(--info-color-rgb), 0.3);
+        color: white;
+    }
+
+    .book-action-btn-warning {
+        background: linear-gradient(135deg, var(--warning-color) 0%, #f97316 100%);
+        color: white;
+    }
+
+    .book-action-btn-warning:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(var(--warning-color-rgb), 0.3);
+        color: white;
+    }
+
+    /* Dark mode adjustments */
+    [data-bs-theme="dark"] .book-breadcrumb {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    [data-bs-theme="dark"] .book-info-label {
+        color: var(--medium-light);
+    }
+
+    [data-bs-theme="dark"] .book-copies-accordion .accordion-button {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: var(--light);
+    }
+
+    [data-bs-theme="dark"] .book-copies-table th {
+        border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+
+    [data-bs-theme="dark"] .book-copies-table td {
+        border-bottom-color: rgba(255, 255, 255, 0.05);
+    }
+
+    [data-bs-theme="dark"] .book-copies-table tr:hover td {
+        background-color: rgba(255, 255, 255, 0.03);
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container">
-    <div class="row mb-4">
-        <div class="col-12">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{% url 'core:home' %}">Home</a></li>
-                    <li class="breadcrumb-item"><a href="{% url 'books:book_list' %}">Books</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">{{ book.title }}</li>
-                </ol>
-            </nav>
-        </div>
+<div class="container book-detail-container">
+    <!-- Breadcrumb -->
+    <div class="book-breadcrumb">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'core:home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'books:book_list' %}">Books</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ book.title }}</li>
+            </ol>
+        </nav>
     </div>
-    
+
     <!-- Book Details -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            {% if book.cover_image %}
-                <img src="{{ book.cover_image.url }}" class="book-cover img-fluid mb-3" alt="{{ book.title }}">
-            {% else %}
-                <img src="https://placehold.co/300x450?text=No+Cover" class="book-cover img-fluid mb-3" alt="No Cover">
-            {% endif %}
-            
-            <div class="card mb-3">
-                <div class="card-header bg-primary text-white">
+    <div class="row">
+        <!-- Left Column - Book Cover and Details -->
+        <div class="col-lg-3 col-md-4">
+            <!-- Book Cover -->
+            <div class="book-cover-container">
+                {% if book.cover_image %}
+                    <img src="{{ book.cover_image.url }}" class="book-cover-image" alt="{{ book.title }}">
+                {% else %}
+                    <img src="https://placehold.co/300x450?text=No+Cover" class="book-cover-image" alt="No Cover">
+                {% endif %}
+            </div>
+
+            <!-- Book Details Card -->
+            <div class="book-info-card">
+                <div class="book-info-header">
+                    <i class="fas fa-info-circle"></i>
                     <h5 class="mb-0">Book Details</h5>
                 </div>
-                <div class="card-body">
-                    <p><strong>ISBN:</strong> {{ book.isbn }}</p>
+                <div class="book-info-body">
+                    <div class="book-info-item">
+                        <div class="book-info-label">ISBN:</div>
+                        <div class="book-info-value">{{ book.isbn }}</div>
+                    </div>
+
                     {% if book.publisher %}
-                        <p><strong>Publisher:</strong> {{ book.publisher }}</p>
+                    <div class="book-info-item">
+                        <div class="book-info-label">Publisher:</div>
+                        <div class="book-info-value">{{ book.publisher }}</div>
+                    </div>
                     {% endif %}
+
                     {% if book.publication_date %}
-                        <p><strong>Publication Date:</strong> {{ book.publication_date|date:"F j, Y" }}</p>
+                    <div class="book-info-item">
+                        <div class="book-info-label">Published:</div>
+                        <div class="book-info-value">{{ book.publication_date|date:"F j, Y" }}</div>
+                    </div>
                     {% endif %}
+
                     {% if book.language %}
-                        <p><strong>Language:</strong> {{ book.language }}</p>
+                    <div class="book-info-item">
+                        <div class="book-info-label">Language:</div>
+                        <div class="book-info-value">{{ book.language }}</div>
+                    </div>
                     {% endif %}
+
                     {% if book.pages %}
-                        <p><strong>Pages:</strong> {{ book.pages }}</p>
+                    <div class="book-info-item">
+                        <div class="book-info-label">Pages:</div>
+                        <div class="book-info-value">{{ book.pages }}</div>
+                    </div>
                     {% endif %}
                 </div>
             </div>
-            
-            <div class="card">
-                <div class="card-header bg-primary text-white">
+
+            <!-- Categories Card -->
+            <div class="book-info-card">
+                <div class="book-info-header">
+                    <i class="fas fa-tags"></i>
                     <h5 class="mb-0">Categories</h5>
                 </div>
-                <div class="card-body">
+                <div class="book-info-body">
                     {% for category in book.categories.all %}
-                        <a href="{% url 'books:category_detail' slug=category.slug %}" class="badge bg-secondary text-decoration-none mb-1">{{ category.name }}</a>
+                        <a href="{% url 'books:category_detail' slug=category.slug %}" class="book-category-badge">{{ category.name }}</a>
                     {% empty %}
-                        <p>No categories assigned.</p>
+                        <p class="text-muted">No categories assigned.</p>
                     {% endfor %}
                 </div>
             </div>
         </div>
-        
-        <div class="col-md-9">
-            <h1 class="mb-2">{{ book.title }}</h1>
-            <h5 class="text-muted mb-3">
-                by 
+
+        <!-- Right Column - Book Content -->
+        <div class="col-lg-9 col-md-8">
+            <!-- Book Title and Author -->
+            <h1 class="book-title">{{ book.title }}</h1>
+            <div class="book-authors">
+                by
                 {% for author in book.authors.all %}
-                    <a href="{% url 'books:author_detail' slug=author.slug %}">{{ author.name }}</a>{% if not forloop.last %}, {% endif %}
+                    <a href="{% url 'books:author_detail' slug=author.slug %}" class="book-author-link">{{ author.name }}</a>{% if not forloop.last %}, {% endif %}
                 {% endfor %}
-            </h5>
-            
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
+            </div>
+
+            <!-- Book Summary Card -->
+            <div class="book-info-card">
+                <div class="book-info-header">
+                    <i class="fas fa-book-open"></i>
                     <h5 class="mb-0">Summary</h5>
                 </div>
-                <div class="card-body">
+                <div class="book-info-body">
                     {% if book.summary %}
-                        <p>{{ book.summary|linebreaks }}</p>
+                        <div class="book-summary">{{ book.summary|linebreaks }}</div>
                     {% else %}
-                        <p>No summary available.</p>
+                        <p class="text-muted">No summary available for this book.</p>
                     {% endif %}
                 </div>
             </div>
-            
-            <div class="card">
-                <div class="card-header bg-primary text-white">
+
+            <!-- Available Copies Card -->
+            <div class="book-info-card">
+                <div class="book-info-header">
+                    <i class="fas fa-copy"></i>
                     <h5 class="mb-0">Available Copies</h5>
                 </div>
-                <div class="card-body">
+                <div class="book-info-body">
                     {% if copies_by_library %}
-                        <div class="accordion" id="libraryAccordion">
+                        <div class="book-copies-accordion accordion" id="libraryAccordion">
                             {% for library, copies in copies_by_library.items %}
                                 <div class="accordion-item">
                                     <h2 class="accordion-header" id="heading{{ library.id }}">
@@ -100,7 +433,7 @@
                                     <div id="collapse{{ library.id }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" aria-labelledby="heading{{ library.id }}" data-bs-parent="#libraryAccordion">
                                         <div class="accordion-body">
                                             <div class="table-responsive">
-                                                <table class="table table-striped table-hover">
+                                                <table class="book-copies-table">
                                                     <thead>
                                                         <tr>
                                                             <th>Inventory #</th>
@@ -115,27 +448,27 @@
                                                                 <td>{{ copy.inventory_number }}</td>
                                                                 <td>
                                                                     {% if copy.status == 'AVAILABLE' %}
-                                                                        <span class="badge bg-success">Available</span>
+                                                                        <span class="book-status-badge book-status-available">Available</span>
                                                                     {% elif copy.status == 'BORROWED' %}
-                                                                        <span class="badge bg-danger">Borrowed</span>
+                                                                        <span class="book-status-badge book-status-borrowed">Borrowed</span>
                                                                     {% elif copy.status == 'RESERVED' %}
-                                                                        <span class="badge bg-warning text-dark">Reserved</span>
+                                                                        <span class="book-status-badge book-status-reserved">Reserved</span>
                                                                     {% else %}
-                                                                        <span class="badge bg-secondary">{{ copy.status|title }}</span>
+                                                                        <span class="book-status-badge book-status-maintenance">{{ copy.status|title }}</span>
                                                                     {% endif %}
                                                                 </td>
                                                                 <td>{{ copy.condition|title }}</td>
                                                                 <td>
-                                                                    <a href="{% url 'libraries:library_detail' slug=library.slug %}" class="btn btn-sm btn-info">
+                                                                    <a href="{% url 'libraries:library_detail' slug=library.slug %}" class="book-action-btn book-action-btn-info">
                                                                         <i class="fas fa-building"></i> View Library
                                                                     </a>
                                                                     {% if user.is_authenticated and user.is_library_member %}
                                                                         {% if copy.status == 'AVAILABLE' %}
-                                                                            <a href="{% url 'transactions:borrow_book' %}?book_copy={{ copy.id }}" class="btn btn-sm btn-primary">
+                                                                            <a href="{% url 'transactions:borrow_book' %}?book_copy={{ copy.id }}" class="book-action-btn book-action-btn-primary">
                                                                                 <i class="fas fa-book"></i> Borrow
                                                                             </a>
                                                                         {% elif copy.status == 'BORROWED' %}
-                                                                            <a href="{% url 'transactions:reserve_book' %}?book_copy={{ copy.id }}" class="btn btn-sm btn-warning">
+                                                                            <a href="{% url 'transactions:reserve_book' %}?book_copy={{ copy.id }}" class="book-action-btn book-action-btn-warning">
                                                                                 <i class="fas fa-bookmark"></i> Reserve
                                                                             </a>
                                                                         {% endif %}
@@ -152,8 +485,9 @@
                             {% endfor %}
                         </div>
                     {% else %}
-                        <div class="alert alert-info">
-                            <p>No copies of this book are available in any library.</p>
+                        <div class="alert alert-info d-flex align-items-center">
+                            <i class="fas fa-info-circle me-3 fa-lg"></i>
+                            <div>No copies of this book are available in any library.</div>
                         </div>
                     {% endif %}
                 </div>
@@ -161,4 +495,24 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add fade-in animation to elements
+        const elements = document.querySelectorAll('.book-info-card, .book-cover-container');
+        elements.forEach((el, index) => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            el.style.transitionDelay = `${0.1 * index}s`;
+
+            setTimeout(() => {
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    });
+</script>
 {% endblock %}

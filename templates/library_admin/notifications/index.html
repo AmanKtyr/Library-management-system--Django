@@ -1,0 +1,617 @@
+{% extends 'core/admin_base.html' %}
+{% load static %}
+
+{% block title %}Notifications Center - Library Management System{% endblock %}
+{% block breadcrumb_title %}Notifications{% endblock %}
+{% block page_title %}Notifications Center{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'library_admin:settings' %}#notifications" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-cog"></i> Notification Settings
+</a>
+<button class="admin-pro-btn admin-pro-btn-primary" id="mark-all-read">
+    <i class="fas fa-check-double"></i> Mark All as Read
+</button>
+{% endblock %}
+
+{% block content %}
+<div class="admin-pro-notifications-container">
+    <div class="row">
+        <!-- Notifications Sidebar -->
+        <div class="col-md-3 mb-4">
+            <div class="admin-pro-card admin-pro-notifications-sidebar">
+                <div class="admin-pro-card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <a href="#all" class="list-group-item list-group-item-action active" data-bs-toggle="list">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div><i class="fas fa-bell me-2"></i> All Notifications</div>
+                                <span class="badge bg-primary rounded-pill">{{ overdue_books.count|add:pending_requests.count|add:maintenance_books.count|add:books_with_counts.count }}</span>
+                            </div>
+                        </a>
+                        <a href="#overdue" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div><i class="fas fa-exclamation-circle text-danger me-2"></i> Overdue Books</div>
+                                <span class="badge bg-danger rounded-pill">{{ overdue_books.count }}</span>
+                            </div>
+                        </a>
+                        <a href="#requests" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div><i class="fas fa-user-plus text-primary me-2"></i> Membership Requests</div>
+                                <span class="badge bg-primary rounded-pill">{{ pending_requests.count }}</span>
+                            </div>
+                        </a>
+                        <a href="#maintenance" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div><i class="fas fa-tools text-warning me-2"></i> Maintenance Needed</div>
+                                <span class="badge bg-warning rounded-pill">{{ maintenance_books.count }}</span>
+                            </div>
+                        </a>
+                        <a href="#inventory" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div><i class="fas fa-box-open text-info me-2"></i> Low Inventory</div>
+                                <span class="badge bg-info rounded-pill">{{ books_with_counts.count }}</span>
+                            </div>
+                        </a>
+                        <a href="#recent" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div><i class="fas fa-history text-success me-2"></i> Recent Activity</div>
+                                <span class="badge bg-success rounded-pill">{{ recent_transactions.count }}</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications Content -->
+        <div class="col-md-9">
+            <div class="admin-pro-card">
+                <div class="admin-pro-card-body">
+                    <div class="tab-content">
+                        <!-- All Notifications -->
+                        <div class="tab-pane fade show active" id="all">
+                            <h4 class="admin-pro-notifications-title">All Notifications</h4>
+                            
+                            {% if overdue_books.count == 0 and pending_requests.count == 0 and maintenance_books.count == 0 and books_with_counts.count == 0 %}
+                                <div class="admin-pro-empty-state">
+                                    <div class="admin-pro-empty-icon">
+                                        <i class="fas fa-bell-slash"></i>
+                                    </div>
+                                    <h4>No Notifications</h4>
+                                    <p>You're all caught up! There are no notifications at this time.</p>
+                                </div>
+                            {% else %}
+                                <div class="admin-pro-notifications-list">
+                                    <!-- Overdue Books Notifications -->
+                                    {% for transaction in overdue_books|slice:":3" %}
+                                        <div class="admin-pro-notification-item unread">
+                                            <div class="admin-pro-notification-icon bg-danger">
+                                                <i class="fas fa-exclamation-circle"></i>
+                                            </div>
+                                            <div class="admin-pro-notification-content">
+                                                <div class="admin-pro-notification-title">
+                                                    Overdue Book: {{ transaction.book_copy.book.title }}
+                                                </div>
+                                                <div class="admin-pro-notification-message">
+                                                    Book borrowed by {{ transaction.user.get_full_name }} is overdue by {{ transaction.due_date|timesince }}.
+                                                </div>
+                                                <div class="admin-pro-notification-meta">
+                                                    <span class="admin-pro-notification-time">Due: {{ transaction.due_date|date:"M d, Y" }}</span>
+                                                    <div class="admin-pro-notification-actions">
+                                                        <a href="{% url 'transactions:transaction_detail' transaction_id=transaction.transaction_id %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
+                                                            <i class="fas fa-eye"></i> View Details
+                                                        </a>
+                                                        <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-danger">
+                                                            <i class="fas fa-envelope"></i> Send Reminder
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                    
+                                    <!-- Membership Requests Notifications -->
+                                    {% for request in pending_requests|slice:":3" %}
+                                        <div class="admin-pro-notification-item unread">
+                                            <div class="admin-pro-notification-icon bg-primary">
+                                                <i class="fas fa-user-plus"></i>
+                                            </div>
+                                            <div class="admin-pro-notification-content">
+                                                <div class="admin-pro-notification-title">
+                                                    New Membership Request
+                                                </div>
+                                                <div class="admin-pro-notification-message">
+                                                    {{ request.user.get_full_name }} has requested to join {{ library.name }}.
+                                                </div>
+                                                <div class="admin-pro-notification-meta">
+                                                    <span class="admin-pro-notification-time">{{ request.request_date|timesince }} ago</span>
+                                                    <div class="admin-pro-notification-actions">
+                                                        <a href="{% url 'library_admin:membership_requests' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
+                                                            <i class="fas fa-eye"></i> View Request
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                    
+                                    <!-- Maintenance Books Notifications -->
+                                    {% for book_copy in maintenance_books|slice:":3" %}
+                                        <div class="admin-pro-notification-item">
+                                            <div class="admin-pro-notification-icon bg-warning">
+                                                <i class="fas fa-tools"></i>
+                                            </div>
+                                            <div class="admin-pro-notification-content">
+                                                <div class="admin-pro-notification-title">
+                                                    Book Needs Maintenance
+                                                </div>
+                                                <div class="admin-pro-notification-message">
+                                                    {{ book_copy.book.title }} (ID: {{ book_copy.inventory_number }}) needs maintenance.
+                                                </div>
+                                                <div class="admin-pro-notification-meta">
+                                                    <span class="admin-pro-notification-time">Updated: {{ book_copy.updated_at|date:"M d, Y" }}</span>
+                                                    <div class="admin-pro-notification-actions">
+                                                        <a href="{% url 'books:manage_books' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
+                                                            <i class="fas fa-eye"></i> View Book
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                    
+                                    <!-- Low Inventory Notifications -->
+                                    {% for book in books_with_counts|slice:":3" %}
+                                        <div class="admin-pro-notification-item">
+                                            <div class="admin-pro-notification-icon bg-info">
+                                                <i class="fas fa-box-open"></i>
+                                            </div>
+                                            <div class="admin-pro-notification-content">
+                                                <div class="admin-pro-notification-title">
+                                                    Low Book Inventory
+                                                </div>
+                                                <div class="admin-pro-notification-message">
+                                                    {{ book.title }} has only {{ book.available_count }} copies available.
+                                                </div>
+                                                <div class="admin-pro-notification-meta">
+                                                    <span class="admin-pro-notification-time">Status: Low Stock</span>
+                                                    <div class="admin-pro-notification-actions">
+                                                        <a href="{% url 'books:manage_books' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
+                                                            <i class="fas fa-eye"></i> View Book
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                    
+                                    {% if overdue_books.count > 3 or pending_requests.count > 3 or maintenance_books.count > 3 or books_with_counts.count > 3 %}
+                                        <div class="admin-pro-notifications-more">
+                                            <button class="admin-pro-btn admin-pro-btn-outline admin-pro-btn-block">
+                                                <i class="fas fa-chevron-down me-1"></i> Load More Notifications
+                                            </button>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Overdue Books -->
+                        <div class="tab-pane fade" id="overdue">
+                            <h4 class="admin-pro-notifications-title">Overdue Books</h4>
+                            
+                            {% if overdue_books.count == 0 %}
+                                <div class="admin-pro-empty-state">
+                                    <div class="admin-pro-empty-icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <h4>No Overdue Books</h4>
+                                    <p>All books have been returned on time. Great job!</p>
+                                </div>
+                            {% else %}
+                                <div class="admin-pro-notifications-list">
+                                    {% for transaction in overdue_books %}
+                                        <div class="admin-pro-notification-item unread">
+                                            <div class="admin-pro-notification-icon bg-danger">
+                                                <i class="fas fa-exclamation-circle"></i>
+                                            </div>
+                                            <div class="admin-pro-notification-content">
+                                                <div class="admin-pro-notification-title">
+                                                    Overdue Book: {{ transaction.book_copy.book.title }}
+                                                </div>
+                                                <div class="admin-pro-notification-message">
+                                                    Book borrowed by {{ transaction.user.get_full_name }} is overdue by {{ transaction.due_date|timesince }}.
+                                                </div>
+                                                <div class="admin-pro-notification-meta">
+                                                    <span class="admin-pro-notification-time">Due: {{ transaction.due_date|date:"M d, Y" }}</span>
+                                                    <div class="admin-pro-notification-actions">
+                                                        <a href="{% url 'transactions:transaction_detail' transaction_id=transaction.transaction_id %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
+                                                            <i class="fas fa-eye"></i> View Details
+                                                        </a>
+                                                        <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-danger">
+                                                            <i class="fas fa-envelope"></i> Send Reminder
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Membership Requests -->
+                        <div class="tab-pane fade" id="requests">
+                            <h4 class="admin-pro-notifications-title">Membership Requests</h4>
+                            
+                            {% if pending_requests.count == 0 %}
+                                <div class="admin-pro-empty-state">
+                                    <div class="admin-pro-empty-icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <h4>No Pending Requests</h4>
+                                    <p>There are no pending membership requests at this time.</p>
+                                </div>
+                            {% else %}
+                                <div class="admin-pro-notifications-list">
+                                    {% for request in pending_requests %}
+                                        <div class="admin-pro-notification-item unread">
+                                            <div class="admin-pro-notification-icon bg-primary">
+                                                <i class="fas fa-user-plus"></i>
+                                            </div>
+                                            <div class="admin-pro-notification-content">
+                                                <div class="admin-pro-notification-title">
+                                                    New Membership Request
+                                                </div>
+                                                <div class="admin-pro-notification-message">
+                                                    {{ request.user.get_full_name }} has requested to join {{ library.name }}.
+                                                </div>
+                                                <div class="admin-pro-notification-meta">
+                                                    <span class="admin-pro-notification-time">{{ request.request_date|timesince }} ago</span>
+                                                    <div class="admin-pro-notification-actions">
+                                                        <a href="{% url 'library_admin:membership_requests' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
+                                                            <i class="fas fa-eye"></i> View Request
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Maintenance Needed -->
+                        <div class="tab-pane fade" id="maintenance">
+                            <h4 class="admin-pro-notifications-title">Books Needing Maintenance</h4>
+                            
+                            {% if maintenance_books.count == 0 %}
+                                <div class="admin-pro-empty-state">
+                                    <div class="admin-pro-empty-icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <h4>No Maintenance Needed</h4>
+                                    <p>All books are in good condition. No maintenance is required at this time.</p>
+                                </div>
+                            {% else %}
+                                <div class="admin-pro-notifications-list">
+                                    {% for book_copy in maintenance_books %}
+                                        <div class="admin-pro-notification-item">
+                                            <div class="admin-pro-notification-icon bg-warning">
+                                                <i class="fas fa-tools"></i>
+                                            </div>
+                                            <div class="admin-pro-notification-content">
+                                                <div class="admin-pro-notification-title">
+                                                    Book Needs Maintenance
+                                                </div>
+                                                <div class="admin-pro-notification-message">
+                                                    {{ book_copy.book.title }} (ID: {{ book_copy.inventory_number }}) needs maintenance.
+                                                </div>
+                                                <div class="admin-pro-notification-meta">
+                                                    <span class="admin-pro-notification-time">Updated: {{ book_copy.updated_at|date:"M d, Y" }}</span>
+                                                    <div class="admin-pro-notification-actions">
+                                                        <a href="{% url 'books:manage_books' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
+                                                            <i class="fas fa-eye"></i> View Book
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Low Inventory -->
+                        <div class="tab-pane fade" id="inventory">
+                            <h4 class="admin-pro-notifications-title">Books with Low Inventory</h4>
+                            
+                            {% if books_with_counts.count == 0 %}
+                                <div class="admin-pro-empty-state">
+                                    <div class="admin-pro-empty-icon">
+                                        <i class="fas fa-box"></i>
+                                    </div>
+                                    <h4>Inventory Levels Good</h4>
+                                    <p>All books have sufficient inventory levels.</p>
+                                </div>
+                            {% else %}
+                                <div class="admin-pro-notifications-list">
+                                    {% for book in books_with_counts %}
+                                        <div class="admin-pro-notification-item">
+                                            <div class="admin-pro-notification-icon bg-info">
+                                                <i class="fas fa-box-open"></i>
+                                            </div>
+                                            <div class="admin-pro-notification-content">
+                                                <div class="admin-pro-notification-title">
+                                                    Low Book Inventory
+                                                </div>
+                                                <div class="admin-pro-notification-message">
+                                                    {{ book.title }} has only {{ book.available_count }} copies available.
+                                                </div>
+                                                <div class="admin-pro-notification-meta">
+                                                    <span class="admin-pro-notification-time">Status: Low Stock</span>
+                                                    <div class="admin-pro-notification-actions">
+                                                        <a href="{% url 'books:manage_books' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
+                                                            <i class="fas fa-eye"></i> View Book
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Recent Activity -->
+                        <div class="tab-pane fade" id="recent">
+                            <h4 class="admin-pro-notifications-title">Recent Activity</h4>
+                            
+                            {% if recent_transactions.count == 0 %}
+                                <div class="admin-pro-empty-state">
+                                    <div class="admin-pro-empty-icon">
+                                        <i class="fas fa-history"></i>
+                                    </div>
+                                    <h4>No Recent Activity</h4>
+                                    <p>There has been no activity in the past 7 days.</p>
+                                </div>
+                            {% else %}
+                                <div class="admin-pro-notifications-list">
+                                    {% for transaction in recent_transactions %}
+                                        <div class="admin-pro-notification-item">
+                                            <div class="admin-pro-notification-icon 
+                                                {% if transaction.transaction_type == 'BORROW' %}bg-primary
+                                                {% elif transaction.transaction_type == 'RETURN' %}bg-success
+                                                {% elif transaction.transaction_type == 'RESERVE' %}bg-warning
+                                                {% else %}bg-info{% endif %}">
+                                                {% if transaction.transaction_type == 'BORROW' %}
+                                                    <i class="fas fa-arrow-circle-right"></i>
+                                                {% elif transaction.transaction_type == 'RETURN' %}
+                                                    <i class="fas fa-arrow-circle-left"></i>
+                                                {% elif transaction.transaction_type == 'RESERVE' %}
+                                                    <i class="fas fa-bookmark"></i>
+                                                {% else %}
+                                                    <i class="fas fa-times-circle"></i>
+                                                {% endif %}
+                                            </div>
+                                            <div class="admin-pro-notification-content">
+                                                <div class="admin-pro-notification-title">
+                                                    {% if transaction.transaction_type == 'BORROW' %}
+                                                        Book Borrowed
+                                                    {% elif transaction.transaction_type == 'RETURN' %}
+                                                        Book Returned
+                                                    {% elif transaction.transaction_type == 'RESERVE' %}
+                                                        Book Reserved
+                                                    {% else %}
+                                                        Reservation Cancelled
+                                                    {% endif %}
+                                                </div>
+                                                <div class="admin-pro-notification-message">
+                                                    {{ transaction.user.get_full_name }} 
+                                                    {% if transaction.transaction_type == 'BORROW' %}
+                                                        borrowed
+                                                    {% elif transaction.transaction_type == 'RETURN' %}
+                                                        returned
+                                                    {% elif transaction.transaction_type == 'RESERVE' %}
+                                                        reserved
+                                                    {% else %}
+                                                        cancelled reservation for
+                                                    {% endif %}
+                                                    {{ transaction.book_copy.book.title }}.
+                                                </div>
+                                                <div class="admin-pro-notification-meta">
+                                                    <span class="admin-pro-notification-time">{{ transaction.transaction_date|timesince }} ago</span>
+                                                    <div class="admin-pro-notification-actions">
+                                                        <a href="{% url 'transactions:transaction_detail' transaction_id=transaction.transaction_id %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
+                                                            <i class="fas fa-eye"></i> View Details
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .admin-pro-notifications-container {
+        margin-bottom: 30px;
+    }
+    
+    .admin-pro-notifications-sidebar .list-group-item {
+        border-radius: 0;
+        border-left: 3px solid transparent;
+        padding: 12px 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .admin-pro-notifications-sidebar .list-group-item.active {
+        background-color: rgba(var(--bs-primary-rgb), 0.1);
+        color: var(--primary-color);
+        border-left-color: var(--primary-color);
+        font-weight: 500;
+    }
+    
+    .admin-pro-notifications-sidebar .list-group-item:hover:not(.active) {
+        background-color: rgba(var(--bs-primary-rgb), 0.05);
+        border-left-color: rgba(var(--bs-primary-rgb), 0.3);
+    }
+    
+    .admin-pro-notifications-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--gray-200);
+        color: var(--dark-color);
+    }
+    
+    .admin-pro-notifications-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .admin-pro-notification-item {
+        display: flex;
+        padding: 15px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        border-left: 3px solid transparent;
+        transition: all 0.3s ease;
+    }
+    
+    .admin-pro-notification-item:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+    
+    .admin-pro-notification-item.unread {
+        border-left-color: var(--primary-color);
+        background-color: rgba(var(--bs-primary-rgb), 0.02);
+    }
+    
+    .admin-pro-notification-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        color: white;
+        font-size: 20px;
+        flex-shrink: 0;
+    }
+    
+    .admin-pro-notification-content {
+        flex: 1;
+    }
+    
+    .admin-pro-notification-title {
+        font-weight: 600;
+        font-size: 16px;
+        margin-bottom: 5px;
+        color: var(--dark-color);
+    }
+    
+    .admin-pro-notification-message {
+        font-size: 14px;
+        color: var(--gray-700);
+        margin-bottom: 10px;
+    }
+    
+    .admin-pro-notification-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        color: var(--gray-500);
+    }
+    
+    .admin-pro-notification-actions {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .admin-pro-notifications-more {
+        margin-top: 15px;
+    }
+    
+    .admin-pro-empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        text-align: center;
+    }
+    
+    .admin-pro-empty-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background-color: var(--gray-100);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
+        color: var(--gray-500);
+        font-size: 30px;
+    }
+    
+    .admin-pro-empty-state h4 {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: var(--gray-700);
+    }
+    
+    .admin-pro-empty-state p {
+        font-size: 14px;
+        color: var(--gray-600);
+        max-width: 300px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle tab navigation via URL hash
+        const hash = window.location.hash;
+        if (hash) {
+            const tab = document.querySelector(`.list-group-item[href="${hash}"]`);
+            if (tab) {
+                tab.click();
+            }
+        }
+        
+        // Mark all as read button
+        const markAllReadBtn = document.getElementById('mark-all-read');
+        if (markAllReadBtn) {
+            markAllReadBtn.addEventListener('click', function() {
+                const unreadItems = document.querySelectorAll('.admin-pro-notification-item.unread');
+                unreadItems.forEach(item => {
+                    item.classList.remove('unread');
+                });
+                
+                // Update badge counts (in a real app, this would be an AJAX call)
+                const badges = document.querySelectorAll('.badge');
+                badges.forEach(badge => {
+                    badge.textContent = '0';
+                });
+                
+                // Show success message
+                alert('All notifications marked as read');
+            });
+        }
+    });
+</script>
+{% endblock %}

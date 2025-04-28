@@ -1,0 +1,257 @@
+{% extends 'core/admin_base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - Library Admin{% endblock %}
+{% block breadcrumb_title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'library_admin:categories' %}" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-arrow-left"></i> Back to Categories
+</a>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Modern Category Form Styles */
+    .category-form-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .category-form-card {
+        background-color: var(--surface);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+        border: none;
+        transition: all var(--transition-normal);
+    }
+    
+    .category-form-card:hover {
+        box-shadow: var(--shadow-md);
+    }
+    
+    .category-form-header {
+        padding: 1.5rem;
+        background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.05) 0%, rgba(var(--accent-color-rgb), 0.05) 100%);
+        border-bottom: 1px solid rgba(var(--primary-color-rgb), 0.1);
+    }
+    
+    .category-form-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+    }
+    
+    .category-form-subtitle {
+        color: var(--medium);
+        font-size: 0.95rem;
+    }
+    
+    .category-form-body {
+        padding: 1.5rem;
+    }
+    
+    .category-form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .category-form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: var(--medium-dark);
+        display: block;
+    }
+    
+    .category-form-control {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: var(--dark);
+        background-color: var(--surface);
+        background-clip: padding-box;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: var(--border-radius-md);
+        transition: all var(--transition-normal);
+    }
+    
+    .category-form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(var(--primary-color-rgb), 0.25);
+        outline: 0;
+    }
+    
+    .category-form-textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+    
+    .category-form-footer {
+        padding: 1.5rem;
+        background-color: rgba(var(--primary-color-rgb), 0.02);
+        border-top: 1px solid rgba(var(--primary-color-rgb), 0.05);
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+    }
+    
+    .category-form-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: middle;
+        user-select: none;
+        border: 1px solid transparent;
+        font-size: 1rem;
+        line-height: 1.5;
+        border-radius: var(--border-radius-md);
+        transition: all var(--transition-normal);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .category-form-btn i {
+        margin-right: 0.5rem;
+    }
+    
+    .category-form-btn-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        border-color: var(--primary-color);
+    }
+    
+    .category-form-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(var(--primary-color-rgb), 0.3);
+    }
+    
+    .category-form-btn-outline {
+        background-color: transparent;
+        border-color: var(--medium-light);
+        color: var(--medium-dark);
+    }
+    
+    .category-form-btn-outline:hover {
+        background-color: rgba(var(--primary-color-rgb), 0.05);
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        transform: translateY(-2px);
+    }
+    
+    .category-form-help {
+        display: block;
+        margin-top: 0.5rem;
+        font-size: 0.875rem;
+        color: var(--medium);
+    }
+    
+    .category-form-error {
+        display: block;
+        margin-top: 0.5rem;
+        font-size: 0.875rem;
+        color: var(--danger-color);
+    }
+    
+    /* Dark Mode Adjustments */
+    [data-bs-theme="dark"] .category-form-control {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: var(--light);
+    }
+    
+    [data-bs-theme="dark"] .category-form-control:focus {
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 0.2rem rgba(var(--primary-light-rgb), 0.25);
+    }
+    
+    [data-bs-theme="dark"] .category-form-btn-outline {
+        border-color: rgba(255, 255, 255, 0.2);
+        color: var(--light);
+    }
+    
+    [data-bs-theme="dark"] .category-form-btn-outline:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: var(--primary-light);
+        color: var(--primary-light);
+    }
+    
+    /* Animation Styles */
+    .fade-in-up {
+        animation: fadeInUp 0.5s ease forwards;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="category-form-container fade-in-up">
+    <div class="category-form-card">
+        <div class="category-form-header">
+            <h2 class="category-form-title">{{ title }}</h2>
+            <p class="category-form-subtitle">Fill in the details below to create a new category.</p>
+        </div>
+        
+        <form method="post" class="category-form">
+            {% csrf_token %}
+            
+            <div class="category-form-body">
+                <div class="category-form-group">
+                    <label for="id_name" class="category-form-label">Category Name</label>
+                    {{ form.name.errors }}
+                    <input type="text" name="name" id="id_name" class="category-form-control {% if form.name.errors %}is-invalid{% endif %}" value="{{ form.name.value|default:'' }}" required>
+                    {% if form.name.errors %}
+                        <div class="category-form-error">{{ form.name.errors.0 }}</div>
+                    {% endif %}
+                    <small class="category-form-help">Enter a unique name for the category.</small>
+                </div>
+                
+                <div class="category-form-group">
+                    <label for="id_description" class="category-form-label">Description</label>
+                    {{ form.description.errors }}
+                    <textarea name="description" id="id_description" class="category-form-control category-form-textarea {% if form.description.errors %}is-invalid{% endif %}">{{ form.description.value|default:'' }}</textarea>
+                    {% if form.description.errors %}
+                        <div class="category-form-error">{{ form.description.errors.0 }}</div>
+                    {% endif %}
+                    <small class="category-form-help">Provide a brief description of the category (optional).</small>
+                </div>
+            </div>
+            
+            <div class="category-form-footer">
+                <a href="{% url 'library_admin:categories' %}" class="category-form-btn category-form-btn-outline">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+                <button type="submit" class="category-form-btn category-form-btn-primary">
+                    <i class="fas fa-save"></i> Save Category
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Focus on the name field when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('id_name').focus();
+    });
+</script>
+{% endblock %}

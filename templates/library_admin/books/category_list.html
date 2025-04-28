@@ -1,0 +1,674 @@
+{% extends 'core/admin_base.html' %}
+{% load static %}
+
+{% block title %}Manage Categories - Library Admin{% endblock %}
+{% block breadcrumb_title %}Categories{% endblock %}
+{% block page_title %}Manage Book Categories{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'library_admin:add_category' %}" class="admin-pro-btn admin-pro-btn-primary">
+    <i class="fas fa-plus"></i> Add Category
+</a>
+<a href="{% url 'books:manage_books' %}" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-book"></i> Manage Books
+</a>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Modern Category Management Styles */
+    .category-card {
+        background-color: var(--surface);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-sm);
+        transition: all var(--transition-normal);
+        height: 100%;
+        border: none;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .category-card-header {
+        padding: 1.25rem;
+        background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.05) 0%, rgba(var(--accent-color-rgb), 0.05) 100%);
+        border-bottom: 1px solid rgba(var(--primary-color-rgb), 0.1);
+        display: flex;
+        align-items: center;
+    }
+
+    .category-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        transition: all var(--transition-normal);
+    }
+
+    .category-card:hover .category-icon {
+        transform: scale(1.1);
+    }
+
+    .category-name {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0;
+        color: var(--dark);
+    }
+
+    .category-card-body {
+        padding: 1.25rem;
+    }
+
+    .category-description {
+        color: var(--medium);
+        margin-bottom: 1rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        height: 4.5rem;
+    }
+
+    .category-meta {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.25rem;
+    }
+
+    .category-book-count {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.4em 0.8em;
+        border-radius: 50rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.1) 0%, rgba(var(--accent-color-rgb), 0.1) 100%);
+        color: var(--primary-color);
+    }
+
+    .category-book-count i {
+        margin-right: 0.5rem;
+    }
+
+    .category-card-footer {
+        padding: 1rem 1.25rem;
+        border-top: 1px solid rgba(var(--primary-color-rgb), 0.05);
+        background-color: rgba(var(--primary-color-rgb), 0.02);
+    }
+
+    .category-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .category-action-btn {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 0.75rem;
+        border-radius: var(--border-radius-md);
+        font-weight: 500;
+        text-decoration: none;
+        transition: all var(--transition-normal);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .category-action-btn i {
+        margin-right: 0.5rem;
+    }
+
+    .category-action-btn-view {
+        background: linear-gradient(135deg, var(--info-color) 0%, var(--secondary-color) 100%);
+        color: white;
+    }
+
+    .category-action-btn-edit {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+    }
+
+    .category-action-btn-delete {
+        background: linear-gradient(135deg, var(--danger-color) 0%, #e74c3c 100%);
+        color: white;
+    }
+
+    .category-action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+        color: white;
+    }
+
+    .category-empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        background-color: var(--surface);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-sm);
+        border: 1px dashed rgba(var(--primary-color-rgb), 0.2);
+    }
+
+    .category-empty-icon {
+        font-size: 3rem;
+        color: var(--medium-light);
+        margin-bottom: 1.5rem;
+    }
+
+    .category-empty-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--dark);
+    }
+
+    .category-empty-text {
+        color: var(--medium);
+        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+    }
+
+    .category-empty-btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--border-radius-md);
+        font-weight: 500;
+        text-decoration: none;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        transition: all var(--transition-normal);
+    }
+
+    .category-empty-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        color: white;
+    }
+
+    .category-empty-btn i {
+        margin-right: 0.5rem;
+    }
+
+    /* Table View Styles */
+    .category-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .category-table th {
+        background-color: rgba(var(--primary-color-rgb), 0.05);
+        padding: 1rem 1.25rem;
+        font-weight: 600;
+        text-align: left;
+        border-bottom: 2px solid rgba(var(--primary-color-rgb), 0.1);
+        color: var(--medium-dark);
+    }
+
+    .category-table td {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        vertical-align: middle;
+        color: var(--medium);
+    }
+
+    .category-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .category-table tr:hover td {
+        background-color: rgba(var(--primary-color-rgb), 0.02);
+    }
+
+    .category-table-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .category-table-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: var(--border-radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-decoration: none;
+        transition: all var(--transition-normal);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .category-table-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .category-table-btn-view {
+        background: linear-gradient(135deg, var(--info-color) 0%, var(--secondary-color) 100%);
+    }
+
+    .category-table-btn-edit {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    }
+
+    .category-table-btn-delete {
+        background: linear-gradient(135deg, var(--danger-color) 0%, #e74c3c 100%);
+    }
+
+    /* View Toggle Styles */
+    .category-view-toggle {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .category-view-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: var(--border-radius-md);
+        background-color: var(--surface);
+        color: var(--medium);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        transition: all var(--transition-normal);
+        cursor: pointer;
+    }
+
+    .category-view-btn.active {
+        background-color: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+    .category-view-btn:hover:not(.active) {
+        background-color: rgba(var(--primary-color-rgb), 0.05);
+        color: var(--primary-color);
+    }
+
+    /* Dark Mode Adjustments */
+    [data-bs-theme="dark"] .category-table th {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+
+    [data-bs-theme="dark"] .category-table td {
+        border-bottom-color: rgba(255, 255, 255, 0.05);
+    }
+
+    [data-bs-theme="dark"] .category-table tr:hover td {
+        background-color: rgba(255, 255, 255, 0.03);
+    }
+
+    [data-bs-theme="dark"] .category-card-header {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+        border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+
+    [data-bs-theme="dark"] .category-card-footer {
+        border-top-color: rgba(255, 255, 255, 0.05);
+        background-color: rgba(255, 255, 255, 0.02);
+    }
+
+    [data-bs-theme="dark"] .category-view-btn {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: var(--light);
+    }
+
+    [data-bs-theme="dark"] .category-view-btn:hover:not(.active) {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Animation Styles */
+    .fade-in-up {
+        animation: fadeInUp 0.5s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .ripple-effect {
+        position: absolute;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.3);
+        animation: ripple 0.6s linear;
+        transform: scale(0);
+        pointer-events: none;
+    }
+
+    @keyframes ripple {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-pro-container fade-in-up">
+    <!-- Search and View Toggle -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form method="get" action="{% url 'library_admin:categories' %}">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    <input type="text" name="q" class="form-control border-start-0" placeholder="Search categories..." value="{{ request.GET.q|default:'' }}">
+                    <button type="submit" class="admin-pro-btn admin-pro-btn-primary">Search</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6 text-end">
+            <div class="category-view-toggle ms-auto">
+                <button type="button" class="category-view-btn active" data-view="grid">
+                    <i class="fas fa-th-large"></i>
+                </button>
+                <button type="button" class="category-view-btn" data-view="list">
+                    <i class="fas fa-list"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grid View -->
+    <div id="grid-view" class="row">
+        {% for category in categories %}
+            <div class="col-lg-4 col-md-6 mb-4 category-card-wrapper" style="opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; transition-delay: {{ forloop.counter0|divisibleby:3 }}00ms;">
+                <div class="category-card">
+                    <div class="category-card-header">
+                        <div class="category-icon">
+                            <i class="fas fa-folder"></i>
+                        </div>
+                        <h3 class="category-name">{{ category.name }}</h3>
+                    </div>
+                    <div class="category-card-body">
+                        <div class="category-meta">
+                            <div class="category-book-count">
+                                <i class="fas fa-book"></i> {{ category.book_count }} {% if category.book_count == 1 %}book{% else %}books{% endif %}
+                            </div>
+                        </div>
+                        <div class="category-description">
+                            {% if category.description %}
+                                {{ category.description|truncatechars:150 }}
+                            {% else %}
+                                <span class="text-muted">No description available for this category.</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="category-card-footer">
+                        <div class="category-actions">
+                            <a href="{% url 'library_admin:category_detail' slug=category.slug %}" class="category-action-btn category-action-btn-view btn-ripple">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                            <a href="{% url 'admin:books_category_change' category.id %}" class="category-action-btn category-action-btn-edit btn-ripple">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a href="#" class="category-action-btn category-action-btn-delete btn-ripple" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal" data-category-id="{{ category.id }}" data-category-name="{{ category.name }}">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="category-empty-state">
+                    <div class="category-empty-icon">
+                        <i class="fas fa-folder-open"></i>
+                    </div>
+                    <h3 class="category-empty-title">No Categories Found</h3>
+                    <p class="category-empty-text">There are no categories in the database yet.</p>
+                    <a href="{% url 'library_admin:add_category' %}" class="category-empty-btn">
+                        <i class="fas fa-plus"></i> Add Your First Category
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- List View -->
+    <div id="list-view" class="row" style="display: none;">
+        <div class="col-12">
+            <div class="admin-pro-card">
+                <div class="admin-pro-card-body p-0">
+                    <div class="table-responsive">
+                        <table class="category-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Books</th>
+                                    <th>Description</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for category in categories %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="category-icon me-3" style="width: 36px; height: 36px; font-size: 0.9rem;">
+                                                <i class="fas fa-folder"></i>
+                                            </div>
+                                            <span class="fw-medium">{{ category.name }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="category-book-count">
+                                            <i class="fas fa-book"></i> {{ category.book_count }}
+                                        </span>
+                                    </td>
+                                    <td>{{ category.description|truncatechars:50|default:"No description available" }}</td>
+                                    <td>{{ category.created_at|date:"M d, Y" }}</td>
+                                    <td>
+                                        <div class="category-table-actions">
+                                            <a href="{% url 'library_admin:category_detail' slug=category.slug %}" class="category-table-btn category-table-btn-view" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{% url 'admin:books_category_change' category.id %}" class="category-table-btn category-table-btn-edit" title="Edit Category">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="#" class="category-table-btn category-table-btn-delete" title="Delete Category" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal" data-category-id="{{ category.id }}" data-category-name="{{ category.name }}">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-5">
+                                        <div class="category-empty-icon">
+                                            <i class="fas fa-folder-open"></i>
+                                        </div>
+                                        <h3 class="category-empty-title">No Categories Found</h3>
+                                        <p class="category-empty-text">There are no categories in the database yet.</p>
+                                        <a href="{% url 'admin:books_category_add' %}" class="category-empty-btn">
+                                            <i class="fas fa-plus"></i> Add Your First Category
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-labelledby="deleteCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteCategoryModalLabel">
+                    <i class="fas fa-trash-alt me-2 text-danger"></i> Confirm Delete
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <div class="delete-icon-container mb-3">
+                        <i class="fas fa-exclamation-triangle fa-3x text-warning"></i>
+                    </div>
+                    <h4 class="mb-3">Are you sure?</h4>
+                    <p>You are about to delete the category "<span id="categoryName" class="fw-bold"></span>".</p>
+                    <div class="alert alert-danger d-flex align-items-center mt-3">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <div>This action cannot be undone and may affect books in this category.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="admin-pro-btn admin-pro-btn-outline" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i> Cancel
+                </button>
+                <form id="deleteCategoryForm" method="post" action="">
+                    {% csrf_token %}
+                    <button type="submit" class="admin-pro-btn admin-pro-btn-danger">
+                        <i class="fas fa-trash me-2"></i> Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .delete-icon-container {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background-color: rgba(var(--warning-color-rgb), 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
+
+    .admin-pro-btn-danger {
+        background: linear-gradient(135deg, var(--danger-color) 0%, #e74c3c 100%);
+        color: white;
+        border: none;
+    }
+
+    .admin-pro-btn-danger:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(var(--danger-color-rgb), 0.3);
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate category cards on page load
+        const categoryCards = document.querySelectorAll('.category-card-wrapper');
+        setTimeout(() => {
+            categoryCards.forEach(card => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            });
+        }, 100);
+
+        // View toggle functionality
+        const gridViewBtn = document.querySelector('.category-view-btn[data-view="grid"]');
+        const listViewBtn = document.querySelector('.category-view-btn[data-view="list"]');
+        const gridView = document.getElementById('grid-view');
+        const listView = document.getElementById('list-view');
+
+        gridViewBtn.addEventListener('click', function() {
+            gridViewBtn.classList.add('active');
+            listViewBtn.classList.remove('active');
+            gridView.style.display = 'flex';
+            listView.style.display = 'none';
+            localStorage.setItem('categoryViewPreference', 'grid');
+        });
+
+        listViewBtn.addEventListener('click', function() {
+            listViewBtn.classList.add('active');
+            gridViewBtn.classList.remove('active');
+            listView.style.display = 'block';
+            gridView.style.display = 'none';
+            localStorage.setItem('categoryViewPreference', 'list');
+        });
+
+        // Check for saved preference
+        const savedView = localStorage.getItem('categoryViewPreference');
+        if (savedView === 'list') {
+            listViewBtn.click();
+        }
+
+        // Add ripple effect to buttons
+        const rippleButtons = document.querySelectorAll('.btn-ripple');
+        rippleButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                const x = e.clientX - e.target.getBoundingClientRect().left;
+                const y = e.clientY - e.target.getBoundingClientRect().top;
+
+                const ripple = document.createElement('span');
+                ripple.style.width = '100px';
+                ripple.style.height = '100px';
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+                ripple.classList.add('ripple-effect');
+
+                this.appendChild(ripple);
+
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+
+        // Delete modal functionality
+        const deleteCategoryModal = document.getElementById('deleteCategoryModal');
+        if (deleteCategoryModal) {
+            deleteCategoryModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const categoryId = button.getAttribute('data-category-id');
+                const categoryName = button.getAttribute('data-category-name');
+
+                document.getElementById('categoryName').textContent = categoryName;
+                document.getElementById('deleteCategoryForm').action = `/admin/books/category/${categoryId}/delete/`;
+
+                // Add animation to modal content
+                const modalContent = this.querySelector('.modal-content');
+                modalContent.style.transform = 'scale(0.9)';
+                modalContent.style.opacity = '0';
+
+                setTimeout(() => {
+                    modalContent.style.transition = 'all 0.3s ease';
+                    modalContent.style.transform = 'scale(1)';
+                    modalContent.style.opacity = '1';
+                }, 50);
+            });
+        }
+    });
+</script>
+{% endblock %}

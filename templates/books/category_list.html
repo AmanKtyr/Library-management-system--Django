@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Categories - Library Management System{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Modern Category List Page Styles */
+    .category-list-container {
+        padding: 2rem 0;
+    }
+    
+    .category-list-header {
+        margin-bottom: 2rem;
+        position: relative;
+    }
+    
+    .category-list-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+        position: relative;
+        display: inline-block;
+    }
+    
+    .category-list-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+        border-radius: 2px;
+    }
+    
+    .category-list-subtitle {
+        font-size: 1.25rem;
+        color: var(--medium);
+        margin-top: 1rem;
+    }
+    
+    .category-card {
+        border: none;
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        height: 100%;
+        transition: all var(--transition-normal);
+        background-color: var(--surface);
+        position: relative;
+    }
+    
+    .category-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .category-card-body {
+        padding: 1.5rem;
+    }
+    
+    .category-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.1) 0%, rgba(var(--accent-color-rgb), 0.1) 100%);
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.5rem;
+        transition: all var(--transition-normal);
+    }
+    
+    .category-card:hover .category-icon {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+        color: white;
+        transform: scale(1.05);
+    }
+    
+    .category-name {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+        transition: all var(--transition-fast);
+    }
+    
+    .category-card:hover .category-name {
+        color: var(--primary-color);
+    }
+    
+    .category-book-count {
+        display: inline-block;
+        padding: 0.4em 0.8em;
+        margin: 0.75rem 0;
+        border-radius: 50rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.1) 0%, rgba(var(--accent-color-rgb), 0.1) 100%);
+        color: var(--primary-color);
+        transition: all var(--transition-fast);
+    }
+    
+    .category-card:hover .category-book-count {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .category-description {
+        font-size: 0.95rem;
+        color: var(--medium);
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        height: 4.8rem;
+    }
+    
+    .category-card-footer {
+        padding: 1rem 1.5rem;
+        background-color: rgba(var(--primary-color-rgb), 0.02);
+        border-top: 1px solid rgba(var(--primary-color-rgb), 0.05);
+    }
+    
+    .category-action-btn {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 0;
+        text-align: center;
+        border-radius: var(--border-radius-md);
+        font-weight: 500;
+        text-decoration: none;
+        transition: all var(--transition-normal);
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+    }
+    
+    .category-action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(var(--primary-color-rgb), 0.3);
+        color: white;
+    }
+    
+    .category-action-btn i {
+        margin-right: 0.5rem;
+    }
+    
+    .category-empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        background-color: var(--surface);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .category-empty-icon {
+        font-size: 3rem;
+        color: var(--medium-light);
+        margin-bottom: 1.5rem;
+    }
+    
+    .category-empty-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--dark);
+    }
+    
+    .category-empty-text {
+        font-size: 1.1rem;
+        color: var(--medium);
+        margin-bottom: 0;
+    }
+    
+    /* Dark Mode Adjustments */
+    [data-bs-theme="dark"] .category-card-footer {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-top-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Animation Styles */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container category-list-container">
+    <!-- Header -->
+    <div class="category-list-header">
+        <h1 class="category-list-title">Book Categories</h1>
+        <p class="category-list-subtitle">Browse our collection of books by category</p>
+    </div>
+    
+    <!-- Categories Grid -->
+    <div class="row">
+        {% for category in categories %}
+            <div class="col-lg-4 col-md-6 mb-4 category-card-wrapper" style="opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; transition-delay: {{ forloop.counter0|divisibleby:3 }}00ms;">
+                <div class="category-card">
+                    <div class="category-card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="category-icon">
+                                <i class="fas fa-book-open"></i>
+                            </div>
+                            <div>
+                                <h3 class="category-name">{{ category.name }}</h3>
+                            </div>
+                        </div>
+                        
+                        <div class="category-book-count">
+                            <i class="fas fa-book me-1"></i> {{ category.book_count }} {% if category.book_count == 1 %}book{% else %}books{% endif %}
+                        </div>
+                        
+                        <div class="category-description">
+                            {% if category.description %}
+                                {{ category.description|truncatechars:180 }}
+                            {% else %}
+                                <span class="text-muted">No description available for this category.</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="category-card-footer">
+                        <a href="{% url 'books:category_detail' slug=category.slug %}" class="category-action-btn btn-ripple">
+                            <i class="fas fa-folder-open"></i> Browse Books in this Category
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="category-empty-state">
+                    <div class="category-empty-icon">
+                        <i class="fas fa-folder-open"></i>
+                    </div>
+                    <h3 class="category-empty-title">No Categories Found</h3>
+                    <p class="category-empty-text">There are no categories in the database yet.</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate category cards on page load
+        const categoryCards = document.querySelectorAll('.category-card-wrapper');
+        setTimeout(() => {
+            categoryCards.forEach(card => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            });
+        }, 100);
+        
+        // Add ripple effect to buttons
+        const rippleButtons = document.querySelectorAll('.btn-ripple');
+        rippleButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                const x = e.clientX - e.target.getBoundingClientRect().left;
+                const y = e.clientY - e.target.getBoundingClientRect().top;
+
+                const ripple = document.createElement('span');
+                ripple.style.width = '100px';
+                ripple.style.height = '100px';
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+                ripple.classList.add('ripple-effect');
+
+                this.appendChild(ripple);
+
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+    });
+</script>
+{% endblock %}

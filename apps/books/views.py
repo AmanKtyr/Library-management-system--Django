@@ -3,9 +3,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponseForbidden
 from django.db.models import Q, Count
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from .models import Book, Author, Category, BookCopy
 from apps.libraries.models import Library
-from .forms import BookForm, AuthorForm, CategoryForm, BookCopyForm  # We'll create these forms later
+from .forms import BookForm, BookCopyForm  # AuthorForm and CategoryForm removed - now handled in library_admin app
 
 def book_list(request):
     """View function for listing all books."""
@@ -87,27 +88,7 @@ def author_detail(request, slug):
 
     return render(request, 'books/author_detail.html', context)
 
-def category_list(request):
-    """View function for listing all categories."""
-    categories = Category.objects.annotate(book_count=Count('books')).order_by('name')
-
-    context = {
-        'categories': categories,
-    }
-
-    return render(request, 'books/category_list.html', context)
-
-def category_detail(request, slug):
-    """View function for displaying details of a specific category."""
-    category = get_object_or_404(Category, slug=slug)
-    books = category.books.all()
-
-    context = {
-        'category': category,
-        'books': books,
-    }
-
-    return render(request, 'books/category_detail.html', context)
+# Category views removed - now handled in library_admin app
 
 @login_required
 def manage_books(request):
@@ -138,8 +119,40 @@ def manage_books(request):
         else:
             books = Book.objects.none()
 
+    # Search functionality
+    search_query = request.GET.get('q', '')
+    if search_query:
+        books = books.filter(
+            Q(title__icontains=search_query) |
+            Q(authors__name__icontains=search_query) |
+            Q(isbn__icontains=search_query)
+        ).distinct()
+
+    # Pagination
+    page = request.GET.get('page', 1)
+    paginator = Paginator(books, 12)  # Show 12 books per page
+
+    try:
+        books = paginator.page(page)
+    except PageNotAnInteger:
+        books = paginator.page(1)
+    except EmptyPage:
+        books = paginator.page(paginator.num_pages)
+
+    # Get library for context
+    library = None
+    if user.is_library_admin:
+        libraries = Library.objects.filter(admin=user)
+        if libraries.exists():
+            library = libraries.first()
+    elif user.is_staff_member:
+        libraries = user.staffed_libraries.all()
+        if libraries.exists():
+            library = libraries.first()
+
     context = {
         'books': books,
+        'library': library,
     }
 
     return render(request, 'books/manage_books.html', context)
@@ -153,6 +166,17 @@ def add_book(request):
     if not (user.is_super_admin or user.is_library_admin or user.is_staff_member):
         return HttpResponseForbidden("You don't have permission to access this page.")
 
+    # Get the user's library
+    library = None
+    if user.is_library_admin:
+        libraries = Library.objects.filter(admin=user)
+        if libraries.exists():
+            library = libraries.first()
+    elif user.is_staff_member:
+        libraries = user.staffed_libraries.all()
+        if libraries.exists():
+            library = libraries.first()
+
     if request.method == 'POST':
         form = BookForm(request.POST, request.FILES)
         if form.is_valid():
@@ -165,6 +189,7 @@ def add_book(request):
     context = {
         'form': form,
         'title': 'Add Book',
+        'library': library,  # Add library to context
     }
 
     return render(request, 'books/book_form.html', context)
@@ -179,6 +204,17 @@ def edit_book(request, slug):
     if not (user.is_super_admin or user.is_library_admin):
         return HttpResponseForbidden("You don't have permission to access this page.")
 
+    # Get the user's library
+    library = None
+    if user.is_library_admin:
+        libraries = Library.objects.filter(admin=user)
+        if libraries.exists():
+            library = libraries.first()
+    elif user.is_staff_member:
+        libraries = user.staffed_libraries.all()
+        if libraries.exists():
+            library = libraries.first()
+
     if request.method == 'POST':
         form = BookForm(request.POST, request.FILES, instance=book)
         if form.is_valid():
@@ -192,9 +228,28 @@ def edit_book(request, slug):
         'form': form,
         'book': book,
         'title': 'Edit Book',
+        'library': library,  # Add library to context
     }
 
     return render(request, 'books/book_form.html', context)
+
+@login_required
+def delete_book(request, pk):
+    """View function for deleting a book."""
+    user = request.user
+    book = get_object_or_404(Book, pk=pk)
+
+    # Check if user has permission to delete books
+    if not (user.is_super_admin or user.is_library_admin):
+        return HttpResponseForbidden("You don't have permission to access this page.")
+
+    if request.method == 'POST':
+        book_title = book.title
+        book.delete()
+        messages.success(request, f"Book '{book_title}' deleted successfully.")
+        return redirect('books:manage_books')
+
+    return redirect('books:manage_books')
 
 @login_required
 def manage_book_copies(request):
@@ -220,6 +275,30 @@ def manage_book_copies(request):
     library = libraries.first()
     book_copies = BookCopy.objects.filter(library=library)
 
+    # Search functionality
+    search_query = request.GET.get('q', '')
+    if search_query:
+        book_copies = book_copies.filter(
+            Q(book__title__icontains=search_query) |
+            Q(inventory_number__icontains=search_query)
+        ).distinct()
+
+    # Filter by book if provided
+    book_id = request.GET.get('book', '')
+    if book_id:
+        book_copies = book_copies.filter(book_id=book_id)
+
+    # Pagination
+    page = request.GET.get('page', 1)
+    paginator = Paginator(book_copies, 10)  # Show 10 copies per page
+
+    try:
+        book_copies = paginator.page(page)
+    except PageNotAnInteger:
+        book_copies = paginator.page(1)
+    except EmptyPage:
+        book_copies = paginator.page(paginator.num_pages)
+
     if request.method == 'POST':
         form = BookCopyForm(request.POST, user=user)
         if form.is_valid():
@@ -238,3 +317,23 @@ def manage_book_copies(request):
     }
 
     return render(request, 'books/manage_book_copies.html', context)
+
+@login_required
+def delete_book_copy(request, pk):
+    """View function for deleting a book copy."""
+    user = request.user
+    book_copy = get_object_or_404(BookCopy, pk=pk)
+
+    # Check if user has permission to delete book copies
+    if not (user.is_super_admin or
+            (user.is_library_admin and book_copy.library.admin == user) or
+            (user.is_staff_member and user in book_copy.library.staff.all())):
+        return HttpResponseForbidden("You don't have permission to access this page.")
+
+    if request.method == 'POST':
+        inventory_number = book_copy.inventory_number
+        book_copy.delete()
+        messages.success(request, f"Book copy '{inventory_number}' deleted successfully.")
+        return redirect('books:manage_book_copies')
+
+    return redirect('books:manage_book_copies')

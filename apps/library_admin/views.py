@@ -1,14 +1,18 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from django.db.models import Count, Sum, Q
+from django.db.models import Count, Sum, Q, F, Avg
 from django.utils import timezone
-from django.core.paginator import Paginator
-from django.http import HttpResponseForbidden
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.http import HttpResponseForbidden, JsonResponse
+from datetime import timedelta
+import json
+import random
 
 from apps.accounts.models import User
 from apps.libraries.models import Library
 from apps.books.models import Book, BookCopy, Author, Category
+from apps.books.forms import CategoryForm
 from apps.transactions.models import Transaction, Membership, MembershipPlan, MembershipRequest
 
 def is_library_admin(user):
@@ -456,3 +460,381 @@ def reject_membership_request(request):
     )
 
     return redirect('library_admin:membership_requests')
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def settings(request):
+    """View function for library settings page."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    # Handle form submission for updating library settings
+    if request.method == 'POST':
+        # Basic library information update
+        library.name = request.POST.get('name', library.name)
+        library.address = request.POST.get('address', library.address)
+        library.city = request.POST.get('city', library.city)
+        library.state = request.POST.get('state', library.state)
+        library.postal_code = request.POST.get('postal_code', library.postal_code)
+        library.country = request.POST.get('country', library.country)
+        library.phone = request.POST.get('phone', library.phone)
+        library.email = request.POST.get('email', library.email)
+        library.website = request.POST.get('website', library.website)
+        library.description = request.POST.get('description', library.description)
+        library.opening_hours = request.POST.get('opening_hours', library.opening_hours)
+
+        # Handle image upload if provided
+        if 'image' in request.FILES:
+            library.image = request.FILES['image']
+
+        library.save()
+        messages.success(request, "Library settings updated successfully.")
+        return redirect('library_admin:settings')
+
+    context = {
+        'library': library,
+        'page': 'settings',
+    }
+
+    return render(request, 'library_admin/settings/index.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def notifications(request):
+    """View function for notifications center."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    # Get overdue books
+    overdue_books = Transaction.objects.filter(
+        library=library,
+        transaction_type='BORROW',
+        status='COMPLETED',
+        due_date__lt=timezone.now(),
+        return_date__isnull=True
+    ).order_by('due_date')
+
+    # Get pending membership requests
+    pending_requests = MembershipRequest.objects.filter(
+        library=library,
+        status='PENDING'
+    ).order_by('-request_date')
+
+    # Get books that need maintenance (low stock or poor condition)
+    maintenance_books = BookCopy.objects.filter(
+        library=library,
+        status='MAINTENANCE'
+    ).order_by('-updated_at')
+
+    # Get books with low inventory (less than 3 copies available)
+    books_with_counts = Book.objects.filter(
+        copies__library=library
+    ).annotate(
+        available_count=Count('copies', filter=Q(copies__status='AVAILABLE', copies__library=library))
+    ).filter(available_count__lt=3)
+
+    # Get recent transactions (last 7 days)
+    recent_date = timezone.now() - timedelta(days=7)
+    recent_transactions = Transaction.objects.filter(
+        library=library,
+        transaction_date__gte=recent_date
+    ).order_by('-transaction_date')
+
+    context = {
+        'library': library,
+        'overdue_books': overdue_books,
+        'pending_requests': pending_requests,
+        'maintenance_books': maintenance_books,
+        'books_with_counts': books_with_counts,
+        'recent_transactions': recent_transactions,
+        'page': 'notifications',
+    }
+
+    return render(request, 'library_admin/notifications/index.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def help_documentation(request):
+    """View function for help and documentation page."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    # Get the specific help topic if provided
+    topic = request.GET.get('topic', 'general')
+
+    context = {
+        'library': library,
+        'topic': topic,
+        'page': 'help',
+    }
+
+    return render(request, 'library_admin/help/index.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def analytics(request):
+    """View function for analytics and reports dashboard with charts."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    # Get date range for filtering
+    end_date = timezone.now().date()
+    start_date = end_date - timedelta(days=30)  # Default to last 30 days
+
+    date_range = request.GET.get('range', '30')
+    if date_range == '7':
+        start_date = end_date - timedelta(days=7)
+    elif date_range == '90':
+        start_date = end_date - timedelta(days=90)
+    elif date_range == '365':
+        start_date = end_date - timedelta(days=365)
+
+    # Transaction statistics
+    transactions = Transaction.objects.filter(
+        library=library,
+        transaction_date__date__gte=start_date,
+        transaction_date__date__lte=end_date
+    )
+
+    # Count transactions by type
+    borrows = transactions.filter(transaction_type='BORROW').count()
+    returns = transactions.filter(transaction_type='RETURN').count()
+    reserves = transactions.filter(transaction_type='RESERVE').count()
+    cancellations = transactions.filter(transaction_type='CANCEL_RESERVATION').count()
+
+    # Count transactions by status
+    completed = transactions.filter(status='COMPLETED').count()
+    pending = transactions.filter(status='PENDING').count()
+    overdue = transactions.filter(status='OVERDUE').count()
+    cancelled = transactions.filter(status='CANCELLED').count()
+
+    # Get popular books (most borrowed)
+    popular_books = Book.objects.filter(
+        copies__transactions__library=library,
+        copies__transactions__transaction_type='BORROW',
+        copies__transactions__transaction_date__date__gte=start_date,
+        copies__transactions__transaction_date__date__lte=end_date
+    ).annotate(
+        borrow_count=Count('copies__transactions',
+                          filter=Q(copies__transactions__transaction_type='BORROW'))
+    ).order_by('-borrow_count')[:10]
+
+    # Get active members (most transactions)
+    active_members = User.objects.filter(
+        transactions__library=library,
+        transactions__transaction_date__date__gte=start_date,
+        transactions__transaction_date__date__lte=end_date
+    ).annotate(
+        transaction_count=Count('transactions')
+    ).order_by('-transaction_count')[:10]
+
+    # Get daily transaction data for charts
+    daily_data = []
+    current_date = start_date
+    while current_date <= end_date:
+        day_transactions = transactions.filter(
+            transaction_date__date=current_date
+        )
+
+        daily_data.append({
+            'date': current_date.strftime('%Y-%m-%d'),
+            'borrows': day_transactions.filter(transaction_type='BORROW').count(),
+            'returns': day_transactions.filter(transaction_type='RETURN').count(),
+            'reserves': day_transactions.filter(transaction_type='RESERVE').count(),
+        })
+
+        current_date += timedelta(days=1)
+
+    # Get category distribution data
+    categories = Category.objects.filter(
+        books__copies__library=library
+    ).annotate(
+        book_count=Count('books', distinct=True)
+    ).order_by('-book_count')[:8]
+
+    category_data = [
+        {
+            'name': category.name,
+            'count': category.book_count
+        } for category in categories
+    ]
+
+    context = {
+        'library': library,
+        'start_date': start_date,
+        'end_date': end_date,
+        'date_range': date_range,
+        'transactions_count': transactions.count(),
+        'borrows': borrows,
+        'returns': returns,
+        'reserves': reserves,
+        'cancellations': cancellations,
+        'completed': completed,
+        'pending': pending,
+        'overdue': overdue,
+        'cancelled': cancelled,
+        'popular_books': popular_books,
+        'active_members': active_members,
+        'daily_data': json.dumps(daily_data),
+        'category_data': json.dumps(category_data),
+        'page': 'analytics',
+    }
+
+    return render(request, 'library_admin/analytics/index.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def manage_categories(request):
+    """View function for managing book categories."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    # Get all categories with book count
+    categories = Category.objects.annotate(
+        book_count=Count('books', filter=Q(books__copies__library=library), distinct=True)
+    ).order_by('name')
+
+    # Search functionality
+    search_query = request.GET.get('q', '')
+    if search_query:
+        categories = categories.filter(
+            Q(name__icontains=search_query) |
+            Q(description__icontains=search_query)
+        )
+
+    # Pagination
+    page = request.GET.get('page', 1)
+    paginator = Paginator(categories, 12)  # Show 12 categories per page
+
+    try:
+        categories = paginator.page(page)
+    except PageNotAnInteger:
+        categories = paginator.page(1)
+    except EmptyPage:
+        categories = paginator.page(paginator.num_pages)
+
+    context = {
+        'library': library,
+        'categories': categories,
+        'search_query': search_query,
+    }
+
+    return render(request, 'library_admin/books/category_list.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def category_detail(request, slug):
+    """View function for displaying details of a specific category."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    # Get the category
+    category = get_object_or_404(Category, slug=slug)
+
+    # Get books in this category that are available in the library
+    books = Book.objects.filter(
+        categories=category,
+        copies__library=library
+    ).distinct()
+
+    # Search functionality
+    search_query = request.GET.get('q', '')
+    if search_query:
+        books = books.filter(
+            Q(title__icontains=search_query) |
+            Q(authors__name__icontains=search_query) |
+            Q(isbn__icontains=search_query)
+        ).distinct()
+
+    # Pagination
+    page = request.GET.get('page', 1)
+    paginator = Paginator(books, 12)  # Show 12 books per page
+
+    try:
+        books = paginator.page(page)
+    except PageNotAnInteger:
+        books = paginator.page(1)
+    except EmptyPage:
+        books = paginator.page(paginator.num_pages)
+
+    context = {
+        'library': library,
+        'category': category,
+        'books': books,
+        'search_query': search_query,
+    }
+
+    return render(request, 'library_admin/books/category_detail.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def add_category(request):
+    """View function for adding a new category."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            category = form.save()
+            messages.success(request, f"Category '{category.name}' added successfully.")
+            return redirect('library_admin:categories')
+    else:
+        form = CategoryForm()
+
+    context = {
+        'library': library,
+        'form': form,
+        'title': 'Add Category',
+    }
+
+    return render(request, 'library_admin/books/category_form.html', context)

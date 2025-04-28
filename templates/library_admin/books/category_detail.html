@@ -1,0 +1,726 @@
+{% extends 'core/admin_base.html' %}
+{% load static %}
+
+{% block title %}{{ category.name }} - Library Admin{% endblock %}
+{% block breadcrumb_title %}Category: {{ category.name }}{% endblock %}
+{% block page_title %}Category: {{ category.name }}{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'admin:books_category_change' category.id %}" class="admin-pro-btn admin-pro-btn-primary">
+    <i class="fas fa-edit"></i> Edit Category
+</a>
+<a href="{% url 'library_admin:books' %}" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-arrow-left"></i> Back to Categories
+</a>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Modern Category Detail Styles */
+    .category-detail-container {
+        padding: 1rem 0;
+    }
+    
+    .category-detail-header {
+        background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.05) 0%, rgba(var(--accent-color-rgb), 0.05) 100%);
+        border-radius: var(--border-radius-lg);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-sm);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .category-detail-header::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(var(--primary-color-rgb), 0.1) 0%, rgba(var(--primary-color-rgb), 0) 70%);
+        border-radius: 50%;
+        transform: translate(30%, -30%);
+    }
+    
+    .category-detail-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+    }
+    
+    .category-detail-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.25rem;
+    }
+    
+    .category-detail-meta {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .category-detail-stat {
+        display: flex;
+        align-items: center;
+        color: var(--medium);
+    }
+    
+    .category-detail-stat i {
+        margin-right: 0.5rem;
+        color: var(--primary-color);
+    }
+    
+    .category-detail-description {
+        color: var(--medium);
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+    
+    .category-books-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .category-books-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0;
+        color: var(--dark);
+        position: relative;
+        display: inline-block;
+    }
+    
+    .category-books-title::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 40px;
+        height: 3px;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+        border-radius: 2px;
+    }
+    
+    .category-books-actions {
+        display: flex;
+        gap: 0.75rem;
+    }
+    
+    .category-book-card {
+        background-color: var(--surface);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-sm);
+        transition: all var(--transition-normal);
+        height: 100%;
+        border: none;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .category-book-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-md);
+    }
+    
+    .category-book-img-container {
+        height: 200px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .category-book-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: all var(--transition-normal);
+    }
+    
+    .category-book-card:hover .category-book-img {
+        transform: scale(1.05);
+    }
+    
+    .category-book-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 50%);
+        opacity: 0.8;
+        transition: all var(--transition-normal);
+    }
+    
+    .category-book-card:hover .category-book-overlay {
+        opacity: 1;
+    }
+    
+    .category-book-body {
+        padding: 1.25rem;
+    }
+    
+    .category-book-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+        transition: all var(--transition-fast);
+    }
+    
+    .category-book-card:hover .category-book-title {
+        color: var(--primary-color);
+    }
+    
+    .category-book-authors {
+        font-size: 0.9rem;
+        color: var(--medium);
+        margin-bottom: 0.75rem;
+    }
+    
+    .category-book-isbn {
+        font-size: 0.85rem;
+        color: var(--medium-light);
+        margin-bottom: 0.75rem;
+    }
+    
+    .category-book-copies {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.4em 0.8em;
+        border-radius: 50rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.1) 0%, rgba(var(--accent-color-rgb), 0.1) 100%);
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+    
+    .category-book-copies i {
+        margin-right: 0.5rem;
+    }
+    
+    .category-book-footer {
+        padding: 0.75rem 1.25rem;
+        border-top: 1px solid rgba(var(--primary-color-rgb), 0.05);
+        background-color: rgba(var(--primary-color-rgb), 0.02);
+    }
+    
+    .category-book-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .category-book-btn {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 0.75rem;
+        border-radius: var(--border-radius-md);
+        font-weight: 500;
+        text-decoration: none;
+        transition: all var(--transition-normal);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .category-book-btn i {
+        margin-right: 0.5rem;
+    }
+    
+    .category-book-btn-view {
+        background: linear-gradient(135deg, var(--info-color) 0%, var(--secondary-color) 100%);
+        color: white;
+    }
+    
+    .category-book-btn-edit {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+    }
+    
+    .category-book-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+        color: white;
+    }
+    
+    .category-empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        background-color: var(--surface);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-sm);
+        border: 1px dashed rgba(var(--primary-color-rgb), 0.2);
+    }
+    
+    .category-empty-icon {
+        font-size: 3rem;
+        color: var(--medium-light);
+        margin-bottom: 1.5rem;
+    }
+    
+    .category-empty-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--dark);
+    }
+    
+    .category-empty-text {
+        color: var(--medium);
+        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+    }
+    
+    .category-empty-btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--border-radius-md);
+        font-weight: 500;
+        text-decoration: none;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        transition: all var(--transition-normal);
+    }
+    
+    .category-empty-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        color: white;
+    }
+    
+    .category-empty-btn i {
+        margin-right: 0.5rem;
+    }
+    
+    /* Table View Styles */
+    .category-book-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    
+    .category-book-table th {
+        background-color: rgba(var(--primary-color-rgb), 0.05);
+        padding: 1rem 1.25rem;
+        font-weight: 600;
+        text-align: left;
+        border-bottom: 2px solid rgba(var(--primary-color-rgb), 0.1);
+        color: var(--medium-dark);
+    }
+    
+    .category-book-table td {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        vertical-align: middle;
+        color: var(--medium);
+    }
+    
+    .category-book-table tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .category-book-table tr:hover td {
+        background-color: rgba(var(--primary-color-rgb), 0.02);
+    }
+    
+    .category-book-cover {
+        width: 40px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: var(--border-radius-sm);
+        box-shadow: var(--shadow-sm);
+        transition: all var(--transition-normal);
+    }
+    
+    .category-book-table tr:hover .category-book-cover {
+        transform: scale(1.05);
+        box-shadow: var(--shadow-md);
+    }
+    
+    .category-book-table-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .category-book-table-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: var(--border-radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-decoration: none;
+        transition: all var(--transition-normal);
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .category-book-table-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+    }
+    
+    .category-book-table-btn-view {
+        background: linear-gradient(135deg, var(--info-color) 0%, var(--secondary-color) 100%);
+    }
+    
+    .category-book-table-btn-edit {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    }
+    
+    /* View Toggle Styles */
+    .category-view-toggle {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .category-view-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: var(--border-radius-md);
+        background-color: var(--surface);
+        color: var(--medium);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        transition: all var(--transition-normal);
+        cursor: pointer;
+    }
+    
+    .category-view-btn.active {
+        background-color: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+    
+    .category-view-btn:hover:not(.active) {
+        background-color: rgba(var(--primary-color-rgb), 0.05);
+        color: var(--primary-color);
+    }
+    
+    /* Dark Mode Adjustments */
+    [data-bs-theme="dark"] .category-detail-header {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    }
+    
+    [data-bs-theme="dark"] .category-book-table th {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    [data-bs-theme="dark"] .category-book-table td {
+        border-bottom-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    [data-bs-theme="dark"] .category-book-table tr:hover td {
+        background-color: rgba(255, 255, 255, 0.03);
+    }
+    
+    [data-bs-theme="dark"] .category-book-footer {
+        border-top-color: rgba(255, 255, 255, 0.05);
+        background-color: rgba(255, 255, 255, 0.02);
+    }
+    
+    [data-bs-theme="dark"] .category-view-btn {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: var(--light);
+    }
+    
+    [data-bs-theme="dark"] .category-view-btn:hover:not(.active) {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Animation Styles */
+    .fade-in-up {
+        animation: fadeInUp 0.5s ease forwards;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .ripple-effect {
+        position: absolute;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.3);
+        animation: ripple 0.6s linear;
+        transform: scale(0);
+        pointer-events: none;
+    }
+    
+    @keyframes ripple {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-pro-container fade-in-up">
+    <!-- Category Header -->
+    <div class="category-detail-header">
+        <h1 class="category-detail-title">
+            <div class="category-detail-icon">
+                <i class="fas fa-folder"></i>
+            </div>
+            {{ category.name }}
+        </h1>
+        
+        <div class="category-detail-meta">
+            <div class="category-detail-stat">
+                <i class="fas fa-book"></i>
+                <span>{{ books.count }} {% if books.count == 1 %}Book{% else %}Books{% endif %}</span>
+            </div>
+            <div class="category-detail-stat">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Created: {{ category.created_at|date:"F j, Y" }}</span>
+            </div>
+            <div class="category-detail-stat">
+                <i class="fas fa-clock"></i>
+                <span>Last Updated: {{ category.updated_at|date:"F j, Y" }}</span>
+            </div>
+        </div>
+        
+        {% if category.description %}
+        <div class="category-detail-description">
+            {{ category.description }}
+        </div>
+        {% else %}
+        <div class="category-detail-description text-muted">
+            No description available for this category.
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Books in Category -->
+    <div class="category-books-header">
+        <h2 class="category-books-title">Books in this Category</h2>
+        <div class="category-books-actions">
+            <div class="category-view-toggle">
+                <button type="button" class="category-view-btn active" data-view="grid">
+                    <i class="fas fa-th-large"></i>
+                </button>
+                <button type="button" class="category-view-btn" data-view="list">
+                    <i class="fas fa-list"></i>
+                </button>
+            </div>
+            <a href="{% url 'books:add_book' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-primary">
+                <i class="fas fa-plus"></i> Add Book
+            </a>
+        </div>
+    </div>
+    
+    <!-- Grid View -->
+    <div id="grid-view" class="row">
+        {% for book in books %}
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4 category-book-card-wrapper" style="opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; transition-delay: {{ forloop.counter0|divisibleby:4 }}00ms;">
+                <div class="category-book-card">
+                    <div class="category-book-img-container">
+                        {% if book.cover_image %}
+                            <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="category-book-img">
+                        {% else %}
+                            <img src="https://placehold.co/600x800?text=No+Cover" alt="No Cover" class="category-book-img">
+                        {% endif %}
+                        <div class="category-book-overlay"></div>
+                    </div>
+                    <div class="category-book-body">
+                        <h3 class="category-book-title">{{ book.title|truncatechars:40 }}</h3>
+                        <div class="category-book-authors">
+                            By {% for author in book.authors.all %}
+                                {{ author.name }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="category-book-isbn">ISBN: {{ book.isbn }}</div>
+                        <div class="category-book-copies">
+                            <i class="fas fa-copy"></i> {{ book.copies.count }} {% if book.copies.count == 1 %}copy{% else %}copies{% endif %}
+                        </div>
+                    </div>
+                    <div class="category-book-footer">
+                        <div class="category-book-actions">
+                            <a href="{% url 'books:book_detail' slug=book.slug %}" class="category-book-btn category-book-btn-view btn-ripple">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                            <a href="{% url 'books:edit_book' slug=book.slug %}" class="category-book-btn category-book-btn-edit btn-ripple">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="category-empty-state">
+                    <div class="category-empty-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h3 class="category-empty-title">No Books Found</h3>
+                    <p class="category-empty-text">There are no books in this category yet.</p>
+                    <a href="{% url 'books:add_book' %}" class="category-empty-btn">
+                        <i class="fas fa-plus"></i> Add Book to this Category
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <!-- List View -->
+    <div id="list-view" class="row" style="display: none;">
+        <div class="col-12">
+            <div class="admin-pro-card">
+                <div class="admin-pro-card-body p-0">
+                    <div class="table-responsive">
+                        <table class="category-book-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">Cover</th>
+                                    <th>Title</th>
+                                    <th>Author(s)</th>
+                                    <th>ISBN</th>
+                                    <th>Copies</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for book in books %}
+                                <tr>
+                                    <td>
+                                        {% if book.cover_image %}
+                                            <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="category-book-cover">
+                                        {% else %}
+                                            <img src="https://placehold.co/40x60?text=No+Cover" alt="No Cover" class="category-book-cover">
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ book.title }}</td>
+                                    <td>
+                                        {% for author in book.authors.all %}
+                                            {{ author.name }}{% if not forloop.last %}, {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td>{{ book.isbn }}</td>
+                                    <td>{{ book.copies.count }}</td>
+                                    <td>
+                                        <div class="category-book-table-actions">
+                                            <a href="{% url 'books:book_detail' slug=book.slug %}" class="category-book-table-btn category-book-table-btn-view" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{% url 'books:edit_book' slug=book.slug %}" class="category-book-table-btn category-book-table-btn-edit" title="Edit Book">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center py-5">
+                                        <div class="category-empty-icon">
+                                            <i class="fas fa-book"></i>
+                                        </div>
+                                        <h3 class="category-empty-title">No Books Found</h3>
+                                        <p class="category-empty-text">There are no books in this category yet.</p>
+                                        <a href="{% url 'books:add_book' %}" class="category-empty-btn">
+                                            <i class="fas fa-plus"></i> Add Book to this Category
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate book cards on page load
+        const bookCards = document.querySelectorAll('.category-book-card-wrapper');
+        setTimeout(() => {
+            bookCards.forEach(card => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            });
+        }, 100);
+        
+        // View toggle functionality
+        const gridViewBtn = document.querySelector('.category-view-btn[data-view="grid"]');
+        const listViewBtn = document.querySelector('.category-view-btn[data-view="list"]');
+        const gridView = document.getElementById('grid-view');
+        const listView = document.getElementById('list-view');
+        
+        gridViewBtn.addEventListener('click', function() {
+            gridViewBtn.classList.add('active');
+            listViewBtn.classList.remove('active');
+            gridView.style.display = 'flex';
+            listView.style.display = 'none';
+            localStorage.setItem('categoryBookViewPreference', 'grid');
+        });
+        
+        listViewBtn.addEventListener('click', function() {
+            listViewBtn.classList.add('active');
+            gridViewBtn.classList.remove('active');
+            listView.style.display = 'block';
+            gridView.style.display = 'none';
+            localStorage.setItem('categoryBookViewPreference', 'list');
+        });
+        
+        // Check for saved preference
+        const savedView = localStorage.getItem('categoryBookViewPreference');
+        if (savedView === 'list') {
+            listViewBtn.click();
+        }
+        
+        // Add ripple effect to buttons
+        const rippleButtons = document.querySelectorAll('.btn-ripple');
+        rippleButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                const x = e.clientX - e.target.getBoundingClientRect().left;
+                const y = e.clientY - e.target.getBoundingClientRect().top;
+                
+                const ripple = document.createElement('span');
+                ripple.style.width = '100px';
+                ripple.style.height = '100px';
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+                ripple.classList.add('ripple-effect');
+                
+                this.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+    });
+</script>
+{% endblock %}

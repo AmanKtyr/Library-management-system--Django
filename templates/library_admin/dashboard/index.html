@@ -5,6 +5,506 @@
 {% block breadcrumb_title %}Dashboard{% endblock %}
 {% block page_title %}Library Admin Dashboard{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Animation Effects */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .fade-in-left {
+        opacity: 0;
+        transform: translateX(-20px);
+        animation: fadeInLeft 0.6s ease forwards;
+    }
+
+    .fade-in-right {
+        opacity: 0;
+        transform: translateX(20px);
+        animation: fadeInRight 0.6s ease forwards;
+    }
+
+    .scale-in {
+        opacity: 0;
+        transform: scale(0.9);
+        animation: scaleIn 0.5s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInLeft {
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes fadeInRight {
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes scaleIn {
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    /* Pulse Animation for Welcome Icon */
+    .pulse {
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    /* Card Hover Effects */
+    .stats-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+
+    /* Quick Action Cards */
+    .quick-action-card {
+        transition: all 0.3s ease;
+        border-radius: 10px;
+        border: 1px solid var(--bs-gray-200);
+    }
+
+    .quick-action-card:hover {
+        transform: translateY(-3px);
+        background: var(--bs-primary-bg-subtle);
+        border-color: var(--bs-primary);
+        box-shadow: 0 5px 15px rgba(var(--bs-primary-rgb), 0.15);
+    }
+
+    .quick-action-icon {
+        transition: all 0.3s ease;
+    }
+
+    .quick-action-card:hover .quick-action-icon {
+        transform: scale(1.1);
+    }
+
+    /* Enhanced Welcome Section */
+    .admin-pro-welcome-message {
+        background: linear-gradient(135deg, var(--bs-primary-bg-subtle) 0%, rgba(var(--bs-primary-rgb), 0.05) 100%);
+        border-radius: 15px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        border-left: 4px solid var(--bs-primary);
+    }
+
+    .admin-pro-welcome-icon {
+        width: 60px;
+        height: 60px;
+        background: var(--bs-primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 24px;
+        margin-right: 20px;
+        box-shadow: 0 5px 15px rgba(var(--bs-primary-rgb), 0.3);
+    }
+
+    /* Enhanced Stats Cards */
+    .admin-pro-stats-card {
+        padding: 20px;
+        border-radius: 12px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .admin-pro-stats-card.primary {
+        background: linear-gradient(135deg, #3a5a78 0%, #4a6a88 100%);
+        color: white;
+    }
+
+    .admin-pro-stats-card.success {
+        background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        color: white;
+    }
+
+    .admin-pro-stats-card.info {
+        background: linear-gradient(135deg, #3498db 0%, #5dade2 100%);
+        color: white;
+    }
+
+    .admin-pro-stats-card.warning {
+        background: linear-gradient(135deg, #e67e22 0%, #f39c12 100%);
+        color: white;
+    }
+
+    .admin-pro-stats-card.danger {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+    }
+
+    .admin-pro-stats-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-right: 15px;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .admin-pro-stats-content {
+        flex: 1;
+    }
+
+    .admin-pro-stats-value {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 5px;
+        line-height: 1;
+    }
+
+    .admin-pro-stats-label {
+        font-size: 14px;
+        opacity: 0.9;
+        margin-bottom: 5px;
+    }
+
+    .admin-pro-stats-trend {
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+    }
+
+    .admin-pro-stats-trend.up {
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .admin-pro-stats-trend.down {
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .admin-pro-stats-trend i {
+        margin-right: 5px;
+    }
+
+    /* Library Info Section */
+    .admin-pro-library-image {
+        text-align: center;
+        margin-bottom: 15px;
+    }
+
+    .admin-pro-library-image img {
+        width: 100%;
+        max-width: 200px;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .admin-pro-library-placeholder {
+        width: 200px;
+        height: 150px;
+        background: var(--bs-gray-200);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        color: var(--bs-gray-500);
+        margin: 0 auto;
+    }
+
+    .admin-pro-library-name {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: var(--bs-primary);
+    }
+
+    .admin-pro-library-info {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .admin-pro-library-info-item {
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .admin-pro-library-info-icon {
+        width: 30px;
+        height: 30px;
+        background: var(--bs-primary-bg-subtle);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--bs-primary);
+        margin-right: 10px;
+        flex-shrink: 0;
+    }
+
+    /* Staff Cards */
+    .admin-pro-staff-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        padding: 15px;
+        transition: all 0.3s ease;
+        height: 100%;
+        border: 1px solid var(--bs-gray-200);
+    }
+
+    .admin-pro-staff-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        border-color: var(--bs-primary);
+    }
+
+    .admin-pro-staff-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .admin-pro-staff-avatar {
+        width: 60px;
+        height: 60px;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+
+    .admin-pro-staff-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 2px solid var(--bs-primary);
+    }
+
+    .admin-pro-staff-avatar-placeholder {
+        width: 100%;
+        height: 100%;
+        background: var(--bs-primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        border-radius: 50%;
+        font-size: 20px;
+    }
+
+    .admin-pro-staff-name {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    /* System Health */
+    .system-health-item {
+        margin-bottom: 15px;
+    }
+
+    /* Table Styling */
+    .admin-pro-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .admin-pro-table th {
+        background-color: var(--bs-gray-100);
+        padding: 12px 15px;
+        font-weight: 600;
+        text-align: left;
+        border-bottom: 2px solid var(--bs-gray-200);
+    }
+
+    .admin-pro-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid var(--bs-gray-200);
+        vertical-align: middle;
+    }
+
+    .admin-pro-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .admin-pro-table tr:hover td {
+        background-color: var(--bs-primary-bg-subtle);
+    }
+
+    /* User Small Component */
+    .admin-pro-user-small {
+        display: flex;
+        align-items: center;
+    }
+
+    .admin-pro-user-small-img {
+        width: 36px;
+        height: 36px;
+        margin-right: 10px;
+        flex-shrink: 0;
+    }
+
+    .admin-pro-user-small-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .admin-pro-user-small-placeholder {
+        width: 100%;
+        height: 100%;
+        background: var(--bs-primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        border-radius: 50%;
+        font-size: 14px;
+    }
+
+    /* Book Item Component */
+    .admin-pro-book-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .admin-pro-book-title {
+        font-weight: 500;
+        margin-bottom: 3px;
+    }
+
+    .admin-pro-book-id {
+        font-size: 12px;
+        color: var(--bs-gray-600);
+    }
+
+    /* Badge Styling */
+    .admin-pro-badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .admin-pro-badge-primary {
+        background-color: var(--bs-primary-bg-subtle);
+        color: var(--bs-primary);
+    }
+
+    .admin-pro-badge-success {
+        background-color: var(--bs-success-bg-subtle);
+        color: var(--bs-success);
+    }
+
+    .admin-pro-badge-warning {
+        background-color: var(--bs-warning-bg-subtle);
+        color: var(--bs-warning);
+    }
+
+    .admin-pro-badge-danger {
+        background-color: var(--bs-danger-bg-subtle);
+        color: var(--bs-danger);
+    }
+
+    .admin-pro-badge-info {
+        background-color: var(--bs-info-bg-subtle);
+        color: var(--bs-info);
+    }
+
+    /* Empty State */
+    .admin-pro-empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 30px;
+        text-align: center;
+    }
+
+    .admin-pro-empty-icon {
+        width: 70px;
+        height: 70px;
+        background: var(--bs-gray-200);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        color: var(--bs-gray-600);
+        margin-bottom: 15px;
+    }
+
+    .admin-pro-empty-state h4 {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .admin-pro-empty-state p {
+        color: var(--bs-gray-600);
+        max-width: 300px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .admin-pro-welcome-message {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .admin-pro-welcome-icon {
+            margin-right: 0;
+            margin-bottom: 15px;
+        }
+
+        .admin-pro-stats-card {
+            margin-bottom: 15px;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block page_actions %}
 <a href="{% url 'books:add_book' %}" class="admin-pro-btn admin-pro-btn-primary">
     <i class="fas fa-plus"></i> Add Book
@@ -15,13 +515,18 @@
 {% endblock %}
 
 {% block content %}
-<div class="admin-pro-welcome-message mb-4">
-    <div class="admin-pro-welcome-icon">
+<!-- Enhanced Welcome Section -->
+<div class="admin-pro-welcome-message mb-4 fade-in-up" style="animation-delay: 0.1s">
+    <div class="admin-pro-welcome-icon pulse">
         <i class="fas fa-book-reader"></i>
     </div>
     <div class="admin-pro-welcome-content">
-        <h2>Welcome back, {{ user.get_full_name|default:"Library Admin" }}!</h2>
-        <p>Here's what's happening at {{ library.name }} today.</p>
+        <h2>Welcome back, {{ user.get_full_name|default:"Library Admin" }}! 👋</h2>
+        <p class="lead">Here's what's happening at {{ library.name }} today.</p>
+        <div class="mt-3">
+            <span class="badge bg-success"><i class="fas fa-clock me-1"></i>Last updated: {% now "g:i A" %}</span>
+            <span class="badge bg-primary ms-2"><i class="fas fa-calendar me-1"></i>{% now "F j, Y" %}</span>
+        </div>
     </div>
 </div>
 
@@ -112,67 +617,79 @@
         </div>
     </div>
 
-    <!-- Quick Stats -->
+    <!-- Redesigned Statistics Cards -->
     <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="admin-pro-card">
-                <div class="admin-pro-stats-card success">
+        <div class="col-md-3 fade-in-up" style="animation-delay: 0.2s">
+            <div class="admin-pro-card stats-card">
+                <div class="admin-pro-stats-card success h-100">
                     <div class="admin-pro-stats-icon" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);">
                         <i class="fas fa-book"></i>
                     </div>
                     <div class="admin-pro-stats-content">
-                        <h3 class="admin-pro-stats-value">{{ total_books }}</h3>
+                        <div class="d-flex align-items-baseline">
+                            <h3 class="admin-pro-stats-value mb-0">{{ total_books }}</h3>
+                            <small class="ms-2 text-success">+{{ new_books_count }} new</small>
+                        </div>
                         <p class="admin-pro-stats-label">Total Books</p>
                         <div class="admin-pro-stats-trend up">
-                            <i class="fas fa-arrow-up"></i> 3% from last month
+                            <i class="fas fa-chart-line"></i> 3% from last month
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="admin-pro-card">
-                <div class="admin-pro-stats-card info">
+        <div class="col-md-3 fade-in-up" style="animation-delay: 0.2s">
+            <div class="admin-pro-card stats-card">
+                <div class="admin-pro-stats-card info h-100">
                     <div class="admin-pro-stats-icon" style="background: linear-gradient(135deg, #3498db 0%, #5dade2 100%);">
                         <i class="fas fa-users"></i>
                     </div>
                     <div class="admin-pro-stats-content">
-                        <h3 class="admin-pro-stats-value">{{ staff_members }}</h3>
+                        <div class="d-flex align-items-baseline">
+                            <h3 class="admin-pro-stats-value mb-0">{{ staff_members }}</h3>
+                            <small class="ms-2 text-success">+{{ new_staff_count }} new</small>
+                        </div>
                         <p class="admin-pro-stats-label">Staff Members</p>
                         <div class="admin-pro-stats-trend up">
-                            <i class="fas fa-arrow-up"></i> 2% from last month
+                            <i class="fas fa-chart-line"></i> 2% from last month
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="admin-pro-card">
-                <div class="admin-pro-stats-card primary">
+        <div class="col-md-3 fade-in-up" style="animation-delay: 0.2s">
+            <div class="admin-pro-card stats-card">
+                <div class="admin-pro-stats-card primary h-100">
                     <div class="admin-pro-stats-icon">
                         <i class="fas fa-user-friends"></i>
                     </div>
                     <div class="admin-pro-stats-content">
-                        <h3 class="admin-pro-stats-value">{{ members }}</h3>
+                        <div class="d-flex align-items-baseline">
+                            <h3 class="admin-pro-stats-value mb-0">{{ members }}</h3>
+                            <small class="ms-2 text-success">+{{ new_members_count }} new</small>
+                        </div>
                         <p class="admin-pro-stats-label">Active Members</p>
                         <div class="admin-pro-stats-trend up">
-                            <i class="fas fa-arrow-up"></i> 5% from last month
+                            <i class="fas fa-chart-line"></i> 5% from last month
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="admin-pro-card">
-                <div class="admin-pro-stats-card warning">
+        <div class="col-md-3 fade-in-up" style="animation-delay: 0.2s">
+            <div class="admin-pro-card stats-card">
+                <div class="admin-pro-stats-card warning h-100">
                     <div class="admin-pro-stats-icon" style="background: linear-gradient(135deg, #e67e22 0%, #f39c12 100%);">
                         <i class="fas fa-exchange-alt"></i>
                     </div>
                     <div class="admin-pro-stats-content">
-                        <h3 class="admin-pro-stats-value">{{ transactions_count }}</h3>
+                        <div class="d-flex align-items-baseline">
+                            <h3 class="admin-pro-stats-value mb-0">{{ transactions_count }}</h3>
+                            <small class="ms-2 text-success">+{{ new_transactions_count }} new</small>
+                        </div>
                         <p class="admin-pro-stats-label">Transactions</p>
                         <div class="admin-pro-stats-trend up">
-                            <i class="fas fa-arrow-up"></i> 8% from last month
+                            <i class="fas fa-chart-line"></i> 8% from last month
                         </div>
                     </div>
                 </div>
@@ -180,8 +697,164 @@
         </div>
     </div>
 
-    <!-- Quick Actions -->
+    <!-- New Recent Activities Section -->
     <div class="row mb-4">
+        <div class="col-md-8 fade-in-up" style="animation-delay: 0.3s">
+            <div class="admin-pro-card">
+                <div class="admin-pro-card-header d-flex justify-content-between align-items-center">
+                    <h3 class="admin-pro-card-title">
+                        <i class="fas fa-history me-2 text-primary"></i>Recent Activities
+                    </h3>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-primary active">All</button>
+                        <button type="button" class="btn btn-sm btn-outline-primary">Books</button>
+                        <button type="button" class="btn btn-sm btn-outline-primary">Members</button>
+                    </div>
+                </div>
+                <div class="admin-pro-card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for activity in recent_activities %}
+                        <div class="list-group-item admin-pro-activity-item">
+                            <div class="admin-pro-activity-icon bg-{{ activity.type }}-subtle text-{{ activity.type }}">
+                                <i class="{{ activity.icon }}"></i>
+                            </div>
+                            <div class="admin-pro-activity-content">
+                                <div class="d-flex w-100 justify-content-between align-items-center">
+                                    <div class="admin-pro-activity-message">
+                                        {{ activity.message }}
+                                    </div>
+                                    <small class="admin-pro-activity-time">{{ activity.timestamp|timesince }} ago</small>
+                                </div>
+                                {% if activity.details %}
+                                <div class="admin-pro-activity-details">
+                                    <small class="text-muted">{{ activity.details }}</small>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="admin-pro-empty-state py-4">
+                            <div class="admin-pro-empty-icon">
+                                <i class="fas fa-history"></i>
+                            </div>
+                            <h4>No Recent Activities</h4>
+                            <p>Activities will appear here as they occur.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <style>
+                        .admin-pro-activity-item {
+                            display: flex;
+                            align-items: flex-start;
+                            padding: 15px;
+                            transition: all 0.2s ease;
+                            border-left: 3px solid transparent;
+                        }
+
+                        .admin-pro-activity-item:hover {
+                            background-color: var(--bs-gray-100);
+                            border-left-color: var(--bs-primary);
+                        }
+
+                        .admin-pro-activity-icon {
+                            width: 40px;
+                            height: 40px;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            margin-right: 15px;
+                            flex-shrink: 0;
+                        }
+
+                        .admin-pro-activity-content {
+                            flex: 1;
+                        }
+
+                        .admin-pro-activity-message {
+                            font-weight: 500;
+                            margin-bottom: 3px;
+                        }
+
+                        .admin-pro-activity-time {
+                            color: var(--bs-gray-600);
+                            font-size: 12px;
+                            white-space: nowrap;
+                            margin-left: 10px;
+                        }
+
+                        .admin-pro-activity-details {
+                            margin-top: 5px;
+                            font-size: 13px;
+                        }
+                    </style>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Health Section -->
+        <div class="col-md-4 fade-in-up" style="animation-delay: 0.4s">
+            <div class="admin-pro-card">
+                <div class="admin-pro-card-header">
+                    <h3 class="admin-pro-card-title">
+                        <i class="fas fa-heartbeat me-2 text-danger"></i>System Health
+                    </h3>
+                </div>
+                <div class="admin-pro-card-body">
+                    <div class="system-health-item mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Server Status</span>
+                            <span class="badge bg-success">Operational</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 95%"></div>
+                        </div>
+                    </div>
+
+                    <div class="system-health-item mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Database Performance</span>
+                            <span class="badge bg-success">Excellent</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 90%"></div>
+                        </div>
+                    </div>
+
+                    <div class="system-health-item mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Storage Usage</span>
+                            <span class="badge bg-warning">65%</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: 65%"></div>
+                        </div>
+                    </div>
+
+                    <div class="system-health-item mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Memory Usage</span>
+                            <span class="badge bg-info">42%</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-info" role="progressbar" style="width: 42%"></div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <span class="text-muted small">Last updated: {% now "g:i A" %}</span>
+                        <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Quick Actions -->
+    <div class="row mb-4 fade-in-up" style="animation-delay: 0.5s">
         <div class="col-12">
             <div class="admin-pro-card">
                 <div class="admin-pro-card-header">
@@ -190,48 +863,92 @@
                     </h3>
                 </div>
                 <div class="admin-pro-card-body">
-                    <div class="row">
-                        <div class="col-md-3 mb-3">
-                            <a href="{% url 'libraries:manage_library_staff' slug=library.slug %}" class="admin-pro-action-card">
-                                <div class="admin-pro-action-icon bg-info">
-                                    <i class="fas fa-users"></i>
+                    <div class="row g-3">
+                        <div class="col-md-3 col-sm-6">
+                            <a href="{% url 'books:add_book' %}" class="quick-action-card d-flex align-items-center p-3 rounded-3 text-decoration-none">
+                                <div class="quick-action-icon bg-primary rounded-circle p-3 me-3">
+                                    <i class="fas fa-book-medical text-white"></i>
                                 </div>
-                                <div class="admin-pro-action-content">
-                                    <h4>Manage Staff</h4>
-                                    <p>Add, edit or remove staff</p>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <a href="{% url 'books:manage_books' %}" class="admin-pro-action-card">
-                                <div class="admin-pro-action-icon bg-success">
-                                    <i class="fas fa-book"></i>
-                                </div>
-                                <div class="admin-pro-action-content">
-                                    <h4>Manage Books</h4>
-                                    <p>Add, edit or remove books</p>
+                                <div>
+                                    <h4 class="h6 mb-1">Add New Book</h4>
+                                    <small class="text-muted">Register new books</small>
                                 </div>
                             </a>
                         </div>
-                        <div class="col-md-3 mb-3">
-                            <a href="{% url 'libraries:manage_library_members' slug=library.slug %}" class="admin-pro-action-card">
-                                <div class="admin-pro-action-icon bg-primary">
-                                    <i class="fas fa-user-friends"></i>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="{% url 'libraries:manage_library_staff' slug=library.slug %}" class="quick-action-card d-flex align-items-center p-3 rounded-3 text-decoration-none">
+                                <div class="quick-action-icon bg-info rounded-circle p-3 me-3">
+                                    <i class="fas fa-users text-white"></i>
                                 </div>
-                                <div class="admin-pro-action-content">
-                                    <h4>Manage Members</h4>
-                                    <p>Add, edit or remove members</p>
+                                <div>
+                                    <h4 class="h6 mb-1">Manage Staff</h4>
+                                    <small class="text-muted">Add, edit or remove staff</small>
                                 </div>
                             </a>
                         </div>
-                        <div class="col-md-3 mb-3">
-                            <a href="{% url 'transactions:transaction_reports' %}" class="admin-pro-action-card">
-                                <div class="admin-pro-action-icon bg-warning">
-                                    <i class="fas fa-chart-bar"></i>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="{% url 'books:manage_books' %}" class="quick-action-card d-flex align-items-center p-3 rounded-3 text-decoration-none">
+                                <div class="quick-action-icon bg-success rounded-circle p-3 me-3">
+                                    <i class="fas fa-book text-white"></i>
                                 </div>
-                                <div class="admin-pro-action-content">
-                                    <h4>View Reports</h4>
-                                    <p>View transaction reports</p>
+                                <div>
+                                    <h4 class="h6 mb-1">Manage Books</h4>
+                                    <small class="text-muted">Add, edit or remove books</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="{% url 'libraries:manage_library_members' slug=library.slug %}" class="quick-action-card d-flex align-items-center p-3 rounded-3 text-decoration-none">
+                                <div class="quick-action-icon bg-primary rounded-circle p-3 me-3">
+                                    <i class="fas fa-user-friends text-white"></i>
+                                </div>
+                                <div>
+                                    <h4 class="h6 mb-1">Manage Members</h4>
+                                    <small class="text-muted">Add, edit or remove members</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="{% url 'transactions:transaction_reports' %}" class="quick-action-card d-flex align-items-center p-3 rounded-3 text-decoration-none">
+                                <div class="quick-action-icon bg-warning rounded-circle p-3 me-3">
+                                    <i class="fas fa-chart-bar text-white"></i>
+                                </div>
+                                <div>
+                                    <h4 class="h6 mb-1">View Reports</h4>
+                                    <small class="text-muted">View transaction reports</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="{% url 'transactions:borrow_book' %}" class="quick-action-card d-flex align-items-center p-3 rounded-3 text-decoration-none">
+                                <div class="quick-action-icon bg-danger rounded-circle p-3 me-3">
+                                    <i class="fas fa-arrow-circle-right text-white"></i>
+                                </div>
+                                <div>
+                                    <h4 class="h6 mb-1">Borrow Book</h4>
+                                    <small class="text-muted">Process new borrowing</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="{% url 'transactions:return_book' %}" class="quick-action-card d-flex align-items-center p-3 rounded-3 text-decoration-none">
+                                <div class="quick-action-icon bg-success rounded-circle p-3 me-3">
+                                    <i class="fas fa-arrow-circle-left text-white"></i>
+                                </div>
+                                <div>
+                                    <h4 class="h6 mb-1">Return Book</h4>
+                                    <small class="text-muted">Process book returns</small>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="{% url 'library_admin:settings' %}" class="quick-action-card d-flex align-items-center p-3 rounded-3 text-decoration-none">
+                                <div class="quick-action-icon bg-secondary rounded-circle p-3 me-3">
+                                    <i class="fas fa-cog text-white"></i>
+                                </div>
+                                <div>
+                                    <h4 class="h6 mb-1">Settings</h4>
+                                    <small class="text-muted">Configure library settings</small>
                                 </div>
                             </a>
                         </div>
@@ -242,7 +959,7 @@
     </div>
 
     <!-- Recent Transactions -->
-    <div class="row mb-4">
+    <div class="row mb-4 fade-in-up" style="animation-delay: 0.6s">
         <div class="col-12">
             <div class="admin-pro-card">
                 <div class="admin-pro-card-header d-flex justify-content-between align-items-center">
@@ -250,13 +967,19 @@
                         <i class="fas fa-exchange-alt me-2 text-warning"></i>Recent Transactions
                     </h3>
                     <div class="admin-pro-card-actions">
-                        <a href="{% url 'transactions:transaction_list' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
+                        <div class="btn-group me-2">
+                            <button type="button" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline active" data-filter="all">All</button>
+                            <button type="button" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline" data-filter="BORROW">Borrows</button>
+                            <button type="button" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline" data-filter="RETURN">Returns</button>
+                            <button type="button" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline" data-filter="RESERVE">Reserves</button>
+                        </div>
+                        <a href="{% url 'transactions:transaction_list' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-primary">
                             <i class="fas fa-list"></i> View All
                         </a>
                     </div>
                 </div>
                 <div class="admin-pro-card-body">
-                    <div class="admin-pro-table-container">
+                    <div class="admin-pro-table-responsive">
                         <table class="admin-pro-table">
                             <thead>
                                 <tr>
@@ -270,8 +993,13 @@
                             </thead>
                             <tbody>
                                 {% for transaction in transactions|slice:":5" %}
-                                    <tr>
-                                        <td>{{ transaction.transaction_date|date:"M d, Y" }}</td>
+                                    <tr class="transaction-row" data-type="{{ transaction.transaction_type }}">
+                                        <td>
+                                            <div class="d-flex flex-column">
+                                                <span>{{ transaction.transaction_date|date:"M d, Y" }}</span>
+                                                <small class="text-muted">{{ transaction.transaction_date|time:"g:i A" }}</small>
+                                            </div>
+                                        </td>
                                         <td>
                                             <div class="admin-pro-user-small">
                                                 <div class="admin-pro-user-small-img">
@@ -284,7 +1012,8 @@
                                                     {% endif %}
                                                 </div>
                                                 <div class="admin-pro-user-small-content">
-                                                    {{ transaction.user.get_full_name|default:transaction.user.email }}
+                                                    <div>{{ transaction.user.get_full_name|default:transaction.user.email }}</div>
+                                                    <small class="text-muted">ID: {{ transaction.user.id }}</small>
                                                 </div>
                                             </div>
                                         </td>
@@ -296,24 +1025,46 @@
                                         </td>
                                         <td>
                                             {% if transaction.transaction_type == 'BORROW' %}
-                                                <span class="admin-pro-badge admin-pro-badge-primary">Borrow</span>
+                                                <span class="admin-pro-badge admin-pro-badge-primary">
+                                                    <i class="fas fa-arrow-circle-right me-1"></i> Borrow
+                                                </span>
                                             {% elif transaction.transaction_type == 'RETURN' %}
-                                                <span class="admin-pro-badge admin-pro-badge-success">Return</span>
+                                                <span class="admin-pro-badge admin-pro-badge-success">
+                                                    <i class="fas fa-arrow-circle-left me-1"></i> Return
+                                                </span>
                                             {% elif transaction.transaction_type == 'RESERVE' %}
-                                                <span class="admin-pro-badge admin-pro-badge-warning">Reserve</span>
+                                                <span class="admin-pro-badge admin-pro-badge-warning">
+                                                    <i class="fas fa-bookmark me-1"></i> Reserve
+                                                </span>
                                             {% else %}
-                                                <span class="admin-pro-badge admin-pro-badge-info">{{ transaction.transaction_type|title }}</span>
+                                                <span class="admin-pro-badge admin-pro-badge-info">
+                                                    <i class="fas fa-exchange-alt me-1"></i> {{ transaction.transaction_type|title }}
+                                                </span>
                                             {% endif %}
                                         </td>
                                         <td>
                                             {% if transaction.status == 'COMPLETED' %}
-                                                <span class="admin-pro-badge admin-pro-badge-success">Completed</span>
+                                                <span class="admin-pro-badge admin-pro-badge-success">
+                                                    <i class="fas fa-check-circle me-1"></i> Completed
+                                                </span>
                                             {% elif transaction.status == 'PENDING' %}
-                                                <span class="admin-pro-badge admin-pro-badge-warning">Pending</span>
+                                                <span class="admin-pro-badge admin-pro-badge-warning">
+                                                    <i class="fas fa-clock me-1"></i> Pending
+                                                </span>
                                             {% elif transaction.status == 'OVERDUE' %}
-                                                <span class="admin-pro-badge admin-pro-badge-danger">Overdue</span>
+                                                <span class="admin-pro-badge admin-pro-badge-danger">
+                                                    <i class="fas fa-exclamation-circle me-1"></i> Overdue
+                                                </span>
                                             {% else %}
-                                                <span class="admin-pro-badge admin-pro-badge-info">{{ transaction.status|title }}</span>
+                                                <span class="admin-pro-badge admin-pro-badge-info">
+                                                    <i class="fas fa-info-circle me-1"></i> {{ transaction.status|title }}
+                                                </span>
+                                            {% endif %}
+
+                                            {% if transaction.due_date and transaction.transaction_type == 'BORROW' and transaction.status != 'COMPLETED' %}
+                                                <div class="mt-1 small text-muted">
+                                                    Due: {{ transaction.due_date|date:"M d, Y" }}
+                                                </div>
                                             {% endif %}
                                         </td>
                                         <td>
@@ -321,6 +1072,18 @@
                                                 <a href="{% url 'transactions:transaction_detail' transaction_id=transaction.transaction_id %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-info admin-pro-btn-icon" title="View Details">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
+
+                                                {% if transaction.transaction_type == 'BORROW' and transaction.status != 'COMPLETED' %}
+                                                    <a href="{% url 'transactions:return_book' %}?transaction_id={{ transaction.transaction_id }}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-success admin-pro-btn-icon" title="Return Book">
+                                                        <i class="fas fa-undo"></i>
+                                                    </a>
+                                                {% endif %}
+
+                                                {% if transaction.transaction_type == 'RESERVE' and transaction.status == 'PENDING' %}
+                                                    <a href="{% url 'transactions:borrow_book' %}?reservation_id={{ transaction.transaction_id }}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-primary admin-pro-btn-icon" title="Convert to Borrow">
+                                                        <i class="fas fa-exchange-alt"></i>
+                                                    </a>
+                                                {% endif %}
                                             </div>
                                         </td>
                                     </tr>
@@ -345,8 +1108,35 @@
         </div>
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Transaction filtering
+            const filterButtons = document.querySelectorAll('[data-filter]');
+            const transactionRows = document.querySelectorAll('.transaction-row');
+
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Update active button
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const filterValue = this.getAttribute('data-filter');
+
+                    // Show/hide rows based on filter
+                    transactionRows.forEach(row => {
+                        if (filterValue === 'all' || row.getAttribute('data-type') === filterValue) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+
     <!-- Staff Members -->
-    <div class="row mb-4">
+    <div class="row mb-4 fade-in-up" style="animation-delay: 0.7s">
         <div class="col-12">
             <div class="admin-pro-card">
                 <div class="admin-pro-card-header d-flex justify-content-between align-items-center">
@@ -354,6 +1144,12 @@
                         <i class="fas fa-users me-2 text-info"></i>Staff Members
                     </h3>
                     <div class="admin-pro-card-actions">
+                        <div class="input-group me-2" style="width: 200px;">
+                            <input type="text" class="form-control form-control-sm" id="staffSearch" placeholder="Search staff...">
+                            <button class="btn btn-sm btn-outline-primary" type="button">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
                         <a href="{% url 'libraries:manage_library_staff' slug=library.slug %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-primary">
                             <i class="fas fa-user-plus"></i> Add Staff
                         </a>
@@ -365,8 +1161,9 @@
                 <div class="admin-pro-card-body">
                     <div class="row">
                         {% for staff in staff_members_list %}
-                            <div class="col-md-4 mb-3">
+                            <div class="col-lg-3 col-md-4 col-sm-6 mb-3 staff-card-container">
                                 <div class="admin-pro-staff-card">
+                                    <div class="admin-pro-staff-status {% if staff.is_active %}active{% else %}inactive{% endif %}"></div>
                                     <div class="admin-pro-staff-header">
                                         <div class="admin-pro-staff-avatar">
                                             {% if staff.profile_picture %}
@@ -379,10 +1176,26 @@
                                         </div>
                                         <div class="admin-pro-staff-info">
                                             <h4 class="admin-pro-staff-name">{{ staff.get_full_name|default:"Staff Member" }}</h4>
-                                            <p class="admin-pro-staff-email">{{ staff.email }}</p>
+                                            <div class="admin-pro-staff-role">
+                                                {% if staff.is_library_admin %}
+                                                    <span class="admin-pro-badge admin-pro-badge-primary">Library Admin</span>
+                                                {% elif staff.is_staff_member %}
+                                                    <span class="admin-pro-badge admin-pro-badge-info">Staff</span>
+                                                {% else %}
+                                                    <span class="admin-pro-badge admin-pro-badge-secondary">Member</span>
+                                                {% endif %}
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="admin-pro-staff-details">
+                                        <div class="admin-pro-staff-detail-item">
+                                            <div class="admin-pro-staff-detail-icon">
+                                                <i class="fas fa-envelope"></i>
+                                            </div>
+                                            <div class="admin-pro-staff-detail-content" title="{{ staff.email }}">
+                                                {{ staff.email|truncatechars:20 }}
+                                            </div>
+                                        </div>
                                         {% if staff.phone_number %}
                                             <div class="admin-pro-staff-detail-item">
                                                 <div class="admin-pro-staff-detail-icon">
@@ -401,19 +1214,27 @@
                                                 Joined: {{ staff.date_joined|date:"M d, Y" }}
                                             </div>
                                         </div>
-                                        <div class="admin-pro-staff-detail-item">
-                                            <div class="admin-pro-staff-detail-icon">
-                                                <i class="fas fa-id-badge"></i>
-                                            </div>
-                                            <div class="admin-pro-staff-detail-content">
-                                                Role: {{ staff.get_role_display|default:"Staff" }}
-                                            </div>
+                                    </div>
+                                    <div class="admin-pro-staff-stats">
+                                        <div class="admin-pro-staff-stat-item">
+                                            <div class="admin-pro-staff-stat-value">{{ staff.transactions.count|default:"0" }}</div>
+                                            <div class="admin-pro-staff-stat-label">Transactions</div>
+                                        </div>
+                                        <div class="admin-pro-staff-stat-item">
+                                            <div class="admin-pro-staff-stat-value">{{ staff.last_login|date:"M d"|default:"Never" }}</div>
+                                            <div class="admin-pro-staff-stat-label">Last Login</div>
                                         </div>
                                     </div>
-                                    <div class="admin-pro-staff-actions">
-                                        <a href="{% url 'accounts:user_profile' user_id=staff.id %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline admin-pro-btn-block">
-                                            <i class="fas fa-eye me-1"></i> View Profile
+                                    <div class="admin-pro-staff-actions mt-3">
+                                        <a href="{% url 'accounts:user_profile' user_id=staff.id %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
+                                            <i class="fas fa-eye"></i> View
                                         </a>
+                                        <a href="{% url 'accounts:user_edit' pk=staff.id %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-primary">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                        <button type="button" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline admin-pro-btn-icon staff-more-actions" title="More Actions">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -437,8 +1258,190 @@
         </div>
     </div>
 
+    <style>
+        /* Enhanced Staff Card Styling */
+        .admin-pro-staff-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+            transition: all 0.3s ease;
+            height: 100%;
+            border: 1px solid var(--bs-gray-200);
+            background: white;
+        }
+
+        .admin-pro-staff-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            border-color: var(--bs-primary);
+        }
+
+        .admin-pro-staff-status {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .admin-pro-staff-status.active {
+            background-color: var(--bs-success);
+            box-shadow: 0 0 0 3px rgba(var(--bs-success-rgb), 0.2);
+        }
+
+        .admin-pro-staff-status.inactive {
+            background-color: var(--bs-danger);
+            box-shadow: 0 0 0 3px rgba(var(--bs-danger-rgb), 0.2);
+        }
+
+        .admin-pro-staff-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .admin-pro-staff-avatar {
+            width: 70px;
+            height: 70px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .admin-pro-staff-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid var(--bs-primary);
+        }
+
+        .admin-pro-staff-avatar-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--bs-primary) 0%, rgba(var(--bs-primary-rgb), 0.8) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            border-radius: 50%;
+            font-size: 24px;
+        }
+
+        .admin-pro-staff-info {
+            flex: 1;
+        }
+
+        .admin-pro-staff-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--bs-gray-800);
+        }
+
+        .admin-pro-staff-role {
+            font-size: 14px;
+            color: var(--bs-gray-600);
+        }
+
+        .admin-pro-staff-details {
+            margin-bottom: 15px;
+            border-top: 1px solid var(--bs-gray-200);
+            padding-top: 15px;
+        }
+
+        .admin-pro-staff-detail-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--bs-gray-700);
+        }
+
+        .admin-pro-staff-detail-icon {
+            width: 30px;
+            height: 30px;
+            background: var(--bs-primary-bg-subtle);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: var(--bs-primary);
+            flex-shrink: 0;
+        }
+
+        .admin-pro-staff-detail-content {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .admin-pro-staff-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            border-top: 1px solid var(--bs-gray-200);
+            padding-top: 15px;
+        }
+
+        .admin-pro-staff-stat-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .admin-pro-staff-stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--bs-primary);
+        }
+
+        .admin-pro-staff-stat-label {
+            font-size: 12px;
+            color: var(--bs-gray-600);
+        }
+
+        .admin-pro-staff-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .staff-more-actions {
+            margin-left: auto;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Staff search functionality
+            const staffSearch = document.getElementById('staffSearch');
+            const staffCards = document.querySelectorAll('.staff-card-container');
+
+            if (staffSearch) {
+                staffSearch.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+
+                    staffCards.forEach(card => {
+                        const staffName = card.querySelector('.admin-pro-staff-name').textContent.toLowerCase();
+                        const staffEmail = card.querySelector('.admin-pro-staff-detail-content').textContent.toLowerCase();
+
+                        if (staffName.includes(searchTerm) || staffEmail.includes(searchTerm)) {
+                            card.style.display = '';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+
     <!-- Book Status -->
-    <div class="row mb-4">
+    <div class="row mb-4 fade-in-up" style="animation-delay: 0.8s">
         <div class="col-12">
             <div class="admin-pro-card">
                 <div class="admin-pro-card-header d-flex justify-content-between align-items-center">
@@ -446,14 +1449,17 @@
                         <i class="fas fa-book-open me-2 text-success"></i>Book Status
                     </h3>
                     <div class="admin-pro-card-actions">
-                        <a href="{% url 'books:manage_book_copies' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
-                            <i class="fas fa-cog"></i> Manage Books
+                        <a href="{% url 'books:manage_books' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
+                            <i class="fas fa-list"></i> All Books
+                        </a>
+                        <a href="{% url 'books:manage_book_copies' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-primary">
+                            <i class="fas fa-cog"></i> Manage Copies
                         </a>
                     </div>
                 </div>
                 <div class="admin-pro-card-body">
                     <div class="row">
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md-3 col-sm-6 mb-3">
                             <div class="admin-pro-status-card success">
                                 <div class="admin-pro-status-icon">
                                     <i class="fas fa-check-circle"></i>
@@ -461,13 +1467,16 @@
                                 <div class="admin-pro-status-content">
                                     <h3 class="admin-pro-status-value">{{ available_books }}</h3>
                                     <p class="admin-pro-status-label">Available Books</p>
+                                    <div class="admin-pro-status-trend">
+                                        <i class="fas fa-arrow-up"></i> {{ available_books_percent|default:"0" }}% of total
+                                    </div>
                                 </div>
                                 <div class="admin-pro-status-progress">
                                     <div class="admin-pro-status-bar success" style="width: {% widthratio available_books total_books 100 %}%;"></div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md-3 col-sm-6 mb-3">
                             <div class="admin-pro-status-card danger">
                                 <div class="admin-pro-status-icon">
                                     <i class="fas fa-book-reader"></i>
@@ -475,13 +1484,16 @@
                                 <div class="admin-pro-status-content">
                                     <h3 class="admin-pro-status-value">{{ borrowed_books }}</h3>
                                     <p class="admin-pro-status-label">Borrowed Books</p>
+                                    <div class="admin-pro-status-trend">
+                                        <i class="fas fa-arrow-up"></i> {{ borrowed_books_percent|default:"0" }}% of total
+                                    </div>
                                 </div>
                                 <div class="admin-pro-status-progress">
                                     <div class="admin-pro-status-bar danger" style="width: {% widthratio borrowed_books total_books 100 %}%;"></div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md-3 col-sm-6 mb-3">
                             <div class="admin-pro-status-card warning">
                                 <div class="admin-pro-status-icon">
                                     <i class="fas fa-bookmark"></i>
@@ -489,13 +1501,16 @@
                                 <div class="admin-pro-status-content">
                                     <h3 class="admin-pro-status-value">{{ reserved_books }}</h3>
                                     <p class="admin-pro-status-label">Reserved Books</p>
+                                    <div class="admin-pro-status-trend">
+                                        <i class="fas fa-arrow-up"></i> {{ reserved_books_percent|default:"0" }}% of total
+                                    </div>
                                 </div>
                                 <div class="admin-pro-status-progress">
                                     <div class="admin-pro-status-bar warning" style="width: {% widthratio reserved_books total_books 100 %}%;"></div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md-3 col-sm-6 mb-3">
                             <div class="admin-pro-status-card info">
                                 <div class="admin-pro-status-icon">
                                     <i class="fas fa-tools"></i>
@@ -503,6 +1518,9 @@
                                 <div class="admin-pro-status-content">
                                     <h3 class="admin-pro-status-value">{{ maintenance_books }}</h3>
                                     <p class="admin-pro-status-label">In Maintenance</p>
+                                    <div class="admin-pro-status-trend">
+                                        <i class="fas fa-arrow-up"></i> {{ maintenance_books_percent|default:"0" }}% of total
+                                    </div>
                                 </div>
                                 <div class="admin-pro-status-progress">
                                     <div class="admin-pro-status-bar info" style="width: {% widthratio maintenance_books total_books 100 %}%;"></div>
@@ -510,8 +1528,198 @@
                             </div>
                         </div>
                     </div>
+
+
                 </div>
             </div>
         </div>
     </div>
+
+    <style>
+        /* Enhanced Status Card Styling */
+        .admin-pro-status-card {
+            position: relative;
+            border-radius: 12px;
+            padding: 20px;
+            height: 100%;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-pro-status-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-pro-status-card.success {
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(40, 167, 69, 0.05) 100%);
+            border-left: 4px solid #28a745;
+        }
+
+        .admin-pro-status-card.danger {
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(220, 53, 69, 0.05) 100%);
+            border-left: 4px solid #dc3545;
+        }
+
+        .admin-pro-status-card.warning {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 193, 7, 0.05) 100%);
+            border-left: 4px solid #ffc107;
+        }
+
+        .admin-pro-status-card.info {
+            background: linear-gradient(135deg, rgba(23, 162, 184, 0.1) 0%, rgba(23, 162, 184, 0.05) 100%);
+            border-left: 4px solid #17a2b8;
+        }
+
+        .admin-pro-status-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .admin-pro-status-card.success .admin-pro-status-icon {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+        }
+
+        .admin-pro-status-card.danger .admin-pro-status-icon {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+        }
+
+        .admin-pro-status-card.warning .admin-pro-status-icon {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+
+        .admin-pro-status-card.info .admin-pro-status-icon {
+            background-color: rgba(23, 162, 184, 0.2);
+            color: #17a2b8;
+        }
+
+        .admin-pro-status-content {
+            flex: 1;
+            margin-bottom: 15px;
+        }
+
+        .admin-pro-status-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            line-height: 1;
+        }
+
+        .admin-pro-status-card.success .admin-pro-status-value {
+            color: #28a745;
+        }
+
+        .admin-pro-status-card.danger .admin-pro-status-value {
+            color: #dc3545;
+        }
+
+        .admin-pro-status-card.warning .admin-pro-status-value {
+            color: #ffc107;
+        }
+
+        .admin-pro-status-card.info .admin-pro-status-value {
+            color: #17a2b8;
+        }
+
+        .admin-pro-status-label {
+            font-size: 14px;
+            color: var(--bs-gray-700);
+            margin-bottom: 5px;
+        }
+
+        .admin-pro-status-trend {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            color: var(--bs-gray-600);
+        }
+
+        .admin-pro-status-trend i {
+            margin-right: 5px;
+        }
+
+        .admin-pro-status-progress {
+            height: 6px;
+            background-color: rgba(0, 0, 0, 0.05);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .admin-pro-status-bar {
+            height: 100%;
+            border-radius: 3px;
+        }
+
+        .admin-pro-status-bar.success {
+            background-color: #28a745;
+        }
+
+        .admin-pro-status-bar.danger {
+            background-color: #dc3545;
+        }
+
+        .admin-pro-status-bar.warning {
+            background-color: #ffc107;
+        }
+
+        .admin-pro-status-bar.info {
+            background-color: #17a2b8;
+        }
+
+
+    </style>
+
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize animations
+    const elements = document.querySelectorAll('.fade-in-up, .fade-in-left, .fade-in-right, .scale-in');
+    elements.forEach(element => {
+        const delay = element.getAttribute('style') ?
+            parseFloat(element.style.animationDelay.replace('s', '')) * 1000 : 0;
+
+        setTimeout(() => {
+            element.classList.add('animated');
+        }, delay);
+    });
+
+    // Counter animation for statistics
+    const counterElements = document.querySelectorAll('.admin-pro-stats-value');
+    counterElements.forEach(counter => {
+        const target = parseInt(counter.textContent, 10);
+        let count = 0;
+        const duration = 2000; // 2 seconds
+        const frameDuration = 1000 / 60; // 60fps
+        const totalFrames = Math.round(duration / frameDuration);
+        const increment = target / totalFrames;
+
+        const animate = () => {
+            count += increment;
+            if (count < target) {
+                counter.textContent = Math.floor(count);
+                requestAnimationFrame(animate);
+            } else {
+                counter.textContent = target;
+            }
+        };
+
+        animate();
+    });
+});
+</script>
 {% endblock %}

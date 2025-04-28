@@ -3,131 +3,424 @@
 
 {% block title %}Authors - Library Management System{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Modern Author List Page Styles */
+    .author-list-container {
+        padding: 2rem 0;
+    }
+
+    .author-list-header {
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .author-list-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+        position: relative;
+        display: inline-block;
+    }
+
+    .author-list-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+        border-radius: 2px;
+    }
+
+    .author-list-subtitle {
+        font-size: 1.25rem;
+        color: var(--medium);
+        margin-top: 1rem;
+    }
+
+    .author-card {
+        border: none;
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        height: 100%;
+        transition: all var(--transition-normal);
+        background-color: var(--surface);
+        position: relative;
+    }
+
+    .author-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .author-card-body {
+        padding: 1.5rem;
+    }
+
+    .author-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 1rem;
+        box-shadow: var(--shadow-sm);
+        border: 3px solid rgba(var(--primary-color-rgb), 0.1);
+        transition: all var(--transition-normal);
+    }
+
+    .author-card:hover .author-avatar {
+        border-color: var(--primary-color);
+        transform: scale(1.05);
+    }
+
+    .author-placeholder {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.1) 0%, rgba(var(--accent-color-rgb), 0.1) 100%);
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.5rem;
+        border: 3px solid rgba(var(--primary-color-rgb), 0.1);
+        transition: all var(--transition-normal);
+    }
+
+    .author-card:hover .author-placeholder {
+        background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.2) 0%, rgba(var(--accent-color-rgb), 0.2) 100%);
+        border-color: var(--primary-color);
+        transform: scale(1.05);
+    }
+
+    .author-name {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        color: var(--dark);
+        transition: all var(--transition-fast);
+    }
+
+    .author-card:hover .author-name {
+        color: var(--primary-color);
+    }
+
+    .author-years {
+        font-size: 0.9rem;
+        color: var(--medium);
+        margin-bottom: 0;
+    }
+
+    .author-book-count {
+        display: inline-block;
+        padding: 0.4em 0.8em;
+        margin: 0.75rem 0;
+        border-radius: 50rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.1) 0%, rgba(var(--accent-color-rgb), 0.1) 100%);
+        color: var(--primary-color);
+        transition: all var(--transition-fast);
+    }
+
+    .author-card:hover .author-book-count {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .author-bio {
+        font-size: 0.95rem;
+        color: var(--medium);
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        height: 4.8rem;
+    }
+
+    .author-card-footer {
+        padding: 1rem 1.5rem;
+        background-color: rgba(var(--primary-color-rgb), 0.02);
+        border-top: 1px solid rgba(var(--primary-color-rgb), 0.05);
+    }
+
+    .author-action-btn {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 0;
+        text-align: center;
+        border-radius: var(--border-radius-md);
+        font-weight: 500;
+        text-decoration: none;
+        transition: all var(--transition-normal);
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+    }
+
+    .author-action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(var(--primary-color-rgb), 0.3);
+        color: white;
+    }
+
+    .author-action-btn i {
+        margin-right: 0.5rem;
+    }
+
+    .author-empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        background-color: var(--surface);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .author-empty-icon {
+        font-size: 3rem;
+        color: var(--medium-light);
+        margin-bottom: 1.5rem;
+    }
+
+    .author-empty-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--dark);
+    }
+
+    .author-empty-text {
+        font-size: 1.1rem;
+        color: var(--medium);
+        margin-bottom: 0;
+    }
+
+    /* Pagination Styles */
+    .author-pagination {
+        margin-top: 2.5rem;
+    }
+
+    .author-pagination .page-item .page-link {
+        border-radius: var(--border-radius-md);
+        margin: 0 0.3rem;
+        color: var(--medium-dark);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        transition: all var(--transition-normal);
+        padding: 0.5rem 1rem;
+    }
+
+    .author-pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        border-color: var(--primary-color);
+        color: white;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .author-pagination .page-item .page-link:hover:not(.active) {
+        background-color: rgba(var(--primary-color-rgb), 0.05);
+        transform: translateY(-2px);
+    }
+
+    /* Dark Mode Adjustments */
+    [data-bs-theme="dark"] .author-pagination .page-item .page-link {
+        border-color: rgba(255, 255, 255, 0.1);
+        color: var(--light);
+    }
+
+    [data-bs-theme="dark"] .author-pagination .page-item .page-link:hover:not(.active) {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Animation Styles */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="mb-4">Authors</h1>
-            <p class="lead">Browse our collection of authors and their works.</p>
-        </div>
+<div class="container author-list-container">
+    <!-- Header -->
+    <div class="author-list-header">
+        <h1 class="author-list-title">Authors Collection</h1>
+        <p class="author-list-subtitle">Discover talented authors and explore their literary works</p>
     </div>
-    
-    <!-- Authors List -->
+
+    <!-- Authors Grid -->
     <div class="row">
         {% for author in authors %}
-            <div class="col-md-4 mb-4">
-                <div class="card card-floating h-100 hover-lift stagger-item fade-in-up">
-                    <div class="card-body">
+            <div class="col-lg-4 col-md-6 mb-4 author-card-wrapper" style="opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; transition-delay: {{ forloop.counter0|divisibleby:3 }}00ms;">
+                <div class="author-card">
+                    <div class="author-card-body">
                         <div class="d-flex align-items-center mb-3">
                             {% if author.photo %}
-                                <img src="{{ author.photo.url }}" alt="{{ author.name }}" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                <img src="{{ author.photo.url }}" alt="{{ author.name }}" class="author-avatar">
                             {% else %}
-                                <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
+                                <div class="author-placeholder">
                                     <i class="fas fa-user"></i>
                                 </div>
                             {% endif %}
                             <div>
-                                <h5 class="card-title mb-0 hover-color-change">{{ author.name }}</h5>
-                                <p class="text-muted small mb-0">
+                                <h3 class="author-name">{{ author.name }}</h3>
+                                <p class="author-years">
                                     {% if author.date_of_birth %}
                                         {{ author.date_of_birth|date:"Y" }}
                                         {% if author.date_of_death %} - {{ author.date_of_death|date:"Y" }}{% endif %}
+                                    {% else %}
+                                        <span class="text-muted">Unknown</span>
                                     {% endif %}
                                 </p>
                             </div>
                         </div>
-                        
-                        <p class="card-text">
-                            <span class="badge bg-primary">{{ author.book_count }} {% if author.book_count == 1 %}book{% else %}books{% endif %}</span>
-                        </p>
-                        
-                        {% if author.biography %}
-                            <p class="card-text">{{ author.biography|truncatechars:150 }}</p>
-                        {% else %}
-                            <p class="card-text text-muted">No biography available.</p>
-                        {% endif %}
+
+                        <div class="author-book-count">
+                            <i class="fas fa-book me-1"></i> {{ author.book_count }} {% if author.book_count == 1 %}book{% else %}books{% endif %}
+                        </div>
+
+                        <div class="author-bio">
+                            {% if author.biography %}
+                                {{ author.biography|truncatechars:180 }}
+                            {% else %}
+                                <span class="text-muted">No biography available for this author.</span>
+                            {% endif %}
+                        </div>
                     </div>
-                    <div class="card-footer bg-transparent border-top-0">
-                        <a href="{% url 'books:author_detail' slug=author.slug %}" class="btn btn-gradient-primary w-100 btn-ripple">
-                            <i class="fas fa-user me-2"></i> View Profile
+                    <div class="author-card-footer">
+                        <a href="{% url 'books:author_detail' slug=author.slug %}" class="author-action-btn btn-ripple">
+                            <i class="fas fa-user"></i> View Author Profile
                         </a>
                     </div>
                 </div>
             </div>
         {% empty %}
-            <div class="col-12 text-center">
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle me-2"></i> No authors found.
+            <div class="col-12">
+                <div class="author-empty-state">
+                    <div class="author-empty-icon">
+                        <i class="fas fa-user-slash"></i>
+                    </div>
+                    <h3 class="author-empty-title">No Authors Found</h3>
+                    <p class="author-empty-text">There are no authors in the database yet.</p>
                 </div>
             </div>
         {% endfor %}
     </div>
-    
+
     <!-- Pagination -->
     {% if authors.has_other_pages %}
-        <div class="row mt-4">
-            <div class="col-12">
-                <nav aria-label="Page navigation">
-                    <ul class="pagination justify-content-center">
-                        {% if authors.has_previous %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page=1" aria-label="First">
-                                    <span aria-hidden="true">&laquo;&laquo;</span>
-                                </a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ authors.previous_page_number }}" aria-label="Previous">
-                                    <span aria-hidden="true">&laquo;</span>
-                                </a>
-                            </li>
-                        {% else %}
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#" aria-label="First">
-                                    <span aria-hidden="true">&laquo;&laquo;</span>
-                                </a>
-                            </li>
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#" aria-label="Previous">
-                                    <span aria-hidden="true">&laquo;</span>
-                                </a>
-                            </li>
+        <div class="author-pagination">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    {% if authors.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1" aria-label="First">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ authors.previous_page_number }}" aria-label="Previous">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="First">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="Previous">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% for i in authors.paginator.page_range %}
+                        {% if authors.number == i %}
+                            <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+                        {% elif i > authors.number|add:'-3' and i < authors.number|add:'3' %}
+                            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
                         {% endif %}
-                        
-                        {% for i in authors.paginator.page_range %}
-                            {% if authors.number == i %}
-                                <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
-                            {% elif i > authors.number|add:'-3' and i < authors.number|add:'3' %}
-                                <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
-                            {% endif %}
-                        {% endfor %}
-                        
-                        {% if authors.has_next %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ authors.next_page_number }}" aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
-                                </a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ authors.paginator.num_pages }}" aria-label="Last">
-                                    <span aria-hidden="true">&raquo;&raquo;</span>
-                                </a>
-                            </li>
-                        {% else %}
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#" aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
-                                </a>
-                            </li>
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#" aria-label="Last">
-                                    <span aria-hidden="true">&raquo;&raquo;</span>
-                                </a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </nav>
-            </div>
+                    {% endfor %}
+
+                    {% if authors.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ authors.next_page_number }}" aria-label="Next">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ authors.paginator.num_pages }}" aria-label="Last">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="Next">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="Last">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
         </div>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate author cards on page load
+        const authorCards = document.querySelectorAll('.author-card-wrapper');
+        setTimeout(() => {
+            authorCards.forEach(card => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            });
+        }, 100);
+
+        // Add ripple effect to buttons
+        const rippleButtons = document.querySelectorAll('.btn-ripple');
+        rippleButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                const x = e.clientX - e.target.getBoundingClientRect().left;
+                const y = e.clientY - e.target.getBoundingClientRect().top;
+
+                const ripple = document.createElement('span');
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+                ripple.classList.add('ripple-effect');
+
+                this.appendChild(ripple);
+
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+    });
+</script>
 {% endblock %}
