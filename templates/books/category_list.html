@@ -9,12 +9,12 @@
     .category-list-container {
         padding: 2rem 0;
     }
-    
+
     .category-list-header {
         margin-bottom: 2rem;
         position: relative;
     }
-    
+
     .category-list-title {
         font-size: 2.5rem;
         font-weight: 700;
@@ -23,7 +23,7 @@
         position: relative;
         display: inline-block;
     }
-    
+
     .category-list-title::after {
         content: '';
         position: absolute;
@@ -34,13 +34,13 @@
         background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
         border-radius: 2px;
     }
-    
+
     .category-list-subtitle {
         font-size: 1.25rem;
         color: var(--medium);
         margin-top: 1rem;
     }
-    
+
     .category-card {
         border: none;
         border-radius: var(--border-radius-lg);
@@ -51,16 +51,16 @@
         background-color: var(--surface);
         position: relative;
     }
-    
+
     .category-card:hover {
         transform: translateY(-8px);
         box-shadow: var(--shadow-lg);
     }
-    
+
     .category-card-body {
         padding: 1.5rem;
     }
-    
+
     .category-icon {
         width: 60px;
         height: 60px;
@@ -74,13 +74,13 @@
         font-size: 1.5rem;
         transition: all var(--transition-normal);
     }
-    
+
     .category-card:hover .category-icon {
         background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
         color: white;
         transform: scale(1.05);
     }
-    
+
     .category-name {
         font-size: 1.5rem;
         font-weight: 600;
@@ -88,11 +88,11 @@
         color: var(--dark);
         transition: all var(--transition-fast);
     }
-    
+
     .category-card:hover .category-name {
         color: var(--primary-color);
     }
-    
+
     .category-book-count {
         display: inline-block;
         padding: 0.4em 0.8em;
@@ -106,13 +106,13 @@
         color: var(--primary-color);
         transition: all var(--transition-fast);
     }
-    
+
     .category-card:hover .category-book-count {
         background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
         color: white;
         transform: translateY(-2px);
     }
-    
+
     .category-description {
         font-size: 0.95rem;
         color: var(--medium);
@@ -124,13 +124,13 @@
         overflow: hidden;
         height: 4.8rem;
     }
-    
+
     .category-card-footer {
         padding: 1rem 1.5rem;
         background-color: rgba(var(--primary-color-rgb), 0.02);
         border-top: 1px solid rgba(var(--primary-color-rgb), 0.05);
     }
-    
+
     .category-action-btn {
         display: block;
         width: 100%;
@@ -145,17 +145,17 @@
         background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
         color: white;
     }
-    
+
     .category-action-btn:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(var(--primary-color-rgb), 0.3);
         color: white;
     }
-    
+
     .category-action-btn i {
         margin-right: 0.5rem;
     }
-    
+
     .category-empty-state {
         text-align: center;
         padding: 3rem 2rem;
@@ -163,32 +163,32 @@
         border-radius: var(--border-radius-lg);
         box-shadow: var(--shadow-sm);
     }
-    
+
     .category-empty-icon {
         font-size: 3rem;
         color: var(--medium-light);
         margin-bottom: 1.5rem;
     }
-    
+
     .category-empty-title {
         font-size: 1.5rem;
         font-weight: 600;
         margin-bottom: 1rem;
         color: var(--dark);
     }
-    
+
     .category-empty-text {
         font-size: 1.1rem;
         color: var(--medium);
         margin-bottom: 0;
     }
-    
+
     /* Dark Mode Adjustments */
     [data-bs-theme="dark"] .category-card-footer {
         background-color: rgba(255, 255, 255, 0.05);
         border-top-color: rgba(255, 255, 255, 0.1);
     }
-    
+
     /* Animation Styles */
     @keyframes fadeInUp {
         from {
@@ -210,7 +210,7 @@
         <h1 class="category-list-title">Book Categories</h1>
         <p class="category-list-subtitle">Browse our collection of books by category</p>
     </div>
-    
+
     <!-- Categories Grid -->
     <div class="row">
         {% for category in categories %}
@@ -225,11 +225,11 @@
                                 <h3 class="category-name">{{ category.name }}</h3>
                             </div>
                         </div>
-                        
+
                         <div class="category-book-count">
                             <i class="fas fa-book me-1"></i> {{ category.book_count }} {% if category.book_count == 1 %}book{% else %}books{% endif %}
                         </div>
-                        
+
                         <div class="category-description">
                             {% if category.description %}
                                 {{ category.description|truncatechars:180 }}
@@ -239,7 +239,7 @@
                         </div>
                     </div>
                     <div class="category-card-footer">
-                        <a href="{% url 'books:category_detail' slug=category.slug %}" class="category-action-btn btn-ripple">
+                        <a href="{% url 'library_admin:category_detail' slug=category.slug %}" class="category-action-btn btn-ripple">
                             <i class="fas fa-folder-open"></i> Browse Books in this Category
                         </a>
                     </div>
@@ -271,7 +271,7 @@
                 card.style.transform = 'translateY(0)';
             });
         }, 100);
-        
+
         // Add ripple effect to buttons
         const rippleButtons = document.querySelectorAll('.btn-ripple');
         rippleButtons.forEach(button => {

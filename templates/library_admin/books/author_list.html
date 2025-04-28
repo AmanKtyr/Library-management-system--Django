@@ -1,0 +1,386 @@
+{% extends 'core/admin_base.html' %}
+{% load static %}
+
+{% block title %}Manage Authors - Library Management System{% endblock %}
+{% block breadcrumb_title %}Authors{% endblock %}
+{% block page_title %}Manage Authors{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Author Card Styles */
+    .author-card {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        background-color: var(--bs-white);
+        border: 1px solid var(--bs-gray-200);
+    }
+
+    .author-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        border-color: var(--bs-primary);
+    }
+
+    .author-card-header {
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid var(--bs-gray-200);
+    }
+
+    .author-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 15px;
+        border: 3px solid var(--bs-primary);
+    }
+
+    .author-placeholder {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background-color: var(--bs-primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        margin-right: 15px;
+    }
+
+    .author-info {
+        flex: 1;
+    }
+
+    .author-name {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: var(--bs-dark);
+    }
+
+    .author-meta {
+        font-size: 14px;
+        color: var(--bs-gray-600);
+        display: flex;
+        align-items: center;
+    }
+
+    .author-meta i {
+        margin-right: 5px;
+    }
+
+    .author-card-body {
+        padding: 20px;
+        flex: 1;
+    }
+
+    .author-bio {
+        font-size: 14px;
+        color: var(--bs-gray-700);
+        margin-bottom: 15px;
+        line-height: 1.5;
+    }
+
+    .author-stats {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid var(--bs-gray-200);
+    }
+
+    .author-stat {
+        text-align: center;
+    }
+
+    .author-stat-value {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--bs-primary);
+    }
+
+    .author-stat-label {
+        font-size: 12px;
+        color: var(--bs-gray-600);
+    }
+
+    .author-card-footer {
+        padding: 15px 20px;
+        border-top: 1px solid var(--bs-gray-200);
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .author-action-btn {
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .author-action-btn.btn-primary {
+        background-color: var(--bs-primary);
+        color: white;
+    }
+
+    .author-action-btn.btn-primary:hover {
+        background-color: var(--bs-primary-dark);
+    }
+
+    .author-action-btn.btn-outline {
+        border: 1px solid var(--bs-primary);
+        color: var(--bs-primary);
+        background-color: transparent;
+    }
+
+    .author-action-btn.btn-outline:hover {
+        background-color: var(--bs-primary-bg-subtle);
+    }
+
+    .author-action-btn i {
+        margin-right: 5px;
+    }
+
+    /* Empty State */
+    .author-empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background-color: var(--bs-white);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .author-empty-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background-color: var(--bs-gray-200);
+        color: var(--bs-gray-600);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        margin: 0 auto 20px;
+    }
+
+    .author-empty-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: var(--bs-dark);
+    }
+
+    .author-empty-text {
+        font-size: 14px;
+        color: var(--bs-gray-600);
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    /* Search and Filter Bar */
+    .author-search-bar {
+        margin-bottom: 30px;
+    }
+
+    /* Animation */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.5s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .author-card-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .author-avatar, .author-placeholder {
+            margin-right: 0;
+            margin-bottom: 15px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'library_admin:add_author' %}" class="admin-pro-btn admin-pro-btn-primary">
+    <i class="fas fa-plus"></i> Add Author
+</a>
+{% endblock %}
+
+{% block content %}
+<!-- Search and Filter Bar -->
+<div class="admin-pro-card mb-4 author-search-bar">
+    <div class="admin-pro-card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-8">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" placeholder="Search authors by name or biography..." name="q" value="{{ search_query }}">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    {% if search_query %}
+                        <a href="{% url 'library_admin:authors' %}" class="btn btn-outline-secondary">Clear</a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <span class="text-muted">Showing {{ authors.start_index }} - {{ authors.end_index }} of {{ page_obj.paginator.count }} authors</span>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Authors Grid -->
+<div class="row">
+    {% for author in authors %}
+        <div class="col-lg-4 col-md-6 mb-4 fade-in-up" style="animation-delay: {{ forloop.counter0|divisibleby:3 }}00ms;">
+            <div class="author-card">
+                <div class="author-card-header">
+                    {% if author.photo %}
+                        <img src="{{ author.photo.url }}" alt="{{ author.name }}" class="author-avatar">
+                    {% else %}
+                        <div class="author-placeholder">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    {% endif %}
+                    <div class="author-info">
+                        <h3 class="author-name">{{ author.name }}</h3>
+                        <div class="author-meta">
+                            {% if author.date_of_birth %}
+                                <span><i class="fas fa-birthday-cake"></i> {{ author.date_of_birth|date:"M d, Y" }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="author-meta mt-1">
+                            <span><i class="fas fa-book"></i> {{ author.book_count }} book{{ author.book_count|pluralize }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="author-card-body">
+                    <div class="author-bio">
+                        {% if author.biography %}
+                            {{ author.biography|truncatechars:180 }}
+                        {% else %}
+                            <span class="text-muted">No biography available for this author.</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="author-card-footer">
+                    <a href="{% url 'library_admin:author_detail' slug=author.slug %}" class="author-action-btn btn-outline">
+                        <i class="fas fa-eye"></i> View Details
+                    </a>
+                    <a href="{% url 'library_admin:edit_author' slug=author.slug %}" class="author-action-btn btn-primary">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <div class="author-empty-state">
+                <div class="author-empty-icon">
+                    <i class="fas fa-user-slash"></i>
+                </div>
+                <h3 class="author-empty-title">No Authors Found</h3>
+                <p class="author-empty-text">
+                    {% if search_query %}
+                        No authors match your search criteria. Try a different search term or <a href="{% url 'library_admin:authors' %}">view all authors</a>.
+                    {% else %}
+                        There are no authors in the database yet. <a href="{% url 'library_admin:add_author' %}">Add your first author</a>.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if authors.paginator.num_pages > 1 %}
+<div class="d-flex justify-content-center mt-4">
+    <nav aria-label="Author pagination">
+        <ul class="pagination">
+            {% if authors.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}" aria-label="First">
+                        <span aria-hidden="true">&laquo;&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ authors.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">&laquo;&laquo;</span>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link">&laquo;</span>
+                </li>
+            {% endif %}
+
+            {% for i in authors.paginator.page_range %}
+                {% if authors.number == i %}
+                    <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+                {% elif i > authors.number|add:"-3" and i < authors.number|add:"3" %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ i }}{% if search_query %}&q={{ search_query }}{% endif %}">{{ i }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if authors.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ authors.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ authors.paginator.num_pages }}{% if search_query %}&q={{ search_query }}{% endif %}" aria-label="Last">
+                        <span aria-hidden="true">&raquo;&raquo;</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">&raquo;</span>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link">&raquo;&raquo;</span>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endif %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate author cards on page load
+        const authorCards = document.querySelectorAll('.fade-in-up');
+        authorCards.forEach((card, index) => {
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100 * index);
+        });
+    });
+</script>
+{% endblock %}

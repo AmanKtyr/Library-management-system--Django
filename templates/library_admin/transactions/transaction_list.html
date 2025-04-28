@@ -1,7 +1,493 @@
 {% extends 'core/admin_base.html' %}
 {% load static %}
 
-{% block title %}Manage Transactions - Admin Panel{% endblock %}
+{% block title %}Transactions - Library Management System{% endblock %}
+{% block breadcrumb_title %}Transactions{% endblock %}
+{% block page_title %}Transactions{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Modern Transaction List Styles */
+    .transactions-container {
+        margin-bottom: 2rem;
+    }
+
+    .transactions-card {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        background-color: var(--bs-white);
+        border: 1px solid var(--bs-gray-200);
+        margin-bottom: 1.5rem;
+    }
+
+    .transactions-card-header {
+        padding: 1.25rem;
+        border-bottom: 1px solid var(--bs-gray-200);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: var(--bs-gray-100);
+    }
+
+    .transactions-card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0;
+        color: var(--bs-gray-700);
+    }
+
+    .transactions-card-body {
+        padding: 0;
+    }
+
+    /* Filters */
+    .transactions-filters {
+        padding: 1.25rem;
+        border-bottom: 1px solid var(--bs-gray-200);
+        background-color: var(--bs-gray-50);
+    }
+
+    .filter-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: flex-end;
+    }
+
+    .filter-group {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .filter-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: var(--bs-gray-700);
+        font-size: 0.875rem;
+    }
+
+    .filter-select {
+        border-radius: 8px;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid var(--bs-gray-300);
+        transition: all 0.2s ease;
+        background-position: right 0.75rem center;
+        font-size: 0.875rem;
+    }
+
+    .filter-select:focus {
+        border-color: var(--bs-primary);
+        box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+    }
+
+    .filter-input {
+        border-radius: 8px;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid var(--bs-gray-300);
+        transition: all 0.2s ease;
+        font-size: 0.875rem;
+    }
+
+    .filter-input:focus {
+        border-color: var(--bs-primary);
+        box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+    }
+
+    .filter-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    /* Table */
+    .transactions-table {
+        width: 100%;
+        margin-bottom: 0;
+    }
+
+    .transactions-table th {
+        background-color: var(--bs-gray-100);
+        color: var(--bs-gray-700);
+        font-weight: 600;
+        padding: 0.75rem 1.25rem;
+        border-bottom: 1px solid var(--bs-gray-200);
+        white-space: nowrap;
+    }
+
+    .transactions-table td {
+        padding: 1rem 1.25rem;
+        vertical-align: middle;
+        border-bottom: 1px solid var(--bs-gray-200);
+    }
+
+    .transactions-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .transactions-table tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .transactions-table tbody tr:hover {
+        background-color: var(--bs-gray-100);
+    }
+
+    /* Status Badge */
+    .status-badge {
+        padding: 0.35rem 0.65rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .status-badge.borrowed {
+        background-color: rgba(246, 194, 62, 0.2);
+        color: #dda20a;
+    }
+
+    .status-badge.returned {
+        background-color: rgba(28, 200, 138, 0.2);
+        color: #13855c;
+    }
+
+    .status-badge.overdue {
+        background-color: rgba(231, 74, 59, 0.2);
+        color: #be2617;
+    }
+
+    .status-badge.reserved {
+        background-color: rgba(54, 185, 204, 0.2);
+        color: #258391;
+    }
+
+    .status-badge.pending {
+        background-color: rgba(78, 115, 223, 0.2);
+        color: #224abe;
+    }
+
+    .status-badge.cancelled {
+        background-color: rgba(108, 117, 125, 0.2);
+        color: #5a5c69;
+    }
+
+    /* Book Cover */
+    .book-cover {
+        width: 40px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Action Buttons */
+    .action-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--bs-gray-600);
+        background-color: var(--bs-gray-100);
+        border: 1px solid var(--bs-gray-200);
+        transition: all 0.2s ease;
+        margin-right: 0.25rem;
+    }
+
+    .action-btn:hover {
+        background-color: var(--bs-gray-200);
+        color: var(--bs-gray-700);
+    }
+
+    .action-btn.view {
+        color: var(--bs-primary);
+        background-color: rgba(var(--bs-primary-rgb), 0.1);
+        border-color: rgba(var(--bs-primary-rgb), 0.2);
+    }
+
+    .action-btn.view:hover {
+        background-color: rgba(var(--bs-primary-rgb), 0.2);
+    }
+
+    .action-btn.return {
+        color: var(--bs-success);
+        background-color: rgba(var(--bs-success-rgb), 0.1);
+        border-color: rgba(var(--bs-success-rgb), 0.2);
+    }
+
+    .action-btn.return:hover {
+        background-color: rgba(var(--bs-success-rgb), 0.2);
+    }
+
+    /* Pagination */
+    .transactions-pagination {
+        padding: 1rem 1.25rem;
+        border-top: 1px solid var(--bs-gray-200);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .page-info {
+        font-size: 0.875rem;
+        color: var(--bs-gray-600);
+    }
+
+    .pagination {
+        margin-bottom: 0;
+    }
+
+    .page-link {
+        border-radius: 8px;
+        margin: 0 0.125rem;
+        color: var(--bs-gray-700);
+        border-color: var(--bs-gray-200);
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    .page-link:hover {
+        background-color: var(--bs-gray-200);
+        border-color: var(--bs-gray-300);
+        color: var(--bs-gray-800);
+    }
+
+    .page-item.active .page-link {
+        background-color: var(--bs-primary);
+        border-color: var(--bs-primary);
+    }
+
+    /* Quick Action Buttons */
+    .quick-actions {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .quick-action-btn {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        border-radius: 12px;
+        background-color: var(--bs-white);
+        border: 1px solid var(--bs-gray-200);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: var(--bs-gray-700);
+        font-weight: 500;
+    }
+
+    .quick-action-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        border-color: var(--bs-primary);
+        color: var(--bs-primary);
+    }
+
+    .quick-action-btn i {
+        font-size: 1.25rem;
+        margin-right: 0.75rem;
+    }
+
+    /* Stats Cards */
+    .stats-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .stats-card {
+        flex: 1;
+        min-width: 200px;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        background-color: var(--bs-white);
+        border: 1px solid var(--bs-gray-200);
+        transition: all 0.3s ease;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .stats-card-body {
+        padding: 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .stats-card-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+    }
+
+    .stats-card-content {
+        flex: 1;
+        padding-left: 1rem;
+    }
+
+    .stats-card-title {
+        font-size: 0.875rem;
+        color: var(--bs-gray-600);
+        margin-bottom: 0.25rem;
+    }
+
+    .stats-card-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--bs-gray-800);
+        line-height: 1;
+    }
+
+    .bg-total {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    }
+
+    .bg-borrows {
+        background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);
+    }
+
+    .bg-returns {
+        background: linear-gradient(135deg, #36b9cc 0%, #258391 100%);
+    }
+
+    .bg-overdue {
+        background: linear-gradient(135deg, #e74a3b 0%, #be2617 100%);
+    }
+
+    /* Animation */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.5s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Dark Mode Adjustments */
+    [data-bs-theme="dark"] .transactions-card,
+    [data-bs-theme="dark"] .stats-card,
+    [data-bs-theme="dark"] .quick-action-btn {
+        background-color: var(--bs-gray-800);
+        border-color: var(--bs-gray-700);
+    }
+
+    [data-bs-theme="dark"] .transactions-card-header,
+    [data-bs-theme="dark"] .transactions-filters {
+        background-color: var(--bs-gray-700);
+        border-color: var(--bs-gray-600);
+    }
+
+    [data-bs-theme="dark"] .transactions-card-title,
+    [data-bs-theme="dark"] .filter-label,
+    [data-bs-theme="dark"] .stats-card-title {
+        color: var(--bs-gray-200);
+    }
+
+    [data-bs-theme="dark"] .stats-card-value {
+        color: var(--bs-white);
+    }
+
+    [data-bs-theme="dark"] .filter-select,
+    [data-bs-theme="dark"] .filter-input {
+        background-color: var(--bs-gray-700);
+        border-color: var(--bs-gray-600);
+        color: var(--bs-gray-200);
+    }
+
+    [data-bs-theme="dark"] .transactions-table th {
+        background-color: var(--bs-gray-700);
+        color: var(--bs-gray-200);
+        border-color: var(--bs-gray-600);
+    }
+
+    [data-bs-theme="dark"] .transactions-table td {
+        border-color: var(--bs-gray-700);
+        color: var(--bs-gray-300);
+    }
+
+    [data-bs-theme="dark"] .transactions-table tbody tr:hover {
+        background-color: var(--bs-gray-700);
+    }
+
+    [data-bs-theme="dark"] .action-btn {
+        background-color: var(--bs-gray-700);
+        border-color: var(--bs-gray-600);
+        color: var(--bs-gray-400);
+    }
+
+    [data-bs-theme="dark"] .action-btn:hover {
+        background-color: var(--bs-gray-600);
+        color: var(--bs-gray-300);
+    }
+
+    [data-bs-theme="dark"] .transactions-pagination {
+        border-color: var(--bs-gray-600);
+    }
+
+    [data-bs-theme="dark"] .page-info {
+        color: var(--bs-gray-400);
+    }
+
+    [data-bs-theme="dark"] .page-link {
+        background-color: var(--bs-gray-700);
+        border-color: var(--bs-gray-600);
+        color: var(--bs-gray-300);
+    }
+
+    [data-bs-theme="dark"] .page-link:hover {
+        background-color: var(--bs-gray-600);
+        border-color: var(--bs-gray-500);
+        color: var(--bs-gray-200);
+    }
+
+    [data-bs-theme="dark"] .quick-action-btn {
+        background-color: var(--bs-gray-800);
+        border-color: var(--bs-gray-700);
+        color: var(--bs-gray-300);
+    }
+
+    [data-bs-theme="dark"] .quick-action-btn:hover {
+        border-color: var(--bs-primary);
+        color: var(--bs-primary);
+    }
+</style>
+{% endblock %}
+
+{% block page_actions %}
+<div class="quick-actions">
+    <a href="{% url 'library_admin:issue_book' %}" class="quick-action-btn">
+        <i class="fas fa-book"></i> Issue Book
+    </a>
+    <a href="{% url 'library_admin:return_book' %}" class="quick-action-btn">
+        <i class="fas fa-undo"></i> Return Book
+    </a>
+    <a href="{% url 'library_admin:circulation' %}" class="quick-action-btn">
+        <i class="fas fa-chart-line"></i> Circulation Dashboard
+    </a>
+</div>
+{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -209,24 +695,24 @@
                                             <a href="{% url 'transactions:transaction_detail' transaction_id=transaction.transaction_id %}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="View">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            
+
                                             {% if transaction.transaction_type == 'BORROW' and transaction.status == 'COMPLETED' and not transaction.return_date %}
                                                 <a href="{% url 'transactions:return_book' %}?transaction_id={{ transaction.transaction_id }}" class="btn btn-sm btn-success" data-bs-toggle="tooltip" title="Return">
                                                     <i class="fas fa-undo"></i>
                                                 </a>
                                             {% endif %}
-                                            
+
                                             {% if transaction.is_overdue and transaction.fine_amount > 0 and not transaction.fine_paid %}
                                                 <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#fineModal{{ transaction.id }}" title="Pay Fine">
                                                     <i class="fas fa-money-bill"></i>
                                                 </button>
                                             {% endif %}
-                                            
+
                                             <a href="#" class="btn btn-sm btn-danger delete-confirm" data-bs-toggle="tooltip" title="Delete">
                                                 <i class="fas fa-trash"></i>
                                             </a>
                                         </div>
-                                        
+
                                         <!-- Fine Payment Modal -->
                                         {% if transaction.is_overdue and transaction.fine_amount > 0 and not transaction.fine_paid %}
                                             <div class="modal fade" id="fineModal{{ transaction.id }}" tabindex="-1" aria-labelledby="fineModalLabel{{ transaction.id }}" aria-hidden="true">
@@ -242,7 +728,7 @@
                                                             <p>Due Date: <strong>{{ transaction.due_date|date:"M d, Y" }}</strong></p>
                                                             <p>Days Overdue: <strong>{{ transaction.due_date|timeuntil }}</strong></p>
                                                             <p>Fine Amount: <strong>${{ transaction.fine_amount }}</strong></p>
-                                                            
+
                                                             <form method="post" action="{% url 'transactions:transaction_detail' transaction_id=transaction.transaction_id %}">
                                                                 {% csrf_token %}
                                                                 <input type="hidden" name="action" value="pay_fine">
@@ -281,7 +767,7 @@
                         </tbody>
                     </table>
                 </div>
-                
+
                 <!-- Bulk Actions -->
                 <div class="mt-3">
                     <form id="bulk-action-form" method="post" action="{% url 'core:admin_transactions' %}">
@@ -298,7 +784,7 @@
                         </div>
                     </form>
                 </div>
-                
+
                 <!-- Pagination -->
                 {% if transactions.paginator.num_pages > 1 %}
                     <nav aria-label="Page navigation" class="mt-4">
@@ -326,7 +812,7 @@
                                     </a>
                                 </li>
                             {% endif %}
-                            
+
                             {% for i in transactions.paginator.page_range %}
                                 {% if transactions.number == i %}
                                     <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
@@ -334,7 +820,7 @@
                                     <li class="page-item"><a class="page-link" href="?page={{ i }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if transaction_type %}&type={{ transaction_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if request.GET.library %}&library={{ request.GET.library }}{% endif %}{% if request.GET.date %}&date={{ request.GET.date }}{% endif %}">{{ i }}</a></li>
                                 {% endif %}
                             {% endfor %}
-                            
+
                             {% if transactions.has_next %}
                                 <li class="page-item">
                                     <a class="page-link" href="?page={{ transactions.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if transaction_type %}&type={{ transaction_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if request.GET.library %}&library={{ request.GET.library }}{% endif %}{% if request.GET.date %}&date={{ request.GET.date }}{% endif %}" aria-label="Next">
@@ -408,7 +894,7 @@
                                                 <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#notifyModal{{ transaction.id }}">
                                                     <i class="fas fa-bell"></i> Notify
                                                 </button>
-                                                
+
                                                 <!-- Notify Modal -->
                                                 <div class="modal fade" id="notifyModal{{ transaction.id }}" tabindex="-1" aria-labelledby="notifyModalLabel{{ transaction.id }}" aria-hidden="true">
                                                     <div class="modal-dialog">
@@ -419,7 +905,7 @@
                                                             </div>
                                                             <div class="modal-body">
                                                                 <p>Send an overdue notification to <strong>{{ transaction.user.get_full_name|default:transaction.user.email }}</strong> for the book <strong>{{ transaction.book_copy.book.title }}</strong>.</p>
-                                                                
+
                                                                 <form method="post" action="{% url 'transactions:transaction_detail' transaction_id=transaction.transaction_id %}">
                                                                     {% csrf_token %}
                                                                     <input type="hidden" name="action" value="send_notification">

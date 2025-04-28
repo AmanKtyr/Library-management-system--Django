@@ -380,7 +380,7 @@
                 </div>
                 <div class="book-info-body">
                     {% for category in book.categories.all %}
-                        <a href="{% url 'books:category_detail' slug=category.slug %}" class="book-category-badge">{{ category.name }}</a>
+                        <a href="{% url 'library_admin:category_detail' slug=category.slug %}" class="book-category-badge">{{ category.name }}</a>
                     {% empty %}
                         <p class="text-muted">No categories assigned.</p>
                     {% endfor %}

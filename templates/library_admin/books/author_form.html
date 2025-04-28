@@ -1,0 +1,279 @@
+{% extends 'core/admin_base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - Library Management System{% endblock %}
+{% block breadcrumb_title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .author-form-card {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        background-color: var(--bs-white);
+        border: 1px solid var(--bs-gray-200);
+    }
+
+    .author-form-header {
+        padding: 20px;
+        border-bottom: 1px solid var(--bs-gray-200);
+        background-color: var(--bs-gray-100);
+    }
+
+    .author-form-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 0;
+        color: var(--bs-dark);
+    }
+
+    .author-form-body {
+        padding: 30px;
+    }
+
+    .author-form-footer {
+        padding: 20px;
+        border-top: 1px solid var(--bs-gray-200);
+        background-color: var(--bs-gray-100);
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 8px;
+    }
+
+    .form-text {
+        font-size: 12px;
+        color: var(--bs-gray-600);
+    }
+
+    .required-field::after {
+        content: "*";
+        color: var(--bs-danger);
+        margin-left: 4px;
+    }
+
+    .preview-image {
+        max-width: 150px;
+        max-height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--bs-primary);
+        margin-top: 10px;
+    }
+
+    .image-placeholder {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background-color: var(--bs-gray-200);
+        color: var(--bs-gray-600);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        margin-top: 10px;
+    }
+
+    /* Animation */
+    .fade-in {
+        animation: fadeIn 0.5s ease forwards;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'library_admin:authors' %}" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-arrow-left"></i> Back to Authors
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="author-form-card fade-in">
+            <div class="author-form-header">
+                <h3 class="author-form-title">
+                    {% if author %}
+                        <i class="fas fa-edit me-2"></i>Edit Author: {{ author.name }}
+                    {% else %}
+                        <i class="fas fa-plus me-2"></i>Add New Author
+                    {% endif %}
+                </h3>
+            </div>
+            <div class="author-form-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="{{ form.name.id_for_label }}" class="form-label required-field">Author Name</label>
+                                {{ form.name }}
+                                {% if form.name.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.name.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                {% if form.name.help_text %}
+                                    <div class="form-text">{{ form.name.help_text }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.date_of_birth.id_for_label }}" class="form-label">Date of Birth</label>
+                                        {{ form.date_of_birth }}
+                                        {% if form.date_of_birth.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {% for error in form.date_of_birth.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="{{ form.date_of_death.id_for_label }}" class="form-label">Date of Death</label>
+                                        {{ form.date_of_death }}
+                                        {% if form.date_of_death.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {% for error in form.date_of_death.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                        <div class="form-text">Leave blank if author is still alive</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 text-center">
+                            <div class="mb-3">
+                                <label for="{{ form.photo.id_for_label }}" class="form-label d-block">Author Photo</label>
+                                {% if author and author.photo %}
+                                    <img src="{{ author.photo.url }}" alt="{{ author.name }}" class="preview-image" id="photoPreview">
+                                {% else %}
+                                    <div class="image-placeholder" id="photoPlaceholder">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="mt-2">
+                                    {{ form.photo }}
+                                    {% if form.photo.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.photo.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    <div class="form-text">Upload a photo of the author (optional)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.biography.id_for_label }}" class="form-label">Biography</label>
+                        {{ form.biography }}
+                        {% if form.biography.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.biography.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">Provide a brief biography of the author</div>
+                    </div>
+                    
+                    <div class="author-form-footer">
+                        <a href="{% url 'library_admin:authors' %}" class="btn btn-outline-secondary me-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            {% if author %}
+                                <i class="fas fa-save me-1"></i> Update Author
+                            {% else %}
+                                <i class="fas fa-plus me-1"></i> Create Author
+                            {% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Preview uploaded image
+        const photoInput = document.getElementById('{{ form.photo.id_for_label }}');
+        const photoPreview = document.getElementById('photoPreview');
+        const photoPlaceholder = document.getElementById('photoPlaceholder');
+        
+        if (photoInput) {
+            photoInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        if (photoPreview) {
+                            photoPreview.src = e.target.result;
+                            photoPreview.style.display = 'inline-block';
+                            if (photoPlaceholder) {
+                                photoPlaceholder.style.display = 'none';
+                            }
+                        } else if (photoPlaceholder) {
+                            // Create preview image if it doesn't exist
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.alt = 'Author Preview';
+                            img.className = 'preview-image';
+                            img.id = 'photoPreview';
+                            photoPlaceholder.parentNode.insertBefore(img, photoPlaceholder);
+                            photoPlaceholder.style.display = 'none';
+                        }
+                    }
+                    
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        }
+        
+        // Add Bootstrap classes to form fields
+        const formControls = document.querySelectorAll('input, textarea, select');
+        formControls.forEach(function(element) {
+            if (element.type !== 'file' && element.type !== 'checkbox' && element.type !== 'radio') {
+                element.classList.add('form-control');
+            } else if (element.type === 'file') {
+                element.classList.add('form-control');
+            } else if (element.type === 'checkbox' || element.type === 'radio') {
+                element.classList.add('form-check-input');
+            }
+        });
+    });
+</script>
+{% endblock %}

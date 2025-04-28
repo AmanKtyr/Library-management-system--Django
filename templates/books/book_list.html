@@ -478,7 +478,7 @@
                         </div>
                         <div class="book-card-categories">
                             {% for category in book.categories.all %}
-                                <a href="{% url 'books:category_detail' slug=category.slug %}" class="book-card-category">{{ category.name }}</a>
+                                <a href="{% url 'library_admin:category_detail' slug=category.slug %}" class="book-card-category">{{ category.name }}</a>
                             {% endfor %}
                         </div>
                         <div class="book-card-isbn">ISBN: {{ book.isbn }}</div>

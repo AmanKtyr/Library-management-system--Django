@@ -1,0 +1,498 @@
+{% extends 'core/admin_base.html' %}
+{% load static %}
+
+{% block title %}{{ author.name }} - Author Details{% endblock %}
+{% block breadcrumb_title %}Author Details{% endblock %}
+{% block page_title %}Author: {{ author.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .author-detail-card {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        background-color: var(--bs-white);
+        border: 1px solid var(--bs-gray-200);
+        margin-bottom: 30px;
+    }
+
+    .author-profile {
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        border-bottom: 1px solid var(--bs-gray-200);
+    }
+
+    .author-avatar {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 20px;
+        border: 4px solid var(--bs-primary);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .author-placeholder {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background-color: var(--bs-primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 64px;
+        margin-bottom: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .author-name {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: var(--bs-dark);
+    }
+
+    .author-dates {
+        font-size: 16px;
+        color: var(--bs-gray-600);
+        margin-bottom: 15px;
+    }
+
+    .author-stats {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin-top: 15px;
+    }
+
+    .author-stat {
+        text-align: center;
+    }
+
+    .author-stat-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--bs-primary);
+        margin-bottom: 5px;
+    }
+
+    .author-stat-label {
+        font-size: 14px;
+        color: var(--bs-gray-600);
+    }
+
+    .author-actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .author-action-btn {
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .author-action-btn.btn-primary {
+        background-color: var(--bs-primary);
+        color: white;
+    }
+
+    .author-action-btn.btn-primary:hover {
+        background-color: var(--bs-primary-dark);
+    }
+
+    .author-action-btn.btn-outline {
+        border: 1px solid var(--bs-primary);
+        color: var(--bs-primary);
+        background-color: transparent;
+    }
+
+    .author-action-btn.btn-outline:hover {
+        background-color: var(--bs-primary-bg-subtle);
+    }
+
+    .author-action-btn i {
+        margin-right: 5px;
+    }
+
+    .author-info-section {
+        padding: 30px;
+    }
+
+    .author-info-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: var(--bs-dark);
+        display: flex;
+        align-items: center;
+    }
+
+    .author-info-title i {
+        margin-right: 10px;
+        color: var(--bs-primary);
+    }
+
+    .author-biography {
+        font-size: 16px;
+        line-height: 1.6;
+        color: var(--bs-gray-700);
+        white-space: pre-line;
+    }
+
+    .book-card {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        background-color: var(--bs-white);
+        border: 1px solid var(--bs-gray-200);
+    }
+
+    .book-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        border-color: var(--bs-primary);
+    }
+
+    .book-cover {
+        height: 200px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .book-cover img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .book-card:hover .book-cover img {
+        transform: scale(1.05);
+    }
+
+    .book-info {
+        padding: 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .book-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: var(--bs-dark);
+    }
+
+    .book-meta {
+        font-size: 14px;
+        color: var(--bs-gray-600);
+        margin-bottom: 10px;
+    }
+
+    .book-meta i {
+        margin-right: 5px;
+    }
+
+    .book-description {
+        font-size: 14px;
+        color: var(--bs-gray-700);
+        margin-bottom: 15px;
+        flex: 1;
+    }
+
+    .book-footer {
+        padding: 15px 20px;
+        border-top: 1px solid var(--bs-gray-200);
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .book-status {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .book-status.available {
+        background-color: var(--bs-success-bg-subtle);
+        color: var(--bs-success);
+    }
+
+    .book-status.borrowed {
+        background-color: var(--bs-warning-bg-subtle);
+        color: var(--bs-warning);
+    }
+
+    .book-action-btn {
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .book-action-btn.btn-primary {
+        background-color: var(--bs-primary);
+        color: white;
+    }
+
+    .book-action-btn.btn-primary:hover {
+        background-color: var(--bs-primary-dark);
+    }
+
+    .book-action-btn i {
+        margin-right: 5px;
+    }
+
+    /* Empty State */
+    .books-empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        background-color: var(--bs-white);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .books-empty-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background-color: var(--bs-gray-200);
+        color: var(--bs-gray-600);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        margin: 0 auto 15px;
+    }
+
+    .books-empty-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: var(--bs-dark);
+    }
+
+    .books-empty-text {
+        font-size: 14px;
+        color: var(--bs-gray-600);
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    /* Animation */
+    .fade-in {
+        animation: fadeIn 0.5s ease forwards;
+    }
+
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.5s ease forwards;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .author-profile {
+            padding: 20px;
+        }
+
+        .author-avatar, .author-placeholder {
+            width: 120px;
+            height: 120px;
+            font-size: 48px;
+        }
+
+        .author-name {
+            font-size: 24px;
+        }
+
+        .author-stats {
+            flex-direction: column;
+            gap: 15px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'library_admin:authors' %}" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-arrow-left"></i> Back to Authors
+</a>
+<a href="{% url 'library_admin:edit_author' slug=author.slug %}" class="admin-pro-btn admin-pro-btn-primary">
+    <i class="fas fa-edit"></i> Edit Author
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-4">
+        <!-- Author Profile Card -->
+        <div class="author-detail-card fade-in">
+            <div class="author-profile">
+                {% if author.photo %}
+                    <img src="{{ author.photo.url }}" alt="{{ author.name }}" class="author-avatar">
+                {% else %}
+                    <div class="author-placeholder">
+                        <i class="fas fa-user"></i>
+                    </div>
+                {% endif %}
+                <h1 class="author-name">{{ author.name }}</h1>
+                <div class="author-dates">
+                    {% if author.date_of_birth and author.date_of_death %}
+                        <i class="fas fa-calendar-alt me-1"></i> {{ author.date_of_birth|date:"Y" }} - {{ author.date_of_death|date:"Y" }}
+                    {% elif author.date_of_birth %}
+                        <i class="fas fa-birthday-cake me-1"></i> Born: {{ author.date_of_birth|date:"F j, Y" }}
+                    {% endif %}
+                </div>
+                <div class="author-stats">
+                    <div class="author-stat">
+                        <div class="author-stat-value">{{ books.count }}</div>
+                        <div class="author-stat-label">Books in Library</div>
+                    </div>
+                </div>
+                <div class="author-actions">
+                    <a href="{% url 'library_admin:edit_author' slug=author.slug %}" class="author-action-btn btn-primary">
+                        <i class="fas fa-edit"></i> Edit Author
+                    </a>
+                    <a href="{% url 'books:author_detail' slug=author.slug %}" class="author-action-btn btn-outline">
+                        <i class="fas fa-eye"></i> Public View
+                    </a>
+                </div>
+            </div>
+            <div class="author-info-section">
+                <h2 class="author-info-title">
+                    <i class="fas fa-info-circle"></i> Author Information
+                </h2>
+                <div class="author-biography">
+                    {% if author.biography %}
+                        {{ author.biography|linebreaks }}
+                    {% else %}
+                        <p class="text-muted">No biography available for this author.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-8">
+        <!-- Author's Books -->
+        <div class="author-detail-card fade-in">
+            <div class="author-info-section">
+                <h2 class="author-info-title">
+                    <i class="fas fa-book"></i> Books by {{ author.name }}
+                </h2>
+                
+                {% if books %}
+                    <div class="row">
+                        {% for book in books %}
+                            <div class="col-md-6 mb-4 fade-in-up" style="animation-delay: {{ forloop.counter0 }}00ms;">
+                                <div class="book-card">
+                                    <div class="book-cover">
+                                        {% if book.cover_image %}
+                                            <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
+                                        {% else %}
+                                            <img src="https://placehold.co/400x200?text=No+Cover" alt="No Cover">
+                                        {% endif %}
+                                    </div>
+                                    <div class="book-info">
+                                        <h3 class="book-title">{{ book.title }}</h3>
+                                        <div class="book-meta">
+                                            <span><i class="fas fa-barcode"></i> ISBN: {{ book.isbn }}</span>
+                                        </div>
+                                        <div class="book-description">
+                                            {% if book.summary %}
+                                                {{ book.summary|truncatechars:120 }}
+                                            {% else %}
+                                                <span class="text-muted">No summary available.</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="book-footer">
+                                        <div>
+                                            {% with available_count=book.copies.filter.count %}
+                                                {% if available_count > 0 %}
+                                                    <span class="book-status available">
+                                                        <i class="fas fa-check-circle"></i> {{ available_count }} Available
+                                                    </span>
+                                                {% else %}
+                                                    <span class="book-status borrowed">
+                                                        <i class="fas fa-clock"></i> Not Available
+                                                    </span>
+                                                {% endif %}
+                                            {% endwith %}
+                                        </div>
+                                        <a href="{% url 'books:book_detail' slug=book.slug %}" class="book-action-btn btn-primary">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="books-empty-state">
+                        <div class="books-empty-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <h3 class="books-empty-title">No Books Found</h3>
+                        <p class="books-empty-text">
+                            This author doesn't have any books in your library yet.
+                        </p>
+                        <a href="{% url 'books:add_book' %}" class="btn btn-primary mt-3">
+                            <i class="fas fa-plus"></i> Add a Book
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate elements on page load
+        const fadeElements = document.querySelectorAll('.fade-in-up');
+        fadeElements.forEach((element, index) => {
+            setTimeout(() => {
+                element.style.opacity = '1';
+                element.style.transform = 'translateY(0)';
+            }, 100 * index);
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,560 @@
+{% extends 'core/admin_base.html' %}
+{% load static %}
+
+{% block title %}Return Book - Library Management System{% endblock %}
+{% block breadcrumb_title %}Return Book{% endblock %}
+{% block page_title %}Return Book{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Modern Form Styles */
+    .return-book-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .return-form-card {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        background-color: var(--bs-white);
+        border: 1px solid var(--bs-gray-200);
+        margin-bottom: 2rem;
+    }
+    
+    .return-form-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--bs-gray-200);
+        background-color: var(--bs-gray-100);
+    }
+    
+    .return-form-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0;
+        color: var(--bs-gray-700);
+    }
+    
+    .return-form-body {
+        padding: 2rem;
+    }
+    
+    .return-form-footer {
+        padding: 1.5rem;
+        border-top: 1px solid var(--bs-gray-200);
+        background-color: var(--bs-gray-100);
+        display: flex;
+        justify-content: flex-end;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: var(--bs-gray-700);
+    }
+    
+    .form-control {
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--bs-gray-300);
+        transition: all 0.2s ease;
+    }
+    
+    .form-control:focus {
+        border-color: var(--bs-primary);
+        box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+    }
+    
+    .form-select {
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--bs-gray-300);
+        transition: all 0.2s ease;
+        background-position: right 1rem center;
+    }
+    
+    .form-select:focus {
+        border-color: var(--bs-primary);
+        box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+    }
+    
+    .form-text {
+        font-size: 0.875rem;
+        color: var(--bs-gray-600);
+        margin-top: 0.25rem;
+    }
+    
+    .required-field::after {
+        content: "*";
+        color: var(--bs-danger);
+        margin-left: 4px;
+    }
+    
+    /* Transaction Preview Card */
+    .transaction-preview-card {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        background-color: var(--bs-white);
+        border: 1px solid var(--bs-gray-200);
+        margin-bottom: 1.5rem;
+        display: none;
+    }
+    
+    .transaction-preview-header {
+        padding: 1.25rem;
+        border-bottom: 1px solid var(--bs-gray-200);
+        background-color: var(--bs-gray-100);
+    }
+    
+    .transaction-preview-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0;
+        color: var(--bs-gray-700);
+    }
+    
+    .transaction-preview-body {
+        padding: 1.5rem;
+    }
+    
+    .transaction-preview-row {
+        display: flex;
+        margin-bottom: 1rem;
+    }
+    
+    .transaction-preview-cover {
+        width: 100px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .transaction-preview-details {
+        flex: 1;
+        padding-left: 1.5rem;
+    }
+    
+    .transaction-preview-book-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--bs-gray-700);
+    }
+    
+    .transaction-preview-info {
+        margin-bottom: 0.5rem;
+    }
+    
+    .transaction-preview-label {
+        font-weight: 600;
+        color: var(--bs-gray-700);
+        margin-right: 0.5rem;
+    }
+    
+    .transaction-preview-value {
+        color: var(--bs-gray-600);
+    }
+    
+    .transaction-preview-status {
+        display: inline-block;
+        padding: 0.35rem 0.65rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .transaction-preview-status.borrowed {
+        background-color: rgba(246, 194, 62, 0.2);
+        color: #dda20a;
+    }
+    
+    .transaction-preview-status.overdue {
+        background-color: rgba(231, 74, 59, 0.2);
+        color: #be2617;
+    }
+    
+    /* Fine Calculator */
+    .fine-calculator {
+        background-color: var(--bs-gray-100);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-top: 1rem;
+        border: 1px dashed var(--bs-gray-300);
+    }
+    
+    .fine-calculator-title {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        color: var(--bs-gray-700);
+    }
+    
+    .fine-amount {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--bs-danger);
+    }
+    
+    /* Condition Rating */
+    .condition-rating {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+    
+    .condition-option {
+        flex: 1;
+        text-align: center;
+    }
+    
+    .condition-radio {
+        display: none;
+    }
+    
+    .condition-label {
+        display: block;
+        padding: 0.75rem;
+        border-radius: 8px;
+        border: 1px solid var(--bs-gray-300);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .condition-label:hover {
+        background-color: var(--bs-gray-100);
+    }
+    
+    .condition-radio:checked + .condition-label {
+        background-color: var(--bs-primary);
+        color: white;
+        border-color: var(--bs-primary);
+    }
+    
+    /* Animation */
+    .fade-in {
+        animation: fadeIn 0.5s ease forwards;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    
+    /* Dark Mode Adjustments */
+    [data-bs-theme="dark"] .return-form-card,
+    [data-bs-theme="dark"] .transaction-preview-card {
+        background-color: var(--bs-gray-800);
+        border-color: var(--bs-gray-700);
+    }
+    
+    [data-bs-theme="dark"] .return-form-header,
+    [data-bs-theme="dark"] .return-form-footer,
+    [data-bs-theme="dark"] .transaction-preview-header {
+        background-color: var(--bs-gray-700);
+        border-color: var(--bs-gray-600);
+    }
+    
+    [data-bs-theme="dark"] .return-form-title,
+    [data-bs-theme="dark"] .transaction-preview-title,
+    [data-bs-theme="dark"] .form-label,
+    [data-bs-theme="dark"] .transaction-preview-book-title,
+    [data-bs-theme="dark"] .transaction-preview-label,
+    [data-bs-theme="dark"] .fine-calculator-title {
+        color: var(--bs-gray-200);
+    }
+    
+    [data-bs-theme="dark"] .form-control,
+    [data-bs-theme="dark"] .form-select {
+        background-color: var(--bs-gray-700);
+        border-color: var(--bs-gray-600);
+        color: var(--bs-gray-200);
+    }
+    
+    [data-bs-theme="dark"] .form-text,
+    [data-bs-theme="dark"] .transaction-preview-value {
+        color: var(--bs-gray-400);
+    }
+    
+    [data-bs-theme="dark"] .fine-calculator {
+        background-color: var(--bs-gray-700);
+        border-color: var(--bs-gray-600);
+    }
+    
+    [data-bs-theme="dark"] .condition-label {
+        border-color: var(--bs-gray-600);
+        color: var(--bs-gray-300);
+    }
+    
+    [data-bs-theme="dark"] .condition-label:hover {
+        background-color: var(--bs-gray-700);
+    }
+</style>
+{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'library_admin:circulation' %}" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-arrow-left"></i> Back to Circulation
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="return-book-container">
+    <div class="return-form-card fade-in">
+        <div class="return-form-header">
+            <h5 class="return-form-title">
+                <i class="fas fa-undo me-2"></i> Return Book
+            </h5>
+        </div>
+        <div class="return-form-body">
+            <form method="post" id="returnBookForm">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="transaction" class="form-label required-field">Select Borrowed Book</label>
+                    <select class="form-select" id="transaction" name="transaction" required>
+                        <option value="">-- Select Borrowed Book --</option>
+                        {% for transaction in borrowed_transactions %}
+                        <option value="{{ transaction.transaction_id }}" 
+                                data-book-title="{{ transaction.book_copy.book.title }}"
+                                data-book-author="{% for author in transaction.book_copy.book.authors.all %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}"
+                                data-inventory-number="{{ transaction.book_copy.inventory_number }}"
+                                data-member-name="{{ transaction.user.first_name }} {{ transaction.user.last_name }}"
+                                data-member-email="{{ transaction.user.email }}"
+                                data-borrow-date="{{ transaction.transaction_date|date:'M d, Y' }}"
+                                data-due-date="{{ transaction.due_date|date:'M d, Y' }}"
+                                data-is-overdue="{% if transaction.is_overdue %}true{% else %}false{% endif %}"
+                                data-days-overdue="{% if transaction.is_overdue %}{{ transaction.due_date|timesince }}{% else %}0{% endif %}">
+                            {{ transaction.book_copy.book.title }} ({{ transaction.book_copy.inventory_number }}) - {{ transaction.user.email }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <div class="form-text">Select a book that is currently borrowed</div>
+                </div>
+                
+                <!-- Transaction Preview -->
+                <div class="transaction-preview-card" id="transactionPreview">
+                    <div class="transaction-preview-header">
+                        <h5 class="transaction-preview-title">Transaction Details</h5>
+                    </div>
+                    <div class="transaction-preview-body">
+                        <div class="transaction-preview-row">
+                            <img src="{% static 'images/default-book-cover.png' %}" alt="Book Cover" class="transaction-preview-cover" id="bookCover">
+                            <div class="transaction-preview-details">
+                                <h5 class="transaction-preview-book-title" id="bookTitle">Book Title</h5>
+                                
+                                <div class="transaction-preview-info">
+                                    <span class="transaction-preview-label">Author:</span>
+                                    <span class="transaction-preview-value" id="bookAuthor">Author Name</span>
+                                </div>
+                                
+                                <div class="transaction-preview-info">
+                                    <span class="transaction-preview-label">Inventory Number:</span>
+                                    <span class="transaction-preview-value" id="inventoryNumber">INV-12345</span>
+                                </div>
+                                
+                                <div class="transaction-preview-info">
+                                    <span class="transaction-preview-label">Borrowed By:</span>
+                                    <span class="transaction-preview-value" id="memberName">Member Name</span>
+                                </div>
+                                
+                                <div class="transaction-preview-info">
+                                    <span class="transaction-preview-label">Member Email:</span>
+                                    <span class="transaction-preview-value" id="memberEmail">member@example.com</span>
+                                </div>
+                                
+                                <div class="transaction-preview-info">
+                                    <span class="transaction-preview-label">Borrow Date:</span>
+                                    <span class="transaction-preview-value" id="borrowDate">Jan 1, 2023</span>
+                                </div>
+                                
+                                <div class="transaction-preview-info">
+                                    <span class="transaction-preview-label">Due Date:</span>
+                                    <span class="transaction-preview-value" id="dueDate">Jan 15, 2023</span>
+                                </div>
+                                
+                                <div class="transaction-preview-info">
+                                    <span class="transaction-preview-label">Status:</span>
+                                    <span class="transaction-preview-status" id="status">Borrowed</span>
+                                </div>
+                                
+                                <!-- Fine Calculator (shows only if overdue) -->
+                                <div class="fine-calculator" id="fineCalculator" style="display: none;">
+                                    <h6 class="fine-calculator-title">Late Return Fine</h6>
+                                    <div class="transaction-preview-info">
+                                        <span class="transaction-preview-label">Days Overdue:</span>
+                                        <span class="transaction-preview-value" id="daysOverdue">5 days</span>
+                                    </div>
+                                    <div class="transaction-preview-info">
+                                        <span class="transaction-preview-label">Fine Amount:</span>
+                                        <span class="fine-amount" id="fineAmount">$5.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Book Condition -->
+                <div class="form-group">
+                    <label class="form-label required-field">Book Condition on Return</label>
+                    <div class="condition-rating">
+                        <div class="condition-option">
+                            <input type="radio" class="condition-radio" name="condition" id="conditionExcellent" value="EXCELLENT" required>
+                            <label class="condition-label" for="conditionExcellent">Excellent</label>
+                        </div>
+                        <div class="condition-option">
+                            <input type="radio" class="condition-radio" name="condition" id="conditionGood" value="GOOD" checked>
+                            <label class="condition-label" for="conditionGood">Good</label>
+                        </div>
+                        <div class="condition-option">
+                            <input type="radio" class="condition-radio" name="condition" id="conditionFair" value="FAIR">
+                            <label class="condition-label" for="conditionFair">Fair</label>
+                        </div>
+                        <div class="condition-option">
+                            <input type="radio" class="condition-radio" name="condition" id="conditionPoor" value="POOR">
+                            <label class="condition-label" for="conditionPoor">Poor</label>
+                        </div>
+                        <div class="condition-option">
+                            <input type="radio" class="condition-radio" name="condition" id="conditionDamaged" value="DAMAGED">
+                            <label class="condition-label" for="conditionDamaged">Damaged</label>
+                        </div>
+                    </div>
+                    <div class="form-text">Select the current condition of the book</div>
+                </div>
+                
+                <!-- Fine Payment (shows only if overdue) -->
+                <div class="form-group" id="finePaymentGroup" style="display: none;">
+                    <label for="fine_amount" class="form-label">Fine Amount</label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input type="number" class="form-control" id="fine_amount" name="fine_amount" step="0.01" min="0" value="0.00">
+                    </div>
+                    <div class="form-text">Enter the fine amount to be paid</div>
+                    
+                    <div class="form-check mt-2">
+                        <input class="form-check-input" type="checkbox" id="fine_paid" name="fine_paid">
+                        <label class="form-check-label" for="fine_paid">
+                            Fine has been paid
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Notes -->
+                <div class="form-group">
+                    <label for="notes" class="form-label">Notes</label>
+                    <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                    <div class="form-text">Add any additional notes about this return</div>
+                </div>
+                
+                <div class="return-form-footer">
+                    <button type="button" class="btn btn-outline-secondary me-2" onclick="window.location.href='{% url 'library_admin:circulation' %}'">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-undo me-1"></i> Return Book
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Transaction selection change event
+        const transactionSelect = document.getElementById('transaction');
+        const transactionPreview = document.getElementById('transactionPreview');
+        const fineCalculator = document.getElementById('fineCalculator');
+        const finePaymentGroup = document.getElementById('finePaymentGroup');
+        
+        transactionSelect.addEventListener('change', function() {
+            if (this.value) {
+                // Show transaction preview
+                transactionPreview.style.display = 'block';
+                
+                // Get selected option data attributes
+                const selectedOption = this.options[this.selectedIndex];
+                const bookTitle = selectedOption.dataset.bookTitle;
+                const bookAuthor = selectedOption.dataset.bookAuthor;
+                const inventoryNumber = selectedOption.dataset.inventoryNumber;
+                const memberName = selectedOption.dataset.memberName;
+                const memberEmail = selectedOption.dataset.memberEmail;
+                const borrowDate = selectedOption.dataset.borrowDate;
+                const dueDate = selectedOption.dataset.dueDate;
+                const isOverdue = selectedOption.dataset.isOverdue === 'true';
+                const daysOverdue = selectedOption.dataset.daysOverdue;
+                
+                // Update preview with transaction details
+                document.getElementById('bookTitle').textContent = bookTitle;
+                document.getElementById('bookAuthor').textContent = bookAuthor || 'Not available';
+                document.getElementById('inventoryNumber').textContent = inventoryNumber;
+                document.getElementById('memberName').textContent = memberName;
+                document.getElementById('memberEmail').textContent = memberEmail;
+                document.getElementById('borrowDate').textContent = borrowDate;
+                document.getElementById('dueDate').textContent = dueDate;
+                
+                // Update status
+                const statusElement = document.getElementById('status');
+                if (isOverdue) {
+                    statusElement.textContent = 'Overdue';
+                    statusElement.className = 'transaction-preview-status overdue';
+                    
+                    // Show fine calculator
+                    fineCalculator.style.display = 'block';
+                    finePaymentGroup.style.display = 'block';
+                    
+                    // Update fine details
+                    document.getElementById('daysOverdue').textContent = daysOverdue;
+                    
+                    // Calculate fine (assuming $1 per day)
+                    const daysCount = parseInt(daysOverdue) || 1;
+                    const fineAmount = daysCount * 1.00;
+                    document.getElementById('fineAmount').textContent = '$' + fineAmount.toFixed(2);
+                    document.getElementById('fine_amount').value = fineAmount.toFixed(2);
+                } else {
+                    statusElement.textContent = 'Borrowed';
+                    statusElement.className = 'transaction-preview-status borrowed';
+                    
+                    // Hide fine calculator
+                    fineCalculator.style.display = 'none';
+                    finePaymentGroup.style.display = 'none';
+                }
+            } else {
+                transactionPreview.style.display = 'none';
+                fineCalculator.style.display = 'none';
+                finePaymentGroup.style.display = 'none';
+            }
+        });
+        
+        // Form validation
+        const returnBookForm = document.getElementById('returnBookForm');
+        
+        returnBookForm.addEventListener('submit', function(e) {
+            const transaction = document.getElementById('transaction').value;
+            const condition = document.querySelector('input[name="condition"]:checked');
+            
+            if (!transaction || !condition) {
+                e.preventDefault();
+                alert('Please fill all required fields.');
+                return false;
+            }
+            
+            // Additional validation could be added here
+            
+            return true;
+        });
+    });
+</script>
+{% endblock %}

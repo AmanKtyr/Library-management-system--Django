@@ -1,0 +1,509 @@
+{% extends 'core/admin_base.html' %}
+{% load static %}
+
+{% block title %}Issue Book - Library Management System{% endblock %}
+{% block breadcrumb_title %}Issue Book{% endblock %}
+{% block page_title %}Issue Book{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Modern Form Styles */
+    .issue-book-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .issue-form-card {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        background-color: var(--bs-white);
+        border: 1px solid var(--bs-gray-200);
+        margin-bottom: 2rem;
+    }
+    
+    .issue-form-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--bs-gray-200);
+        background-color: var(--bs-gray-100);
+    }
+    
+    .issue-form-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0;
+        color: var(--bs-gray-700);
+    }
+    
+    .issue-form-body {
+        padding: 2rem;
+    }
+    
+    .issue-form-footer {
+        padding: 1.5rem;
+        border-top: 1px solid var(--bs-gray-200);
+        background-color: var(--bs-gray-100);
+        display: flex;
+        justify-content: flex-end;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: var(--bs-gray-700);
+    }
+    
+    .form-control {
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--bs-gray-300);
+        transition: all 0.2s ease;
+    }
+    
+    .form-control:focus {
+        border-color: var(--bs-primary);
+        box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+    }
+    
+    .form-select {
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--bs-gray-300);
+        transition: all 0.2s ease;
+        background-position: right 1rem center;
+    }
+    
+    .form-select:focus {
+        border-color: var(--bs-primary);
+        box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+    }
+    
+    .form-text {
+        font-size: 0.875rem;
+        color: var(--bs-gray-600);
+        margin-top: 0.25rem;
+    }
+    
+    .required-field::after {
+        content: "*";
+        color: var(--bs-danger);
+        margin-left: 4px;
+    }
+    
+    /* Book Preview Card */
+    .book-preview-card {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        background-color: var(--bs-white);
+        border: 1px solid var(--bs-gray-200);
+        height: 100%;
+        display: none;
+    }
+    
+    .book-preview-header {
+        padding: 1.25rem;
+        border-bottom: 1px solid var(--bs-gray-200);
+        background-color: var(--bs-gray-100);
+    }
+    
+    .book-preview-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0;
+        color: var(--bs-gray-700);
+    }
+    
+    .book-preview-body {
+        padding: 1.5rem;
+    }
+    
+    .book-preview-cover {
+        width: 120px;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1rem;
+    }
+    
+    .book-preview-info {
+        margin-bottom: 0.5rem;
+    }
+    
+    .book-preview-label {
+        font-weight: 600;
+        color: var(--bs-gray-700);
+        margin-right: 0.5rem;
+    }
+    
+    .book-preview-value {
+        color: var(--bs-gray-600);
+    }
+    
+    /* Member Preview Card */
+    .member-preview-card {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        background-color: var(--bs-white);
+        border: 1px solid var(--bs-gray-200);
+        height: 100%;
+        display: none;
+    }
+    
+    .member-preview-header {
+        padding: 1.25rem;
+        border-bottom: 1px solid var(--bs-gray-200);
+        background-color: var(--bs-gray-100);
+    }
+    
+    .member-preview-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0;
+        color: var(--bs-gray-700);
+    }
+    
+    .member-preview-body {
+        padding: 1.5rem;
+    }
+    
+    .member-preview-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1rem;
+    }
+    
+    .member-preview-info {
+        margin-bottom: 0.5rem;
+    }
+    
+    .member-preview-label {
+        font-weight: 600;
+        color: var(--bs-gray-700);
+        margin-right: 0.5rem;
+    }
+    
+    .member-preview-value {
+        color: var(--bs-gray-600);
+    }
+    
+    .member-status {
+        display: inline-block;
+        padding: 0.35rem 0.65rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .member-status.active {
+        background-color: rgba(28, 200, 138, 0.2);
+        color: #13855c;
+    }
+    
+    .member-status.inactive {
+        background-color: rgba(231, 74, 59, 0.2);
+        color: #be2617;
+    }
+    
+    /* Animation */
+    .fade-in {
+        animation: fadeIn 0.5s ease forwards;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    
+    /* Dark Mode Adjustments */
+    [data-bs-theme="dark"] .issue-form-card,
+    [data-bs-theme="dark"] .book-preview-card,
+    [data-bs-theme="dark"] .member-preview-card {
+        background-color: var(--bs-gray-800);
+        border-color: var(--bs-gray-700);
+    }
+    
+    [data-bs-theme="dark"] .issue-form-header,
+    [data-bs-theme="dark"] .issue-form-footer,
+    [data-bs-theme="dark"] .book-preview-header,
+    [data-bs-theme="dark"] .member-preview-header {
+        background-color: var(--bs-gray-700);
+        border-color: var(--bs-gray-600);
+    }
+    
+    [data-bs-theme="dark"] .issue-form-title,
+    [data-bs-theme="dark"] .book-preview-title,
+    [data-bs-theme="dark"] .member-preview-title,
+    [data-bs-theme="dark"] .form-label,
+    [data-bs-theme="dark"] .book-preview-label,
+    [data-bs-theme="dark"] .member-preview-label {
+        color: var(--bs-gray-200);
+    }
+    
+    [data-bs-theme="dark"] .form-control,
+    [data-bs-theme="dark"] .form-select {
+        background-color: var(--bs-gray-700);
+        border-color: var(--bs-gray-600);
+        color: var(--bs-gray-200);
+    }
+    
+    [data-bs-theme="dark"] .form-text,
+    [data-bs-theme="dark"] .book-preview-value,
+    [data-bs-theme="dark"] .member-preview-value {
+        color: var(--bs-gray-400);
+    }
+</style>
+{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'library_admin:circulation' %}" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-arrow-left"></i> Back to Circulation
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="issue-book-container">
+    <div class="issue-form-card fade-in">
+        <div class="issue-form-header">
+            <h5 class="issue-form-title">
+                <i class="fas fa-book me-2"></i> Issue Book to Member
+            </h5>
+        </div>
+        <div class="issue-form-body">
+            <form method="post" id="issueBookForm">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="member" class="form-label required-field">Select Member</label>
+                            <select class="form-select" id="member" name="member" required>
+                                <option value="">-- Select Member --</option>
+                                {% for member in members %}
+                                <option value="{{ member.id }}">{{ member.email }} ({{ member.first_name }} {{ member.last_name }})</option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text">Select a member with active membership</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="book_copy" class="form-label required-field">Select Book</label>
+                            <select class="form-select" id="book_copy" name="book_copy" required>
+                                <option value="">-- Select Book --</option>
+                                {% for copy in available_copies %}
+                                <option value="{{ copy.id }}">{{ copy.book.title }} ({{ copy.inventory_number }})</option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text">Select an available book copy</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="due_date" class="form-label required-field">Due Date</label>
+                            <input type="date" class="form-control" id="due_date" name="due_date" required>
+                            <div class="form-text">Select the date when the book should be returned</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="notes" class="form-label">Notes</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                            <div class="form-text">Add any additional notes about this transaction</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="member-preview-card" id="memberPreview">
+                            <div class="member-preview-header">
+                                <h5 class="member-preview-title">Member Details</h5>
+                            </div>
+                            <div class="member-preview-body">
+                                <div class="text-center mb-3">
+                                    <img src="{% static 'images/default-avatar.png' %}" alt="Member Avatar" class="member-preview-avatar" id="memberAvatar">
+                                    <h5 id="memberName" class="mt-2 mb-1">Member Name</h5>
+                                    <span class="member-status active" id="memberStatus">Active</span>
+                                </div>
+                                
+                                <div class="member-preview-info">
+                                    <span class="member-preview-label">Email:</span>
+                                    <span class="member-preview-value" id="memberEmail">member@example.com</span>
+                                </div>
+                                
+                                <div class="member-preview-info">
+                                    <span class="member-preview-label">Phone:</span>
+                                    <span class="member-preview-value" id="memberPhone">Not available</span>
+                                </div>
+                                
+                                <div class="member-preview-info">
+                                    <span class="member-preview-label">Membership:</span>
+                                    <span class="member-preview-value" id="membershipType">Standard</span>
+                                </div>
+                                
+                                <div class="member-preview-info">
+                                    <span class="member-preview-label">Books Borrowed:</span>
+                                    <span class="member-preview-value" id="booksBorrowed">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="book-preview-card" id="bookPreview">
+                            <div class="book-preview-header">
+                                <h5 class="book-preview-title">Book Details</h5>
+                            </div>
+                            <div class="book-preview-body">
+                                <div class="text-center mb-3">
+                                    <img src="{% static 'images/default-book-cover.png' %}" alt="Book Cover" class="book-preview-cover" id="bookCover">
+                                </div>
+                                
+                                <div class="book-preview-info">
+                                    <span class="book-preview-label">Title:</span>
+                                    <span class="book-preview-value" id="bookTitle">Book Title</span>
+                                </div>
+                                
+                                <div class="book-preview-info">
+                                    <span class="book-preview-label">Author:</span>
+                                    <span class="book-preview-value" id="bookAuthor">Author Name</span>
+                                </div>
+                                
+                                <div class="book-preview-info">
+                                    <span class="book-preview-label">ISBN:</span>
+                                    <span class="book-preview-value" id="bookISBN">1234567890</span>
+                                </div>
+                                
+                                <div class="book-preview-info">
+                                    <span class="book-preview-label">Inventory Number:</span>
+                                    <span class="book-preview-value" id="inventoryNumber">INV-12345</span>
+                                </div>
+                                
+                                <div class="book-preview-info">
+                                    <span class="book-preview-label">Condition:</span>
+                                    <span class="book-preview-value" id="bookCondition">Good</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="issue-form-footer">
+                    <button type="button" class="btn btn-outline-secondary me-2" onclick="window.location.href='{% url 'library_admin:circulation' %}'">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-book me-1"></i> Issue Book
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set default due date to 14 days from now
+        const dueDateInput = document.getElementById('due_date');
+        const today = new Date();
+        const twoWeeksLater = new Date(today);
+        twoWeeksLater.setDate(today.getDate() + 14);
+        
+        // Format date as YYYY-MM-DD
+        const year = twoWeeksLater.getFullYear();
+        const month = String(twoWeeksLater.getMonth() + 1).padStart(2, '0');
+        const day = String(twoWeeksLater.getDate()).padStart(2, '0');
+        dueDateInput.value = `${year}-${month}-${day}`;
+        
+        // Member selection change event
+        const memberSelect = document.getElementById('member');
+        const memberPreview = document.getElementById('memberPreview');
+        
+        memberSelect.addEventListener('change', function() {
+            if (this.value) {
+                // In a real implementation, you would fetch member details via AJAX
+                // For now, we'll just show the preview with placeholder data
+                memberPreview.style.display = 'block';
+                
+                // Simulate member data (in a real app, this would come from an API)
+                const selectedOption = this.options[this.selectedIndex];
+                const memberName = selectedOption.text.split('(')[1].replace(')', '').trim();
+                const memberEmail = selectedOption.text.split('(')[0].trim();
+                
+                document.getElementById('memberName').textContent = memberName;
+                document.getElementById('memberEmail').textContent = memberEmail;
+                document.getElementById('memberPhone').textContent = 'Not available';
+                document.getElementById('membershipType').textContent = 'Standard';
+                document.getElementById('booksBorrowed').textContent = Math.floor(Math.random() * 5);
+            } else {
+                memberPreview.style.display = 'none';
+            }
+        });
+        
+        // Book selection change event
+        const bookSelect = document.getElementById('book_copy');
+        const bookPreview = document.getElementById('bookPreview');
+        
+        bookSelect.addEventListener('change', function() {
+            if (this.value) {
+                // In a real implementation, you would fetch book details via AJAX
+                // For now, we'll just show the preview with placeholder data
+                bookPreview.style.display = 'block';
+                
+                // Simulate book data (in a real app, this would come from an API)
+                const selectedOption = this.options[this.selectedIndex];
+                const bookTitle = selectedOption.text.split('(')[0].trim();
+                const inventoryNumber = selectedOption.text.split('(')[1].replace(')', '').trim();
+                
+                document.getElementById('bookTitle').textContent = bookTitle;
+                document.getElementById('bookAuthor').textContent = 'Author information not available';
+                document.getElementById('bookISBN').textContent = 'ISBN information not available';
+                document.getElementById('inventoryNumber').textContent = inventoryNumber;
+                document.getElementById('bookCondition').textContent = 'Good';
+            } else {
+                bookPreview.style.display = 'none';
+            }
+        });
+        
+        // Form validation
+        const issueBookForm = document.getElementById('issueBookForm');
+        
+        issueBookForm.addEventListener('submit', function(e) {
+            const member = document.getElementById('member').value;
+            const bookCopy = document.getElementById('book_copy').value;
+            const dueDate = document.getElementById('due_date').value;
+            
+            if (!member || !bookCopy || !dueDate) {
+                e.preventDefault();
+                alert('Please fill all required fields.');
+                return false;
+            }
+            
+            // Additional validation could be added here
+            
+            return true;
+        });
+    });
+</script>
+{% endblock %}

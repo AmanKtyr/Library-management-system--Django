@@ -12,7 +12,7 @@ import random
 from apps.accounts.models import User
 from apps.libraries.models import Library
 from apps.books.models import Book, BookCopy, Author, Category
-from apps.books.forms import CategoryForm
+from apps.books.forms import CategoryForm, AuthorForm
 from apps.transactions.models import Transaction, Membership, MembershipPlan, MembershipRequest
 
 def is_library_admin(user):
@@ -461,6 +461,366 @@ def reject_membership_request(request):
 
     return redirect('library_admin:membership_requests')
 
+
+@login_required
+@user_passes_test(is_library_admin)
+def manage_authors(request):
+    """View function for managing authors."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    # Get all authors with book count
+    authors = Author.objects.annotate(
+        book_count=Count('books', filter=Q(books__copies__library=library), distinct=True)
+    ).order_by('name')
+
+    # Search functionality
+    search_query = request.GET.get('q', '')
+    if search_query:
+        authors = authors.filter(
+            Q(name__icontains=search_query) |
+            Q(biography__icontains=search_query)
+        )
+
+    # Pagination
+    paginator = Paginator(authors, 12)  # Show 12 authors per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'library': library,
+        'authors': page_obj,
+        'search_query': search_query,
+    }
+
+    return render(request, 'library_admin/books/author_list.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def add_author(request):
+    """View function for adding a new author."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    if request.method == 'POST':
+        form = AuthorForm(request.POST, request.FILES)
+        if form.is_valid():
+            author = form.save()
+            messages.success(request, f"Author '{author.name}' added successfully.")
+            return redirect('library_admin:authors')
+    else:
+        form = AuthorForm()
+
+    context = {
+        'library': library,
+        'form': form,
+        'title': 'Add Author',
+    }
+
+    return render(request, 'library_admin/books/author_form.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def edit_author(request, slug):
+    """View function for editing an existing author."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+    author = get_object_or_404(Author, slug=slug)
+
+    if request.method == 'POST':
+        form = AuthorForm(request.POST, request.FILES, instance=author)
+        if form.is_valid():
+            author = form.save()
+            messages.success(request, f"Author '{author.name}' updated successfully.")
+            return redirect('library_admin:authors')
+    else:
+        form = AuthorForm(instance=author)
+
+    context = {
+        'library': library,
+        'form': form,
+        'author': author,
+        'title': 'Edit Author',
+    }
+
+    return render(request, 'library_admin/books/author_form.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def author_detail(request, slug):
+    """View function for displaying details of a specific author."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    # Get the author
+    author = get_object_or_404(Author, slug=slug)
+
+    # Get books by this author that are available in the library
+    books = Book.objects.filter(
+        authors=author,
+        copies__library=library
+    ).distinct()
+
+    context = {
+        'library': library,
+        'author': author,
+        'books': books,
+    }
+
+    return render(request, 'library_admin/books/author_detail.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def circulation(request):
+    """View function for circulation dashboard."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    # Get recent transactions (last 30 days)
+    thirty_days_ago = timezone.now() - timedelta(days=30)
+    recent_transactions = Transaction.objects.filter(
+        library=library,
+        transaction_date__gte=thirty_days_ago
+    ).order_by('-transaction_date')
+
+    # Get statistics
+    total_books = BookCopy.objects.filter(library=library).count()
+    available_books = BookCopy.objects.filter(library=library, status='AVAILABLE').count()
+    borrowed_books = BookCopy.objects.filter(library=library, status='BORROWED').count()
+    reserved_books = BookCopy.objects.filter(library=library, status='RESERVED').count()
+
+    # Get overdue books
+    overdue_books = Transaction.objects.filter(
+        library=library,
+        transaction_type='BORROW',
+        status='COMPLETED',
+        due_date__lt=timezone.now(),
+        return_date__isnull=True
+    ).order_by('due_date')
+
+    # Get active members
+    active_members = Membership.objects.filter(
+        library=library,
+        is_active=True
+    ).count()
+
+    # Get daily transaction counts for the last 30 days
+    daily_transactions = []
+    for i in range(30, 0, -1):
+        date = timezone.now().date() - timedelta(days=i)
+        count = Transaction.objects.filter(
+            library=library,
+            transaction_date__date=date
+        ).count()
+        daily_transactions.append({
+            'date': date.strftime('%b %d'),
+            'count': count
+        })
+
+    # Get most borrowed books
+    most_borrowed_books = Book.objects.filter(
+        copies__library=library,
+        copies__transactions__transaction_type='BORROW'
+    ).annotate(
+        borrow_count=Count('copies__transactions',
+                          filter=Q(copies__transactions__transaction_type='BORROW'))
+    ).order_by('-borrow_count')[:5]
+
+    context = {
+        'library': library,
+        'recent_transactions': recent_transactions[:10],
+        'total_books': total_books,
+        'available_books': available_books,
+        'borrowed_books': borrowed_books,
+        'reserved_books': reserved_books,
+        'overdue_books': overdue_books[:5],
+        'active_members': active_members,
+        'daily_transactions': daily_transactions,
+        'most_borrowed_books': most_borrowed_books,
+    }
+
+    return render(request, 'library_admin/circulation/dashboard.html', context)
+
+@login_required
+@user_passes_test(is_library_admin)
+def issue_book(request):
+    """View function for issuing books to members."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    if request.method == 'POST':
+        # Get form data
+        member_id = request.POST.get('member')
+        book_copy_id = request.POST.get('book_copy')
+        due_date_str = request.POST.get('due_date')
+        notes = request.POST.get('notes')
+
+        # Validate data
+        if not all([member_id, book_copy_id, due_date_str]):
+            messages.error(request, "Please fill all required fields.")
+            return redirect('library_admin:issue_book')
+
+        try:
+            member = User.objects.get(id=member_id)
+            book_copy = BookCopy.objects.get(id=book_copy_id, library=library)
+            due_date = timezone.datetime.strptime(due_date_str, '%Y-%m-%d').date()
+
+            # Check if book is available
+            if book_copy.status != 'AVAILABLE':
+                messages.error(request, f"Book copy {book_copy.inventory_number} is not available for borrowing.")
+                return redirect('library_admin:issue_book')
+
+            # Check if member has an active membership
+            if not Membership.objects.filter(user=member, library=library, is_active=True).exists():
+                messages.error(request, f"User {member.email} does not have an active membership with this library.")
+                return redirect('library_admin:issue_book')
+
+            # Create transaction
+            transaction = Transaction.objects.create(
+                book_copy=book_copy,
+                library=library,
+                user=member,
+                transaction_type='BORROW',
+                status='COMPLETED',
+                due_date=timezone.make_aware(timezone.datetime.combine(due_date, timezone.datetime.min.time())),
+                notes=notes,
+                processed_by=user
+            )
+
+            # Update book copy status
+            book_copy.status = 'BORROWED'
+            book_copy.save()
+
+            messages.success(request, f"Book '{book_copy.book.title}' has been issued to {member.email} successfully.")
+            return redirect('library_admin:circulation')
+
+        except (User.DoesNotExist, BookCopy.DoesNotExist, ValueError) as e:
+            messages.error(request, f"Error processing request: {str(e)}")
+            return redirect('library_admin:issue_book')
+
+    # Get available book copies
+    available_copies = BookCopy.objects.filter(library=library, status='AVAILABLE')
+
+    # Get members with active memberships
+    members = User.objects.filter(
+        memberships__library=library,
+        memberships__is_active=True
+    ).distinct()
+
+    context = {
+        'library': library,
+        'available_copies': available_copies,
+        'members': members,
+    }
+
+    return render(request, 'library_admin/circulation/issue_book.html', context)
+
+@login_required
+@user_passes_test(is_library_admin)
+def return_book(request):
+    """View function for returning books."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    if request.method == 'POST':
+        # Get form data
+        transaction_id = request.POST.get('transaction')
+        condition = request.POST.get('condition')
+        fine_amount = request.POST.get('fine_amount', 0)
+        fine_paid = request.POST.get('fine_paid', False) == 'on'
+        notes = request.POST.get('notes')
+
+        # Validate data
+        if not transaction_id:
+            messages.error(request, "Please select a transaction.")
+            return redirect('library_admin:return_book')
+
+        try:
+            transaction = Transaction.objects.get(transaction_id=transaction_id)
+            book_copy = transaction.book_copy
+
+            # Update transaction
+            transaction.status = 'COMPLETED'
+            transaction.return_date = timezone.now()
+            transaction.fine_amount = fine_amount
+            transaction.fine_paid = fine_paid
+            if fine_paid:
+                transaction.fine_payment_date = timezone.now()
+            transaction.notes = notes
+            transaction.save()
+
+            # Update book copy
+            book_copy.condition = condition
+            book_copy.status = 'AVAILABLE'
+            book_copy.save()
+
+            messages.success(request, f"Book '{book_copy.book.title}' has been returned successfully.")
+            return redirect('library_admin:circulation')
+
+        except Transaction.DoesNotExist as e:
+            messages.error(request, f"Error processing request: {str(e)}")
+            return redirect('library_admin:return_book')
+
+    # Get borrowed books
+    borrowed_transactions = Transaction.objects.filter(
+        library=library,
+        transaction_type='BORROW',
+        status='COMPLETED',
+        return_date__isnull=True
+    ).select_related('book_copy', 'book_copy__book', 'user')
+
+    context = {
+        'library': library,
+        'borrowed_transactions': borrowed_transactions,
+    }
+
+    return render(request, 'library_admin/circulation/return_book.html', context)
 
 @login_required
 @user_passes_test(is_library_admin)

@@ -15,4 +15,8 @@ urlpatterns = [
     path('manage/copies/', views.manage_book_copies, name='manage_book_copies'),
     path('copies/delete/<int:pk>/', views.delete_book_copy, name='delete_book_copy'),
     path('<slug:slug>/', views.book_detail, name='book_detail'),
+
+    # API endpoints for autocomplete
+    path('api/authors/autocomplete/', views.autocomplete_authors, name='autocomplete_authors'),
+    path('api/categories/autocomplete/', views.autocomplete_categories, name='autocomplete_categories'),
 ]

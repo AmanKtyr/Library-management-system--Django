@@ -16,7 +16,7 @@
             </nav>
         </div>
     </div>
-    
+
     <!-- Book Details -->
     <div class="row mb-4">
         <div class="col-md-3">
@@ -25,7 +25,7 @@
             {% else %}
                 <img src="https://placehold.co/300x450?text=No+Cover" class="book-cover img-fluid mb-3" alt="No Cover">
             {% endif %}
-            
+
             <div class="card mb-3">
                 <div class="card-header bg-primary text-white">
                     <h5 class="mb-0">Book Details</h5>
@@ -46,30 +46,30 @@
                     {% endif %}
                 </div>
             </div>
-            
+
             <div class="card">
                 <div class="card-header bg-primary text-white">
                     <h5 class="mb-0">Categories</h5>
                 </div>
                 <div class="card-body">
                     {% for category in book.categories.all %}
-                        <a href="{% url 'books:category_detail' slug=category.slug %}" class="badge bg-secondary text-decoration-none mb-1">{{ category.name }}</a>
+                        <a href="{% url 'library_admin:category_detail' slug=category.slug %}" class="badge bg-secondary text-decoration-none mb-1">{{ category.name }}</a>
                     {% empty %}
                         <p>No categories assigned.</p>
                     {% endfor %}
                 </div>
             </div>
         </div>
-        
+
         <div class="col-md-9">
             <h1 class="mb-2">{{ book.title }}</h1>
             <h5 class="text-muted mb-3">
-                by 
+                by
                 {% for author in book.authors.all %}
                     <a href="{% url 'books:author_detail' slug=author.slug %}">{{ author.name }}</a>{% if not forloop.last %}, {% endif %}
                 {% endfor %}
             </h5>
-            
+
             <div class="card mb-4">
                 <div class="card-header bg-primary text-white">
                     <h5 class="mb-0">Summary</h5>
@@ -82,7 +82,7 @@
                     {% endif %}
                 </div>
             </div>
-            
+
             <div class="card">
                 <div class="card-header bg-primary text-white">
                     <h5 class="mb-0">Available Copies</h5>

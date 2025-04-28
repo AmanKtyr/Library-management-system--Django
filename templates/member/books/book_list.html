@@ -82,7 +82,7 @@
                         </p>
                         <p class="card-text">
                             {% for category in book.categories.all %}
-                                <a href="{% url 'books:category_detail' slug=category.slug %}" class="badge bg-secondary text-decoration-none hover-grow">{{ category.name }}</a>
+                                <a href="{% url 'library_admin:category_detail' slug=category.slug %}" class="badge bg-secondary text-decoration-none hover-grow">{{ category.name }}</a>
                             {% endfor %}
                         </p>
                         <p class="card-text"><small class="text-muted">ISBN: {{ book.isbn }}</small></p>

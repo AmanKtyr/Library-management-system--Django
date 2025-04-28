@@ -877,6 +877,21 @@
                                         <label for="{{ form.categories.id_for_label }}" class="book-form-label">
                                             <i class="fas fa-folder me-2 text-primary"></i>Categories <span class="text-danger">*</span>
                                         </label>
+
+                                        <!-- Category Input with Autocomplete -->
+                                        <div class="mb-3">
+                                            <div class="input-group">
+                                                {{ form.category_input }}
+                                                <button type="button" class="btn btn-primary" id="add-category-btn">
+                                                    <i class="fas fa-plus"></i> Add
+                                                </button>
+                                            </div>
+                                            <div class="form-text">Type a category name and press Enter or click Add</div>
+                                            <div id="category-suggestions" class="dropdown-menu w-100"></div>
+                                            <div id="selected-categories" class="mt-2"></div>
+                                            <input type="hidden" id="new-categories" name="new_categories[]" value="">
+                                        </div>
+
                                         <div class="book-form-check-group">
                                             {{ form.categories }}
                                         </div>
@@ -884,7 +899,7 @@
                                             <div class="book-form-error">{{ form.categories.errors }}</div>
                                         {% endif %}
                                         <div class="book-form-help">
-                                            <i class="fas fa-info-circle me-1"></i> Select at least one category
+                                            <i class="fas fa-info-circle me-1"></i> Select existing categories or add new ones
                                         </div>
                                     </div>
                                 </div>
@@ -893,6 +908,21 @@
                                         <label for="{{ form.authors.id_for_label }}" class="book-form-label">
                                             <i class="fas fa-user-edit me-2 text-primary"></i>Authors <span class="text-danger">*</span>
                                         </label>
+
+                                        <!-- Author Input with Autocomplete -->
+                                        <div class="mb-3">
+                                            <div class="input-group">
+                                                {{ form.author_input }}
+                                                <button type="button" class="btn btn-primary" id="add-author-btn">
+                                                    <i class="fas fa-plus"></i> Add
+                                                </button>
+                                            </div>
+                                            <div class="form-text">Type an author name and press Enter or click Add</div>
+                                            <div id="author-suggestions" class="dropdown-menu w-100"></div>
+                                            <div id="selected-authors" class="mt-2"></div>
+                                            <input type="hidden" id="new-authors" name="new_authors[]" value="">
+                                        </div>
+
                                         <div class="book-form-check-group">
                                             {{ form.authors }}
                                         </div>
@@ -900,7 +930,7 @@
                                             <div class="book-form-error">{{ form.authors.errors }}</div>
                                         {% endif %}
                                         <div class="book-form-help">
-                                            <i class="fas fa-info-circle me-1"></i> Select at least one author
+                                            <i class="fas fa-info-circle me-1"></i> Select existing authors or add new ones
                                         </div>
                                     </div>
                                 </div>
@@ -968,33 +998,212 @@
                 if (input.hasAttribute('required')) {
                     input.setAttribute('aria-required', 'true');
                 }
-
-                // Fix date inputs
-                if (input.type === 'date') {
-                    // Ensure date inputs have a placeholder
-                    if (!input.hasAttribute('placeholder')) {
-                        input.setAttribute('placeholder', 'YYYY-MM-DD');
-                    }
-                }
-
-                // Fix number inputs
-                if (input.type === 'number') {
-                    // Add step attribute if not present
-                    if (!input.hasAttribute('step')) {
-                        input.setAttribute('step', '1');
-                    }
-                }
-
-                // Fix select inputs
-                if (input.tagName.toLowerCase() === 'select') {
-                    // Ensure select inputs have proper styling
-                    input.style.backgroundImage = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'16\' height=\'16\' fill=\'%234b5563\' viewBox=\'0 0 16 16\'%3E%3Cpath d=\'M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z\'/%3E%3C/svg%3E")';
-                    input.style.backgroundRepeat = 'no-repeat';
-                    input.style.backgroundPosition = 'right 0.75rem center';
-                    input.style.backgroundSize = '16px 12px';
-                }
             });
         }
+
+        // Author autocomplete functionality
+        const authorInput = document.querySelector('[data-role="author-input"]');
+        const authorSuggestions = document.getElementById('author-suggestions');
+        const selectedAuthors = document.getElementById('selected-authors');
+        const newAuthorsInput = document.getElementById('new-authors');
+        const addAuthorBtn = document.getElementById('add-author-btn');
+
+        let newAuthors = [];
+
+        // Function to update the hidden input with new authors
+        function updateNewAuthorsInput() {
+            newAuthorsInput.value = newAuthors.join(',');
+        }
+
+        // Function to add a new author tag
+        function addAuthorTag(authorName) {
+            if (!authorName.trim() || newAuthors.includes(authorName.trim())) {
+                return;
+            }
+
+            const authorTag = document.createElement('span');
+            authorTag.className = 'badge bg-primary me-2 mb-2 p-2';
+            authorTag.innerHTML = `${authorName} <i class="fas fa-times ms-1" style="cursor: pointer;"></i>`;
+            selectedAuthors.appendChild(authorTag);
+
+            // Add to new authors array
+            newAuthors.push(authorName.trim());
+            updateNewAuthorsInput();
+
+            // Clear input
+            authorInput.value = '';
+
+            // Add remove functionality
+            const removeIcon = authorTag.querySelector('i');
+            removeIcon.addEventListener('click', function() {
+                authorTag.remove();
+                newAuthors = newAuthors.filter(a => a !== authorName.trim());
+                updateNewAuthorsInput();
+            });
+        }
+
+        // Add author when button is clicked
+        addAuthorBtn.addEventListener('click', function() {
+            addAuthorTag(authorInput.value);
+        });
+
+        // Add author when Enter is pressed
+        authorInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addAuthorTag(authorInput.value);
+            }
+        });
+
+        // Author autocomplete
+        authorInput.addEventListener('input', function() {
+            const query = this.value.trim();
+
+            if (query.length < 2) {
+                authorSuggestions.style.display = 'none';
+                return;
+            }
+
+            fetch(`{% url 'books:autocomplete_authors' %}?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    authorSuggestions.innerHTML = '';
+
+                    if (data.length === 0) {
+                        authorSuggestions.style.display = 'none';
+                        return;
+                    }
+
+                    data.forEach(author => {
+                        const item = document.createElement('a');
+                        item.className = 'dropdown-item';
+                        item.href = '#';
+                        item.textContent = author.name;
+                        item.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            authorInput.value = author.name;
+                            authorSuggestions.style.display = 'none';
+                            addAuthorTag(author.name);
+                        });
+                        authorSuggestions.appendChild(item);
+                    });
+
+                    authorSuggestions.style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error fetching author suggestions:', error);
+                    authorSuggestions.style.display = 'none';
+                });
+        });
+
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!authorInput.contains(e.target) && !authorSuggestions.contains(e.target)) {
+                authorSuggestions.style.display = 'none';
+            }
+        });
+
+        // Category autocomplete functionality
+        const categoryInput = document.querySelector('[data-role="category-input"]');
+        const categorySuggestions = document.getElementById('category-suggestions');
+        const selectedCategories = document.getElementById('selected-categories');
+        const newCategoriesInput = document.getElementById('new-categories');
+        const addCategoryBtn = document.getElementById('add-category-btn');
+
+        let newCategories = [];
+
+        // Function to update the hidden input with new categories
+        function updateNewCategoriesInput() {
+            newCategoriesInput.value = newCategories.join(',');
+        }
+
+        // Function to add a new category tag
+        function addCategoryTag(categoryName) {
+            if (!categoryName.trim() || newCategories.includes(categoryName.trim())) {
+                return;
+            }
+
+            const categoryTag = document.createElement('span');
+            categoryTag.className = 'badge bg-secondary me-2 mb-2 p-2';
+            categoryTag.innerHTML = `${categoryName} <i class="fas fa-times ms-1" style="cursor: pointer;"></i>`;
+            selectedCategories.appendChild(categoryTag);
+
+            // Add to new categories array
+            newCategories.push(categoryName.trim());
+            updateNewCategoriesInput();
+
+            // Clear input
+            categoryInput.value = '';
+
+            // Add remove functionality
+            const removeIcon = categoryTag.querySelector('i');
+            removeIcon.addEventListener('click', function() {
+                categoryTag.remove();
+                newCategories = newCategories.filter(c => c !== categoryName.trim());
+                updateNewCategoriesInput();
+            });
+        }
+
+        // Add category when button is clicked
+        addCategoryBtn.addEventListener('click', function() {
+            addCategoryTag(categoryInput.value);
+        });
+
+        // Add category when Enter is pressed
+        categoryInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addCategoryTag(categoryInput.value);
+            }
+        });
+
+        // Category autocomplete
+        categoryInput.addEventListener('input', function() {
+            const query = this.value.trim();
+
+            if (query.length < 2) {
+                categorySuggestions.style.display = 'none';
+                return;
+            }
+
+            fetch(`{% url 'books:autocomplete_categories' %}?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    categorySuggestions.innerHTML = '';
+
+                    if (data.length === 0) {
+                        categorySuggestions.style.display = 'none';
+                        return;
+                    }
+
+                    data.forEach(category => {
+                        const item = document.createElement('a');
+                        item.className = 'dropdown-item';
+                        item.href = '#';
+                        item.textContent = category.name;
+                        item.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            categoryInput.value = category.name;
+                            categorySuggestions.style.display = 'none';
+                            addCategoryTag(category.name);
+                        });
+                        categorySuggestions.appendChild(item);
+                    });
+
+                    categorySuggestions.style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error fetching category suggestions:', error);
+                    categorySuggestions.style.display = 'none';
+                });
+        });
+
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!categoryInput.contains(e.target) && !categorySuggestions.contains(e.target)) {
+                categorySuggestions.style.display = 'none';
+            }
+        });
 
         // Initialize form controls
         initializeFormControls();
