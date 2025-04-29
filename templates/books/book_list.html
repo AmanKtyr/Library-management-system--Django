@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Books - Library Management System{% endblock %}
+{% block title %}पुस्तकें (Books) - भारतीय पुस्तकालय प्रबंधन प्रणाली (Indian Library Management System){% endblock %}
 
 {% block extra_css %}
 <style>
@@ -317,6 +317,177 @@
         box-shadow: var(--shadow-sm);
     }
 
+    /* Indian-specific styles */
+    .book-indian-header {
+        position: relative;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border-radius: var(--border-radius-lg);
+        background: linear-gradient(135deg, rgba(255, 153, 51, 0.1) 0%, rgba(19, 136, 8, 0.1) 100%);
+        border-left: 4px solid #FF9933;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .book-indian-header h1 {
+        color: #000080;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .book-indian-header p {
+        color: var(--dark);
+        margin-bottom: 0;
+    }
+
+    .book-indian-flag-colors {
+        display: flex;
+        margin-top: 1rem;
+    }
+
+    .book-indian-flag-color {
+        height: 4px;
+        flex: 1;
+    }
+
+    .book-indian-flag-color-saffron {
+        background-color: #FF9933;
+    }
+
+    .book-indian-flag-color-white {
+        background-color: #FFFFFF;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .book-indian-flag-color-green {
+        background-color: #138808;
+    }
+
+    .book-indian-categories {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .book-indian-category {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 50rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 1px solid transparent;
+    }
+
+    .book-indian-category:hover {
+        transform: translateY(-2px);
+    }
+
+    .book-indian-category-hindi {
+        background-color: rgba(255, 153, 51, 0.1);
+        color: #FF9933;
+        border-color: rgba(255, 153, 51, 0.3);
+    }
+
+    .book-indian-category-hindi:hover {
+        background-color: rgba(255, 153, 51, 0.2);
+    }
+
+    .book-indian-category-bengali {
+        background-color: rgba(19, 136, 8, 0.1);
+        color: #138808;
+        border-color: rgba(19, 136, 8, 0.3);
+    }
+
+    .book-indian-category-bengali:hover {
+        background-color: rgba(19, 136, 8, 0.2);
+    }
+
+    .book-indian-category-tamil {
+        background-color: rgba(0, 0, 128, 0.1);
+        color: #000080;
+        border-color: rgba(0, 0, 128, 0.3);
+    }
+
+    .book-indian-category-tamil:hover {
+        background-color: rgba(0, 0, 128, 0.2);
+    }
+
+    .book-indian-category-sanskrit {
+        background-color: rgba(128, 0, 0, 0.1);
+        color: #800000;
+        border-color: rgba(128, 0, 0, 0.3);
+    }
+
+    .book-indian-category-sanskrit:hover {
+        background-color: rgba(128, 0, 0, 0.2);
+    }
+
+    .book-indian-badge {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        border-radius: 0.25rem;
+        z-index: 1;
+    }
+
+    .book-indian-badge-hindi {
+        background-color: rgba(255, 153, 51, 0.9);
+        color: white;
+    }
+
+    .book-indian-badge-bengali {
+        background-color: rgba(19, 136, 8, 0.9);
+        color: white;
+    }
+
+    .book-indian-badge-tamil {
+        background-color: rgba(0, 0, 128, 0.9);
+        color: white;
+    }
+
+    .book-indian-badge-sanskrit {
+        background-color: rgba(128, 0, 0, 0.9);
+        color: white;
+    }
+
+    .book-card.indian-book {
+        border-top: 3px solid #FF9933;
+    }
+
+    .book-card.indian-book .book-card-title {
+        color: #000080;
+    }
+
+    .book-card.indian-book:hover {
+        border-color: #138808;
+        box-shadow: 0 5px 15px rgba(19, 136, 8, 0.1);
+    }
+
+    /* Dark mode adjustments for Indian styles */
+    [data-bs-theme="dark"] .book-indian-header {
+        background: linear-gradient(135deg, rgba(255, 153, 51, 0.2) 0%, rgba(19, 136, 8, 0.2) 100%);
+    }
+
+    [data-bs-theme="dark"] .book-indian-header h1,
+    [data-bs-theme="dark"] .book-indian-header p {
+        color: var(--light);
+    }
+
+    [data-bs-theme="dark"] .book-indian-flag-color-white {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    [data-bs-theme="dark"] .book-card.indian-book .book-card-title {
+        color: var(--light);
+    }
+
     .book-empty-icon {
         font-size: 3rem;
         color: var(--medium-light);
@@ -401,10 +572,36 @@
 
 {% block content %}
 <div class="container book-list-container">
-    <!-- Header -->
-    <div class="book-list-header">
-        <h1 class="book-list-title">Books Collection</h1>
-        <p class="book-list-subtitle">Browse our extensive collection of books across all libraries.</p>
+    <!-- Indian-themed Header -->
+    <div class="book-indian-header">
+        <h1 class="book-list-title">पुस्तकें संग्रह (Books Collection)</h1>
+        <p class="book-list-subtitle">Browse our extensive collection of books across all libraries in India.</p>
+
+        <!-- Indian Flag Colors -->
+        <div class="book-indian-flag-colors">
+            <div class="book-indian-flag-color book-indian-flag-color-saffron"></div>
+            <div class="book-indian-flag-color book-indian-flag-color-white"></div>
+            <div class="book-indian-flag-color book-indian-flag-color-green"></div>
+        </div>
+    </div>
+
+    <!-- Indian Language Categories -->
+    <div class="book-indian-categories">
+        <div class="book-indian-category book-indian-category-hindi" data-language="hindi">
+            <i class="fas fa-language me-1"></i> Hindi
+        </div>
+        <div class="book-indian-category book-indian-category-bengali" data-language="bengali">
+            <i class="fas fa-language me-1"></i> Bengali
+        </div>
+        <div class="book-indian-category book-indian-category-tamil" data-language="tamil">
+            <i class="fas fa-language me-1"></i> Tamil
+        </div>
+        <div class="book-indian-category book-indian-category-sanskrit" data-language="sanskrit">
+            <i class="fas fa-language me-1"></i> Sanskrit
+        </div>
+        <div class="book-indian-category" style="background-color: rgba(0, 0, 0, 0.05); color: var(--dark);" data-language="">
+            <i class="fas fa-globe me-1"></i> All Languages
+        </div>
     </div>
 
     <!-- Search Form -->
@@ -458,7 +655,7 @@
     <!-- Books Grid -->
     <div class="row">
         {% for book in books %}
-            <div class="col-xl-3 col-lg-4 col-md-6 mb-4 book-card-wrapper">
+            <div class="col-xl-3 col-lg-4 col-md-6 mb-4 book-card-wrapper" data-language="{{ book.language|default:'' }}">
                 <div class="book-card">
                     <div class="book-card-cover">
                         {% if book.cover_image %}
@@ -546,6 +743,25 @@
                 card.style.opacity = '1';
                 card.style.transform = 'translateY(0)';
             }, 100);
+
+            // Add Indian language badges to book cards
+            const bookLanguage = card.getAttribute('data-language');
+            if (bookLanguage && ['hindi', 'bengali', 'tamil', 'telugu', 'marathi', 'gujarati', 'kannada', 'malayalam', 'punjabi', 'odia', 'urdu', 'sanskrit'].includes(bookLanguage)) {
+                // Add Indian book class
+                const bookCard = card.querySelector('.book-card');
+                if (bookCard) {
+                    bookCard.classList.add('indian-book');
+
+                    // Add language badge
+                    const bookCover = card.querySelector('.book-card-cover');
+                    if (bookCover) {
+                        const badge = document.createElement('div');
+                        badge.className = `book-indian-badge book-indian-badge-${bookLanguage}`;
+                        badge.textContent = bookLanguage.charAt(0).toUpperCase() + bookLanguage.slice(1);
+                        bookCover.appendChild(badge);
+                    }
+                }
+            }
         });
 
         // Add ripple effect to buttons
@@ -568,6 +784,46 @@
                     ripple.remove();
                 }, 600);
             });
+        });
+
+        // Indian language category filtering
+        const indianCategories = document.querySelectorAll('.book-indian-category');
+        indianCategories.forEach(category => {
+            category.addEventListener('click', function() {
+                const language = this.getAttribute('data-language');
+
+                // Update active state
+                indianCategories.forEach(cat => cat.classList.remove('active'));
+                this.classList.add('active');
+
+                // Update search form and submit
+                const searchForm = document.getElementById('book-search-form');
+                const languageInput = searchForm.querySelector('input[name="language"]');
+
+                if (!languageInput) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'language';
+                    input.value = language;
+                    searchForm.appendChild(input);
+                } else {
+                    languageInput.value = language;
+                }
+
+                searchForm.submit();
+            });
+        });
+
+        // Add animation to Indian flag colors
+        const flagColors = document.querySelectorAll('.book-indian-flag-color');
+        flagColors.forEach((color, index) => {
+            color.style.width = '0';
+            color.style.transition = 'width 1s ease';
+            color.style.transitionDelay = `${0.5 + (index * 0.2)}s`;
+
+            setTimeout(() => {
+                color.style.width = '100%';
+            }, 300);
         });
     });
 </script>

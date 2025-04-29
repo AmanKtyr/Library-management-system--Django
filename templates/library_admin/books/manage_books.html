@@ -3,7 +3,7 @@
 
 {% block title %}Manage Books - Library Management System{% endblock %}
 {% block breadcrumb_title %}Manage Books{% endblock %}
-{% block page_title %}Manage Books{% endblock %}
+{% block page_title %}पुस्तक प्रबंधन (Manage Books){% endblock %}
 
 {% block page_actions %}
 <a href="{% url 'books:add_book' %}" class="admin-pro-btn admin-pro-btn-primary">
@@ -496,17 +496,69 @@
 
 {% block content %}
 <div class="admin-pro-container fade-in-up">
-    <!-- Filters and Search -->
+    <!-- Enhanced Filters and Search with Indian-specific options -->
     <div class="row mb-4">
         <div class="col-md-8">
             <div class="book-search-form">
-                <form method="get" action="{% url 'books:manage_books' %}">
+                <form method="get" action="{% url 'books:manage_books' %}" id="book-search-form">
                     <div class="input-group">
                         <span class="input-group-text bg-white border-end-0">
                             <i class="fas fa-search"></i>
                         </span>
                         <input type="text" name="q" class="form-control border-start-0" placeholder="Search by title, author, or ISBN" value="{{ request.GET.q|default:'' }}">
                         <button type="submit" class="admin-pro-btn admin-pro-btn-primary">Search</button>
+                    </div>
+
+                    <!-- Indian-specific filters -->
+                    <div class="mt-3 d-flex flex-wrap gap-2 align-items-center">
+                        <div class="d-flex align-items-center">
+                            <label class="me-2 mb-0 small text-muted">Language:</label>
+                            <select name="language" class="form-select form-select-sm" style="width: auto; min-width: 120px;" onchange="document.getElementById('book-search-form').submit()">
+                                <option value="">All Languages</option>
+                                <option value="hindi" {% if request.GET.language == 'hindi' %}selected{% endif %}>Hindi</option>
+                                <option value="english" {% if request.GET.language == 'english' %}selected{% endif %}>English</option>
+                                <option value="tamil" {% if request.GET.language == 'tamil' %}selected{% endif %}>Tamil</option>
+                                <option value="bengali" {% if request.GET.language == 'bengali' %}selected{% endif %}>Bengali</option>
+                                <option value="telugu" {% if request.GET.language == 'telugu' %}selected{% endif %}>Telugu</option>
+                                <option value="marathi" {% if request.GET.language == 'marathi' %}selected{% endif %}>Marathi</option>
+                                <option value="gujarati" {% if request.GET.language == 'gujarati' %}selected{% endif %}>Gujarati</option>
+                                <option value="kannada" {% if request.GET.language == 'kannada' %}selected{% endif %}>Kannada</option>
+                                <option value="malayalam" {% if request.GET.language == 'malayalam' %}selected{% endif %}>Malayalam</option>
+                                <option value="punjabi" {% if request.GET.language == 'punjabi' %}selected{% endif %}>Punjabi</option>
+                                <option value="urdu" {% if request.GET.language == 'urdu' %}selected{% endif %}>Urdu</option>
+                                <option value="sanskrit" {% if request.GET.language == 'sanskrit' %}selected{% endif %}>Sanskrit</option>
+                            </select>
+                        </div>
+
+                        <div class="d-flex align-items-center ms-3">
+                            <label class="me-2 mb-0 small text-muted">Classification:</label>
+                            <select name="classification" class="form-select form-select-sm" style="width: auto; min-width: 150px;" onchange="document.getElementById('book-search-form').submit()">
+                                <option value="">All Classifications</option>
+                                <option value="ddc" {% if request.GET.classification == 'ddc' %}selected{% endif %}>Dewey Decimal</option>
+                                <option value="cc" {% if request.GET.classification == 'cc' %}selected{% endif %}>Colon Classification</option>
+                                <option value="ddn" {% if request.GET.classification == 'ddn' %}selected{% endif %}>Decimal Classification (Hindi)</option>
+                                <option value="lcc" {% if request.GET.classification == 'lcc' %}selected{% endif %}>Library of Congress</option>
+                            </select>
+                        </div>
+
+                        <div class="d-flex align-items-center ms-3">
+                            <label class="me-2 mb-0 small text-muted">Region:</label>
+                            <select name="region" class="form-select form-select-sm" style="width: auto; min-width: 120px;" onchange="document.getElementById('book-search-form').submit()">
+                                <option value="">All Regions</option>
+                                <option value="north" {% if request.GET.region == 'north' %}selected{% endif %}>North India</option>
+                                <option value="south" {% if request.GET.region == 'south' %}selected{% endif %}>South India</option>
+                                <option value="east" {% if request.GET.region == 'east' %}selected{% endif %}>East India</option>
+                                <option value="west" {% if request.GET.region == 'west' %}selected{% endif %}>West India</option>
+                                <option value="central" {% if request.GET.region == 'central' %}selected{% endif %}>Central India</option>
+                                <option value="northeast" {% if request.GET.region == 'northeast' %}selected{% endif %}>Northeast India</option>
+                            </select>
+                        </div>
+
+                        <div class="ms-auto">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="reset-filters">
+                                <i class="fas fa-undo-alt me-1"></i> Reset Filters
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -518,6 +570,78 @@
                 </div>
                 <div class="book-view-btn" data-view="list">
                     <i class="fas fa-list"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Indian Literature Spotlight -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm" style="border-radius: 10px; overflow: hidden; background: linear-gradient(135deg, rgba(255, 153, 51, 0.05) 0%, rgba(19, 136, 8, 0.05) 100%); border-left: 4px solid #FF9933;">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="rounded-circle p-2 me-3" style="background-color: rgba(255, 153, 51, 0.1);">
+                            <i class="fas fa-book-reader fa-lg" style="color: #FF9933;"></i>
+                        </div>
+                        <h5 class="card-title mb-0">भारतीय साहित्य प्रकाश (Indian Literature Spotlight)</h5>
+                        <a href="#" class="ms-auto btn btn-sm" style="background-color: #FF9933; color: white;">View All</a>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <div class="d-flex align-items-center p-2 rounded" style="background-color: rgba(255, 255, 255, 0.7);">
+                                <div class="flex-shrink-0">
+                                    <div class="rounded-circle p-2" style="background-color: rgba(255, 153, 51, 0.1);">
+                                        <i class="fas fa-award" style="color: #FF9933;"></i>
+                                    </div>
+                                </div>
+                                <div class="ms-3">
+                                    <h6 class="mb-0">Sahitya Akademi</h6>
+                                    <small class="text-muted">Award Winners</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <div class="d-flex align-items-center p-2 rounded" style="background-color: rgba(255, 255, 255, 0.7);">
+                                <div class="flex-shrink-0">
+                                    <div class="rounded-circle p-2" style="background-color: rgba(19, 136, 8, 0.1);">
+                                        <i class="fas fa-language" style="color: #138808;"></i>
+                                    </div>
+                                </div>
+                                <div class="ms-3">
+                                    <h6 class="mb-0">Regional Classics</h6>
+                                    <small class="text-muted">22 Languages</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <div class="d-flex align-items-center p-2 rounded" style="background-color: rgba(255, 255, 255, 0.7);">
+                                <div class="flex-shrink-0">
+                                    <div class="rounded-circle p-2" style="background-color: rgba(0, 0, 128, 0.1);">
+                                        <i class="fas fa-graduation-cap" style="color: #000080;"></i>
+                                    </div>
+                                </div>
+                                <div class="ms-3">
+                                    <h6 class="mb-0">Academic Resources</h6>
+                                    <small class="text-muted">NCERT & UGC</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <div class="d-flex align-items-center p-2 rounded" style="background-color: rgba(255, 255, 255, 0.7);">
+                                <div class="flex-shrink-0">
+                                    <div class="rounded-circle p-2" style="background-color: rgba(255, 153, 51, 0.1);">
+                                        <i class="fas fa-om" style="color: #FF9933;"></i>
+                                    </div>
+                                </div>
+                                <div class="ms-3">
+                                    <h6 class="mb-0">Cultural Heritage</h6>
+                                    <small class="text-muted">Ancient Texts</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -775,6 +899,105 @@
                 document.getElementById('deleteForm').action = `{% url 'books:delete_book' pk=0 %}`.replace('0', bookId);
             });
         }
+
+        // Reset filters functionality
+        const resetFiltersBtn = document.getElementById('reset-filters');
+        if (resetFiltersBtn) {
+            resetFiltersBtn.addEventListener('click', function() {
+                // Clear all filter selections
+                const filterSelects = document.querySelectorAll('#book-search-form select');
+                filterSelects.forEach(select => {
+                    select.value = '';
+                });
+
+                // Clear search input
+                const searchInput = document.querySelector('#book-search-form input[name="q"]');
+                if (searchInput) {
+                    searchInput.value = '';
+                }
+
+                // Submit the form
+                document.getElementById('book-search-form').submit();
+            });
+        }
+
+        // Indian Literature Spotlight animation
+        const spotlightItems = document.querySelectorAll('.col-md-3.mb-2 .d-flex');
+        spotlightItems.forEach((item, index) => {
+            // Add hover effect
+            item.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease';
+            item.style.cursor = 'pointer';
+
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+                this.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
+            });
+
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = 'none';
+            });
+
+            // Add staggered animation on page load
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(20px)';
+            item.style.animation = `fadeInUp 0.5s ease forwards ${0.1 + (index * 0.1)}s`;
+        });
+
+        // Add animation keyframes
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            /* Indian-inspired styles for book cards */
+            .book-card {
+                border-top: 3px solid transparent;
+                transition: all 0.3s ease;
+            }
+
+            .book-card:nth-child(3n+1) {
+                border-top-color: #FF9933; /* Saffron */
+            }
+
+            .book-card:nth-child(3n+2) {
+                border-top-color: #FFFFFF; /* White */
+            }
+
+            .book-card:nth-child(3n+3) {
+                border-top-color: #138808; /* Green */
+            }
+
+            /* Add Indian pattern to book cards */
+            .book-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 50px;
+                height: 50px;
+                background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50"><path d="M25,0 C38.8,0 50,11.2 50,25 C50,38.8 38.8,50 25,50 C11.2,50 0,38.8 0,25 C0,11.2 11.2,0 25,0 Z M25,10 C16.7,10 10,16.7 10,25 C10,33.3 16.7,40 25,40 C33.3,40 40,33.3 40,25 C40,16.7 33.3,10 25,10 Z" fill="%23FF9933" opacity="0.1"/></svg>');
+                background-repeat: no-repeat;
+                background-position: center;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+                pointer-events: none;
+                z-index: 1;
+            }
+
+            .book-card:hover::before {
+                opacity: 1;
+            }
+        `;
+        document.head.appendChild(style);
     });
 </script>
 {% endblock %}

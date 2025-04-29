@@ -1,9 +1,9 @@
 {% extends 'core/admin_base.html' %}
 {% load static %}
 
-{% block title %}Manage Books - Library Management System{% endblock %}
-{% block breadcrumb_title %}Manage Books{% endblock %}
-{% block page_title %}Manage Books{% endblock %}
+{% block title %}पुस्तक प्रबंधन (Manage Books) - Library Management System{% endblock %}
+{% block breadcrumb_title %}पुस्तक प्रबंधन (Manage Books){% endblock %}
+{% block page_title %}पुस्तक प्रबंधन (Manage Books){% endblock %}
 
 {% block page_actions %}
 <a href="{% url 'books:add_book' %}" class="admin-pro-btn admin-pro-btn-primary">
@@ -29,6 +29,36 @@
         background-color: var(--surface);
         position: relative;
     }
+
+    /* Indian-specific Book Card Styles */
+    .book-card.indian-book {
+        border-top: 3px solid #FF9933;
+    }
+
+    .book-card.indian-book:hover {
+        border-top-color: #138808;
+    }
+
+    .book-indian-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        background-color: rgba(255, 153, 51, 0.9);
+        color: white;
+        z-index: 2;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .book-indian-badge-hindi { background-color: #FF9933; }
+    .book-indian-badge-tamil { background-color: #138808; }
+    .book-indian-badge-bengali { background-color: #000080; }
+    .book-indian-badge-sanskrit { background-color: #9C27B0; }
+    .book-indian-badge-jnanpith { background-color: #D4AF37; }
 
     .book-card:hover {
         transform: translateY(-8px);
@@ -496,16 +526,123 @@
 
 {% block content %}
 <div class="admin-pro-container fade-in-up">
+    <!-- Indian-themed Header Banner -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="indian-book-banner" style="background: linear-gradient(135deg, rgba(255, 153, 51, 0.1) 0%, rgba(19, 136, 8, 0.05) 100%); border-radius: 8px; padding: 15px; border-left: 4px solid #FF9933; position: relative; overflow: hidden;">
+                <!-- Indian Flag Colors Strip -->
+                <div class="indian-flag-colors" style="position: absolute; top: 0; right: 0; width: 60px; height: 100%; display: flex; flex-direction: column;">
+                    <div style="flex: 1; background-color: #FF9933;"></div>
+                    <div style="flex: 1; background-color: #FFFFFF; border-top: 1px solid rgba(0,0,0,0.05); border-bottom: 1px solid rgba(0,0,0,0.05);"></div>
+                    <div style="flex: 1; background-color: #138808;"></div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-1" style="color: #000080; font-weight: 600;">भारतीय पुस्तकालय संग्रह (Indian Library Collection)</h4>
+                        <p class="mb-0" style="color: #555;">Manage your library's collection with Indian classification systems and regional categories</p>
+                    </div>
+                    <div class="d-none d-md-block">
+                        <img src="{% static 'images/ashoka-chakra.png' %}" alt="Ashoka Chakra" style="height: 40px; width: 40px; opacity: 0.7;" onerror="this.style.display='none'">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Indian Language & Classification Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-3">
+                    <ul class="nav nav-tabs" id="indianFiltersTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="languages-tab" data-bs-toggle="tab" data-bs-target="#languages" type="button" role="tab" aria-controls="languages" aria-selected="true">
+                                <i class="fas fa-language me-1"></i> Languages
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="classification-tab" data-bs-toggle="tab" data-bs-target="#classification" type="button" role="tab" aria-controls="classification" aria-selected="false">
+                                <i class="fas fa-tags me-1"></i> Classification
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="regions-tab" data-bs-toggle="tab" data-bs-target="#regions" type="button" role="tab" aria-controls="regions" aria-selected="false">
+                                <i class="fas fa-map-marker-alt me-1"></i> Regions
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content pt-3" id="indianFiltersTabContent">
+                        <!-- Languages Tab -->
+                        <div class="tab-pane fade show active" id="languages" role="tabpanel" aria-labelledby="languages-tab">
+                            <div class="d-flex flex-wrap gap-2">
+                                <a href="?language=all" class="btn btn-sm {% if not request.GET.language or request.GET.language == 'all' %}btn-primary{% else %}btn-outline-primary{% endif %}">All</a>
+                                <a href="?language=hindi" class="btn btn-sm {% if request.GET.language == 'hindi' %}btn-primary{% else %}btn-outline-primary{% endif %}">हिन्दी (Hindi)</a>
+                                <a href="?language=tamil" class="btn btn-sm {% if request.GET.language == 'tamil' %}btn-primary{% else %}btn-outline-primary{% endif %}">தமிழ் (Tamil)</a>
+                                <a href="?language=bengali" class="btn btn-sm {% if request.GET.language == 'bengali' %}btn-primary{% else %}btn-outline-primary{% endif %}">বাংলা (Bengali)</a>
+                                <a href="?language=telugu" class="btn btn-sm {% if request.GET.language == 'telugu' %}btn-primary{% else %}btn-outline-primary{% endif %}">తెలుగు (Telugu)</a>
+                                <a href="?language=marathi" class="btn btn-sm {% if request.GET.language == 'marathi' %}btn-primary{% else %}btn-outline-primary{% endif %}">मराठी (Marathi)</a>
+                                <a href="?language=gujarati" class="btn btn-sm {% if request.GET.language == 'gujarati' %}btn-primary{% else %}btn-outline-primary{% endif %}">ગુજરાતી (Gujarati)</a>
+                                <a href="?language=kannada" class="btn btn-sm {% if request.GET.language == 'kannada' %}btn-primary{% else %}btn-outline-primary{% endif %}">ಕನ್ನಡ (Kannada)</a>
+                                <a href="?language=malayalam" class="btn btn-sm {% if request.GET.language == 'malayalam' %}btn-primary{% else %}btn-outline-primary{% endif %}">മലയാളം (Malayalam)</a>
+                                <a href="?language=punjabi" class="btn btn-sm {% if request.GET.language == 'punjabi' %}btn-primary{% else %}btn-outline-primary{% endif %}">ਪੰਜਾਬੀ (Punjabi)</a>
+                                <a href="?language=odia" class="btn btn-sm {% if request.GET.language == 'odia' %}btn-primary{% else %}btn-outline-primary{% endif %}">ଓଡ଼ିଆ (Odia)</a>
+                                <a href="?language=urdu" class="btn btn-sm {% if request.GET.language == 'urdu' %}btn-primary{% else %}btn-outline-primary{% endif %}">اردو (Urdu)</a>
+                                <a href="?language=sanskrit" class="btn btn-sm {% if request.GET.language == 'sanskrit' %}btn-primary{% else %}btn-outline-primary{% endif %}">संस्कृतम् (Sanskrit)</a>
+                            </div>
+                        </div>
+
+                        <!-- Classification Tab -->
+                        <div class="tab-pane fade" id="classification" role="tabpanel" aria-labelledby="classification-tab">
+                            <div class="d-flex flex-wrap gap-2">
+                                <a href="?classification=all" class="btn btn-sm {% if not request.GET.classification or request.GET.classification == 'all' %}btn-primary{% else %}btn-outline-primary{% endif %}">All</a>
+                                <a href="?classification=colon" class="btn btn-sm {% if request.GET.classification == 'colon' %}btn-primary{% else %}btn-outline-primary{% endif %}">Colon Classification</a>
+                                <a href="?classification=dewey_hindi" class="btn btn-sm {% if request.GET.classification == 'dewey_hindi' %}btn-primary{% else %}btn-outline-primary{% endif %}">Dewey Decimal (Hindi)</a>
+                                <a href="?classification=nbh" class="btn btn-sm {% if request.GET.classification == 'nbh' %}btn-primary{% else %}btn-outline-primary{% endif %}">National Bibliography of India</a>
+                                <a href="?classification=blis" class="btn btn-sm {% if request.GET.classification == 'blis' %}btn-primary{% else %}btn-outline-primary{% endif %}">BLIS Classification</a>
+                                <a href="?classification=traditional" class="btn btn-sm {% if request.GET.classification == 'traditional' %}btn-primary{% else %}btn-outline-primary{% endif %}">Traditional Indian</a>
+                            </div>
+                        </div>
+
+                        <!-- Regions Tab -->
+                        <div class="tab-pane fade" id="regions" role="tabpanel" aria-labelledby="regions-tab">
+                            <div class="d-flex flex-wrap gap-2">
+                                <a href="?region=all" class="btn btn-sm {% if not request.GET.region or request.GET.region == 'all' %}btn-primary{% else %}btn-outline-primary{% endif %}">All India</a>
+                                <a href="?region=north" class="btn btn-sm {% if request.GET.region == 'north' %}btn-primary{% else %}btn-outline-primary{% endif %}">North India</a>
+                                <a href="?region=south" class="btn btn-sm {% if request.GET.region == 'south' %}btn-primary{% else %}btn-outline-primary{% endif %}">South India</a>
+                                <a href="?region=east" class="btn btn-sm {% if request.GET.region == 'east' %}btn-primary{% else %}btn-outline-primary{% endif %}">East India</a>
+                                <a href="?region=west" class="btn btn-sm {% if request.GET.region == 'west' %}btn-primary{% else %}btn-outline-primary{% endif %}">West India</a>
+                                <a href="?region=central" class="btn btn-sm {% if request.GET.region == 'central' %}btn-primary{% else %}btn-outline-primary{% endif %}">Central India</a>
+                                <a href="?region=northeast" class="btn btn-sm {% if request.GET.region == 'northeast' %}btn-primary{% else %}btn-outline-primary{% endif %}">Northeast India</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Filters and Search -->
     <div class="row mb-4">
         <div class="col-md-8">
             <div class="book-search-form">
-                <form method="get" action="{% url 'books:manage_books' %}">
+                <form method="get" action="{% url 'books:manage_books' %}" id="book-search-form">
                     <div class="input-group">
                         <span class="input-group-text bg-white border-end-0">
                             <i class="fas fa-search"></i>
                         </span>
                         <input type="text" name="q" class="form-control border-start-0" placeholder="Search by title, author, or ISBN" value="{{ request.GET.q|default:'' }}">
+                        <!-- Hidden inputs to preserve filters when searching -->
+                        {% if request.GET.language %}
+                        <input type="hidden" name="language" value="{{ request.GET.language }}">
+                        {% endif %}
+                        {% if request.GET.classification %}
+                        <input type="hidden" name="classification" value="{{ request.GET.classification }}">
+                        {% endif %}
+                        {% if request.GET.region %}
+                        <input type="hidden" name="region" value="{{ request.GET.region }}">
+                        {% endif %}
                         <button type="submit" class="admin-pro-btn admin-pro-btn-primary">Search</button>
                     </div>
                 </form>
@@ -523,10 +660,80 @@
         </div>
     </div>
 
+    <!-- Indian Literature Spotlight -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center" style="border-bottom: 2px solid #FF9933;">
+                    <h5 class="mb-0" style="color: #000080;">
+                        <i class="fas fa-star me-2" style="color: #FF9933;"></i>भारतीय साहित्य प्रकाश (Indian Literature Spotlight)
+                    </h5>
+                    <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#indianLiteratureCollapse" aria-expanded="false" aria-controls="indianLiteratureCollapse">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+                <div class="collapse" id="indianLiteratureCollapse">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <div class="card h-100 border-0 shadow-sm hover-card">
+                                    <div class="card-body p-3">
+                                        <h5 class="card-title" style="color: #FF9933;">Sahitya Akademi Award Winners</h5>
+                                        <p class="card-text small">Collection of books that have won India's highest literary honor.</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="badge bg-primary">{{ sahitya_akademi_count|default:"24" }} Books</span>
+                                            <a href="?award=sahitya_akademi" class="btn btn-sm btn-outline-primary">View</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card h-100 border-0 shadow-sm hover-card">
+                                    <div class="card-body p-3">
+                                        <h5 class="card-title" style="color: #138808;">Regional Classics</h5>
+                                        <p class="card-text small">Classic literature from India's diverse linguistic traditions.</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="badge bg-success">{{ regional_classics_count|default:"22" }} Languages</span>
+                                            <a href="?category=regional_classics" class="btn btn-sm btn-outline-success">View</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card h-100 border-0 shadow-sm hover-card">
+                                    <div class="card-body p-3">
+                                        <h5 class="card-title" style="color: #000080;">Academic Resources</h5>
+                                        <p class="card-text small">NCERT, UGC, and other educational materials for Indian students.</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="badge bg-info">{{ academic_resources_count|default:"45" }} Resources</span>
+                                            <a href="?category=academic" class="btn btn-sm btn-outline-info">View</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card h-100 border-0 shadow-sm hover-card">
+                                    <div class="card-body p-3">
+                                        <h5 class="card-title" style="color: #FF9933;">Cultural Heritage</h5>
+                                        <p class="card-text small">Ancient texts and cultural heritage materials from India.</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="badge" style="background-color: #FF9933; color: white;">{{ cultural_heritage_count|default:"18" }} Collections</span>
+                                            <a href="?category=cultural_heritage" class="btn btn-sm" style="border-color: #FF9933; color: #FF9933;">View</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Books Grid View -->
     <div class="row book-view" id="grid-view">
         {% for book in books %}
-        <div class="col-md-3 col-sm-6 mb-4">
+        <div class="col-md-3 col-sm-6 mb-4 book-card-wrapper" data-language="{{ book.language|default:'' }}" data-award="{{ book.award|default:'' }}" data-region="{{ book.region|default:'' }}" data-classification="{{ book.classification_system|default:'' }}">
             <div class="book-card">
                 <div class="book-cover">
                     {% if book.cover_image %}
@@ -774,6 +981,82 @@
                 document.getElementById('bookTitle').textContent = bookTitle;
                 document.getElementById('deleteForm').action = `{% url 'books:delete_book' pk=0 %}`.replace('0', bookId);
             });
+        }
+
+        // Indian-specific functionality
+
+        // Add Indian language badges to book cards
+        const bookCards = document.querySelectorAll('.book-card');
+        bookCards.forEach(card => {
+            const bookLanguage = card.closest('.book-card-wrapper')?.getAttribute('data-language');
+            if (bookLanguage && ['hindi', 'tamil', 'bengali', 'telugu', 'marathi', 'gujarati', 'kannada', 'malayalam', 'punjabi', 'odia', 'urdu', 'sanskrit'].includes(bookLanguage)) {
+                // Add Indian book class
+                card.classList.add('indian-book');
+
+                // Add language badge
+                const bookCover = card.querySelector('.book-cover');
+                if (bookCover) {
+                    const badge = document.createElement('div');
+                    badge.className = `book-indian-badge book-indian-badge-${bookLanguage}`;
+                    badge.textContent = bookLanguage.charAt(0).toUpperCase() + bookLanguage.slice(1);
+                    bookCover.appendChild(badge);
+                }
+            }
+
+            // Add award badges if applicable
+            const bookAward = card.closest('.book-card-wrapper')?.getAttribute('data-award');
+            if (bookAward) {
+                const bookCover = card.querySelector('.book-cover');
+                if (bookCover) {
+                    const badge = document.createElement('div');
+                    badge.className = `book-indian-badge book-indian-badge-jnanpith`;
+                    badge.style.top = '40px'; // Position below language badge if present
+                    badge.textContent = bookAward.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    bookCover.appendChild(badge);
+                }
+            }
+        });
+
+        // Indian filter tabs functionality
+        const filterTabs = document.querySelectorAll('#indianFiltersTab .nav-link');
+        filterTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Store the active tab in localStorage
+                localStorage.setItem('activeIndianFilterTab', this.id);
+            });
+        });
+
+        // Restore active tab from localStorage
+        const activeTab = localStorage.getItem('activeIndianFilterTab');
+        if (activeTab) {
+            const tabToActivate = document.getElementById(activeTab);
+            if (tabToActivate) {
+                const bsTab = new bootstrap.Tab(tabToActivate);
+                bsTab.show();
+            }
+        }
+
+        // Animate Indian flag colors on page load
+        const flagColors = document.querySelectorAll('.indian-flag-colors > div');
+        flagColors.forEach((color, index) => {
+            color.style.opacity = '0';
+            color.style.transition = 'opacity 0.5s ease';
+            color.style.transitionDelay = `${0.3 + (index * 0.2)}s`;
+
+            setTimeout(() => {
+                color.style.opacity = '1';
+            }, 100);
+        });
+
+        // Auto-expand Indian Literature Spotlight section if there's a relevant filter
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('award') || urlParams.has('category') && ['regional_classics', 'academic', 'cultural_heritage'].includes(urlParams.get('category'))) {
+            const collapseElement = document.getElementById('indianLiteratureCollapse');
+            if (collapseElement) {
+                const bsCollapse = new bootstrap.Collapse(collapseElement, {
+                    toggle: true
+                });
+            }
         }
     });
 </script>

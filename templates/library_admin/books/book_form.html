@@ -3,7 +3,7 @@
 
 {% block title %}{{ title }} - Library Management System{% endblock %}
 {% block breadcrumb_title %}{{ title }}{% endblock %}
-{% block page_title %}{{ title }}{% endblock %}
+{% block page_title %}{% if book %}पुस्तक संपादित करें (Edit Book){% else %}नई पुस्तक जोड़ें (Add New Book){% endif %}{% endblock %}
 
 {% block page_actions %}
 <a href="{% url 'books:manage_books' %}" class="admin-pro-btn admin-pro-btn-outline">
@@ -786,9 +786,36 @@
                                         <div class="col-md-6">
                                             <div class="book-form-group">
                                                 <label for="{{ form.language.id_for_label }}" class="book-form-label">
-                                                    <i class="fas fa-language me-2 text-primary"></i>Language
+                                                    <i class="fas fa-language me-2 text-primary"></i>Language <span class="badge bg-warning text-dark ms-2">Indian Languages Added</span>
                                                 </label>
-                                                {{ form.language }}
+                                                <select name="language" id="{{ form.language.id_for_label }}" class="form-control book-form-control">
+                                                    <option value="">Select Language</option>
+                                                    <optgroup label="Indian Languages">
+                                                        <option value="hindi" {% if form.language.value == 'hindi' %}selected{% endif %}>Hindi (हिन्दी)</option>
+                                                        <option value="bengali" {% if form.language.value == 'bengali' %}selected{% endif %}>Bengali (বাংলা)</option>
+                                                        <option value="tamil" {% if form.language.value == 'tamil' %}selected{% endif %}>Tamil (தமிழ்)</option>
+                                                        <option value="telugu" {% if form.language.value == 'telugu' %}selected{% endif %}>Telugu (తెలుగు)</option>
+                                                        <option value="marathi" {% if form.language.value == 'marathi' %}selected{% endif %}>Marathi (मराठी)</option>
+                                                        <option value="gujarati" {% if form.language.value == 'gujarati' %}selected{% endif %}>Gujarati (ગુજરાતી)</option>
+                                                        <option value="kannada" {% if form.language.value == 'kannada' %}selected{% endif %}>Kannada (ಕನ್ನಡ)</option>
+                                                        <option value="malayalam" {% if form.language.value == 'malayalam' %}selected{% endif %}>Malayalam (മലയാളം)</option>
+                                                        <option value="punjabi" {% if form.language.value == 'punjabi' %}selected{% endif %}>Punjabi (ਪੰਜਾਬੀ)</option>
+                                                        <option value="odia" {% if form.language.value == 'odia' %}selected{% endif %}>Odia (ଓଡ଼ିଆ)</option>
+                                                        <option value="urdu" {% if form.language.value == 'urdu' %}selected{% endif %}>Urdu (اردو)</option>
+                                                        <option value="sanskrit" {% if form.language.value == 'sanskrit' %}selected{% endif %}>Sanskrit (संस्कृतम्)</option>
+                                                    </optgroup>
+                                                    <optgroup label="Other Languages">
+                                                        <option value="english" {% if form.language.value == 'english' %}selected{% endif %}>English</option>
+                                                        <option value="spanish" {% if form.language.value == 'spanish' %}selected{% endif %}>Spanish</option>
+                                                        <option value="french" {% if form.language.value == 'french' %}selected{% endif %}>French</option>
+                                                        <option value="german" {% if form.language.value == 'german' %}selected{% endif %}>German</option>
+                                                        <option value="chinese" {% if form.language.value == 'chinese' %}selected{% endif %}>Chinese</option>
+                                                        <option value="japanese" {% if form.language.value == 'japanese' %}selected{% endif %}>Japanese</option>
+                                                        <option value="arabic" {% if form.language.value == 'arabic' %}selected{% endif %}>Arabic</option>
+                                                        <option value="russian" {% if form.language.value == 'russian' %}selected{% endif %}>Russian</option>
+                                                        <option value="portuguese" {% if form.language.value == 'portuguese' %}selected{% endif %}>Portuguese</option>
+                                                    </optgroup>
+                                                </select>
                                                 {% if form.language.errors %}
                                                     <div class="book-form-error">{{ form.language.errors }}</div>
                                                 {% endif %}
@@ -803,6 +830,79 @@
                                                 {% if form.pages.errors %}
                                                     <div class="book-form-error">{{ form.pages.errors }}</div>
                                                 {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Indian-specific Book Details -->
+                                    <div class="row mt-3">
+                                        <div class="col-md-6">
+                                            <div class="book-form-group">
+                                                <label for="regional_title" class="book-form-label">
+                                                    <i class="fas fa-font me-2 text-primary"></i>Regional Title
+                                                </label>
+                                                <input type="text" id="regional_title" name="regional_title" class="form-control book-form-control" placeholder="Title in regional language" value="{{ book.regional_title|default:'' }}">
+                                                <div class="book-form-help">
+                                                    <i class="fas fa-info-circle me-1"></i> Enter the book title in its original Indian language
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="book-form-group">
+                                                <label for="classification_code" class="book-form-label">
+                                                    <i class="fas fa-hashtag me-2 text-primary"></i>Indian Classification
+                                                </label>
+                                                <select id="classification_code" name="classification_code" class="form-control book-form-control">
+                                                    <option value="">Select Classification System</option>
+                                                    <option value="cc" {% if book.classification_code == 'cc' %}selected{% endif %}>Colon Classification (CC)</option>
+                                                    <option value="ddn" {% if book.classification_code == 'ddn' %}selected{% endif %}>Dewey Decimal (Hindi)</option>
+                                                    <option value="bns" {% if book.classification_code == 'bns' %}selected{% endif %}>Bibliographic and Notation System</option>
+                                                    <option value="ddc" {% if book.classification_code == 'ddc' %}selected{% endif %}>Dewey Decimal Classification</option>
+                                                </select>
+                                                <div class="book-form-help">
+                                                    <i class="fas fa-info-circle me-1"></i> Select the Indian classification system used for this book
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-3">
+                                        <div class="col-md-6">
+                                            <div class="book-form-group">
+                                                <label for="region" class="book-form-label">
+                                                    <i class="fas fa-map-marker-alt me-2 text-primary"></i>Indian Region
+                                                </label>
+                                                <select id="region" name="region" class="form-control book-form-control">
+                                                    <option value="">Select Region</option>
+                                                    <option value="north" {% if book.region == 'north' %}selected{% endif %}>North India</option>
+                                                    <option value="south" {% if book.region == 'south' %}selected{% endif %}>South India</option>
+                                                    <option value="east" {% if book.region == 'east' %}selected{% endif %}>East India</option>
+                                                    <option value="west" {% if book.region == 'west' %}selected{% endif %}>West India</option>
+                                                    <option value="central" {% if book.region == 'central' %}selected{% endif %}>Central India</option>
+                                                    <option value="northeast" {% if book.region == 'northeast' %}selected{% endif %}>Northeast India</option>
+                                                </select>
+                                                <div class="book-form-help">
+                                                    <i class="fas fa-info-circle me-1"></i> Region of India where this book originates from
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="book-form-group">
+                                                <label for="award" class="book-form-label">
+                                                    <i class="fas fa-award me-2 text-primary"></i>Indian Literary Award
+                                                </label>
+                                                <select id="award" name="award" class="form-control book-form-control">
+                                                    <option value="">Select Award (if any)</option>
+                                                    <option value="sahitya_akademi" {% if book.award == 'sahitya_akademi' %}selected{% endif %}>Sahitya Akademi Award</option>
+                                                    <option value="jnanpith" {% if book.award == 'jnanpith' %}selected{% endif %}>Jnanpith Award</option>
+                                                    <option value="saraswati_samman" {% if book.award == 'saraswati_samman' %}selected{% endif %}>Saraswati Samman</option>
+                                                    <option value="vyas_samman" {% if book.award == 'vyas_samman' %}selected{% endif %}>Vyas Samman</option>
+                                                    <option value="crossword" {% if book.award == 'crossword' %}selected{% endif %}>Crossword Book Award</option>
+                                                    <option value="other" {% if book.award == 'other' %}selected{% endif %}>Other Indian Award</option>
+                                                </select>
+                                                <div class="book-form-help">
+                                                    <i class="fas fa-info-circle me-1"></i> Select if this book has won any Indian literary award
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -973,6 +1073,44 @@
                         <li><i class="fas fa-check-circle me-2"></i> Include a detailed summary to help readers</li>
                     </ul>
                     <p class="mb-0">For more information, check the <a href="#" class="book-form-help-link">documentation</a> or <a href="#" class="book-form-help-link">contact support</a>.</p>
+                </div>
+            </div>
+
+            <!-- Indian Book Publishing Guide -->
+            <div class="book-form-help-card mt-4" style="border-left: 4px solid #FF9933; background: linear-gradient(135deg, rgba(255, 153, 51, 0.05) 0%, rgba(19, 136, 8, 0.05) 100%);">
+                <div class="book-form-help-card-header" style="border-bottom-color: rgba(19, 136, 8, 0.2);">
+                    <i class="fas fa-info-circle me-2" style="color: #FF9933;"></i> भारतीय पुस्तक प्रकाशन मार्गदर्शिका (Indian Book Publishing Guide)
+                </div>
+                <div class="book-form-help-card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <h6 style="color: #FF9933;">ISBN Registration in India</h6>
+                                <p class="small text-muted">ISBN numbers in India are issued by Raja Rammohun Roy National Agency for ISBN under Ministry of Culture. <a href="https://isbn.gov.in/" target="_blank" class="book-form-help-link">Apply here</a>.</p>
+                            </div>
+                            <div class="mb-3">
+                                <h6 style="color: #138808;">Indian Copyright Registration</h6>
+                                <p class="small text-muted">Register copyright for books through the Copyright Office under Department for Promotion of Industry and Internal Trade. <a href="https://copyright.gov.in/" target="_blank" class="book-form-help-link">Learn more</a>.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <h6 style="color: #000080;">Indian Classification Systems</h6>
+                                <p class="small text-muted">Colon Classification (CC) developed by S.R. Ranganathan is widely used in Indian libraries alongside Dewey Decimal.</p>
+                            </div>
+                            <div class="mb-3">
+                                <h6 style="color: #FF9933;">National Library Resources</h6>
+                                <p class="small text-muted">The National Library of India in Kolkata maintains the largest collection of Indian publications. <a href="http://www.nationallibrary.gov.in/" target="_blank" class="book-form-help-link">Visit website</a>.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Indian Flag Colors -->
+                    <div class="d-flex justify-content-center mt-2">
+                        <div style="width: 30px; height: 3px; background-color: #FF9933;"></div>
+                        <div style="width: 30px; height: 3px; background-color: #FFFFFF; border: 1px solid #ddd;"></div>
+                        <div style="width: 30px; height: 3px; background-color: #138808;"></div>
+                    </div>
                 </div>
             </div>
         </div>

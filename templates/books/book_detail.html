@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ book.title }} - Library Management System{% endblock %}
+{% block title %}{{ book.title }} - भारतीय पुस्तकालय प्रबंधन प्रणाली (Indian Library Management System){% endblock %}
 
 {% block extra_css %}
 <style>
@@ -276,6 +276,116 @@
         color: white;
     }
 
+    /* Indian-specific styles */
+    .book-indian-header {
+        position: relative;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border-radius: var(--border-radius-lg);
+        background: linear-gradient(135deg, rgba(255, 153, 51, 0.1) 0%, rgba(19, 136, 8, 0.1) 100%);
+        border-left: 4px solid #FF9933;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .book-indian-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100px;
+        height: 100px;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="%23FF9933" d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zm0-15a1 1 0 0 1 1 1v3h3a1 1 0 0 1 0 2h-3v3a1 1 0 0 1-2 0v-3H8a1 1 0 0 1 0-2h3V8a1 1 0 0 1 1-1z"/></svg>');
+        background-repeat: no-repeat;
+        background-position: center;
+        opacity: 0.1;
+        pointer-events: none;
+    }
+
+    .book-regional-title {
+        font-family: 'Noto Sans', sans-serif;
+        font-size: 1.5rem;
+        color: #FF9933;
+        margin-bottom: 0.5rem;
+    }
+
+    .book-indian-badge {
+        display: inline-block;
+        padding: 0.3em 0.6em;
+        border-radius: 50rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-right: 0.5rem;
+    }
+
+    .book-indian-badge-sahitya {
+        background-color: rgba(255, 153, 51, 0.1);
+        color: #FF9933;
+        border: 1px solid rgba(255, 153, 51, 0.3);
+    }
+
+    .book-indian-badge-jnanpith {
+        background-color: rgba(19, 136, 8, 0.1);
+        color: #138808;
+        border: 1px solid rgba(19, 136, 8, 0.3);
+    }
+
+    .book-indian-badge-region {
+        background-color: rgba(0, 0, 128, 0.1);
+        color: #000080;
+        border: 1px solid rgba(0, 0, 128, 0.3);
+    }
+
+    .book-indian-info-card {
+        border: none;
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 1.5rem;
+        transition: all var(--transition-normal);
+        background-color: var(--surface);
+        border-left: 4px solid #138808;
+    }
+
+    .book-indian-info-header {
+        padding: 1rem 1.5rem;
+        background: linear-gradient(135deg, rgba(19, 136, 8, 0.8) 0%, rgba(19, 136, 8, 1) 100%);
+        color: white;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+    }
+
+    .book-indian-info-header i {
+        margin-right: 0.75rem;
+        font-size: 1.1rem;
+    }
+
+    .book-indian-flag-colors {
+        display: flex;
+        margin-top: 1rem;
+    }
+
+    .book-indian-flag-color {
+        height: 4px;
+        flex: 1;
+    }
+
+    .book-indian-flag-color-saffron {
+        background-color: #FF9933;
+    }
+
+    .book-indian-flag-color-white {
+        background-color: #FFFFFF;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .book-indian-flag-color-green {
+        background-color: #138808;
+    }
+
     /* Dark mode adjustments */
     [data-bs-theme="dark"] .book-breadcrumb {
         background-color: rgba(255, 255, 255, 0.05);
@@ -300,6 +410,15 @@
 
     [data-bs-theme="dark"] .book-copies-table tr:hover td {
         background-color: rgba(255, 255, 255, 0.03);
+    }
+
+    [data-bs-theme="dark"] .book-indian-header {
+        background: linear-gradient(135deg, rgba(255, 153, 51, 0.2) 0%, rgba(19, 136, 8, 0.2) 100%);
+    }
+
+    [data-bs-theme="dark"] .book-indian-flag-color-white {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 </style>
 {% endblock %}
@@ -390,13 +509,43 @@
 
         <!-- Right Column - Book Content -->
         <div class="col-lg-9 col-md-8">
-            <!-- Book Title and Author -->
-            <h1 class="book-title">{{ book.title }}</h1>
-            <div class="book-authors">
-                by
-                {% for author in book.authors.all %}
-                    <a href="{% url 'books:author_detail' slug=author.slug %}" class="book-author-link">{{ author.name }}</a>{% if not forloop.last %}, {% endif %}
-                {% endfor %}
+            <!-- Indian Book Header with Regional Title -->
+            <div class="book-indian-header">
+                <!-- Regional Title (if available) -->
+                {% if book.regional_title %}
+                    <div class="book-regional-title">{{ book.regional_title }}</div>
+                {% endif %}
+
+                <!-- Book Title and Author -->
+                <h1 class="book-title">{{ book.title }}</h1>
+                <div class="book-authors">
+                    by
+                    {% for author in book.authors.all %}
+                        <a href="{% url 'books:author_detail' slug=author.slug %}" class="book-author-link">{{ author.name }}</a>{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </div>
+
+                <!-- Indian-specific badges -->
+                <div class="mt-3">
+                    {% if book.language in 'hindi,bengali,tamil,telugu,marathi,gujarati,kannada,malayalam,punjabi,odia,urdu,sanskrit' %}
+                        <span class="book-indian-badge book-indian-badge-sahitya">{{ book.language|title }} Language</span>
+                    {% endif %}
+
+                    {% if book.award %}
+                        <span class="book-indian-badge book-indian-badge-jnanpith">{{ book.award|title|cut:'_'|capfirst }} Award</span>
+                    {% endif %}
+
+                    {% if book.region %}
+                        <span class="book-indian-badge book-indian-badge-region">{{ book.region|title }} India</span>
+                    {% endif %}
+                </div>
+
+                <!-- Indian Flag Colors -->
+                <div class="book-indian-flag-colors">
+                    <div class="book-indian-flag-color book-indian-flag-color-saffron"></div>
+                    <div class="book-indian-flag-color book-indian-flag-color-white"></div>
+                    <div class="book-indian-flag-color book-indian-flag-color-green"></div>
+                </div>
             </div>
 
             <!-- Book Summary Card -->
@@ -413,6 +562,69 @@
                     {% endif %}
                 </div>
             </div>
+
+            <!-- Indian Classification Card (if available) -->
+            {% if book.classification_code %}
+            <div class="book-indian-info-card">
+                <div class="book-indian-info-header">
+                    <i class="fas fa-hashtag"></i>
+                    <h5 class="mb-0">Indian Classification</h5>
+                </div>
+                <div class="book-info-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="book-info-item">
+                                <div class="book-info-label">Classification System:</div>
+                                <div class="book-info-value">
+                                    {% if book.classification_code == 'cc' %}
+                                        Colon Classification (CC)
+                                    {% elif book.classification_code == 'ddn' %}
+                                        Dewey Decimal (Hindi)
+                                    {% elif book.classification_code == 'bns' %}
+                                        Bibliographic and Notation System
+                                    {% elif book.classification_code == 'ddc' %}
+                                        Dewey Decimal Classification
+                                    {% else %}
+                                        {{ book.classification_code }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="book-info-item">
+                                <div class="book-info-label">Developed by:</div>
+                                <div class="book-info-value">
+                                    {% if book.classification_code == 'cc' %}
+                                        S.R. Ranganathan
+                                    {% elif book.classification_code == 'ddn' %}
+                                        Melvil Dewey (Hindi Adaptation)
+                                    {% elif book.classification_code == 'bns' %}
+                                        Indian Library Association
+                                    {% elif book.classification_code == 'ddc' %}
+                                        Melvil Dewey
+                                    {% else %}
+                                        Unknown
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <p class="small text-muted mb-0">
+                            {% if book.classification_code == 'cc' %}
+                                Colon Classification is an analytico-synthetic classification system developed by S.R. Ranganathan in 1933. It's widely used in Indian libraries.
+                            {% elif book.classification_code == 'ddn' %}
+                                Hindi adaptation of the Dewey Decimal system, modified for better organization of Indian literature and subjects.
+                            {% elif book.classification_code == 'bns' %}
+                                A specialized system developed by the Indian Library Association for better categorization of Indian texts.
+                            {% elif book.classification_code == 'ddc' %}
+                                The standard Dewey Decimal Classification system used internationally.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
 
             <!-- Available Copies Card -->
             <div class="book-info-card">
@@ -492,6 +704,111 @@
                     {% endif %}
                 </div>
             </div>
+
+            <!-- Indian Cultural Context Card -->
+            {% if book.language in 'hindi,bengali,tamil,telugu,marathi,gujarati,kannada,malayalam,punjabi,odia,urdu,sanskrit' or book.region %}
+            <div class="book-indian-info-card mt-4">
+                <div class="book-indian-info-header">
+                    <i class="fas fa-landmark"></i>
+                    <h5 class="mb-0">Indian Cultural Context</h5>
+                </div>
+                <div class="book-info-body">
+                    <!-- Language Context -->
+                    {% if book.language in 'hindi,bengali,tamil,telugu,marathi,gujarati,kannada,malayalam,punjabi,odia,urdu,sanskrit' %}
+                    <div class="mb-4">
+                        <h6 style="color: #FF9933;">{{ book.language|title }} Literature</h6>
+                        <p>
+                            {% if book.language == 'hindi' %}
+                                Hindi literature dates back to the 7th century and has a rich tradition of poetry, prose, and drama. It's one of India's most widely spoken languages and has produced notable works like "Godan" by Premchand and poetry by Kabir and Tulsidas.
+                            {% elif book.language == 'bengali' %}
+                                Bengali literature has a rich heritage with luminaries like Rabindranath Tagore, the first non-European Nobel laureate in Literature. Works like "Gitanjali" and novels by Bankim Chandra Chatterjee have shaped modern Indian literature.
+                            {% elif book.language == 'tamil' %}
+                                Tamil is one of the world's oldest languages with literature dating back over 2,000 years. The Sangam literature, Thirukkural, and works by Bharathiyar represent its rich literary tradition.
+                            {% elif book.language == 'telugu' %}
+                                Telugu literature has a history spanning over a millennium with classical works like "Manu Charitra" and modern literature influenced by social reform movements and progressive ideals.
+                            {% elif book.language == 'marathi' %}
+                                Marathi literature includes ancient works like "Dnyaneshwari" and modern contributions from figures like P.L. Deshpande and V.S. Khandekar, reflecting Maharashtra's cultural heritage.
+                            {% elif book.language == 'gujarati' %}
+                                Gujarati literature features works from medieval saints like Narsinh Mehta to modern writers like K.M. Munshi, with themes ranging from spirituality to social reform.
+                            {% elif book.language == 'kannada' %}
+                                Kannada literature spans over a millennium with classical works, medieval Vachana literature, and modern novels that have won multiple Jnanpith Awards.
+                            {% elif book.language == 'malayalam' %}
+                                Malayalam literature is known for its poetry traditions and progressive novels. Writers like Vaikom Muhammad Basheer and O.V. Vijayan have contributed significantly to Indian literature.
+                            {% elif book.language == 'punjabi' %}
+                                Punjabi literature includes Sufi poetry, the Guru Granth Sahib, and modern works reflecting Punjab's cultural identity and historical experiences.
+                            {% elif book.language == 'odia' %}
+                                Odia literature is one of the oldest in India, with works dating back to the 7th century and a strong tradition of poetry, prose, and devotional literature.
+                            {% elif book.language == 'urdu' %}
+                                Urdu literature is renowned for its poetry traditions including ghazals and nazms, with contributions from poets like Ghalib, Mir, and Faiz Ahmad Faiz.
+                            {% elif book.language == 'sanskrit' %}
+                                Sanskrit literature includes ancient texts like the Vedas, Upanishads, classical works by Kalidasa, and epic poems like the Mahabharata and Ramayana.
+                            {% endif %}
+                        </p>
+                    </div>
+                    {% endif %}
+
+                    <!-- Regional Context -->
+                    {% if book.region %}
+                    <div class="mb-4">
+                        <h6 style="color: #138808;">{{ book.region|title }} Indian Context</h6>
+                        <p>
+                            {% if book.region == 'north' %}
+                                North Indian literature encompasses Hindi, Urdu, Punjabi, and other languages, with themes reflecting the region's Mughal influence, folk traditions, and historical experiences.
+                            {% elif book.region == 'south' %}
+                                South Indian literature in Tamil, Telugu, Kannada, and Malayalam has ancient classical traditions and modern works addressing social reform, cultural identity, and philosophical themes.
+                            {% elif book.region == 'east' %}
+                                East Indian literature includes Bengali, Odia, and Assamese works, with themes of nationalism, social reform, and cultural renaissance particularly prominent in the colonial and post-colonial periods.
+                            {% elif book.region == 'west' %}
+                                Western Indian literature in Marathi, Gujarati, and Konkani reflects the region's maritime history, commercial traditions, and social reform movements.
+                            {% elif book.region == 'central' %}
+                                Central Indian literature often addresses tribal cultures, folk traditions, and the intersection of various linguistic and cultural influences in the heart of India.
+                            {% elif book.region == 'northeast' %}
+                                Northeastern Indian literature represents diverse linguistic traditions and often addresses themes of identity, cultural preservation, and the region's unique historical experiences.
+                            {% endif %}
+                        </p>
+                    </div>
+                    {% endif %}
+
+                    <!-- Literary Resources -->
+                    <div>
+                        <h6 style="color: #000080;">Literary Resources</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <i class="fas fa-university me-2" style="color: #FF9933;"></i>
+                                        <a href="https://www.sahitya-akademi.gov.in/" target="_blank" class="book-form-help-link">Sahitya Akademi</a>
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-book me-2" style="color: #138808;"></i>
+                                        <a href="http://www.nationallibrary.gov.in/" target="_blank" class="book-form-help-link">National Library of India</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <i class="fas fa-landmark me-2" style="color: #FF9933;"></i>
+                                        <a href="https://www.indiaculture.gov.in/" target="_blank" class="book-form-help-link">Ministry of Culture</a>
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-graduation-cap me-2" style="color: #138808;"></i>
+                                        <a href="https://www.ugc.ac.in/" target="_blank" class="book-form-help-link">UGC Resources</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Indian Flag Colors -->
+                    <div class="book-indian-flag-colors mt-3">
+                        <div class="book-indian-flag-color book-indian-flag-color-saffron"></div>
+                        <div class="book-indian-flag-color book-indian-flag-color-white"></div>
+                        <div class="book-indian-flag-color book-indian-flag-color-green"></div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -501,7 +818,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Add fade-in animation to elements
-        const elements = document.querySelectorAll('.book-info-card, .book-cover-container');
+        const elements = document.querySelectorAll('.book-info-card, .book-cover-container, .book-indian-info-card, .book-indian-header');
         elements.forEach((el, index) => {
             el.style.opacity = '0';
             el.style.transform = 'translateY(20px)';
@@ -513,6 +830,48 @@
                 el.style.transform = 'translateY(0)';
             }, 100);
         });
+
+        // Add special animation for Indian flag colors
+        const flagColors = document.querySelectorAll('.book-indian-flag-color');
+        flagColors.forEach((color, index) => {
+            color.style.width = '0';
+            color.style.transition = 'width 1s ease';
+            color.style.transitionDelay = `${0.5 + (index * 0.2)}s`;
+
+            setTimeout(() => {
+                color.style.width = '100%';
+            }, 300);
+        });
+
+        // Add hover effects for Indian badges
+        const badges = document.querySelectorAll('.book-indian-badge');
+        badges.forEach(badge => {
+            badge.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease';
+
+            badge.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-3px)';
+                this.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+            });
+
+            badge.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = 'none';
+            });
+        });
+
+        // Add special animation for regional title if it exists
+        const regionalTitle = document.querySelector('.book-regional-title');
+        if (regionalTitle) {
+            regionalTitle.style.opacity = '0';
+            regionalTitle.style.transform = 'translateX(-20px)';
+            regionalTitle.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            regionalTitle.style.transitionDelay = '0.3s';
+
+            setTimeout(() => {
+                regionalTitle.style.opacity = '1';
+                regionalTitle.style.transform = 'translateX(0)';
+            }, 200);
+        }
     });
 </script>
 {% endblock %}
