@@ -6,7 +6,7 @@
 {% block page_title %}Super Admin Dashboard{% endblock %}
 
 {% block page_actions %}
-<a href="{% url 'libraries:create_library' %}" class="admin-pro-btn admin-pro-btn-primary">
+<a href="{% url 'superadmin:create_library' %}" class="admin-pro-btn admin-pro-btn-primary">
     <i class="fas fa-plus"></i> Add New Library
 </a>
 <a href="{% url 'accounts:user_add' %}" class="admin-pro-btn admin-pro-btn-outline">
@@ -25,7 +25,7 @@
             <h2>Welcome to Super Admin Dashboard</h2>
             <p>Manage your entire library network from one central location. Monitor performance, add new libraries, and oversee all operations across your organization.</p>
             <div class="super-admin-welcome-actions">
-                <a href="{% url 'libraries:create_library' %}" class="btn btn-primary">
+                <a href="{% url 'superadmin:create_library' %}" class="btn btn-primary">
                     <i class="fas fa-plus"></i> Add New Library
                 </a>
                 <a href="{% url 'superadmin:reports' %}?type=libraries" class="btn btn-outline-primary">

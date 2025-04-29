@@ -1,0 +1,781 @@
+{% extends 'core/admin_base.html' %}
+{% load static %}
+
+{% block title %}Manage Books - Library Management System{% endblock %}
+{% block breadcrumb_title %}Manage Books{% endblock %}
+{% block page_title %}Manage Books{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'books:add_book' %}" class="admin-pro-btn admin-pro-btn-primary">
+    <i class="fas fa-plus"></i> Add Book
+</a>
+<a href="{% url 'books:manage_book_copies' %}" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-copy"></i> Manage Copies
+</a>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Modern Professional Book Management Styles */
+
+    /* Book Card Styles */
+    .book-card {
+        transition: all var(--transition-normal);
+        height: 100%;
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        border: none;
+        box-shadow: var(--shadow-sm);
+        background-color: var(--surface);
+        position: relative;
+    }
+
+    .book-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .book-cover {
+        height: 220px;
+        overflow: hidden;
+        position: relative;
+        background-color: rgba(var(--primary-color-rgb), 0.05);
+    }
+
+    .book-cover img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: all 0.5s ease;
+    }
+
+    .book-card:hover .book-cover img {
+        transform: scale(1.05);
+    }
+
+    .book-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 100%);
+        opacity: 0;
+        transition: all var(--transition-normal);
+        display: flex;
+        align-items: flex-end;
+        padding: 1.25rem;
+    }
+
+    .book-card:hover .book-overlay {
+        opacity: 1;
+    }
+
+    .book-overlay-actions {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .book-overlay-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--dark);
+        text-decoration: none;
+        transition: all var(--transition-normal);
+        transform: translateY(20px);
+        opacity: 0;
+        box-shadow: var(--shadow-md);
+    }
+
+    .book-card:hover .book-overlay-btn {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .book-overlay-btn:hover {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .book-overlay-btn:nth-child(1) {
+        transition-delay: 0.05s;
+    }
+
+    .book-overlay-btn:nth-child(2) {
+        transition-delay: 0.1s;
+    }
+
+    .book-overlay-btn:nth-child(3) {
+        transition-delay: 0.15s;
+    }
+
+    .book-content {
+        padding: 1.5rem;
+    }
+
+    .book-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        height: 2.8rem;
+        line-height: 1.4;
+        transition: all var(--transition-fast);
+    }
+
+    .book-card:hover .book-title {
+        color: var(--primary-color);
+    }
+
+    .book-authors {
+        font-size: 0.95rem;
+        color: var(--medium);
+        margin-bottom: 0.75rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .book-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+        font-size: 0.85rem;
+        color: var(--medium);
+    }
+
+    .book-categories {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-top: 0.75rem;
+    }
+
+    .book-category {
+        font-size: 0.7rem;
+        padding: 0.3em 0.6em;
+        border-radius: 50rem;
+        background-color: rgba(var(--secondary-color-rgb), 0.1);
+        color: var(--secondary-color);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        transition: all var(--transition-fast);
+    }
+
+    .book-category:hover {
+        background-color: var(--secondary-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .book-copies {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .book-copies i {
+        color: var(--primary-color);
+    }
+
+    .book-isbn {
+        font-family: var(--body-font);
+        font-size: 0.85rem;
+        color: var(--medium-light);
+        margin-top: 0.5rem;
+    }
+
+    /* Search and Filter Styles */
+    .book-search-form {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+
+    .book-search-form .input-group {
+        box-shadow: var(--shadow-sm);
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        transition: all var(--transition-normal);
+    }
+
+    .book-search-form .input-group:focus-within {
+        box-shadow: var(--shadow-md);
+    }
+
+    .book-search-form .input-group-text {
+        border-radius: 0;
+        border: none;
+        padding: 0.75rem 1.25rem;
+        font-size: 1.1rem;
+    }
+
+    .book-search-form .form-control {
+        border-radius: 0;
+        border: none;
+        padding: 0.75rem 1.25rem;
+        font-size: 1rem;
+    }
+
+    .book-search-form .form-control:focus {
+        box-shadow: none;
+    }
+
+    .book-search-form .admin-pro-btn {
+        border-radius: 0;
+        padding: 0.75rem 1.5rem;
+    }
+
+    /* View Toggle Styles */
+    .book-view-toggle {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .book-view-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--border-radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(var(--primary-color-rgb), 0.1);
+        color: var(--medium);
+        cursor: pointer;
+        transition: all var(--transition-normal);
+    }
+
+    .book-view-btn.active {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .book-view-btn:hover:not(.active) {
+        background-color: rgba(var(--primary-color-rgb), 0.2);
+        transform: translateY(-2px);
+    }
+
+    /* Table View Styles */
+    .book-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .book-table th {
+        background-color: rgba(var(--primary-color-rgb), 0.05);
+        padding: 1rem 1.25rem;
+        font-weight: 600;
+        text-align: left;
+        border-bottom: 2px solid rgba(var(--primary-color-rgb), 0.1);
+        color: var(--medium-dark);
+    }
+
+    .book-table td {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        vertical-align: middle;
+        color: var(--medium);
+    }
+
+    .book-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .book-table tr:hover td {
+        background-color: rgba(var(--primary-color-rgb), 0.02);
+    }
+
+    .book-table-cover {
+        width: 50px;
+        height: 75px;
+        object-fit: cover;
+        border-radius: var(--border-radius-sm);
+        box-shadow: var(--shadow-sm);
+        transition: all var(--transition-normal);
+    }
+
+    .book-table tr:hover .book-table-cover {
+        transform: scale(1.05);
+        box-shadow: var(--shadow-md);
+    }
+
+    .book-table-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .book-table-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: var(--border-radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-decoration: none;
+        transition: all var(--transition-normal);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .book-table-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .book-table-btn-view {
+        background: linear-gradient(135deg, var(--info-color) 0%, var(--secondary-color) 100%);
+    }
+
+    .book-table-btn-edit {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    }
+
+    .book-table-btn-delete {
+        background: linear-gradient(135deg, var(--danger-color) 0%, #e74c3c 100%);
+    }
+
+    /* Empty State Styles */
+    .book-empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        background-color: var(--surface);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-sm);
+        border: 1px dashed rgba(var(--primary-color-rgb), 0.2);
+    }
+
+    .book-empty-icon {
+        font-size: 3rem;
+        color: var(--medium-light);
+        margin-bottom: 1.5rem;
+    }
+
+    .book-empty-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--dark);
+    }
+
+    .book-empty-text {
+        color: var(--medium);
+        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+    }
+
+    /* Pagination Styles */
+    .book-pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+
+    .book-pagination .page-item .page-link {
+        border-radius: var(--border-radius-md);
+        margin: 0 0.3rem;
+        color: var(--medium-dark);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        transition: all var(--transition-normal);
+        padding: 0.5rem 1rem;
+    }
+
+    .book-pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        border-color: var(--primary-color);
+        color: white;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .book-pagination .page-item .page-link:hover:not(.active) {
+        background-color: rgba(var(--primary-color-rgb), 0.05);
+        transform: translateY(-2px);
+    }
+
+    /* Modal Styles */
+    .modal-content {
+        border: none;
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .modal-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        border-bottom: none;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .modal-footer {
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 1.25rem 1.5rem;
+    }
+
+    .btn-close {
+        color: white;
+        opacity: 0.8;
+        transition: all var(--transition-fast);
+    }
+
+    .btn-close:hover {
+        opacity: 1;
+        transform: rotate(90deg);
+    }
+
+    /* Dark Mode Adjustments */
+    [data-bs-theme="dark"] .book-table th {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+
+    [data-bs-theme="dark"] .book-table td {
+        border-bottom-color: rgba(255, 255, 255, 0.05);
+    }
+
+    [data-bs-theme="dark"] .book-table tr:hover td {
+        background-color: rgba(255, 255, 255, 0.03);
+    }
+
+    [data-bs-theme="dark"] .book-view-btn:not(.active) {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    [data-bs-theme="dark"] .book-view-btn:hover:not(.active) {
+        background-color: rgba(255, 255, 255, 0.15);
+    }
+
+    [data-bs-theme="dark"] .book-pagination .page-item .page-link {
+        border-color: rgba(255, 255, 255, 0.1);
+        color: var(--light);
+    }
+
+    [data-bs-theme="dark"] .book-pagination .page-item .page-link:hover:not(.active) {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    [data-bs-theme="dark"] .modal-footer {
+        border-top-color: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Animation Styles */
+    .fade-in-up {
+        animation: fadeInUp 0.5s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-pro-container fade-in-up">
+    <!-- Filters and Search -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="book-search-form">
+                <form method="get" action="{% url 'books:manage_books' %}">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" name="q" class="form-control border-start-0" placeholder="Search by title, author, or ISBN" value="{{ request.GET.q|default:'' }}">
+                        <button type="submit" class="admin-pro-btn admin-pro-btn-primary">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="book-view-toggle">
+                <div class="book-view-btn active" data-view="grid">
+                    <i class="fas fa-th-large"></i>
+                </div>
+                <div class="book-view-btn" data-view="list">
+                    <i class="fas fa-list"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Books Grid View -->
+    <div class="row book-view" id="grid-view">
+        {% for book in books %}
+        <div class="col-md-3 col-sm-6 mb-4">
+            <div class="book-card">
+                <div class="book-cover">
+                    {% if book.cover_image %}
+                    <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
+                    {% else %}
+                    <img src="https://placehold.co/400x600?text=No+Cover" alt="No Cover">
+                    {% endif %}
+                    <div class="book-overlay">
+                        <div class="book-overlay-actions">
+                            <a href="{% url 'books:book_detail' slug=book.slug %}" class="book-overlay-btn" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{% url 'books:edit_book' slug=book.slug %}" class="book-overlay-btn" title="Edit Book">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="#" class="book-overlay-btn" title="Delete Book" data-bs-toggle="modal" data-bs-target="#deleteModal" data-book-id="{{ book.id }}" data-book-title="{{ book.title }}">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="book-content">
+                    <h3 class="book-title">{{ book.title }}</h3>
+                    <div class="book-authors">
+                        {% for author in book.authors.all %}
+                        {{ author.name }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="book-isbn">ISBN: {{ book.isbn }}</div>
+                    <div class="book-categories">
+                        {% for category in book.categories.all %}
+                        <span class="book-category">{{ category.name }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="book-meta">
+                        <div class="book-copies">
+                            <i class="fas fa-copy"></i> {{ book.copies.count }} copies
+                        </div>
+                        <div class="book-published">
+                            {{ book.publication_date|date:"Y" }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="book-empty-state">
+                <div class="book-empty-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <h3 class="book-empty-title">No Books Found</h3>
+                <p class="book-empty-text">There are no books in your library yet. Add your first book to get started.</p>
+                <a href="{% url 'books:add_book' %}" class="admin-pro-btn admin-pro-btn-primary">
+                    <i class="fas fa-plus me-2"></i> Add Book
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Books List View (Hidden by default) -->
+    <div class="row book-view" id="list-view" style="display: none;">
+        <div class="col-12">
+            <div class="admin-pro-card">
+                <div class="admin-pro-card-body p-0">
+                    <div class="table-responsive">
+                        <table class="book-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 60px;">Cover</th>
+                                    <th>Title</th>
+                                    <th>Author(s)</th>
+                                    <th>ISBN</th>
+                                    <th>Categories</th>
+                                    <th>Copies</th>
+                                    <th style="width: 120px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for book in books %}
+                                <tr>
+                                    <td>
+                                        {% if book.cover_image %}
+                                        <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="book-table-cover">
+                                        {% else %}
+                                        <img src="https://placehold.co/50x75?text=No+Cover" alt="No Cover" class="book-table-cover">
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ book.title }}</td>
+                                    <td>
+                                        {% for author in book.authors.all %}
+                                        {{ author.name }}{% if not forloop.last %}, {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td>{{ book.isbn }}</td>
+                                    <td>
+                                        {% for category in book.categories.all %}
+                                        <span class="badge bg-secondary">{{ category.name }}</span>
+                                        {% endfor %}
+                                    </td>
+                                    <td>{{ book.copies.count }}</td>
+                                    <td>
+                                        <div class="book-table-actions">
+                                            <a href="{% url 'books:book_detail' slug=book.slug %}" class="book-table-btn book-table-btn-view" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{% url 'books:edit_book' slug=book.slug %}" class="book-table-btn book-table-btn-edit" title="Edit Book">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="#" class="book-table-btn book-table-btn-delete" title="Delete Book" data-bs-toggle="modal" data-bs-target="#deleteModal" data-book-id="{{ book.id }}" data-book-title="{{ book.title }}">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center py-5">
+                                        <div class="book-empty-icon">
+                                            <i class="fas fa-book"></i>
+                                        </div>
+                                        <h3 class="book-empty-title">No Books Found</h3>
+                                        <p class="book-empty-text">There are no books in your library yet. Add your first book to get started.</p>
+                                        <a href="{% url 'books:add_book' %}" class="admin-pro-btn admin-pro-btn-primary">
+                                            <i class="fas fa-plus me-2"></i> Add Book
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if books.has_other_pages %}
+    <div class="book-pagination">
+        <ul class="pagination">
+            {% if books.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="First">
+                    <span aria-hidden="true">&laquo;&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ books.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% endif %}
+
+            {% for i in books.paginator.page_range %}
+            {% if books.number == i %}
+            <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+            {% elif i > books.number|add:'-3' and i < books.number|add:'3' %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ i }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ i }}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+
+            {% if books.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ books.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ books.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Last">
+                    <span aria-hidden="true">&raquo;&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the book "<span id="bookTitle"></span>"?</p>
+                <p class="text-danger">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="post" action="">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // View toggle functionality
+        const gridViewBtn = document.querySelector('.book-view-btn[data-view="grid"]');
+        const listViewBtn = document.querySelector('.book-view-btn[data-view="list"]');
+        const gridView = document.getElementById('grid-view');
+        const listView = document.getElementById('list-view');
+
+        gridViewBtn.addEventListener('click', function() {
+            gridViewBtn.classList.add('active');
+            listViewBtn.classList.remove('active');
+            gridView.style.display = 'flex';
+            listView.style.display = 'none';
+            localStorage.setItem('bookViewPreference', 'grid');
+        });
+
+        listViewBtn.addEventListener('click', function() {
+            listViewBtn.classList.add('active');
+            gridViewBtn.classList.remove('active');
+            listView.style.display = 'block';
+            gridView.style.display = 'none';
+            localStorage.setItem('bookViewPreference', 'list');
+        });
+
+        // Load user preference if exists
+        const viewPreference = localStorage.getItem('bookViewPreference');
+        if (viewPreference === 'list') {
+            listViewBtn.click();
+        }
+
+        // Delete modal functionality
+        const deleteModal = document.getElementById('deleteModal');
+        if (deleteModal) {
+            deleteModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const bookId = button.getAttribute('data-book-id');
+                const bookTitle = button.getAttribute('data-book-title');
+
+                document.getElementById('bookTitle').textContent = bookTitle;
+                document.getElementById('deleteForm').action = `{% url 'books:delete_book' pk=0 %}`.replace('0', bookId);
+            });
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}

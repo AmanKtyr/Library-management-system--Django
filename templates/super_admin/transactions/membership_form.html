@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ title }} - Library Management System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'core:home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'transactions:membership_list' %}">Memberships</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="mb-4">{{ title }}</h1>
+            <p class="lead">Join a library to borrow books and access library resources.</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Membership Form</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        {{ form|crispy }}
+                        
+                        <div class="alert alert-info mt-3">
+                            <h5>Membership Benefits:</h5>
+                            <ul>
+                                <li>Borrow books from the library</li>
+                                <li>Reserve books that are currently borrowed</li>
+                                <li>Access library resources and facilities</li>
+                                <li>Participate in library events and programs</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-user-plus me-1"></i> Join Library
+                            </button>
+                            <a href="{% url 'transactions:membership_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const planSelect = document.getElementById('id_plan');
+        const librarySelect = document.getElementById('id_library');
+        
+        // Function to update available plans based on selected library
+        function updatePlans() {
+            const libraryId = librarySelect.value;
+            if (libraryId) {
+                // In a real implementation, you would make an AJAX call to get plans for this library
+                // For now, we'll just enable the plan select
+                planSelect.disabled = false;
+            } else {
+                planSelect.disabled = true;
+            }
+        }
+        
+        // Update plans when library selection changes
+        if (librarySelect) {
+            librarySelect.addEventListener('change', updatePlans);
+            // Initial update
+            updatePlans();
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Return Book - Library Management System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'core:home' %}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'transactions:transaction_list' %}">Transactions</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Return Book</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="mb-4">Return Book</h1>
+            <p class="lead">Select a book to return from your borrowed books.</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Your Borrowed Books</h5>
+                </div>
+                <div class="card-body">
+                    {% if borrowed_transactions %}
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Book</th>
+                                        <th>Library</th>
+                                        <th>Borrowed Date</th>
+                                        <th>Due Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for transaction in borrowed_transactions %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    {% if transaction.book_copy.book.cover_image %}
+                                                        <img src="{{ transaction.book_copy.book.cover_image.url }}" class="me-3" style="width: 50px; height: 75px; object-fit: cover;" alt="{{ transaction.book_copy.book.title }}">
+                                                    {% else %}
+                                                        <img src="https://placehold.co/50x75?text=No+Cover" class="me-3" alt="No Cover">
+                                                    {% endif %}
+                                                    <div>
+                                                        <h6 class="mb-0">{{ transaction.book_copy.book.title }}</h6>
+                                                        <small class="text-muted">
+                                                            {% for author in transaction.book_copy.book.authors.all %}
+                                                                {{ author.name }}{% if not forloop.last %}, {% endif %}
+                                                            {% endfor %}
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>{{ transaction.library.name }}</td>
+                                            <td>{{ transaction.transaction_date|date:"M d, Y" }}</td>
+                                            <td>{{ transaction.due_date|date:"M d, Y" }}</td>
+                                            <td>
+                                                {% if transaction.is_overdue %}
+                                                    <span class="badge bg-danger">Overdue</span>
+                                                {% else %}
+                                                    <span class="badge bg-success">On Time</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <form method="post" action="{% url 'transactions:return_book' %}">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="transaction_id" value="{{ transaction.transaction_id }}">
+                                                    {% if user.is_staff_member or user.is_library_admin %}
+                                                        <input type="hidden" name="processed_by" value="{{ user.id }}">
+                                                    {% endif %}
+                                                    <button type="submit" class="btn btn-primary">
+                                                        <i class="fas fa-undo me-1"></i> Return
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <p>You don't have any borrowed books to return.</p>
+                            <a href="{% url 'books:book_list' %}" class="btn btn-primary mt-2">Browse Books</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

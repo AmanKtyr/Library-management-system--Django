@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Libraries - Library Management System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="mb-4">Libraries</h1>
+            <p class="lead">Browse our network of libraries and find the one closest to you.</p>
+        </div>
+    </div>
+    
+    <!-- Libraries List -->
+    <div class="row">
+        {% for library in libraries %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    {% if library.image %}
+                        <img src="{{ library.image.url }}" class="card-img-top" alt="{{ library.name }}">
+                    {% else %}
+                        <img src="https://placehold.co/400x200?text=Library" class="card-img-top" alt="Library">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ library.name }}</h5>
+                        <p class="card-text">{{ library.description|truncatechars:100 }}</p>
+                        <p class="card-text"><i class="fas fa-map-marker-alt me-2"></i>{{ library.city }}, {{ library.country }}</p>
+                        <p class="card-text"><i class="fas fa-phone me-2"></i>{{ library.phone }}</p>
+                        <p class="card-text"><i class="fas fa-envelope me-2"></i>{{ library.email }}</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0">
+                        <a href="{% url 'libraries:library_detail' slug=library.slug %}" class="btn btn-primary w-100">View Details</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12 text-center">
+                <div class="alert alert-info">
+                    <p>No libraries available yet. Please check back later.</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -17,7 +17,7 @@
 {% block content %}
 <!-- User Stats Overview -->
 <div class="row mb-4">
-    <div class="col-md-3">
+    <div class="col-md-3 col-sm-6">
         <div class="super-admin-stats-card primary">
             <div class="super-admin-stats-header">
                 <div class="super-admin-stats-icon primary">
@@ -25,15 +25,25 @@
                 </div>
             </div>
             <div class="super-admin-stats-content">
-                <h3 class="super-admin-stats-value counter-value" data-target="{{ users.paginator.count|default:'0' }}">0</h3>
+                <h3 class="super-admin-stats-value counter-value" data-target="{{ total_users|default:'0' }}">0</h3>
                 <p class="super-admin-stats-label">Total Users</p>
                 <div class="super-admin-stats-trend up">
-                    <i class="fas fa-arrow-up"></i> Growing community
+                    <i class="fas fa-arrow-up"></i>
+                    <span class="super-admin-stats-percent">{{ active_users|default:'0' }} active</span>
+                </div>
+            </div>
+            <div class="super-admin-stats-progress">
+                <div class="progress">
+                    {% if total_users > 0 %}
+                    <div class="progress-bar bg-primary" role="progressbar" style="width: {{ active_users|default:'0'|floatformat:0 }}%" aria-valuenow="{{ active_users|default:'0' }}" aria-valuemin="0" aria-valuemax="{{ total_users|default:'0' }}"></div>
+                    {% else %}
+                    <div class="progress-bar bg-primary" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-3 col-sm-6">
         <div class="super-admin-stats-card info">
             <div class="super-admin-stats-header">
                 <div class="super-admin-stats-icon info">
@@ -44,12 +54,28 @@
                 <h3 class="super-admin-stats-value counter-value" data-target="{{ admin_count|default:'0' }}">0</h3>
                 <p class="super-admin-stats-label">Administrators</p>
                 <div class="super-admin-stats-trend up">
-                    <i class="fas fa-arrow-up"></i> Management team
+                    <i class="fas fa-arrow-up"></i>
+                    <span class="super-admin-stats-percent">
+                        {% if total_users > 0 %}
+                            {{ admin_count|default:'0'|floatformat:0 }}% of users
+                        {% else %}
+                            0% of users
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            <div class="super-admin-stats-progress">
+                <div class="progress">
+                    {% if total_users > 0 %}
+                    <div class="progress-bar bg-info" role="progressbar" style="width: {% widthratio admin_count|default:'0' total_users 100 %}%" aria-valuenow="{% widthratio admin_count|default:'0' total_users 100 %}" aria-valuemin="0" aria-valuemax="100"></div>
+                    {% else %}
+                    <div class="progress-bar bg-info" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-3 col-sm-6">
         <div class="super-admin-stats-card success">
             <div class="super-admin-stats-header">
                 <div class="super-admin-stats-icon success">
@@ -60,12 +86,28 @@
                 <h3 class="super-admin-stats-value counter-value" data-target="{{ staff_count|default:'0' }}">0</h3>
                 <p class="super-admin-stats-label">Staff Members</p>
                 <div class="super-admin-stats-trend up">
-                    <i class="fas fa-arrow-up"></i> Support team
+                    <i class="fas fa-arrow-up"></i>
+                    <span class="super-admin-stats-percent">
+                        {% if total_users > 0 %}
+                            {{ staff_count|default:'0'|floatformat:0 }}% of users
+                        {% else %}
+                            0% of users
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            <div class="super-admin-stats-progress">
+                <div class="progress">
+                    {% if total_users > 0 %}
+                    <div class="progress-bar bg-success" role="progressbar" style="width: {% widthratio staff_count|default:'0' total_users 100 %}%" aria-valuenow="{% widthratio staff_count|default:'0' total_users 100 %}" aria-valuemin="0" aria-valuemax="100"></div>
+                    {% else %}
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-3 col-sm-6">
         <div class="super-admin-stats-card warning">
             <div class="super-admin-stats-header">
                 <div class="super-admin-stats-icon warning">
@@ -76,7 +118,23 @@
                 <h3 class="super-admin-stats-value counter-value" data-target="{{ member_count|default:'0' }}">0</h3>
                 <p class="super-admin-stats-label">Members</p>
                 <div class="super-admin-stats-trend up">
-                    <i class="fas fa-arrow-up"></i> Library patrons
+                    <i class="fas fa-arrow-up"></i>
+                    <span class="super-admin-stats-percent">
+                        {% if total_users > 0 %}
+                            {{ member_count|default:'0'|floatformat:0 }}% of users
+                        {% else %}
+                            0% of users
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            <div class="super-admin-stats-progress">
+                <div class="progress">
+                    {% if total_users > 0 %}
+                    <div class="progress-bar bg-warning" role="progressbar" style="width: {% widthratio member_count|default:'0' total_users 100 %}%" aria-valuenow="{% widthratio member_count|default:'0' total_users 100 %}" aria-valuemin="0" aria-valuemax="100"></div>
+                    {% else %}
+                    <div class="progress-bar bg-warning" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -90,24 +148,88 @@
             <i class="fas fa-users"></i> Users
         </h5>
         <div class="super-admin-card-actions">
-            <div class="dropdown me-2">
-                <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fas fa-filter me-1"></i> Filter
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="filterDropdown">
-                    <li><a class="dropdown-item {% if not status %}active{% endif %}" href="?{% if search_query %}q={{ search_query }}{% endif %}{% if user_type %}&user_type={{ user_type }}{% endif %}">All Users</a></li>
-                    <li><a class="dropdown-item {% if status == 'active' %}active{% endif %}" href="?status=active{% if search_query %}&q={{ search_query }}{% endif %}{% if user_type %}&user_type={{ user_type }}{% endif %}">Active Users</a></li>
-                    <li><a class="dropdown-item {% if status == 'inactive' %}active{% endif %}" href="?status=inactive{% if search_query %}&q={{ search_query }}{% endif %}{% if user_type %}&user_type={{ user_type }}{% endif %}">Inactive Users</a></li>
-                </ul>
+            <div class="d-flex flex-wrap gap-2">
+                <!-- Status Filter -->
+                <div class="dropdown me-2">
+                    <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline dropdown-toggle" type="button" id="statusDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-filter me-1"></i>
+                        {% if status == 'active' %}
+                            Active Users
+                        {% elif status == 'inactive' %}
+                            Inactive Users
+                        {% else %}
+                            All Status
+                        {% endif %}
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="statusDropdown">
+                        <li><a class="dropdown-item {% if not status %}active{% endif %}" href="?{% if search_query %}q={{ search_query }}{% endif %}{% if user_type %}&user_type={{ user_type }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">All Status</a></li>
+                        <li><a class="dropdown-item {% if status == 'active' %}active{% endif %}" href="?status=active{% if search_query %}&q={{ search_query }}{% endif %}{% if user_type %}&user_type={{ user_type }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">Active Users</a></li>
+                        <li><a class="dropdown-item {% if status == 'inactive' %}active{% endif %}" href="?status=inactive{% if search_query %}&q={{ search_query }}{% endif %}{% if user_type %}&user_type={{ user_type }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">Inactive Users</a></li>
+                    </ul>
+                </div>
+
+                <!-- Sort Options -->
+                <div class="dropdown me-2">
+                    <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-sort me-1"></i>
+                        {% if sort == 'name' %}
+                            Name (A-Z)
+                        {% elif sort == '-name' %}
+                            Name (Z-A)
+                        {% elif sort == 'email' %}
+                            Email (A-Z)
+                        {% elif sort == '-email' %}
+                            Email (Z-A)
+                        {% elif sort == 'date_joined' %}
+                            Oldest First
+                        {% elif sort == '-date_joined' %}
+                            Newest First
+                        {% elif sort == 'last_login' %}
+                            Last Login (Oldest)
+                        {% elif sort == '-last_login' %}
+                            Last Login (Recent)
+                        {% else %}
+                            Sort By
+                        {% endif %}
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                        <li><h6 class="dropdown-header">Name</h6></li>
+                        <li><a class="dropdown-item {% if sort == 'name' %}active{% endif %}" href="?sort=name{% if search_query %}&q={{ search_query }}{% endif %}{% if user_type %}&user_type={{ user_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}">Name (A-Z)</a></li>
+                        <li><a class="dropdown-item {% if sort == '-name' %}active{% endif %}" href="?sort=-name{% if search_query %}&q={{ search_query }}{% endif %}{% if user_type %}&user_type={{ user_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}">Name (Z-A)</a></li>
+
+                        <li><hr class="dropdown-divider"></li>
+                        <li><h6 class="dropdown-header">Email</h6></li>
+                        <li><a class="dropdown-item {% if sort == 'email' %}active{% endif %}" href="?sort=email{% if search_query %}&q={{ search_query }}{% endif %}{% if user_type %}&user_type={{ user_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}">Email (A-Z)</a></li>
+                        <li><a class="dropdown-item {% if sort == '-email' %}active{% endif %}" href="?sort=-email{% if search_query %}&q={{ search_query }}{% endif %}{% if user_type %}&user_type={{ user_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}">Email (Z-A)</a></li>
+
+                        <li><hr class="dropdown-divider"></li>
+                        <li><h6 class="dropdown-header">Date Joined</h6></li>
+                        <li><a class="dropdown-item {% if sort == 'date_joined' %}active{% endif %}" href="?sort=date_joined{% if search_query %}&q={{ search_query }}{% endif %}{% if user_type %}&user_type={{ user_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}">Oldest First</a></li>
+                        <li><a class="dropdown-item {% if sort == '-date_joined' %}active{% endif %}" href="?sort=-date_joined{% if search_query %}&q={{ search_query }}{% endif %}{% if user_type %}&user_type={{ user_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}">Newest First</a></li>
+
+                        <li><hr class="dropdown-divider"></li>
+                        <li><h6 class="dropdown-header">Last Login</h6></li>
+                        <li><a class="dropdown-item {% if sort == 'last_login' %}active{% endif %}" href="?sort=last_login{% if search_query %}&q={{ search_query }}{% endif %}{% if user_type %}&user_type={{ user_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}">Oldest First</a></li>
+                        <li><a class="dropdown-item {% if sort == '-last_login' %}active{% endif %}" href="?sort=-last_login{% if search_query %}&q={{ search_query }}{% endif %}{% if user_type %}&user_type={{ user_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}">Recent First</a></li>
+                    </ul>
+                </div>
             </div>
-            <form class="admin-pro-search-form d-flex">
-                <select name="user_type" class="form-select me-2" style="width: auto;">
+
+            <form class="admin-pro-search-form d-flex flex-wrap gap-2">
+                <!-- Preserve existing parameters -->
+                {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
+                {% if sort %}<input type="hidden" name="sort" value="{{ sort }}">{% endif %}
+
+                <!-- User Type Filter -->
+                <select name="user_type" class="form-select" style="width: auto;">
                     <option value="">All User Types</option>
                     <option value="SUPER_ADMIN" {% if user_type == 'SUPER_ADMIN' %}selected{% endif %}>Super Admin</option>
                     <option value="LIBRARY_ADMIN" {% if user_type == 'LIBRARY_ADMIN' %}selected{% endif %}>Library Admin</option>
                     <option value="STAFF" {% if user_type == 'STAFF' %}selected{% endif %}>Staff</option>
                     <option value="MEMBER" {% if user_type == 'MEMBER' %}selected{% endif %}>Member</option>
                 </select>
+
+                <!-- Search Box -->
                 <div class="input-group">
                     <input type="text" class="form-control" placeholder="Search users..." name="q" value="{{ search_query }}">
                     <button class="btn btn-primary" type="submit">
@@ -300,68 +422,131 @@
         </div>
     </div>
     <div class="super-admin-card-footer">
-        <div class="d-flex justify-content-between align-items-center">
-            <div class="super-admin-pagination-info">
-                {% if users %}
-                Showing {{ users.start_index }} to {{ users.end_index }} of {{ users.paginator.count }} users
+        <div class="admin-pro-pagination-wrapper">
+            <div class="admin-pro-pagination-info">
+                {% if total_users > 0 %}
+                    Showing <span class="fw-bold text-primary">{{ start_item }}</span> to <span class="fw-bold text-primary">{{ end_item }}</span> of <span class="fw-bold text-primary">{{ total_users }}</span> users
+                {% else %}
+                    No users found
                 {% endif %}
             </div>
-            <div class="super-admin-pagination">
+
+            <div class="admin-pro-pagination">
                 {% if users.has_other_pages %}
-                <nav>
-                    <ul class="pagination">
+                <nav aria-label="User pagination">
+                    <ul class="pagination pagination-modern">
+                        <!-- First Page Button -->
                         {% if users.has_previous %}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ users.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if user_type %}&user_type={{ user_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}" aria-label="Previous">
-                                <i class="fas fa-chevron-left"></i>
+                            <a class="page-link" href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}{% if user_type %}&user_type={{ user_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" aria-label="First">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="First">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        <!-- Previous Button -->
+                        {% if users.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ users.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if user_type %}&user_type={{ user_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" aria-label="Previous">
+                                <i class="fas fa-angle-left"></i>
                             </a>
                         </li>
                         {% else %}
                         <li class="page-item disabled">
                             <a class="page-link" href="#" aria-label="Previous">
-                                <i class="fas fa-chevron-left"></i>
+                                <i class="fas fa-angle-left"></i>
                             </a>
                         </li>
                         {% endif %}
 
-                        {% if users.number > 3 %}
-                        <li class="page-item"><a class="page-link" href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}{% if user_type %}&user_type={{ user_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}">1</a></li>
-                        {% if users.number > 4 %}
-                        <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
-                        {% endif %}
-                        {% endif %}
-
-                        {% for i in users.paginator.page_range %}
-                            {% if users.number == i %}
-                            <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
-                            {% elif i > users.number|add:"-3" and i < users.number|add:"3" %}
-                            <li class="page-item"><a class="page-link" href="?page={{ i }}{% if search_query %}&q={{ search_query }}{% endif %}{% if user_type %}&user_type={{ user_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}">{{ i }}</a></li>
+                        <!-- Page Numbers -->
+                        {% if users.paginator.num_pages <= 5 %}
+                            {% for i in users.paginator.page_range %}
+                                {% if users.number == i %}
+                                <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+                                {% else %}
+                                <li class="page-item"><a class="page-link" href="?page={{ i }}{% if search_query %}&q={{ search_query }}{% endif %}{% if user_type %}&user_type={{ user_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            {% if users.number|add:"-2" > 1 %}
+                                <li class="page-item"><a class="page-link" href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}{% if user_type %}&user_type={{ user_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">1</a></li>
+                                {% if users.number|add:"-2" > 2 %}
+                                <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+                                {% endif %}
                             {% endif %}
-                        {% endfor %}
 
-                        {% if users.number < users.paginator.num_pages|add:"-2" %}
-                        {% if users.number < users.paginator.num_pages|add:"-3" %}
-                        <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
-                        {% endif %}
-                        <li class="page-item"><a class="page-link" href="?page={{ users.paginator.num_pages }}{% if search_query %}&q={{ search_query }}{% endif %}{% if user_type %}&user_type={{ user_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}">{{ users.paginator.num_pages }}</a></li>
+                            {% for i in users.paginator.page_range %}
+                                {% if i >= users.number|add:"-1" and i <= users.number|add:"1" %}
+                                    {% if users.number == i %}
+                                    <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+                                    {% else %}
+                                    <li class="page-item"><a class="page-link" href="?page={{ i }}{% if search_query %}&q={{ search_query }}{% endif %}{% if user_type %}&user_type={{ user_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">{{ i }}</a></li>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if users.number|add:"2" < users.paginator.num_pages %}
+                                {% if users.number|add:"2" < users.paginator.num_pages|add:"-1" %}
+                                <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+                                {% endif %}
+                                <li class="page-item"><a class="page-link" href="?page={{ users.paginator.num_pages }}{% if search_query %}&q={{ search_query }}{% endif %}{% if user_type %}&user_type={{ user_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">{{ users.paginator.num_pages }}</a></li>
+                            {% endif %}
                         {% endif %}
 
+                        <!-- Next Button -->
                         {% if users.has_next %}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ users.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if user_type %}&user_type={{ user_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}" aria-label="Next">
-                                <i class="fas fa-chevron-right"></i>
+                            <a class="page-link" href="?page={{ users.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if user_type %}&user_type={{ user_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" aria-label="Next">
+                                <i class="fas fa-angle-right"></i>
                             </a>
                         </li>
                         {% else %}
                         <li class="page-item disabled">
                             <a class="page-link" href="#" aria-label="Next">
-                                <i class="fas fa-chevron-right"></i>
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        <!-- Last Page Button -->
+                        {% if users.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ users.paginator.num_pages }}{% if search_query %}&q={{ search_query }}{% endif %}{% if user_type %}&user_type={{ user_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" aria-label="Last">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="Last">
+                                <i class="fas fa-angle-double-right"></i>
                             </a>
                         </li>
                         {% endif %}
                     </ul>
                 </nav>
                 {% endif %}
+            </div>
+
+            <div class="admin-pro-pagination-select">
+                <form method="get" class="d-flex align-items-center">
+                    {% if search_query %}<input type="hidden" name="q" value="{{ search_query }}">{% endif %}
+                    {% if user_type %}<input type="hidden" name="user_type" value="{{ user_type }}">{% endif %}
+                    {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
+                    {% if sort %}<input type="hidden" name="sort" value="{{ sort }}">{% endif %}
+                    <label for="page-select" class="me-2">Go to page:</label>
+                    <select id="page-select" name="page" class="form-select form-select-sm" onchange="this.form.submit()">
+                        {% for i in users.paginator.page_range %}
+                            <option value="{{ i }}" {% if users.number == i %}selected{% endif %}>{{ i }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
             </div>
         </div>
     </div>

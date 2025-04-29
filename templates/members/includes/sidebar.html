@@ -1,0 +1,45 @@
+<div class="text-center mb-4">
+    {% if user.profile_picture %}
+        <img src="{{ user.profile_picture.url }}" alt="{{ user.get_full_name }}" class="img-fluid rounded-circle mb-3" style="width: 100px; height: 100px; object-fit: cover;">
+    {% else %}
+        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 100px; height: 100px;">
+            <span class="display-4 text-secondary">{{ user.get_initials }}</span>
+        </div>
+    {% endif %}
+    <h5>{{ user.get_full_name|default:user.email }}</h5>
+    <p class="text-muted small">{{ user.email }}</p>
+</div>
+
+<nav class="nav flex-column">
+    <a class="nav-link {% if request.path == '/member/dashboard/' %}active{% endif %}" href="{% url 'member:dashboard' %}">
+        <i class="fas fa-tachometer-alt"></i> Dashboard
+    </a>
+    <a class="nav-link {% if request.path == '/member/profile/' %}active{% endif %}" href="{% url 'member:profile' %}">
+        <i class="fas fa-user"></i> My Profile
+    </a>
+    <a class="nav-link {% if request.path == '/member/memberships/' %}active{% endif %}" href="{% url 'member:memberships' %}">
+        <i class="fas fa-id-card"></i> Memberships
+    </a>
+    <a class="nav-link {% if request.path == '/member/borrowed-books/' %}active{% endif %}" href="{% url 'member:borrowed_books' %}">
+        <i class="fas fa-book"></i> Borrowed Books
+    </a>
+    <a class="nav-link {% if request.path == '/member/reserved-books/' %}active{% endif %}" href="{% url 'member:reserved_books' %}">
+        <i class="fas fa-clock"></i> Reserved Books
+    </a>
+    <a class="nav-link {% if request.path == '/member/transactions/' %}active{% endif %}" href="{% url 'member:transactions' %}">
+        <i class="fas fa-exchange-alt"></i> Transactions
+    </a>
+    <a class="nav-link {% if request.path == '/member/fines/' %}active{% endif %}" href="{% url 'member:fines' %}">
+        <i class="fas fa-money-bill-wave"></i> Fines
+    </a>
+    <div class="dropdown-divider my-3"></div>
+    <a class="nav-link" href="{% url 'books:book_list' %}">
+        <i class="fas fa-search"></i> Browse Books
+    </a>
+    <a class="nav-link" href="{% url 'libraries:library_list' %}">
+        <i class="fas fa-building"></i> Browse Libraries
+    </a>
+    <a class="nav-link" href="{% url 'account_logout' %}">
+        <i class="fas fa-sign-out-alt"></i> Logout
+    </a>
+</nav>

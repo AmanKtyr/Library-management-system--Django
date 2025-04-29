@@ -1,0 +1,197 @@
+{% extends 'member/dashboard_base.html' %}
+{% load static %}
+
+{% block title %}My Profile - Library Management System{% endblock %}
+{% block member_title %}My Profile{% endblock %}
+
+{% block member_actions %}
+<a href="{% url 'account_change_password' %}" class="btn btn-outline-primary">
+    <i class="fas fa-lock me-1"></i> Change Password
+</a>
+{% endblock %}
+
+{% block member_content %}
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+                {% if user.profile_picture %}
+                    <img src="{{ user.profile_picture.url }}" alt="{{ user.get_full_name }}" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                {% else %}
+                    <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 150px; height: 150px;">
+                        <span class="display-4 text-secondary">{{ user.get_initials }}</span>
+                    </div>
+                {% endif %}
+                <h4>{{ user.get_full_name|default:user.email }}</h4>
+                <p class="text-muted">{{ user.email }}</p>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'member:edit_profile' %}" class="btn btn-primary">
+                        <i class="fas fa-edit me-1"></i> Edit Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Personal Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <p class="text-muted mb-0">Full Name</p>
+                    </div>
+                    <div class="col-md-8">
+                        <p class="mb-0">{{ user.get_full_name|default:"Not provided" }}</p>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <p class="text-muted mb-0">Email Address</p>
+                    </div>
+                    <div class="col-md-8">
+                        <p class="mb-0">{{ user.email }}</p>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <p class="text-muted mb-0">Phone Number</p>
+                    </div>
+                    <div class="col-md-8">
+                        <p class="mb-0">{{ user.phone_number|default:"Not provided" }}</p>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <p class="text-muted mb-0">Address</p>
+                    </div>
+                    <div class="col-md-8">
+                        <p class="mb-0">{{ user.address|default:"Not provided" }}</p>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <p class="text-muted mb-0">Date of Birth</p>
+                    </div>
+                    <div class="col-md-8">
+                        <p class="mb-0">{{ user.date_of_birth|date:"F d, Y"|default:"Not provided" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Account Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <p class="text-muted mb-0">Account Type</p>
+                    </div>
+                    <div class="col-md-8">
+                        <p class="mb-0">
+                            {% if user.is_super_admin %}
+                            <span class="badge bg-primary">Super Admin</span>
+                            {% elif user.is_library_admin %}
+                            <span class="badge bg-success">Library Admin</span>
+                            {% elif user.is_staff_member %}
+                            <span class="badge bg-info">Staff</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Member</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <p class="text-muted mb-0">Account Status</p>
+                    </div>
+                    <div class="col-md-8">
+                        <p class="mb-0">
+                            {% if user.is_active %}
+                            <span class="badge bg-success">Active</span>
+                            {% else %}
+                            <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <p class="text-muted mb-0">Member Since</p>
+                    </div>
+                    <div class="col-md-8">
+                        <p class="mb-0">{{ user.date_joined|date:"F d, Y" }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <p class="text-muted mb-0">Last Login</p>
+                    </div>
+                    <div class="col-md-8">
+                        <p class="mb-0">{{ user.last_login|date:"F d, Y g:i A"|default:"Never" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if memberships %}
+<div class="card shadow-sm mt-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0">Library Memberships</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Library</th>
+                        <th>Membership Plan</th>
+                        <th>Start Date</th>
+                        <th>Expiry Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for membership in memberships %}
+                    <tr>
+                        <td>{{ membership.library.name }}</td>
+                        <td>{{ membership.plan.name }}</td>
+                        <td>{{ membership.start_date|date:"M d, Y" }}</td>
+                        <td>{{ membership.end_date|date:"M d, Y" }}</td>
+                        <td>
+                            {% if membership.is_active %}
+                            <span class="badge bg-success">Active</span>
+                            {% else %}
+                            <span class="badge bg-danger">Expired</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'transactions:membership_detail' membership_id=membership.id %}" class="btn btn-sm btn-outline-primary">
+                                Details
+                            </a>
+                            {% if not membership.is_active %}
+                            <a href="{% url 'transactions:renew_membership' membership_id=membership.id %}" class="btn btn-sm btn-outline-success">
+                                Renew
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

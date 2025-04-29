@@ -27,6 +27,7 @@
     <link rel="stylesheet" href="{% static 'css/admin.css' %}">
     <link rel="stylesheet" href="{% static 'css/admin-pro.css' %}">
     <link rel="stylesheet" href="{% static 'css/super-admin.css' %}">
+    <link rel="stylesheet" href="{% static 'css/pagination.css' %}">
 
     {% block extra_css %}{% endblock %}
 </head>
@@ -77,7 +78,7 @@
                         <span>Libraries</span>
                         <span class="menu-badge">{{ total_libraries|default:"0" }}</span>
                     </a>
-                    <a href="{% url 'libraries:create_library' %}" class="admin-pro-menu-item">
+                    <a href="{% url 'superadmin:create_library' %}" class="admin-pro-menu-item">
                         <i class="fas fa-plus-circle"></i>
                         <span>Add New Library</span>
                     </a>

@@ -662,6 +662,52 @@
     font-size: 16px;
 }
 
+.super-admin-stats-percent {
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.super-admin-stats-progress {
+    padding: 0 5px 15px;
+    margin-top: 15px;
+}
+
+.super-admin-stats-progress .progress {
+    height: 6px;
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.super-admin-stats-progress .progress-bar {
+    border-radius: 3px;
+    position: relative;
+    overflow: hidden;
+}
+
+.super-admin-stats-progress .progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0) 100%);
+    animation: progress-shine 2s infinite;
+}
+
+@keyframes progress-shine {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
 .super-admin-stats-card:hover .super-admin-stats-trend {
     transform: translateX(5px);
 }

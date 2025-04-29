@@ -102,7 +102,7 @@ def is_library_admin(user):
 @user_passes_test(is_super_admin)
 def admin_panel(request):
     """View function for the custom super admin panel - redirects to superadmin dashboard."""
-    return redirect('super_admin:dashboard')
+    return redirect('superadmin:dashboard')
 
 @login_required
 @user_passes_test(is_super_admin)
