@@ -19,7 +19,7 @@ urlpatterns = [
     path('categories/<slug:slug>/edit/', views.edit_category, name='edit_category'),
 
     # Authors URLs
-    path('authors/', views.manage_authors, name='authors'),
+    path('authors/', views.authors_collection, name='authors_collection'),
     path('authors/add/', views.add_author, name='add_author'),
     path('authors/<slug:slug>/edit/', views.edit_author, name='edit_author'),
     path('authors/<slug:slug>/', views.author_detail, name='author_detail'),

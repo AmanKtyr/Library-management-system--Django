@@ -974,8 +974,8 @@ def system_status(request):
 
 @login_required
 @user_passes_test(is_library_admin)
-def manage_authors(request):
-    """View function for managing authors."""
+def authors_collection(request):
+    """View function for displaying the authors page."""
     user = request.user
     libraries = Library.objects.filter(admin=user)
 

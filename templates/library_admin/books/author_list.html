@@ -1,7 +1,18 @@
-{% extends 'base.html' %}
+{% extends 'library_admin/base.html' %}
 {% load static %}
 
 {% block title %}Authors - Library Management System{% endblock %}
+{% block breadcrumb_title %}Authors{% endblock %}
+{% block page_title %}Authors{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'library_admin:add_author' %}" class="admin-pro-btn admin-pro-btn-primary">
+    <i class="fas fa-plus"></i> Add Author
+</a>
+<a href="{% url 'books:manage_books' %}" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-book"></i> Manage Books
+</a>
+{% endblock %}
 
 {% block extra_css %}
 <style>
