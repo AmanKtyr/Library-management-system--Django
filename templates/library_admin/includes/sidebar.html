@@ -45,15 +45,19 @@
     <i class="fas fa-sync category-icon"></i>
     <span>Circulation</span>
 </div>
-<a href="{% url 'transactions:borrow_book' %}" class="admin-pro-menu-item {% if '/transactions/borrow/' in request.path %}active{% endif %}">
+<a href="{% url 'library_admin:circulation' %}" class="admin-pro-menu-item {% if '/library-admin/circulation/' in request.path and not '/issue-book/' in request.path and not '/return-book/' in request.path %}active{% endif %}">
+    <i class="fas fa-sync"></i>
+    <span>Circulation</span>
+</a>
+<a href="{% url 'library_admin:issue_book' %}" class="admin-pro-menu-item {% if '/library-admin/circulation/issue-book/' in request.path %}active{% endif %}">
     <i class="fas fa-arrow-circle-right"></i>
     <span>Issue Books</span>
 </a>
-<a href="{% url 'transactions:return_book' %}" class="admin-pro-menu-item {% if '/transactions/return/' in request.path %}active{% endif %}">
+<a href="{% url 'library_admin:return_book' %}" class="admin-pro-menu-item {% if '/library-admin/circulation/return-book/' in request.path %}active{% endif %}">
     <i class="fas fa-arrow-circle-left"></i>
     <span>Return Books</span>
 </a>
-<a href="{% url 'transactions:transaction_list' %}" class="admin-pro-menu-item {% if '/transactions/' in request.path and not '/borrow/' in request.path and not '/return/' in request.path and not '/reports/' in request.path %}active{% endif %}">
+<a href="{% url 'library_admin:transactions' %}" class="admin-pro-menu-item {% if '/library-admin/transactions/' in request.path %}active{% endif %}">
     <i class="fas fa-exchange-alt"></i>
     <span>Transactions</span>
 </a>

@@ -1,4 +1,4 @@
-{% extends 'core/admin_base.html' %}
+{% extends 'library_admin/base.html' %}
 {% load static %}
 
 {% block title %}Circulation Dashboard - Library Management System{% endblock %}
@@ -11,7 +11,7 @@
     .circulation-dashboard {
         margin-bottom: 2rem;
     }
-    
+
     .stats-card {
         border-radius: 12px;
         overflow: hidden;
@@ -21,12 +21,12 @@
         background-color: var(--bs-white);
         border: 1px solid var(--bs-gray-200);
     }
-    
+
     .stats-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     }
-    
+
     .stats-card-header {
         padding: 1.25rem;
         border-bottom: 1px solid var(--bs-gray-200);
@@ -34,14 +34,14 @@
         align-items: center;
         justify-content: space-between;
     }
-    
+
     .stats-card-title {
         font-size: 1rem;
         font-weight: 600;
         margin-bottom: 0;
         color: var(--bs-gray-700);
     }
-    
+
     .stats-card-icon {
         width: 40px;
         height: 40px;
@@ -52,70 +52,70 @@
         font-size: 1.25rem;
         color: white;
     }
-    
+
     .stats-card-body {
         padding: 1.5rem;
         display: flex;
         flex-direction: column;
     }
-    
+
     .stats-card-value {
         font-size: 2.5rem;
         font-weight: 700;
         margin-bottom: 0.5rem;
         line-height: 1;
     }
-    
+
     .stats-card-label {
         font-size: 0.875rem;
         color: var(--bs-gray-600);
     }
-    
+
     .stats-card-footer {
         padding: 0.75rem 1.25rem;
         border-top: 1px solid var(--bs-gray-200);
         font-size: 0.875rem;
         color: var(--bs-gray-600);
     }
-    
+
     .stats-card-trend {
         display: flex;
         align-items: center;
         font-weight: 500;
     }
-    
+
     .stats-card-trend i {
         margin-right: 0.25rem;
     }
-    
+
     .stats-card-trend.positive {
         color: var(--bs-success);
     }
-    
+
     .stats-card-trend.negative {
         color: var(--bs-danger);
     }
-    
+
     .bg-books {
         background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
     }
-    
+
     .bg-available {
         background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);
     }
-    
+
     .bg-borrowed {
         background: linear-gradient(135deg, #f6c23e 0%, #dda20a 100%);
     }
-    
+
     .bg-overdue {
         background: linear-gradient(135deg, #e74a3b 0%, #be2617 100%);
     }
-    
+
     .bg-members {
         background: linear-gradient(135deg, #36b9cc 0%, #258391 100%);
     }
-    
+
     /* Chart Card */
     .chart-card {
         border-radius: 12px;
@@ -125,23 +125,23 @@
         border: 1px solid var(--bs-gray-200);
         margin-bottom: 1.5rem;
     }
-    
+
     .chart-card-header {
         padding: 1.25rem;
         border-bottom: 1px solid var(--bs-gray-200);
     }
-    
+
     .chart-card-title {
         font-size: 1.1rem;
         font-weight: 600;
         margin-bottom: 0;
         color: var(--bs-gray-700);
     }
-    
+
     .chart-card-body {
         padding: 1.5rem;
     }
-    
+
     /* Table Card */
     .table-card {
         border-radius: 12px;
@@ -151,7 +151,7 @@
         border: 1px solid var(--bs-gray-200);
         margin-bottom: 1.5rem;
     }
-    
+
     .table-card-header {
         padding: 1.25rem;
         border-bottom: 1px solid var(--bs-gray-200);
@@ -159,23 +159,23 @@
         align-items: center;
         justify-content: space-between;
     }
-    
+
     .table-card-title {
         font-size: 1.1rem;
         font-weight: 600;
         margin-bottom: 0;
         color: var(--bs-gray-700);
     }
-    
+
     .table-card-body {
         padding: 0;
     }
-    
+
     .circulation-table {
         width: 100%;
         margin-bottom: 0;
     }
-    
+
     .circulation-table th {
         background-color: var(--bs-gray-100);
         color: var(--bs-gray-700);
@@ -183,25 +183,25 @@
         padding: 0.75rem 1.25rem;
         border-bottom: 1px solid var(--bs-gray-200);
     }
-    
+
     .circulation-table td {
         padding: 1rem 1.25rem;
         vertical-align: middle;
         border-bottom: 1px solid var(--bs-gray-200);
     }
-    
+
     .circulation-table tr:last-child td {
         border-bottom: none;
     }
-    
+
     .circulation-table tbody tr {
         transition: all 0.2s ease;
     }
-    
+
     .circulation-table tbody tr:hover {
         background-color: var(--bs-gray-100);
     }
-    
+
     .status-badge {
         padding: 0.35rem 0.65rem;
         border-radius: 50px;
@@ -209,34 +209,34 @@
         font-weight: 600;
         display: inline-block;
     }
-    
+
     .status-badge.borrowed {
         background-color: rgba(246, 194, 62, 0.2);
         color: #dda20a;
     }
-    
+
     .status-badge.returned {
         background-color: rgba(28, 200, 138, 0.2);
         color: #13855c;
     }
-    
+
     .status-badge.overdue {
         background-color: rgba(231, 74, 59, 0.2);
         color: #be2617;
     }
-    
+
     .status-badge.reserved {
         background-color: rgba(54, 185, 204, 0.2);
         color: #258391;
     }
-    
+
     /* Quick Action Buttons */
     .quick-actions {
         display: flex;
         gap: 1rem;
         margin-bottom: 1.5rem;
     }
-    
+
     .quick-action-btn {
         flex: 1;
         display: flex;
@@ -252,33 +252,33 @@
         color: var(--bs-gray-700);
         font-weight: 500;
     }
-    
+
     .quick-action-btn:hover {
         transform: translateY(-3px);
         box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
         border-color: var(--bs-primary);
         color: var(--bs-primary);
     }
-    
+
     .quick-action-btn i {
         font-size: 1.25rem;
         margin-right: 0.75rem;
     }
-    
+
     /* Animation */
     .fade-in-up {
         opacity: 0;
         transform: translateY(20px);
         animation: fadeInUp 0.5s ease forwards;
     }
-    
+
     @keyframes fadeInUp {
         to {
             opacity: 1;
             transform: translateY(0);
         }
     }
-    
+
     /* Dark Mode Adjustments */
     [data-bs-theme="dark"] .stats-card,
     [data-bs-theme="dark"] .chart-card,
@@ -287,48 +287,48 @@
         background-color: var(--bs-gray-800);
         border-color: var(--bs-gray-700);
     }
-    
+
     [data-bs-theme="dark"] .stats-card-header,
     [data-bs-theme="dark"] .chart-card-header,
     [data-bs-theme="dark"] .table-card-header,
     [data-bs-theme="dark"] .stats-card-footer {
         border-color: var(--bs-gray-700);
     }
-    
+
     [data-bs-theme="dark"] .stats-card-title,
     [data-bs-theme="dark"] .chart-card-title,
     [data-bs-theme="dark"] .table-card-title {
         color: var(--bs-gray-200);
     }
-    
+
     [data-bs-theme="dark"] .stats-card-value {
         color: var(--bs-white);
     }
-    
+
     [data-bs-theme="dark"] .stats-card-label,
     [data-bs-theme="dark"] .stats-card-footer {
         color: var(--bs-gray-400);
     }
-    
+
     [data-bs-theme="dark"] .circulation-table th {
         background-color: var(--bs-gray-700);
         color: var(--bs-gray-200);
         border-color: var(--bs-gray-600);
     }
-    
+
     [data-bs-theme="dark"] .circulation-table td {
         border-color: var(--bs-gray-700);
         color: var(--bs-gray-300);
     }
-    
+
     [data-bs-theme="dark"] .circulation-table tbody tr:hover {
         background-color: var(--bs-gray-700);
     }
-    
+
     [data-bs-theme="dark"] .quick-action-btn {
         color: var(--bs-gray-300);
     }
-    
+
     [data-bs-theme="dark"] .quick-action-btn:hover {
         border-color: var(--bs-primary);
         color: var(--bs-primary);
@@ -376,7 +376,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="stats-card fade-in-up" style="animation-delay: 0.2s;">
                 <div class="stats-card-header">
@@ -392,12 +392,16 @@
                 <div class="stats-card-footer">
                     <div class="stats-card-trend {% if available_books > borrowed_books %}positive{% else %}negative{% endif %}">
                         <i class="fas fa-{% if available_books > borrowed_books %}arrow-up{% else %}arrow-down{% endif %}"></i>
-                        {{ available_books|floatformat:1 }}% of total inventory
+                        {% if total_books > 0 %}
+                            {{ available_books|floatformat:1 }}% of total inventory
+                        {% else %}
+                            0% of total inventory
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="stats-card fade-in-up" style="animation-delay: 0.3s;">
                 <div class="stats-card-header">
@@ -411,14 +415,14 @@
                     <div class="stats-card-label">Books currently borrowed</div>
                 </div>
                 <div class="stats-card-footer">
-                    <div class="stats-card-trend {% if borrowed_books < total_books|floatformat:0|div:2 %}positive{% else %}negative{% endif %}">
-                        <i class="fas fa-{% if borrowed_books < total_books|floatformat:0|div:2 %}arrow-down{% else %}arrow-up{% endif %}"></i>
+                    <div class="stats-card-trend {% if borrowed_books < total_books|floatformat:0|divisibleby:2 %}positive{% else %}negative{% endif %}">
+                        <i class="fas fa-{% if borrowed_books < total_books|floatformat:0|divisibleby:2 %}arrow-down{% else %}arrow-up{% endif %}"></i>
                         {{ borrowed_books|floatformat:1 }}% of total inventory
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="stats-card fade-in-up" style="animation-delay: 0.4s;">
                 <div class="stats-card-header">
@@ -439,7 +443,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Charts and Tables -->
     <div class="row">
         <!-- Transaction Activity Chart -->
@@ -453,7 +457,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Most Borrowed Books -->
         <div class="col-xl-4 mb-4">
             <div class="table-card fade-in-up" style="animation-delay: 0.6s;">
@@ -485,7 +489,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="row">
         <!-- Recent Transactions -->
         <div class="col-xl-8 mb-4">
@@ -513,7 +517,7 @@
                                 <td>{{ transaction.get_transaction_type_display }}</td>
                                 <td>{{ transaction.transaction_date|date:"M d, Y" }}</td>
                                 <td>
-                                    <span class="status-badge 
+                                    <span class="status-badge
                                         {% if transaction.transaction_type == 'BORROW' and transaction.is_overdue %}overdue
                                         {% elif transaction.transaction_type == 'BORROW' %}borrowed
                                         {% elif transaction.transaction_type == 'RETURN' %}returned
@@ -537,7 +541,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Overdue Books -->
         <div class="col-xl-4 mb-4">
             <div class="table-card fade-in-up" style="animation-delay: 0.8s;">
@@ -582,11 +586,11 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Transaction Activity Chart
         const ctx = document.getElementById('transactionChart').getContext('2d');
-        
+
         // Parse data from Django
         const dates = [{% for item in daily_transactions %}'{{ item.date }}'{% if not forloop.last %}, {% endif %}{% endfor %}];
         const counts = [{% for item in daily_transactions %}{{ item.count }}{% if not forloop.last %}, {% endif %}{% endfor %}];
-        
+
         const transactionChart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -652,13 +656,13 @@
                 }
             }
         });
-        
+
         // Handle dark mode changes
         const observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 if (mutation.attributeName === 'data-bs-theme') {
                     const isDarkMode = document.documentElement.getAttribute('data-bs-theme') === 'dark';
-                    
+
                     // Update chart colors for dark mode
                     if (isDarkMode) {
                         transactionChart.options.scales.x.ticks.color = '#e0e0e0';
@@ -671,12 +675,12 @@
                         transactionChart.options.scales.x.grid.color = 'rgba(0, 0, 0, 0.1)';
                         transactionChart.options.scales.y.grid.color = 'rgba(0, 0, 0, 0.1)';
                     }
-                    
+
                     transactionChart.update();
                 }
             });
         });
-        
+
         observer.observe(document.documentElement, { attributes: true });
     });
 </script>

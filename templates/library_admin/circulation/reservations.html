@@ -1,4 +1,4 @@
-{% extends 'core/admin_base.html' %}
+{% extends 'library_admin/base.html' %}
 {% load static %}
 
 {% block title %}Manage Reservations - Library Management System{% endblock %}
@@ -6,10 +6,10 @@
 {% block page_title %}Manage Book Reservations{% endblock %}
 
 {% block page_actions %}
-<a href="{% url 'transactions:transaction_list' %}" class="admin-pro-btn admin-pro-btn-outline">
+<a href="{% url 'library_admin:transactions' %}" class="admin-pro-btn admin-pro-btn-outline">
     <i class="fas fa-exchange-alt"></i> Transactions
 </a>
-<a href="{% url 'transactions:borrow_book' %}" class="admin-pro-btn admin-pro-btn-primary">
+<a href="{% url 'library_admin:issue_book' %}" class="admin-pro-btn admin-pro-btn-primary">
     <i class="fas fa-arrow-circle-right"></i> Issue Book
 </a>
 {% endblock %}
@@ -19,7 +19,7 @@
     .reservation-filters {
         margin-bottom: 30px;
     }
-    
+
     .reservation-status-badge {
         display: inline-flex;
         align-items: center;
@@ -29,36 +29,36 @@
         font-size: 12px;
         font-weight: 600;
     }
-    
+
     .reservation-status-badge.pending {
         background-color: rgba(230, 126, 34, 0.1);
         color: #e67e22;
     }
-    
+
     .reservation-status-badge.confirmed {
         background-color: rgba(39, 174, 96, 0.1);
         color: #27ae60;
     }
-    
+
     .reservation-status-badge.cancelled {
         background-color: rgba(231, 76, 60, 0.1);
         color: #e74c3c;
     }
-    
+
     .reservation-status-badge.completed {
         background-color: rgba(52, 152, 219, 0.1);
         color: #3498db;
     }
-    
+
     .reservation-status-badge.expired {
         background-color: rgba(149, 165, 166, 0.1);
         color: #95a5a6;
     }
-    
+
     .reservation-status-badge i {
         margin-right: 5px;
     }
-    
+
     .reservation-table th {
         font-weight: 600;
         color: var(--gray-700);
@@ -67,22 +67,22 @@
         padding: 12px 15px;
         background-color: var(--gray-100);
     }
-    
+
     .reservation-table td {
         padding: 15px;
         vertical-align: middle;
         border-bottom: 1px solid var(--gray-200);
     }
-    
+
     .reservation-table tr:hover {
         background-color: var(--gray-50);
     }
-    
+
     .reservation-table .book-info {
         display: flex;
         align-items: center;
     }
-    
+
     .reservation-table .book-cover {
         width: 50px;
         height: 70px;
@@ -92,13 +92,13 @@
         margin-right: 15px;
         flex-shrink: 0;
     }
-    
+
     .reservation-table .book-cover img {
         width: 100%;
         height: 100%;
         object-fit: cover;
     }
-    
+
     .reservation-table .book-cover-placeholder {
         width: 100%;
         height: 100%;
@@ -108,23 +108,23 @@
         font-size: 20px;
         color: var(--gray-400);
     }
-    
+
     .reservation-table .book-title {
         font-weight: 600;
         margin-bottom: 5px;
         color: var(--gray-800);
     }
-    
+
     .reservation-table .book-author {
         font-size: 13px;
         color: var(--gray-600);
     }
-    
+
     .reservation-table .member-info {
         display: flex;
         align-items: center;
     }
-    
+
     .reservation-table .member-avatar {
         width: 40px;
         height: 40px;
@@ -138,42 +138,42 @@
         margin-right: 10px;
         flex-shrink: 0;
     }
-    
+
     .reservation-table .member-avatar img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         border-radius: 50%;
     }
-    
+
     .reservation-table .member-name {
         font-weight: 500;
         margin-bottom: 3px;
         color: var(--gray-800);
     }
-    
+
     .reservation-table .member-email {
         font-size: 12px;
         color: var(--gray-600);
     }
-    
+
     .reservation-table .date-info {
         font-size: 13px;
         color: var(--gray-700);
     }
-    
+
     .reservation-table .date-label {
         font-size: 11px;
         color: var(--gray-500);
         display: block;
         margin-bottom: 3px;
     }
-    
+
     .reservation-actions {
         display: flex;
         gap: 5px;
     }
-    
+
     .reservation-action-btn {
         width: 32px;
         height: 32px;
@@ -187,62 +187,62 @@
         border: none;
         cursor: pointer;
     }
-    
+
     .reservation-action-btn.confirm {
         background-color: #27ae60;
     }
-    
+
     .reservation-action-btn.confirm:hover {
         background-color: #219653;
     }
-    
+
     .reservation-action-btn.cancel {
         background-color: #e74c3c;
     }
-    
+
     .reservation-action-btn.cancel:hover {
         background-color: #c0392b;
     }
-    
+
     .reservation-action-btn.view {
         background-color: #3498db;
     }
-    
+
     .reservation-action-btn.view:hover {
         background-color: #2980b9;
     }
-    
+
     .reservation-action-btn.issue {
         background-color: #9b59b6;
     }
-    
+
     .reservation-action-btn.issue:hover {
         background-color: #8e44ad;
     }
-    
+
     .reservation-action-btn[disabled] {
         background-color: var(--gray-400);
         cursor: not-allowed;
     }
-    
+
     .reservation-filters .form-select,
     .reservation-filters .form-control {
         border-radius: 8px;
         padding: 10px 15px;
         border: 1px solid var(--gray-300);
     }
-    
+
     .reservation-filters .form-select:focus,
     .reservation-filters .form-control:focus {
         border-color: var(--primary-color);
         box-shadow: 0 0 0 0.2rem rgba(58, 90, 120, 0.15);
     }
-    
+
     .reservation-empty-state {
         text-align: center;
         padding: 60px 20px;
     }
-    
+
     .reservation-empty-icon {
         width: 80px;
         height: 80px;
@@ -255,21 +255,21 @@
         color: var(--gray-500);
         margin: 0 auto 20px;
     }
-    
+
     .reservation-empty-title {
         font-size: 20px;
         font-weight: 600;
         margin-bottom: 10px;
         color: var(--gray-700);
     }
-    
+
     .reservation-empty-text {
         font-size: 16px;
         color: var(--gray-600);
         max-width: 500px;
         margin: 0 auto 20px;
     }
-    
+
     /* Animation */
     @keyframes fadeInUp {
         from {
@@ -281,7 +281,7 @@
             transform: translateY(0);
         }
     }
-    
+
     .fade-in-up {
         animation: fadeInUp 0.5s ease forwards;
     }
@@ -438,7 +438,7 @@
                                         <a href="#" class="reservation-action-btn view" title="View Details" data-bs-toggle="tooltip">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        
+
                                         {% if reservation.status == 'PENDING' %}
                                             <form method="post" action="{% url 'library_admin:confirm_reservation' reservation_id=reservation.id %}" class="d-inline">
                                                 {% csrf_token %}
@@ -446,7 +446,7 @@
                                                     <i class="fas fa-check"></i>
                                                 </button>
                                             </form>
-                                            
+
                                             <form method="post" action="{% url 'library_admin:cancel_reservation' reservation_id=reservation.id %}" class="d-inline">
                                                 {% csrf_token %}
                                                 <button type="submit" class="reservation-action-btn cancel" title="Cancel Reservation" data-bs-toggle="tooltip">
@@ -454,12 +454,12 @@
                                                 </button>
                                             </form>
                                         {% endif %}
-                                        
+
                                         {% if reservation.status == 'CONFIRMED' %}
-                                            <a href="{% url 'transactions:borrow_book' %}?reservation={{ reservation.id }}" class="reservation-action-btn issue" title="Issue Book" data-bs-toggle="tooltip">
+                                            <a href="{% url 'library_admin:issue_book' %}?reservation={{ reservation.id }}" class="reservation-action-btn issue" title="Issue Book" data-bs-toggle="tooltip">
                                                 <i class="fas fa-arrow-circle-right"></i>
                                             </a>
-                                            
+
                                             <form method="post" action="{% url 'library_admin:cancel_reservation' reservation_id=reservation.id %}" class="d-inline">
                                                 {% csrf_token %}
                                                 <button type="submit" class="reservation-action-btn cancel" title="Cancel Reservation" data-bs-toggle="tooltip">
@@ -520,7 +520,7 @@
                     </a>
                 </li>
             {% endif %}
-            
+
             {% for i in reservations.paginator.page_range %}
                 {% if reservations.number == i %}
                     <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
@@ -528,7 +528,7 @@
                     <li class="page-item"><a class="page-link" href="?page={{ i }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status %}&status={{ status }}{% endif %}">{{ i }}</a></li>
                 {% endif %}
             {% endfor %}
-            
+
             {% if reservations.has_next %}
                 <li class="page-item">
                     <a class="page-link" href="?page={{ reservations.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status %}&status={{ status }}{% endif %}" aria-label="Next">
@@ -566,7 +566,7 @@
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
         });
-        
+
         // Refresh button functionality
         document.getElementById('refreshBtn').addEventListener('click', function() {
             location.reload();

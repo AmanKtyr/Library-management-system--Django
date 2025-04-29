@@ -1,4 +1,4 @@
-{% extends 'core/admin_base.html' %}
+{% extends 'library_admin/base.html' %}
 {% load static %}
 
 {% block title %}Library Admin Dashboard - Library Management System{% endblock %}
@@ -147,23 +147,25 @@
         overflow: hidden;
     }
 
+    /* Indian Flag Colors */
     .admin-pro-stats-card.primary {
-        background: linear-gradient(135deg, #3a5a78 0%, #4a6a88 100%);
+        background: linear-gradient(135deg, #FF9933 0%, #FF8C00 100%); /* Saffron */
         color: white;
     }
 
     .admin-pro-stats-card.success {
-        background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        background: linear-gradient(135deg, #138808 0%, #0F6606 100%); /* Green */
         color: white;
     }
 
     .admin-pro-stats-card.info {
-        background: linear-gradient(135deg, #3498db 0%, #5dade2 100%);
-        color: white;
+        background: linear-gradient(135deg, #FFFFFF 0%, #F8F8F8 100%); /* White */
+        color: #333333;
+        border: 1px solid #e0e0e0;
     }
 
     .admin-pro-stats-card.warning {
-        background: linear-gradient(135deg, #e67e22 0%, #f39c12 100%);
+        background: linear-gradient(135deg, #000080 0%, #000066 100%); /* Navy Blue (Ashoka Chakra) */
         color: white;
     }
 
@@ -516,17 +518,17 @@
 
 {% block content %}
 <!-- Enhanced Welcome Section with Indian Context -->
-<div class="admin-pro-welcome-message mb-4 fade-in-up" style="animation-delay: 0.1s; background: linear-gradient(135deg, rgba(255, 153, 51, 0.1) 0%, rgba(0, 123, 255, 0.05) 100%); border-left: 4px solid #FF9933;">
-    <div class="admin-pro-welcome-icon pulse" style="background: linear-gradient(135deg, #FF9933 0%, #FF9933 100%);">
+<div class="admin-pro-welcome-message mb-4 fade-in-up" style="animation-delay: 0.1s; background: linear-gradient(135deg, rgba(255, 153, 51, 0.1) 0%, rgba(19, 136, 8, 0.05) 100%); border-left: 4px solid #FF9933; border-radius: 8px;">
+    <div class="admin-pro-welcome-icon pulse" style="background: linear-gradient(135deg, #FF9933 0%, #FF8C00 100%);">
         <i class="fas fa-book-reader"></i>
     </div>
     <div class="admin-pro-welcome-content">
-        <h2>Namaste, {{ user.get_full_name|default:"Library Admin" }}! 👋</h2>
-        <p class="lead">Here's what's happening at {{ library.name }} today.</p>
+        <h2>नमस्ते (Namaste), {{ user.get_full_name|default:"Library Admin" }}! 🙏</h2>
+        <p class="lead">आज {{ library.name }} में क्या हो रहा है | Here's what's happening at your library today.</p>
         <div class="mt-3">
-            <span class="badge bg-success"><i class="fas fa-clock me-1"></i>Last updated: {% now "g:i A" %}</span>
-            <span class="badge bg-primary ms-2"><i class="fas fa-calendar me-1"></i>{% now "F j, Y" %}</span>
-            <span class="badge ms-2" style="background-color: #138808; color: white;"><i class="fas fa-map-marker-alt me-1"></i>{{ library.city }}, {{ library.state }}</span>
+            <span class="badge" style="background-color: #138808; color: white;"><i class="fas fa-clock me-1"></i>अपडेट: {% now "g:i A" %}</span>
+            <span class="badge ms-2" style="background-color: #FF9933; color: white;"><i class="fas fa-calendar me-1"></i>{% now "F j, Y" %}</span>
+            <span class="badge ms-2" style="background-color: #000080; color: white;"><i class="fas fa-map-marker-alt me-1"></i>{{ library.city }}, {{ library.state }}</span>
         </div>
     </div>
 </div>

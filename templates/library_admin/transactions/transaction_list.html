@@ -1,28 +1,297 @@
-{% extends 'base.html' %}
+{% extends 'library_admin/base.html' %}
 {% load static %}
 
 {% block title %}Transactions - Library Management System{% endblock %}
+{% block breadcrumb_title %}Transactions{% endblock %}
+{% block page_title %}Transactions{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'library_admin:issue_book' %}" class="admin-pro-btn admin-pro-btn-primary">
+    <i class="fas fa-arrow-circle-right"></i> Issue Book
+</a>
+<a href="{% url 'library_admin:return_book' %}" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-arrow-circle-left"></i> Return Book
+</a>
+{% endblock %}
 
 {% block extra_css %}
+<style>
+    /* Transaction Page Styles */
+    .transaction-container {
+        margin-bottom: 2rem;
+    }
+
+    .filter-card {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .filter-card:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .filter-card-body {
+        padding: 1.5rem;
+    }
+
+    .transaction-card {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .transaction-card:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .transaction-card-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        background-color: rgba(0, 0, 0, 0.02);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .transaction-card-header h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0;
+        color: #333;
+    }
+
+    .transaction-card-body {
+        padding: 1.5rem;
+    }
+
+    .transaction-table-container {
+        overflow-x: auto;
+    }
+
+    .transaction-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .transaction-table th {
+        background-color: rgba(0, 0, 0, 0.02);
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        text-align: left;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        color: #555;
+    }
+
+    .transaction-table td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        vertical-align: middle;
+    }
+
+    .transaction-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .transaction-table tr:hover {
+        background-color: rgba(0, 0, 0, 0.01);
+    }
+
+    .transaction-badge {
+        display: inline-block;
+        padding: 0.35em 0.65em;
+        font-size: 0.75em;
+        font-weight: 600;
+        line-height: 1;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: 50px;
+    }
+
+    .transaction-badge-primary {
+        background-color: rgba(13, 110, 253, 0.1);
+        color: #0d6efd;
+    }
+
+    .transaction-badge-success {
+        background-color: rgba(25, 135, 84, 0.1);
+        color: #198754;
+    }
+
+    .transaction-badge-warning {
+        background-color: rgba(255, 193, 7, 0.1);
+        color: #ffc107;
+    }
+
+    .transaction-badge-danger {
+        background-color: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+    }
+
+    .transaction-badge-secondary {
+        background-color: rgba(108, 117, 125, 0.1);
+        color: #6c757d;
+    }
+
+    .transaction-btn {
+        display: inline-block;
+        font-weight: 500;
+        text-align: center;
+        vertical-align: middle;
+        cursor: pointer;
+        user-select: none;
+        border: 1px solid transparent;
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        border-radius: 0.25rem;
+        transition: all 0.15s ease-in-out;
+        text-decoration: none;
+    }
+
+    .transaction-btn-primary {
+        color: #fff;
+        background-color: #FF9933;
+        border-color: #FF9933;
+    }
+
+    .transaction-btn-primary:hover {
+        background-color: #e68a2e;
+        border-color: #e68a2e;
+        color: #fff;
+    }
+
+    .transaction-btn-outline {
+        color: #FF9933;
+        background-color: transparent;
+        border-color: #FF9933;
+    }
+
+    .transaction-btn-outline:hover {
+        color: #fff;
+        background-color: #FF9933;
+        border-color: #FF9933;
+    }
+
+    .transaction-btn-info {
+        color: #fff;
+        background-color: #0dcaf0;
+        border-color: #0dcaf0;
+    }
+
+    .transaction-btn-info:hover {
+        background-color: #0bacda;
+        border-color: #0bacda;
+    }
+
+    .transaction-btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+    }
+
+    .transaction-table-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 768px) {
+        .transaction-table {
+            display: block;
+        }
+
+        .transaction-table thead {
+            display: none;
+        }
+
+        .transaction-table tbody {
+            display: block;
+        }
+
+        .transaction-table tr {
+            display: block;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .transaction-table td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 0.5rem 0;
+        }
+
+        .transaction-table td:last-child {
+            border-bottom: none;
+        }
+
+        .transaction-table td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            margin-right: 1rem;
+        }
+
+        .transaction-table-actions {
+            justify-content: flex-end;
+            width: 100%;
+        }
+    }
+
+    /* Animation classes */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    .slide-in-up {
+        animation: slideInUp 0.5s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="transaction-header">
-        <div class="row">
-            <div class="col-12">
-                <h1><i class="fas fa-exchange-alt me-2 text-primary"></i>Transactions</h1>
-                <p>View and manage your transactions.</p>
-            </div>
-        </div>
-    </div>
+<div class="admin-pro-container">
+    <div class="transaction-container fade-in">
 
     <!-- Filter Form -->
     <div class="row mb-4">
         <div class="col-12">
             <div class="filter-card">
                 <div class="filter-card-body">
-                    <form method="get" action="{% url 'transactions:transaction_list' %}">
+                    <form method="get" action="{% url 'library_admin:transactions' %}">
                         <div class="row g-3">
                             <div class="col-md-4 col-sm-6">
                                 <label for="type" class="form-label">Transaction Type</label>
@@ -126,18 +395,18 @@
                                         </td>
                                         <td data-label="Actions">
                                             <div class="transaction-table-actions">
-                                                <a href="{% url 'transactions:transaction_detail' transaction_id=transaction.transaction_id %}" class="transaction-btn transaction-btn-info transaction-btn-sm">
+                                                <a href="#" class="transaction-btn transaction-btn-info transaction-btn-sm">
                                                     <i class="fas fa-eye"></i><span class="d-none d-md-inline"> View</span>
                                                 </a>
 
                                                 {% if transaction.transaction_type == 'BORROW' and transaction.status == 'COMPLETED' and not transaction.return_date %}
-                                                    <a href="{% url 'transactions:return_book' %}?transaction_id={{ transaction.transaction_id }}" class="transaction-btn transaction-btn-primary transaction-btn-sm">
+                                                    <a href="{% url 'library_admin:return_book' %}?transaction_id={{ transaction.transaction_id }}" class="transaction-btn transaction-btn-primary transaction-btn-sm">
                                                         <i class="fas fa-undo"></i><span class="d-none d-md-inline"> Return</span>
                                                     </a>
                                                 {% endif %}
 
                                                 {% if transaction.transaction_type == 'RESERVE' and transaction.status == 'COMPLETED' and transaction.book_copy.status == 'AVAILABLE' %}
-                                                    <a href="{% url 'transactions:borrow_book' %}?book_copy={{ transaction.book_copy.id }}" class="transaction-btn transaction-btn-primary transaction-btn-sm">
+                                                    <a href="{% url 'library_admin:issue_book' %}?book_copy={{ transaction.book_copy.id }}" class="transaction-btn transaction-btn-primary transaction-btn-sm">
                                                         <i class="fas fa-book"></i><span class="d-none d-md-inline"> Borrow</span>
                                                     </a>
                                                 {% endif %}
@@ -165,4 +434,35 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add animation to elements
+        const elements = document.querySelectorAll('.fade-in, .slide-in-up');
+        elements.forEach((element, index) => {
+            element.style.opacity = '0';
+            setTimeout(() => {
+                element.style.opacity = '1';
+                if (element.classList.contains('slide-in-up')) {
+                    element.style.transform = 'translateY(0)';
+                }
+            }, 100 + (index * 50));
+        });
+
+        // Add hover effect to table rows
+        const tableRows = document.querySelectorAll('.transaction-table tbody tr');
+        tableRows.forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.style.transition = 'background-color 0.3s ease';
+                this.style.backgroundColor = 'rgba(0, 0, 0, 0.02)';
+            });
+
+            row.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = '';
+            });
+        });
+    });
+</script>
 {% endblock %}

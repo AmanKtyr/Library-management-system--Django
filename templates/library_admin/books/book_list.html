@@ -1,7 +1,18 @@
-{% extends 'base.html' %}
+{% extends 'library_admin/base.html' %}
 {% load static %}
 
 {% block title %}Books - Library Management System{% endblock %}
+{% block breadcrumb_title %}Books{% endblock %}
+{% block page_title %}Books Collection{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'library_admin:add_book' %}" class="admin-pro-btn admin-pro-btn-primary">
+    <i class="fas fa-plus"></i> Add Book
+</a>
+<a href="{% url 'library_admin:import_books' %}" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-file-import"></i> Import Books
+</a>
+{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -400,13 +411,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="container book-list-container">
-    <!-- Header -->
-    <div class="book-list-header">
-        <h1 class="book-list-title">Books Collection</h1>
-        <p class="book-list-subtitle">Browse our extensive collection of books across all libraries.</p>
-    </div>
-
+<div class="admin-pro-container book-list-container">
     <!-- Search Form -->
     <div class="book-search-card">
         <div class="book-search-form">
