@@ -515,52 +515,53 @@
 {% endblock %}
 
 {% block content %}
-<!-- Enhanced Welcome Section -->
-<div class="admin-pro-welcome-message mb-4 fade-in-up" style="animation-delay: 0.1s">
-    <div class="admin-pro-welcome-icon pulse">
+<!-- Enhanced Welcome Section with Indian Context -->
+<div class="admin-pro-welcome-message mb-4 fade-in-up" style="animation-delay: 0.1s; background: linear-gradient(135deg, rgba(255, 153, 51, 0.1) 0%, rgba(0, 123, 255, 0.05) 100%); border-left: 4px solid #FF9933;">
+    <div class="admin-pro-welcome-icon pulse" style="background: linear-gradient(135deg, #FF9933 0%, #FF9933 100%);">
         <i class="fas fa-book-reader"></i>
     </div>
     <div class="admin-pro-welcome-content">
-        <h2>Welcome back, {{ user.get_full_name|default:"Library Admin" }}! 👋</h2>
+        <h2>Namaste, {{ user.get_full_name|default:"Library Admin" }}! 👋</h2>
         <p class="lead">Here's what's happening at {{ library.name }} today.</p>
         <div class="mt-3">
             <span class="badge bg-success"><i class="fas fa-clock me-1"></i>Last updated: {% now "g:i A" %}</span>
             <span class="badge bg-primary ms-2"><i class="fas fa-calendar me-1"></i>{% now "F j, Y" %}</span>
+            <span class="badge ms-2" style="background-color: #138808; color: white;"><i class="fas fa-map-marker-alt me-1"></i>{{ library.city }}, {{ library.state }}</span>
         </div>
     </div>
 </div>
 
 {% if pending_requests_count > 0 %}
-<!-- Pending Membership Requests Alert -->
-<div class="alert alert-warning mb-4 fade-in-up d-flex align-items-center" style="animation-delay: 0.15s">
-    <div style="font-size: 24px; margin-right: 15px;">
+<!-- Pending Membership Requests Alert with Indian Context -->
+<div class="alert mb-4 fade-in-up d-flex align-items-center" style="animation-delay: 0.15s; background: linear-gradient(135deg, rgba(255, 153, 51, 0.1) 0%, rgba(19, 136, 8, 0.05) 100%); border-left: 4px solid #FF9933; border-radius: 8px;">
+    <div style="font-size: 24px; margin-right: 15px; color: #FF9933;">
         <i class="fas fa-user-plus"></i>
     </div>
     <div class="flex-grow-1">
-        <h4 class="alert-heading mb-1">Pending Membership Requests</h4>
-        <p class="mb-0">You have <strong>{{ pending_requests_count }}</strong> pending membership {% if pending_requests_count == 1 %}request{% else %}requests{% endif %} that {% if pending_requests_count == 1 %}requires{% else %}require{% endif %} your approval.</p>
+        <h4 class="alert-heading mb-1" style="color: #000080;">लंबित सदस्यता अनुरोध (Pending Membership Requests)</h4>
+        <p class="mb-0">You have <strong style="color: #FF9933;">{{ pending_requests_count }}</strong> pending membership {% if pending_requests_count == 1 %}request{% else %}requests{% endif %} that {% if pending_requests_count == 1 %}requires{% else %}require{% endif %} your approval.</p>
     </div>
     <div>
-        <a href="{% url 'library_admin:membership_requests' %}" class="btn btn-warning">
+        <a href="{% url 'library_admin:membership_requests' %}" class="btn" style="background-color: #FF9933; color: white; border: none;">
             <i class="fas fa-eye me-1"></i> View Requests
         </a>
     </div>
 </div>
 {% endif %}
 
-    <!-- Library Info -->
+    <!-- Library Info with Indian Context -->
     <div class="row mb-4">
         <div class="col-12">
             <div class="admin-pro-card">
-                <div class="admin-pro-card-header d-flex justify-content-between align-items-center">
+                <div class="admin-pro-card-header d-flex justify-content-between align-items-center" style="border-bottom: 2px solid #FF9933;">
                     <h3 class="admin-pro-card-title">
-                        <i class="fas fa-building me-2 text-primary"></i>Library Information
+                        <i class="fas fa-building me-2" style="color: #FF9933;"></i>पुस्तकालय जानकारी (Library Information)
                     </h3>
                     <div class="admin-pro-card-actions">
-                        <a href="{% url 'libraries:manage_library' slug=library.slug %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-primary">
+                        <a href="{% url 'libraries:manage_library' slug=library.slug %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-primary" style="background-color: #FF9933; border-color: #FF9933;">
                             <i class="fas fa-edit"></i> Edit Library
                         </a>
-                        <a href="{% url 'libraries:library_detail' slug=library.slug %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
+                        <a href="{% url 'libraries:library_detail' slug=library.slug %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline" style="border-color: #FF9933; color: #FF9933;">
                             <i class="fas fa-eye"></i> View Public Page
                         </a>
                     </div>
@@ -635,20 +636,20 @@
         </div>
     </div>
 
-    <!-- Redesigned Statistics Cards -->
+    <!-- Redesigned Statistics Cards with Indian Context -->
     <div class="row mb-4">
         <div class="col-md-3 fade-in-up" style="animation-delay: 0.2s">
             <div class="admin-pro-card stats-card">
-                <div class="admin-pro-stats-card success h-100">
-                    <div class="admin-pro-stats-icon" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);">
+                <div class="admin-pro-stats-card h-100" style="background: linear-gradient(135deg, #FF9933 0%, #FF9933 100%); color: white;">
+                    <div class="admin-pro-stats-icon" style="background: rgba(255, 255, 255, 0.2);">
                         <i class="fas fa-book"></i>
                     </div>
                     <div class="admin-pro-stats-content">
                         <div class="d-flex align-items-baseline">
                             <h3 class="admin-pro-stats-value mb-0">{{ total_books }}</h3>
-                            <small class="ms-2 text-success">+{{ new_books_count }} new</small>
+                            <small class="ms-2" style="color: #fff;">+{{ new_books_count }} new</small>
                         </div>
-                        <p class="admin-pro-stats-label">Total Books</p>
+                        <p class="admin-pro-stats-label">पुस्तकें (Books)</p>
                         <div class="admin-pro-stats-trend up">
                             <i class="fas fa-chart-line"></i> 3% from last month
                         </div>
@@ -658,8 +659,8 @@
         </div>
         <div class="col-md-3 fade-in-up" style="animation-delay: 0.2s">
             <div class="admin-pro-card stats-card">
-                <div class="admin-pro-stats-card info h-100">
-                    <div class="admin-pro-stats-icon" style="background: linear-gradient(135deg, #3498db 0%, #5dade2 100%);">
+                <div class="admin-pro-stats-card h-100" style="background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%); color: #333; border: 1px solid #ddd;">
+                    <div class="admin-pro-stats-icon" style="background: rgba(0, 0, 0, 0.1);">
                         <i class="fas fa-users"></i>
                     </div>
                     <div class="admin-pro-stats-content">
@@ -667,8 +668,8 @@
                             <h3 class="admin-pro-stats-value mb-0">{{ staff_members }}</h3>
                             <small class="ms-2 text-success">+{{ new_staff_count }} new</small>
                         </div>
-                        <p class="admin-pro-stats-label">Staff Members</p>
-                        <div class="admin-pro-stats-trend up">
+                        <p class="admin-pro-stats-label">कर्मचारी (Staff)</p>
+                        <div class="admin-pro-stats-trend up" style="color: #28a745;">
                             <i class="fas fa-chart-line"></i> 2% from last month
                         </div>
                     </div>
@@ -677,16 +678,16 @@
         </div>
         <div class="col-md-3 fade-in-up" style="animation-delay: 0.2s">
             <div class="admin-pro-card stats-card">
-                <div class="admin-pro-stats-card primary h-100">
-                    <div class="admin-pro-stats-icon">
+                <div class="admin-pro-stats-card h-100" style="background: linear-gradient(135deg, #138808 0%, #138808 100%); color: white;">
+                    <div class="admin-pro-stats-icon" style="background: rgba(255, 255, 255, 0.2);">
                         <i class="fas fa-user-friends"></i>
                     </div>
                     <div class="admin-pro-stats-content">
                         <div class="d-flex align-items-baseline">
                             <h3 class="admin-pro-stats-value mb-0">{{ members }}</h3>
-                            <small class="ms-2 text-success">+{{ new_members_count }} new</small>
+                            <small class="ms-2" style="color: #fff;">+{{ new_members_count }} new</small>
                         </div>
-                        <p class="admin-pro-stats-label">Active Members</p>
+                        <p class="admin-pro-stats-label">सदस्य (Members)</p>
                         <div class="admin-pro-stats-trend up">
                             <i class="fas fa-chart-line"></i> 5% from last month
                         </div>
@@ -696,16 +697,16 @@
         </div>
         <div class="col-md-3 fade-in-up" style="animation-delay: 0.2s">
             <div class="admin-pro-card stats-card">
-                <div class="admin-pro-stats-card warning h-100">
-                    <div class="admin-pro-stats-icon" style="background: linear-gradient(135deg, #e67e22 0%, #f39c12 100%);">
+                <div class="admin-pro-stats-card h-100" style="background: linear-gradient(135deg, #000080 0%, #000080 100%); color: white;">
+                    <div class="admin-pro-stats-icon" style="background: rgba(255, 255, 255, 0.2);">
                         <i class="fas fa-exchange-alt"></i>
                     </div>
                     <div class="admin-pro-stats-content">
                         <div class="d-flex align-items-baseline">
                             <h3 class="admin-pro-stats-value mb-0">{{ transactions_count }}</h3>
-                            <small class="ms-2 text-success">+{{ new_transactions_count }} new</small>
+                            <small class="ms-2" style="color: #fff;">+{{ new_transactions_count }} new</small>
                         </div>
-                        <p class="admin-pro-stats-label">Transactions</p>
+                        <p class="admin-pro-stats-label">लेनदेन (Transactions)</p>
                         <div class="admin-pro-stats-trend up">
                             <i class="fas fa-chart-line"></i> 8% from last month
                         </div>
@@ -715,18 +716,18 @@
         </div>
     </div>
 
-    <!-- New Recent Activities Section -->
+    <!-- New Recent Activities Section with Indian Context -->
     <div class="row mb-4">
         <div class="col-md-8 fade-in-up" style="animation-delay: 0.3s">
             <div class="admin-pro-card">
-                <div class="admin-pro-card-header d-flex justify-content-between align-items-center">
+                <div class="admin-pro-card-header d-flex justify-content-between align-items-center" style="border-bottom: 2px solid #FF9933;">
                     <h3 class="admin-pro-card-title">
-                        <i class="fas fa-history me-2 text-primary"></i>Recent Activities
+                        <i class="fas fa-history me-2" style="color: #FF9933;"></i>हाल की गतिविधियां (Recent Activities)
                     </h3>
                     <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-outline-primary active">All</button>
-                        <button type="button" class="btn btn-sm btn-outline-primary">Books</button>
-                        <button type="button" class="btn btn-sm btn-outline-primary">Members</button>
+                        <button type="button" class="btn btn-sm btn-outline-primary active" style="border-color: #FF9933; color: #FF9933;">All</button>
+                        <button type="button" class="btn btn-sm btn-outline-primary" style="border-color: #FF9933; color: #FF9933;">Books</button>
+                        <button type="button" class="btn btn-sm btn-outline-primary" style="border-color: #FF9933; color: #FF9933;">Members</button>
                     </div>
                 </div>
                 <div class="admin-pro-card-body p-0">
@@ -811,14 +812,14 @@
             </div>
         </div>
 
-        <!-- Pending Membership Requests Section -->
+        <!-- Pending Membership Requests Section with Indian Context -->
         <div class="col-md-4 fade-in-up" style="animation-delay: 0.4s">
             <div class="admin-pro-card">
-                <div class="admin-pro-card-header d-flex justify-content-between align-items-center">
+                <div class="admin-pro-card-header d-flex justify-content-between align-items-center" style="border-bottom: 2px solid #000080;">
                     <h3 class="admin-pro-card-title">
-                        <i class="fas fa-user-plus me-2 text-warning"></i>Pending Requests
+                        <i class="fas fa-user-plus me-2" style="color: #000080;"></i>लंबित अनुरोध (Pending Requests)
                     </h3>
-                    <a href="{% url 'library_admin:membership_requests' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
+                    <a href="{% url 'library_admin:membership_requests' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline" style="border-color: #000080; color: #000080;">
                         <i class="fas fa-external-link-alt"></i> View All
                     </a>
                 </div>
@@ -871,64 +872,64 @@
         </div>
     </div>
 
-    <!-- Enhanced Quick Actions -->
+    <!-- Enhanced Quick Actions with Indian Context -->
     <div class="row mb-4 fade-in-up" style="animation-delay: 0.5s">
         <div class="col-12">
             <div class="admin-pro-card">
-                <div class="admin-pro-card-header">
+                <div class="admin-pro-card-header" style="border-bottom: 2px solid #FF9933;">
                     <h3 class="admin-pro-card-title">
-                        <i class="fas fa-bolt me-2 text-warning"></i>Quick Actions
+                        <i class="fas fa-bolt me-2" style="color: #FF9933;"></i>त्वरित कार्य (Quick Actions)
                     </h3>
                 </div>
                 <div class="admin-pro-card-body">
                     <div class="row g-3">
                         <div class="col-md-3 col-sm-6">
                             <a href="{% url 'books:add_book' %}" class="quick-action-card d-flex align-items-center p-3 rounded-3 text-decoration-none">
-                                <div class="quick-action-icon bg-primary rounded-circle p-3 me-3">
+                                <div class="quick-action-icon rounded-circle p-3 me-3" style="background-color: #FF9933;">
                                     <i class="fas fa-book-medical text-white"></i>
                                 </div>
                                 <div>
                                     <h4 class="h6 mb-1">Add New Book</h4>
-                                    <small class="text-muted">Register new books</small>
+                                    <small class="text-muted">नई पुस्तकें जोड़ें</small>
                                 </div>
                             </a>
                         </div>
                         <div class="col-md-3 col-sm-6">
                             <a href="{% url 'libraries:manage_library_staff' slug=library.slug %}" class="quick-action-card d-flex align-items-center p-3 rounded-3 text-decoration-none">
-                                <div class="quick-action-icon bg-info rounded-circle p-3 me-3">
-                                    <i class="fas fa-users text-white"></i>
+                                <div class="quick-action-icon rounded-circle p-3 me-3" style="background-color: #FFFFFF; border: 1px solid #ddd;">
+                                    <i class="fas fa-users" style="color: #333;"></i>
                                 </div>
                                 <div>
                                     <h4 class="h6 mb-1">Manage Staff</h4>
-                                    <small class="text-muted">Add, edit or remove staff</small>
+                                    <small class="text-muted">कर्मचारियों का प्रबंधन</small>
                                 </div>
                             </a>
                         </div>
                         <div class="col-md-3 col-sm-6">
                             <a href="{% url 'books:manage_books' %}" class="quick-action-card d-flex align-items-center p-3 rounded-3 text-decoration-none">
-                                <div class="quick-action-icon bg-success rounded-circle p-3 me-3">
+                                <div class="quick-action-icon rounded-circle p-3 me-3" style="background-color: #138808;">
                                     <i class="fas fa-book text-white"></i>
                                 </div>
                                 <div>
                                     <h4 class="h6 mb-1">Manage Books</h4>
-                                    <small class="text-muted">Add, edit or remove books</small>
+                                    <small class="text-muted">पुस्तकों का प्रबंधन</small>
                                 </div>
                             </a>
                         </div>
                         <div class="col-md-3 col-sm-6">
                             <a href="{% url 'libraries:manage_library_members' slug=library.slug %}" class="quick-action-card d-flex align-items-center p-3 rounded-3 text-decoration-none">
-                                <div class="quick-action-icon bg-primary rounded-circle p-3 me-3">
+                                <div class="quick-action-icon rounded-circle p-3 me-3" style="background-color: #000080;">
                                     <i class="fas fa-user-friends text-white"></i>
                                 </div>
                                 <div>
                                     <h4 class="h6 mb-1">Manage Members</h4>
-                                    <small class="text-muted">Add, edit or remove members</small>
+                                    <small class="text-muted">सदस्यों का प्रबंधन</small>
                                 </div>
                             </a>
                         </div>
                         <div class="col-md-3 col-sm-6">
                             <a href="{% url 'library_admin:membership_requests' %}" class="quick-action-card d-flex align-items-center p-3 rounded-3 text-decoration-none">
-                                <div class="quick-action-icon bg-warning rounded-circle p-3 me-3">
+                                <div class="quick-action-icon rounded-circle p-3 me-3" style="background-color: #FF9933;">
                                     <i class="fas fa-user-plus text-white"></i>
                                 </div>
                                 <div>
@@ -939,45 +940,45 @@
                         </div>
                         <div class="col-md-3 col-sm-6">
                             <a href="{% url 'transactions:transaction_reports' %}" class="quick-action-card d-flex align-items-center p-3 rounded-3 text-decoration-none">
-                                <div class="quick-action-icon bg-warning rounded-circle p-3 me-3">
+                                <div class="quick-action-icon rounded-circle p-3 me-3" style="background-color: #138808;">
                                     <i class="fas fa-chart-bar text-white"></i>
                                 </div>
                                 <div>
                                     <h4 class="h6 mb-1">View Reports</h4>
-                                    <small class="text-muted">View transaction reports</small>
+                                    <small class="text-muted">रिपोर्ट देखें</small>
                                 </div>
                             </a>
                         </div>
                         <div class="col-md-3 col-sm-6">
                             <a href="{% url 'transactions:borrow_book' %}" class="quick-action-card d-flex align-items-center p-3 rounded-3 text-decoration-none">
-                                <div class="quick-action-icon bg-danger rounded-circle p-3 me-3">
+                                <div class="quick-action-icon rounded-circle p-3 me-3" style="background-color: #000080;">
                                     <i class="fas fa-arrow-circle-right text-white"></i>
                                 </div>
                                 <div>
                                     <h4 class="h6 mb-1">Borrow Book</h4>
-                                    <small class="text-muted">Process new borrowing</small>
+                                    <small class="text-muted">पुस्तक उधार दें</small>
                                 </div>
                             </a>
                         </div>
                         <div class="col-md-3 col-sm-6">
                             <a href="{% url 'transactions:return_book' %}" class="quick-action-card d-flex align-items-center p-3 rounded-3 text-decoration-none">
-                                <div class="quick-action-icon bg-success rounded-circle p-3 me-3">
+                                <div class="quick-action-icon rounded-circle p-3 me-3" style="background-color: #138808;">
                                     <i class="fas fa-arrow-circle-left text-white"></i>
                                 </div>
                                 <div>
                                     <h4 class="h6 mb-1">Return Book</h4>
-                                    <small class="text-muted">Process book returns</small>
+                                    <small class="text-muted">पुस्तक वापसी</small>
                                 </div>
                             </a>
                         </div>
                         <div class="col-md-3 col-sm-6">
                             <a href="{% url 'library_admin:settings' %}" class="quick-action-card d-flex align-items-center p-3 rounded-3 text-decoration-none">
-                                <div class="quick-action-icon bg-secondary rounded-circle p-3 me-3">
+                                <div class="quick-action-icon rounded-circle p-3 me-3" style="background-color: #FF9933;">
                                     <i class="fas fa-cog text-white"></i>
                                 </div>
                                 <div>
                                     <h4 class="h6 mb-1">Settings</h4>
-                                    <small class="text-muted">Configure library settings</small>
+                                    <small class="text-muted">सेटिंग्स</small>
                                 </div>
                             </a>
                         </div>
@@ -987,22 +988,98 @@
         </div>
     </div>
 
-    <!-- Recent Transactions -->
+    <!-- Indian Literature Spotlight Section -->
+    <div class="row mb-4 fade-in-up" style="animation-delay: 0.55s">
+        <div class="col-12">
+            <div class="admin-pro-card">
+                <div class="admin-pro-card-header d-flex justify-content-between align-items-center" style="border-bottom: 2px solid #000080;">
+                    <h3 class="admin-pro-card-title">
+                        <i class="fas fa-book-reader me-2" style="color: #000080;"></i>भारतीय साहित्य प्रकाश (Indian Literature Spotlight)
+                    </h3>
+                    <a href="{% url 'books:book_list' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline" style="border-color: #000080; color: #000080;">
+                        <i class="fas fa-external-link-alt"></i> Browse All Books
+                    </a>
+                </div>
+                <div class="admin-pro-card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <div class="card h-100 border-0 shadow-sm hover-card">
+                                <div class="card-body text-center p-3">
+                                    <div class="mb-3">
+                                        <span class="d-inline-block rounded-circle p-3" style="background-color: rgba(255, 153, 51, 0.1);">
+                                            <i class="fas fa-book fa-2x" style="color: #FF9933;"></i>
+                                        </span>
+                                    </div>
+                                    <h5 class="card-title">Regional Literature</h5>
+                                    <p class="card-text small">Promote regional Indian literature by adding books in local languages.</p>
+                                    <a href="{% url 'books:add_book' %}" class="btn btn-sm" style="background-color: #FF9933; color: white;">Add Books</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card h-100 border-0 shadow-sm hover-card">
+                                <div class="card-body text-center p-3">
+                                    <div class="mb-3">
+                                        <span class="d-inline-block rounded-circle p-3" style="background-color: rgba(19, 136, 8, 0.1);">
+                                            <i class="fas fa-users fa-2x" style="color: #138808;"></i>
+                                        </span>
+                                    </div>
+                                    <h5 class="card-title">Reading Groups</h5>
+                                    <p class="card-text small">Create reading groups focused on Indian authors and literature.</p>
+                                    <a href="#" class="btn btn-sm" style="background-color: #138808; color: white;">Create Group</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card h-100 border-0 shadow-sm hover-card">
+                                <div class="card-body text-center p-3">
+                                    <div class="mb-3">
+                                        <span class="d-inline-block rounded-circle p-3" style="background-color: rgba(0, 0, 128, 0.1);">
+                                            <i class="fas fa-calendar-alt fa-2x" style="color: #000080;"></i>
+                                        </span>
+                                    </div>
+                                    <h5 class="card-title">Cultural Events</h5>
+                                    <p class="card-text small">Plan and organize cultural events and literary festivals.</p>
+                                    <a href="#" class="btn btn-sm" style="background-color: #000080; color: white;">Plan Event</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card h-100 border-0 shadow-sm hover-card">
+                                <div class="card-body text-center p-3">
+                                    <div class="mb-3">
+                                        <span class="d-inline-block rounded-circle p-3" style="background-color: rgba(255, 153, 51, 0.1);">
+                                            <i class="fas fa-graduation-cap fa-2x" style="color: #FF9933;"></i>
+                                        </span>
+                                    </div>
+                                    <h5 class="card-title">Educational Resources</h5>
+                                    <p class="card-text small">Add educational resources about Indian history and culture.</p>
+                                    <a href="{% url 'books:add_book' %}" class="btn btn-sm" style="background-color: #FF9933; color: white;">Add Resources</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Transactions with Indian Context -->
     <div class="row mb-4 fade-in-up" style="animation-delay: 0.6s">
         <div class="col-12">
             <div class="admin-pro-card">
-                <div class="admin-pro-card-header d-flex justify-content-between align-items-center">
+                <div class="admin-pro-card-header d-flex justify-content-between align-items-center" style="border-bottom: 2px solid #138808;">
                     <h3 class="admin-pro-card-title">
-                        <i class="fas fa-exchange-alt me-2 text-warning"></i>Recent Transactions
+                        <i class="fas fa-exchange-alt me-2" style="color: #138808;"></i>हाल के लेनदेन (Recent Transactions)
                     </h3>
                     <div class="admin-pro-card-actions">
                         <div class="btn-group me-2">
-                            <button type="button" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline active" data-filter="all">All</button>
-                            <button type="button" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline" data-filter="BORROW">Borrows</button>
-                            <button type="button" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline" data-filter="RETURN">Returns</button>
-                            <button type="button" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline" data-filter="RESERVE">Reserves</button>
+                            <button type="button" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline active" data-filter="all" style="border-color: #138808; color: #138808;">All</button>
+                            <button type="button" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline" data-filter="BORROW" style="border-color: #138808; color: #138808;">Borrows</button>
+                            <button type="button" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline" data-filter="RETURN" style="border-color: #138808; color: #138808;">Returns</button>
+                            <button type="button" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline" data-filter="RESERVE" style="border-color: #138808; color: #138808;">Reserves</button>
                         </div>
-                        <a href="{% url 'transactions:transaction_list' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-primary">
+                        <a href="{% url 'transactions:transaction_list' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-primary" style="background-color: #138808; border-color: #138808;">
                             <i class="fas fa-list"></i> View All
                         </a>
                     </div>
@@ -1131,6 +1208,94 @@
                                 {% endfor %}
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Indian Festivals and Events Calendar -->
+    <div class="row mb-4 fade-in-up" style="animation-delay: 0.7s">
+        <div class="col-12">
+            <div class="admin-pro-card">
+                <div class="admin-pro-card-header d-flex justify-content-between align-items-center" style="border-bottom: 2px solid #FF9933;">
+                    <h3 class="admin-pro-card-title">
+                        <i class="fas fa-calendar-day me-2" style="color: #FF9933;"></i>भारतीय त्योहार और कार्यक्रम (Indian Festivals & Events)
+                    </h3>
+                    <a href="#" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline" style="border-color: #FF9933; color: #FF9933;">
+                        <i class="fas fa-plus"></i> Add Event
+                    </a>
+                </div>
+                <div class="admin-pro-card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="rounded-circle p-2 me-3" style="background-color: rgba(255, 153, 51, 0.1);">
+                                            <i class="fas fa-book fa-lg" style="color: #FF9933;"></i>
+                                        </div>
+                                        <h5 class="card-title mb-0">World Book Day</h5>
+                                    </div>
+                                    <p class="card-text small mb-2">Celebrate with special reading sessions and book donations.</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="badge" style="background-color: #FF9933;">Apr 23, 2023</span>
+                                        <a href="#" class="btn btn-sm btn-link" style="color: #FF9933;">Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="rounded-circle p-2 me-3" style="background-color: rgba(19, 136, 8, 0.1);">
+                                            <i class="fas fa-landmark fa-lg" style="color: #138808;"></i>
+                                        </div>
+                                        <h5 class="card-title mb-0">Hindi Diwas</h5>
+                                    </div>
+                                    <p class="card-text small mb-2">Promote Hindi literature with special displays and readings.</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="badge" style="background-color: #138808; color: white;">Sep 14, 2023</span>
+                                        <a href="#" class="btn btn-sm btn-link" style="color: #138808;">Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="rounded-circle p-2 me-3" style="background-color: rgba(0, 0, 128, 0.1);">
+                                            <i class="fas fa-lightbulb fa-lg" style="color: #000080;"></i>
+                                        </div>
+                                        <h5 class="card-title mb-0">National Library Week</h5>
+                                    </div>
+                                    <p class="card-text small mb-2">Week-long celebration with various activities and workshops.</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="badge" style="background-color: #000080; color: white;">Nov 14-20, 2023</span>
+                                        <a href="#" class="btn btn-sm btn-link" style="color: #000080;">Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="rounded-circle p-2 me-3" style="background-color: rgba(255, 153, 51, 0.1);">
+                                            <i class="fas fa-users fa-lg" style="color: #FF9933;"></i>
+                                        </div>
+                                        <h5 class="card-title mb-0">Author Meet & Greet</h5>
+                                    </div>
+                                    <p class="card-text small mb-2">Special event with renowned Indian author Amish Tripathi.</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="badge" style="background-color: #FF9933;">Dec 5, 2023</span>
+                                        <a href="#" class="btn btn-sm btn-link" style="color: #FF9933;">Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

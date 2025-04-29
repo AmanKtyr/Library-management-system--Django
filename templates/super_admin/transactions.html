@@ -12,13 +12,16 @@
 <a href="{% url 'superadmin:reports' %}?type=transactions" class="admin-pro-btn admin-pro-btn-outline">
     <i class="fas fa-chart-bar"></i> Transaction Reports
 </a>
+<button class="admin-pro-btn admin-pro-btn-success" id="exportTransactionsBtn">
+    <i class="fas fa-file-export"></i> Export Data
+</button>
 {% endblock %}
 
 {% block content %}
 <!-- Transaction Stats Overview -->
 <div class="row mb-4">
     <div class="col-md-3">
-        <div class="super-admin-stats-card primary">
+        <div class="super-admin-stats-card primary animate-card">
             <div class="super-admin-stats-header">
                 <div class="super-admin-stats-icon primary">
                     <i class="fas fa-exchange-alt"></i>
@@ -30,11 +33,16 @@
                 <div class="super-admin-stats-trend up">
                     <i class="fas fa-arrow-up"></i> Active circulation
                 </div>
+                <div class="super-admin-stats-progress">
+                    <div class="progress">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="super-admin-stats-card success">
+        <div class="super-admin-stats-card success animate-card" style="animation-delay: 0.1s">
             <div class="super-admin-stats-header">
                 <div class="super-admin-stats-icon success">
                     <i class="fas fa-arrow-circle-down"></i>
@@ -46,11 +54,18 @@
                 <div class="super-admin-stats-trend up">
                     <i class="fas fa-arrow-up"></i> Books in circulation
                 </div>
+                <div class="super-admin-stats-progress">
+                    <div class="progress">
+                        <div class="progress-bar bg-success" role="progressbar"
+                            style="width: {% if transactions.count %}{{ borrows|default:'0'|floatformat:0 }}%{% else %}0%{% endif %}"
+                            aria-valuenow="{{ borrows|default:'0' }}" aria-valuemin="0" aria-valuemax="{{ transactions.count|default:'100' }}"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="super-admin-stats-card info">
+        <div class="super-admin-stats-card info animate-card" style="animation-delay: 0.2s">
             <div class="super-admin-stats-header">
                 <div class="super-admin-stats-icon info">
                     <i class="fas fa-arrow-circle-up"></i>
@@ -62,11 +77,18 @@
                 <div class="super-admin-stats-trend up">
                     <i class="fas fa-arrow-up"></i> Books returned
                 </div>
+                <div class="super-admin-stats-progress">
+                    <div class="progress">
+                        <div class="progress-bar bg-info" role="progressbar"
+                            style="width: {% if transactions.count %}{{ returns|default:'0'|floatformat:0 }}%{% else %}0%{% endif %}"
+                            aria-valuenow="{{ returns|default:'0' }}" aria-valuemin="0" aria-valuemax="{{ transactions.count|default:'100' }}"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="super-admin-stats-card warning">
+        <div class="super-admin-stats-card warning animate-card" style="animation-delay: 0.3s">
             <div class="super-admin-stats-header">
                 <div class="super-admin-stats-icon warning">
                     <i class="fas fa-exclamation-circle"></i>
@@ -78,32 +100,82 @@
                 <div class="super-admin-stats-trend down">
                     <i class="fas fa-arrow-down"></i> Need attention
                 </div>
+                <div class="super-admin-stats-progress">
+                    <div class="progress">
+                        <div class="progress-bar bg-warning" role="progressbar"
+                            style="width: {% if transactions.count %}{{ overdue|default:'0'|floatformat:0 }}%{% else %}0%{% endif %}"
+                            aria-valuenow="{{ overdue|default:'0' }}" aria-valuemin="0" aria-valuemax="{{ transactions.count|default:'100' }}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Transaction Analytics -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="super-admin-card animate-card" style="animation-delay: 0.4s">
+            <div class="super-admin-card-header">
+                <h5 class="super-admin-card-title">
+                    <i class="fas fa-chart-line"></i> Transaction Trends
+                </h5>
+                <div class="super-admin-card-actions">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-sm btn-outline-primary active" id="weeklyTrendBtn">Weekly</button>
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="monthlyTrendBtn">Monthly</button>
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="yearlyTrendBtn">Yearly</button>
+                    </div>
+                </div>
+            </div>
+            <div class="super-admin-card-body">
+                <div style="height: 300px;">
+                    <canvas id="transactionTrendsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="super-admin-card animate-card" style="animation-delay: 0.5s">
+            <div class="super-admin-card-header">
+                <h5 class="super-admin-card-title">
+                    <i class="fas fa-chart-pie"></i> Transaction Types
+                </h5>
+            </div>
+            <div class="super-admin-card-body">
+                <div style="height: 300px;">
+                    <canvas id="transactionTypesChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Transactions Table -->
-<div class="super-admin-card">
+<div class="super-admin-card animate-card" style="animation-delay: 0.6s">
     <div class="super-admin-card-header">
         <h5 class="super-admin-card-title">
             <i class="fas fa-exchange-alt"></i> Transactions
         </h5>
         <div class="super-admin-card-actions">
+            <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline me-2" type="button" data-bs-toggle="collapse" data-bs-target="#advancedFilters" aria-expanded="false" aria-controls="advancedFilters">
+                <i class="fas fa-sliders-h me-1"></i> Advanced Filters
+            </button>
             <div class="dropdown me-2">
                 <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline dropdown-toggle" type="button" id="typeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fas fa-filter me-1"></i> Type
+                    <i class="fas fa-filter me-1"></i> Type: {% if transaction_type %}{{ transaction_type|title }}{% else %}All{% endif %}
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="typeDropdown">
                     <li><a class="dropdown-item {% if not transaction_type %}active{% endif %}" href="?{% if status %}&status={{ status }}{% endif %}">All Types</a></li>
                     <li><a class="dropdown-item {% if transaction_type == 'BORROW' %}active{% endif %}" href="?type=BORROW{% if status %}&status={{ status }}{% endif %}">Borrows</a></li>
                     <li><a class="dropdown-item {% if transaction_type == 'RETURN' %}active{% endif %}" href="?type=RETURN{% if status %}&status={{ status }}{% endif %}">Returns</a></li>
                     <li><a class="dropdown-item {% if transaction_type == 'RESERVE' %}active{% endif %}" href="?type=RESERVE{% if status %}&status={{ status }}{% endif %}">Reservations</a></li>
+                    <li><a class="dropdown-item {% if transaction_type == 'CANCEL_RESERVATION' %}active{% endif %}" href="?type=CANCEL_RESERVATION{% if status %}&status={{ status }}{% endif %}">Cancelled Reservations</a></li>
                 </ul>
             </div>
             <div class="dropdown me-2">
                 <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline dropdown-toggle" type="button" id="statusDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fas fa-filter me-1"></i> Status
+                    <i class="fas fa-filter me-1"></i> Status: {% if status %}{{ status|title }}{% else %}All{% endif %}
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="statusDropdown">
                     <li><a class="dropdown-item {% if not status %}active{% endif %}" href="?{% if transaction_type %}&type={{ transaction_type }}{% endif %}">All Statuses</a></li>
@@ -123,32 +195,92 @@
             </form>
         </div>
     </div>
+
+    <!-- Advanced Filters -->
+    <div class="collapse" id="advancedFilters">
+        <div class="card card-body border-0 bg-light mb-0">
+            <form class="row g-3" method="get">
+                <div class="col-md-3">
+                    <label for="dateRange" class="form-label">Date Range</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="dateRange" name="date_range" placeholder="Select date range">
+                        <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label for="libraryFilter" class="form-label">Library</label>
+                    <select class="form-select" id="libraryFilter" name="library">
+                        <option value="">All Libraries</option>
+                        <!-- Add library options here -->
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="fineStatus" class="form-label">Fine Status</label>
+                    <select class="form-select" id="fineStatus" name="fine_status">
+                        <option value="">All</option>
+                        <option value="has_fine">Has Fine</option>
+                        <option value="paid">Fine Paid</option>
+                        <option value="unpaid">Fine Unpaid</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="sortBy" class="form-label">Sort By</label>
+                    <select class="form-select" id="sortBy" name="sort">
+                        <option value="-transaction_date">Latest First</option>
+                        <option value="transaction_date">Oldest First</option>
+                        <option value="due_date">Due Date</option>
+                        <option value="-fine_amount">Highest Fine</option>
+                    </select>
+                </div>
+                <div class="col-12 text-end">
+                    <button type="reset" class="btn btn-outline-secondary">Reset</button>
+                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <div class="super-admin-card-body">
         <div class="admin-pro-table-responsive">
-            <table class="table super-admin-table">
+            <table class="table super-admin-table table-hover">
                 <thead>
                     <tr>
-                        <th>Transaction ID</th>
+                        <th>
+                            <div class="d-flex align-items-center">
+                                <span>Transaction ID</span>
+                                <div class="ms-2 d-flex flex-column">
+                                    <a href="?sort=transaction_id" class="sort-link"><i class="fas fa-sort-up fa-xs"></i></a>
+                                    <a href="?sort=-transaction_id" class="sort-link"><i class="fas fa-sort-down fa-xs"></i></a>
+                                </div>
+                            </div>
+                        </th>
                         <th>Book</th>
                         <th>User</th>
                         <th>Library</th>
                         <th>Type</th>
                         <th>Status</th>
-                        <th>Dates</th>
+                        <th>
+                            <div class="d-flex align-items-center">
+                                <span>Dates</span>
+                                <div class="ms-2 d-flex flex-column">
+                                    <a href="?sort=transaction_date" class="sort-link"><i class="fas fa-sort-up fa-xs"></i></a>
+                                    <a href="?sort=-transaction_date" class="sort-link"><i class="fas fa-sort-down fa-xs"></i></a>
+                                </div>
+                            </div>
+                        </th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for transaction in transactions %}
-                    <tr>
+                    <tr class="transaction-row" data-transaction-id="{{ transaction.transaction_id }}">
                         <td>
-                            <a href="{% url 'transactions:transaction_detail' transaction_id=transaction.transaction_id %}">
+                            <a href="{% url 'transactions:transaction_detail' transaction_id=transaction.transaction_id %}" class="transaction-id-link">
                                 #{{ transaction.transaction_id|truncatechars:8 }}
                             </a>
                         </td>
                         <td>
                             <div class="super-admin-table-item">
-                                <div class="super-admin-table-item-img">
+                                <div class="super-admin-table-item-img book-cover-thumbnail">
                                     {% if transaction.book_copy.book.cover_image %}
                                     <img src="{{ transaction.book_copy.book.cover_image.url }}" alt="{{ transaction.book_copy.book.title }}">
                                     {% else %}
@@ -157,17 +289,17 @@
                                 </div>
                                 <div class="super-admin-table-item-content">
                                     <h4>
-                                        <a href="{% url 'books:book_detail' slug=transaction.book_copy.book.slug %}">
+                                        <a href="{% url 'books:book_detail' slug=transaction.book_copy.book.slug %}" class="book-title-link">
                                             {{ transaction.book_copy.book.title|truncatechars:25 }}
                                         </a>
                                     </h4>
-                                    <p>Copy #{{ transaction.book_copy.copy_number }}</p>
+                                    <p class="book-copy-info">Copy #{{ transaction.book_copy.copy_number }}</p>
                                 </div>
                             </div>
                         </td>
                         <td>
                             <div class="super-admin-table-item">
-                                <div class="super-admin-table-item-img">
+                                <div class="super-admin-table-item-img user-avatar">
                                     {% if transaction.user.profile_picture %}
                                     <img src="{{ transaction.user.profile_picture.url }}" alt="{{ transaction.user.get_full_name }}">
                                     {% else %}
@@ -177,69 +309,79 @@
                                     {% endif %}
                                 </div>
                                 <div class="super-admin-table-item-content">
-                                    <h4>{{ transaction.user.get_full_name|default:transaction.user.email|truncatechars:20 }}</h4>
-                                    <p>
+                                    <h4 class="user-name">{{ transaction.user.get_full_name|default:transaction.user.email|truncatechars:20 }}</h4>
+                                    <p class="user-role">
                                         {% if transaction.user.is_super_admin %}
-                                        Super Admin
+                                        <span class="badge bg-danger">Super Admin</span>
                                         {% elif transaction.user.is_library_admin %}
-                                        Library Admin
+                                        <span class="badge bg-primary">Library Admin</span>
                                         {% elif transaction.user.is_staff_member %}
-                                        Staff
+                                        <span class="badge bg-info">Staff</span>
                                         {% else %}
-                                        Member
+                                        <span class="badge bg-success">Member</span>
                                         {% endif %}
                                     </p>
                                 </div>
                             </div>
                         </td>
-                        <td>{{ transaction.library.name }}</td>
+                        <td>
+                            <span class="library-name">{{ transaction.library.name }}</span>
+                        </td>
                         <td>
                             {% if transaction.transaction_type == 'BORROW' %}
-                            <span class="super-admin-badge super-admin-badge-success">
+                            <span class="super-admin-badge super-admin-badge-success transaction-type">
                                 <i class="fas fa-arrow-circle-down"></i> Borrow
                             </span>
                             {% elif transaction.transaction_type == 'RETURN' %}
-                            <span class="super-admin-badge super-admin-badge-info">
+                            <span class="super-admin-badge super-admin-badge-info transaction-type">
                                 <i class="fas fa-arrow-circle-up"></i> Return
                             </span>
                             {% elif transaction.transaction_type == 'RESERVE' %}
-                            <span class="super-admin-badge super-admin-badge-warning">
+                            <span class="super-admin-badge super-admin-badge-warning transaction-type">
                                 <i class="fas fa-clock"></i> Reserve
                             </span>
+                            {% elif transaction.transaction_type == 'CANCEL_RESERVATION' %}
+                            <span class="super-admin-badge super-admin-badge-secondary transaction-type">
+                                <i class="fas fa-ban"></i> Cancel Reserve
+                            </span>
                             {% else %}
-                            <span class="super-admin-badge super-admin-badge-secondary">
+                            <span class="super-admin-badge super-admin-badge-secondary transaction-type">
                                 <i class="fas fa-question-circle"></i> {{ transaction.transaction_type }}
                             </span>
                             {% endif %}
                         </td>
                         <td>
                             {% if transaction.status == 'COMPLETED' %}
-                            <span class="super-admin-badge super-admin-badge-success">
+                            <span class="super-admin-badge super-admin-badge-success transaction-status">
                                 <i class="fas fa-check-circle"></i> Completed
                             </span>
                             {% elif transaction.status == 'PENDING' %}
-                            <span class="super-admin-badge super-admin-badge-warning">
+                            <span class="super-admin-badge super-admin-badge-warning transaction-status">
                                 <i class="fas fa-clock"></i> Pending
                             </span>
                             {% elif transaction.status == 'CANCELLED' %}
-                            <span class="super-admin-badge super-admin-badge-danger">
+                            <span class="super-admin-badge super-admin-badge-danger transaction-status">
                                 <i class="fas fa-times-circle"></i> Cancelled
                             </span>
+                            {% elif transaction.status == 'OVERDUE' %}
+                            <span class="super-admin-badge super-admin-badge-danger transaction-status">
+                                <i class="fas fa-exclamation-circle"></i> Overdue
+                            </span>
                             {% else %}
-                            <span class="super-admin-badge super-admin-badge-secondary">
+                            <span class="super-admin-badge super-admin-badge-secondary transaction-status">
                                 <i class="fas fa-question-circle"></i> {{ transaction.status }}
                             </span>
                             {% endif %}
-                            
+
                             {% if transaction.transaction_type == 'BORROW' and transaction.status == 'COMPLETED' and transaction.due_date and transaction.due_date < now and not transaction.return_date %}
-                            <span class="super-admin-badge super-admin-badge-danger mt-1">
+                            <span class="super-admin-badge super-admin-badge-danger mt-1 overdue-badge">
                                 <i class="fas fa-exclamation-circle"></i> Overdue
                             </span>
                             {% endif %}
-                            
+
                             {% if transaction.fine_amount and transaction.fine_amount > 0 %}
-                            <span class="super-admin-badge super-admin-badge-warning mt-1">
-                                <i class="fas fa-money-bill-wave"></i> Fine: ${{ transaction.fine_amount }}
+                            <span class="super-admin-badge super-admin-badge-warning mt-1 fine-badge">
+                                <i class="fas fa-money-bill-wave"></i> Fine: ₹{{ transaction.fine_amount }}
                                 {% if transaction.fine_paid %}
                                 <i class="fas fa-check-circle text-success ms-1"></i>
                                 {% endif %}
@@ -247,19 +389,19 @@
                             {% endif %}
                         </td>
                         <td>
-                            <div class="d-flex flex-column">
-                                <div class="mb-1">
+                            <div class="d-flex flex-column transaction-dates">
+                                <div class="mb-1 transaction-date">
                                     <i class="fas fa-calendar-alt text-primary me-2"></i>
                                     {{ transaction.transaction_date|date:"M d, Y" }}
                                 </div>
                                 {% if transaction.due_date %}
-                                <div class="mb-1">
-                                    <i class="fas fa-calendar-times text-warning me-2"></i>
+                                <div class="mb-1 due-date {% if transaction.due_date < now and not transaction.return_date %}text-danger fw-bold{% endif %}">
+                                    <i class="fas fa-calendar-times {% if transaction.due_date < now and not transaction.return_date %}text-danger{% else %}text-warning{% endif %} me-2"></i>
                                     Due: {{ transaction.due_date|date:"M d, Y" }}
                                 </div>
                                 {% endif %}
                                 {% if transaction.return_date %}
-                                <div>
+                                <div class="return-date">
                                     <i class="fas fa-calendar-check text-success me-2"></i>
                                     Returned: {{ transaction.return_date|date:"M d, Y" }}
                                 </div>
@@ -271,27 +413,40 @@
                                 <a href="{% url 'transactions:transaction_detail' transaction_id=transaction.transaction_id %}" class="super-admin-action-btn" data-tooltip="View Details">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                
+
                                 {% if transaction.transaction_type == 'BORROW' and transaction.status == 'COMPLETED' and not transaction.return_date %}
-                                <a href="{% url 'transactions:return_book' %}?transaction_id={{ transaction.transaction_id }}" class="super-admin-action-btn" data-tooltip="Return Book">
+                                <a href="{% url 'transactions:return_book' %}?transaction_id={{ transaction.transaction_id }}" class="super-admin-action-btn return-book-btn" data-tooltip="Return Book">
                                     <i class="fas fa-undo"></i>
                                 </a>
                                 {% endif %}
-                                
+
                                 {% if transaction.status == 'PENDING' %}
-                                <a href="#" class="super-admin-action-btn" data-tooltip="Approve">
+                                <a href="#" class="super-admin-action-btn approve-btn" data-transaction-id="{{ transaction.transaction_id }}" data-tooltip="Approve">
                                     <i class="fas fa-check"></i>
                                 </a>
-                                <a href="#" class="super-admin-action-btn" data-tooltip="Reject">
+                                <a href="#" class="super-admin-action-btn reject-btn" data-transaction-id="{{ transaction.transaction_id }}" data-tooltip="Reject">
                                     <i class="fas fa-times"></i>
                                 </a>
                                 {% endif %}
-                                
+
                                 {% if transaction.fine_amount > 0 and not transaction.fine_paid %}
-                                <a href="#" class="super-admin-action-btn" data-tooltip="Mark Fine as Paid">
+                                <a href="#" class="super-admin-action-btn pay-fine-btn" data-transaction-id="{{ transaction.transaction_id }}" data-tooltip="Mark Fine as Paid">
                                     <i class="fas fa-money-bill-wave"></i>
                                 </a>
                                 {% endif %}
+
+                                <div class="dropdown d-inline-block">
+                                    <button class="super-admin-action-btn dropdown-toggle" type="button" id="dropdownMenuButton{{ forloop.counter }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton{{ forloop.counter }}">
+                                        <li><a class="dropdown-item" href="{% url 'transactions:transaction_detail' transaction_id=transaction.transaction_id %}"><i class="fas fa-eye me-2"></i> View Details</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="printTransaction('{{ transaction.transaction_id }}')"><i class="fas fa-print me-2"></i> Print Receipt</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="sendReminder('{{ transaction.transaction_id }}')"><i class="fas fa-bell me-2"></i> Send Reminder</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item text-danger" href="#" onclick="showDeleteConfirmation('{{ transaction.transaction_id }}')"><i class="fas fa-trash-alt me-2"></i> Delete</a></li>
+                                    </ul>
+                                </div>
                             </div>
                         </td>
                     </tr>
@@ -304,9 +459,14 @@
                                 </div>
                                 <h4>No Transactions Found</h4>
                                 <p>There are no transactions matching your search criteria.</p>
-                                <a href="{% url 'transactions:borrow_book' %}" class="btn btn-primary mt-3">
-                                    <i class="fas fa-book me-1"></i> Create New Borrow
-                                </a>
+                                <div class="mt-3">
+                                    <a href="{% url 'transactions:borrow_book' %}" class="btn btn-primary me-2">
+                                        <i class="fas fa-book me-1"></i> Create New Borrow
+                                    </a>
+                                    <a href="{% url 'superadmin:transactions' %}" class="btn btn-outline-secondary">
+                                        <i class="fas fa-sync-alt me-1"></i> Reset Filters
+                                    </a>
+                                </div>
                             </div>
                         </td>
                     </tr>
@@ -315,17 +475,54 @@
             </table>
         </div>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteTransactionModal" tabindex="-1" aria-labelledby="deleteTransactionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteTransactionModalLabel">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this transaction? This action cannot be undone.</p>
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i> Warning: Deleting a transaction may affect library records and statistics.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete Transaction</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="super-admin-card-footer">
         <div class="d-flex justify-content-between align-items-center">
             <div class="super-admin-pagination-info">
                 {% if transactions %}
-                Showing {{ transactions.start_index }} to {{ transactions.end_index }} of {{ transactions.paginator.count }} transactions
+                <div class="d-flex align-items-center">
+                    <span class="me-3">
+                        <i class="fas fa-list me-1 text-primary"></i> Showing {{ transactions.start_index }} to {{ transactions.end_index }} of {{ transactions.paginator.count }} transactions
+                    </span>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="perPageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ transactions.paginator.per_page }} per page
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="perPageDropdown">
+                            <li><a class="dropdown-item" href="?per_page=10{% if query %}&q={{ query }}{% endif %}{% if transaction_type %}&type={{ transaction_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}">10 per page</a></li>
+                            <li><a class="dropdown-item" href="?per_page=25{% if query %}&q={{ query }}{% endif %}{% if transaction_type %}&type={{ transaction_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}">25 per page</a></li>
+                            <li><a class="dropdown-item" href="?per_page=50{% if query %}&q={{ query }}{% endif %}{% if transaction_type %}&type={{ transaction_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}">50 per page</a></li>
+                            <li><a class="dropdown-item" href="?per_page=100{% if query %}&q={{ query }}{% endif %}{% if transaction_type %}&type={{ transaction_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}">100 per page</a></li>
+                        </ul>
+                    </div>
+                </div>
                 {% endif %}
             </div>
             <div class="super-admin-pagination">
                 {% if transactions.has_other_pages %}
-                <nav>
-                    <ul class="pagination">
+                <nav aria-label="Transaction pagination">
+                    <ul class="pagination pagination-modern">
                         {% if transactions.has_previous %}
                         <li class="page-item">
                             <a class="page-link" href="?page={{ transactions.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if transaction_type %}&type={{ transaction_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}" aria-label="Previous">
@@ -339,14 +536,14 @@
                             </a>
                         </li>
                         {% endif %}
-                        
+
                         {% if transactions.number > 3 %}
                         <li class="page-item"><a class="page-link" href="?page=1{% if query %}&q={{ query }}{% endif %}{% if transaction_type %}&type={{ transaction_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}">1</a></li>
                         {% if transactions.number > 4 %}
                         <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
                         {% endif %}
                         {% endif %}
-                        
+
                         {% for i in transactions.paginator.page_range %}
                             {% if transactions.number == i %}
                             <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
@@ -354,14 +551,14 @@
                             <li class="page-item"><a class="page-link" href="?page={{ i }}{% if query %}&q={{ query }}{% endif %}{% if transaction_type %}&type={{ transaction_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}">{{ i }}</a></li>
                             {% endif %}
                         {% endfor %}
-                        
+
                         {% if transactions.number < transactions.paginator.num_pages|add:"-2" %}
                         {% if transactions.number < transactions.paginator.num_pages|add:"-3" %}
                         <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
                         {% endif %}
                         <li class="page-item"><a class="page-link" href="?page={{ transactions.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}{% if transaction_type %}&type={{ transaction_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}">{{ transactions.paginator.num_pages }}</a></li>
                         {% endif %}
-                        
+
                         {% if transactions.has_next %}
                         <li class="page-item">
                             <a class="page-link" href="?page={{ transactions.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if transaction_type %}&type={{ transaction_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}" aria-label="Next">
@@ -385,8 +582,12 @@
 {% endblock %}
 
 {% block extra_js %}
+<!-- Include Date Range Picker -->
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
 <script>
-    // Initialize counters
     document.addEventListener('DOMContentLoaded', function() {
         // Counter animation
         const counters = document.querySelectorAll('.counter-value');
@@ -397,7 +598,7 @@
                 const value = +counter.getAttribute('data-target');
                 const data = +counter.innerText;
                 const time = value / speed;
-                
+
                 if (data < value) {
                     counter.innerText = Math.ceil(data + time);
                     setTimeout(animate, 1);
@@ -407,6 +608,358 @@
             }
             animate();
         });
+
+        // Initialize date range picker
+        $('#dateRange').daterangepicker({
+            opens: 'left',
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear',
+                format: 'YYYY-MM-DD'
+            }
+        });
+
+        $('#dateRange').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' to ' + picker.endDate.format('YYYY-MM-DD'));
+        });
+
+        $('#dateRange').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
+        });
+
+        // Transaction Trends Chart
+        const trendCtx = document.getElementById('transactionTrendsChart').getContext('2d');
+        const trendChart = new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [
+                    {
+                        label: 'Borrows',
+                        data: [65, 59, 80, 81, 56, 55, 40, 45, 60, 70, 75, 80],
+                        borderColor: '#28a745',
+                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Returns',
+                        data: [28, 48, 40, 19, 86, 27, 90, 60, 50, 60, 65, 70],
+                        borderColor: '#007bff',
+                        backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Reservations',
+                        data: [10, 20, 30, 40, 50, 40, 30, 20, 10, 15, 25, 35],
+                        borderColor: '#ffc107',
+                        backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Transaction Types Chart
+        const typesCtx = document.getElementById('transactionTypesChart').getContext('2d');
+        const typesChart = new Chart(typesCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Borrows', 'Returns', 'Reservations', 'Cancelled'],
+                datasets: [{
+                    data: [{{ borrows|default:'0' }}, {{ returns|default:'0' }}, {{ reserves|default:'0' }}, 0],
+                    backgroundColor: [
+                        '#28a745',
+                        '#007bff',
+                        '#ffc107',
+                        '#6c757d'
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                },
+                cutout: '70%'
+            }
+        });
+
+        // Toggle between weekly, monthly, yearly views
+        document.getElementById('weeklyTrendBtn').addEventListener('click', function() {
+            this.classList.add('active');
+            document.getElementById('monthlyTrendBtn').classList.remove('active');
+            document.getElementById('yearlyTrendBtn').classList.remove('active');
+            // Update chart data for weekly view
+            // This would typically fetch data from the server
+        });
+
+        document.getElementById('monthlyTrendBtn').addEventListener('click', function() {
+            this.classList.add('active');
+            document.getElementById('weeklyTrendBtn').classList.remove('active');
+            document.getElementById('yearlyTrendBtn').classList.remove('active');
+            // Update chart data for monthly view
+        });
+
+        document.getElementById('yearlyTrendBtn').addEventListener('click', function() {
+            this.classList.add('active');
+            document.getElementById('weeklyTrendBtn').classList.remove('active');
+            document.getElementById('monthlyTrendBtn').classList.remove('active');
+            // Update chart data for yearly view
+        });
+
+        // Export transactions functionality
+        document.getElementById('exportTransactionsBtn').addEventListener('click', function() {
+            const dropdown = document.createElement('div');
+            dropdown.className = 'export-dropdown';
+            dropdown.innerHTML = `
+                <div class="export-dropdown-content">
+                    <a href="#" id="exportCSV"><i class="fas fa-file-csv me-2"></i> Export as CSV</a>
+                    <a href="#" id="exportExcel"><i class="fas fa-file-excel me-2"></i> Export as Excel</a>
+                    <a href="#" id="exportPDF"><i class="fas fa-file-pdf me-2"></i> Export as PDF</a>
+                    <a href="#" id="printTransactions"><i class="fas fa-print me-2"></i> Print</a>
+                </div>
+            `;
+
+            document.body.appendChild(dropdown);
+
+            const rect = this.getBoundingClientRect();
+            dropdown.style.position = 'absolute';
+            dropdown.style.top = (rect.bottom + window.scrollY) + 'px';
+            dropdown.style.left = (rect.left + window.scrollX) + 'px';
+            dropdown.style.zIndex = '1000';
+
+            document.addEventListener('click', function hideDropdown(e) {
+                if (!dropdown.contains(e.target) && e.target !== document.getElementById('exportTransactionsBtn')) {
+                    document.body.removeChild(dropdown);
+                    document.removeEventListener('click', hideDropdown);
+                }
+            });
+
+            document.getElementById('exportCSV').addEventListener('click', function(e) {
+                e.preventDefault();
+                // Implement CSV export
+                alert('Exporting as CSV...');
+                document.body.removeChild(dropdown);
+            });
+
+            document.getElementById('exportExcel').addEventListener('click', function(e) {
+                e.preventDefault();
+                // Implement Excel export
+                alert('Exporting as Excel...');
+                document.body.removeChild(dropdown);
+            });
+
+            document.getElementById('exportPDF').addEventListener('click', function(e) {
+                e.preventDefault();
+                // Implement PDF export
+                alert('Exporting as PDF...');
+                document.body.removeChild(dropdown);
+            });
+
+            document.getElementById('printTransactions').addEventListener('click', function(e) {
+                e.preventDefault();
+                // Implement print functionality
+                window.print();
+                document.body.removeChild(dropdown);
+            });
+        });
     });
+
+    // Function to show delete confirmation modal
+    function showDeleteConfirmation(transactionId) {
+        const modal = new bootstrap.Modal(document.getElementById('deleteTransactionModal'));
+        const confirmBtn = document.getElementById('confirmDeleteBtn');
+
+        confirmBtn.setAttribute('data-transaction-id', transactionId);
+        confirmBtn.addEventListener('click', function() {
+            deleteTransaction(transactionId);
+            modal.hide();
+        });
+
+        modal.show();
+    }
+
+    // Function to delete transaction
+    function deleteTransaction(transactionId) {
+        // This would typically make an AJAX request to delete the transaction
+        console.log('Deleting transaction:', transactionId);
+        alert('Transaction deletion would be implemented here with proper backend support.');
+    }
+
+    // Function to print transaction receipt
+    function printTransaction(transactionId) {
+        // This would typically open a print-friendly version of the transaction
+        console.log('Printing transaction:', transactionId);
+        alert('Transaction printing would be implemented here.');
+    }
+
+    // Function to send reminder
+    function sendReminder(transactionId) {
+        // This would typically send a reminder email or notification
+        console.log('Sending reminder for transaction:', transactionId);
+        alert('Reminder would be sent to the user.');
+    }
 </script>
+
+<style>
+    /* Custom styles for the transactions page */
+    .animate-card {
+        animation: fadeInUp 0.5s ease-out forwards;
+        opacity: 0;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .transaction-row:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+
+    .sort-link {
+        color: #adb5bd;
+        text-decoration: none;
+        line-height: 0.5;
+    }
+
+    .sort-link:hover {
+        color: #007bff;
+    }
+
+    .transaction-id-link {
+        font-weight: 600;
+        color: #007bff;
+    }
+
+    .book-cover-thumbnail img {
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s;
+    }
+
+    .book-cover-thumbnail img:hover {
+        transform: scale(1.05);
+    }
+
+    .book-title-link {
+        color: #343a40;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .book-title-link:hover {
+        color: #007bff;
+    }
+
+    .user-avatar img, .admin-pro-user-avatar-placeholder {
+        border: 2px solid #fff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .super-admin-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.35em 0.65em;
+        font-size: 0.75em;
+        font-weight: 600;
+        line-height: 1;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: 0.25rem;
+        transition: all 0.2s;
+    }
+
+    .super-admin-badge i {
+        margin-right: 0.25rem;
+    }
+
+    .super-admin-badge:hover {
+        transform: translateY(-1px);
+    }
+
+    .pagination-modern .page-link {
+        margin: 0 2px;
+        border-radius: 4px;
+        border: none;
+        color: #6c757d;
+        background-color: #f8f9fa;
+    }
+
+    .pagination-modern .page-item.active .page-link {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .pagination-modern .page-link:hover {
+        background-color: #e9ecef;
+        color: #007bff;
+    }
+
+    .export-dropdown {
+        position: absolute;
+        background-color: white;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        border-radius: 0.25rem;
+        z-index: 1000;
+    }
+
+    .export-dropdown-content {
+        display: flex;
+        flex-direction: column;
+        padding: 0.5rem 0;
+    }
+
+    .export-dropdown-content a {
+        padding: 0.5rem 1rem;
+        color: #212529;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .export-dropdown-content a:hover {
+        background-color: #f8f9fa;
+        color: #007bff;
+    }
+</style>
 {% endblock %}

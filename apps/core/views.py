@@ -52,6 +52,10 @@ def about(request):
     """View function for the about page."""
     return render(request, 'core/about.html')
 
+def mission(request):
+    """View function for the mission page."""
+    return render(request, 'core/mission.html')
+
 def contact(request):
     """View function for the contact page."""
     return render(request, 'core/contact.html')

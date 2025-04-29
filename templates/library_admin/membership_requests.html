@@ -1,8 +1,8 @@
 {% extends 'core/admin_base.html' %}
 {% load static %}
 
-{% block title %}Membership Requests | Library Admin{% endblock %}
-{% block page_title %}Membership Requests{% endblock %}
+{% block title %}सदस्यता अनुरोध (Membership Requests) | Library Admin{% endblock %}
+{% block page_title %}सदस्यता अनुरोध (Membership Requests){% endblock %}
 
 {% block extra_css %}
 <style>
@@ -217,33 +217,33 @@
 
 {% block page_actions %}
 <div class="btn-group me-2 filter-buttons">
-    <a href="{% url 'library_admin:membership_requests' %}?status=PENDING" class="btn btn-sm btn-warning filter-btn {% if status == 'PENDING' %}active{% endif %}">
-        <i class="fas fa-clock me-1"></i> Pending
+    <a href="{% url 'library_admin:membership_requests' %}?status=PENDING" class="btn btn-sm filter-btn {% if status == 'PENDING' %}active{% endif %}" style="background-color: #FF9933; color: white; border-color: #FF9933;">
+        <i class="fas fa-clock me-1"></i> लंबित (Pending)
         {% if pending_requests_count > 0 %}
-        <span class="badge bg-danger ms-1 badge-pulse">{{ pending_requests_count }}</span>
+        <span class="badge ms-1 badge-pulse" style="background-color: white; color: #FF9933;">{{ pending_requests_count }}</span>
         {% endif %}
     </a>
-    <a href="{% url 'library_admin:membership_requests' %}?status=APPROVED" class="btn btn-sm btn-success filter-btn {% if status == 'APPROVED' %}active{% endif %}">
-        <i class="fas fa-check me-1"></i> Approved
-        <span class="badge bg-light text-dark ms-1">{{ approved_requests_count }}</span>
+    <a href="{% url 'library_admin:membership_requests' %}?status=APPROVED" class="btn btn-sm filter-btn {% if status == 'APPROVED' %}active{% endif %}" style="background-color: #138808; color: white; border-color: #138808;">
+        <i class="fas fa-check me-1"></i> स्वीकृत (Approved)
+        <span class="badge ms-1" style="background-color: white; color: #138808;">{{ approved_requests_count }}</span>
     </a>
-    <a href="{% url 'library_admin:membership_requests' %}?status=REJECTED" class="btn btn-sm btn-danger filter-btn {% if status == 'REJECTED' %}active{% endif %}">
-        <i class="fas fa-times me-1"></i> Rejected
-        <span class="badge bg-light text-dark ms-1">{{ rejected_requests_count }}</span>
+    <a href="{% url 'library_admin:membership_requests' %}?status=REJECTED" class="btn btn-sm filter-btn {% if status == 'REJECTED' %}active{% endif %}" style="background-color: #000080; color: white; border-color: #000080;">
+        <i class="fas fa-times me-1"></i> अस्वीकृत (Rejected)
+        <span class="badge ms-1" style="background-color: white; color: #000080;">{{ rejected_requests_count }}</span>
     </a>
-    <a href="{% url 'library_admin:membership_requests' %}" class="btn btn-sm btn-primary filter-btn {% if not status %}active{% endif %}">
-        <i class="fas fa-list me-1"></i> All
-        <span class="badge bg-light text-dark ms-1">{{ pending_requests_count|add:approved_requests_count|add:rejected_requests_count }}</span>
+    <a href="{% url 'library_admin:membership_requests' %}" class="btn btn-sm filter-btn {% if not status %}active{% endif %}" style="background-color: #6c757d; color: white; border-color: #6c757d;">
+        <i class="fas fa-list me-1"></i> सभी (All)
+        <span class="badge ms-1" style="background-color: white; color: #6c757d;">{{ pending_requests_count|add:approved_requests_count|add:rejected_requests_count }}</span>
     </a>
 </div>
-<button type="button" class="btn btn-sm btn-outline-secondary" id="refreshBtn">
-    <i class="fas fa-sync-alt"></i> <span class="d-none d-md-inline">Refresh</span>
+<button type="button" class="btn btn-sm" id="refreshBtn" style="background-color: rgba(255, 153, 51, 0.1); color: #FF9933; border: 1px solid #FF9933;">
+    <i class="fas fa-sync-alt"></i> <span class="d-none d-md-inline">ताज़ा करें (Refresh)</span>
 </button>
 {% endblock %}
 
 {% block content %}
 <!-- Search and Filter Bar -->
-<div class="card shadow mb-4">
+<div class="card shadow mb-4" style="border-top: 3px solid #FF9933;">
     <div class="card-body p-3">
         <div class="row g-2 align-items-center">
             <div class="col-md-6">
@@ -251,17 +251,19 @@
                     <span class="input-group-text bg-light">
                         <i class="fas fa-search"></i>
                     </span>
-                    <input type="text" class="form-control" id="searchInput" placeholder="Search by name or email...">
-                    <button class="btn btn-primary" type="button" id="searchBtn">Search</button>
+                    <input type="text" class="form-control" id="searchInput" placeholder="नाम या ईमेल से खोजें (Search by name or email)...">
+                    <button class="btn" type="button" id="searchBtn" style="background-color: #FF9933; color: white;">
+                        <i class="fas fa-search me-1"></i> खोजें (Search)
+                    </button>
                 </div>
             </div>
             <div class="col-md-6 text-md-end">
                 <div class="d-flex justify-content-md-end">
                     <div class="me-3">
-                        <span class="text-muted me-2">Status:</span>
-                        <span class="badge bg-warning me-1">Pending: {{ pending_requests_count }}</span>
-                        <span class="badge bg-success me-1">Approved: {{ approved_requests_count|default:"0" }}</span>
-                        <span class="badge bg-danger">Rejected: {{ rejected_requests_count|default:"0" }}</span>
+                        <span class="text-muted me-2">स्थिति (Status):</span>
+                        <span class="badge me-1" style="background-color: #FF9933;">लंबित (Pending): {{ pending_requests_count }}</span>
+                        <span class="badge me-1" style="background-color: #138808;">स्वीकृत (Approved): {{ approved_requests_count|default:"0" }}</span>
+                        <span class="badge" style="background-color: #000080;">अस्वीकृत (Rejected): {{ rejected_requests_count|default:"0" }}</span>
                     </div>
                 </div>
             </div>
@@ -271,17 +273,17 @@
 
 {% if pending_requests_count > 0 and not status %}
 <!-- Pending Requests Alert -->
-<div class="alert alert-warning mb-4 d-flex align-items-center" style="animation: fadeIn 0.5s ease-out;">
-    <div style="font-size: 24px; margin-right: 15px;">
+<div class="alert mb-4 d-flex align-items-center" style="animation: fadeIn 0.5s ease-out; background: linear-gradient(135deg, rgba(255, 153, 51, 0.1) 0%, rgba(19, 136, 8, 0.05) 100%); border-left: 4px solid #FF9933; border-radius: 8px;">
+    <div style="font-size: 24px; margin-right: 15px; color: #FF9933;">
         <i class="fas fa-exclamation-triangle"></i>
     </div>
     <div class="flex-grow-1">
-        <h4 class="alert-heading mb-1">Pending Membership Requests</h4>
-        <p class="mb-0">You have <strong>{{ pending_requests_count }}</strong> pending membership {% if pending_requests_count == 1 %}request{% else %}requests{% endif %} that {% if pending_requests_count == 1 %}requires{% else %}require{% endif %} your attention.</p>
+        <h4 class="alert-heading mb-1" style="color: #000080;">लंबित सदस्यता अनुरोध (Pending Membership Requests)</h4>
+        <p class="mb-0">You have <strong style="color: #FF9933;">{{ pending_requests_count }}</strong> pending membership {% if pending_requests_count == 1 %}request{% else %}requests{% endif %} that {% if pending_requests_count == 1 %}requires{% else %}require{% endif %} your attention.</p>
     </div>
     <div>
-        <a href="{% url 'library_admin:membership_requests' %}?status=PENDING" class="btn btn-warning">
-            <i class="fas fa-eye me-1"></i> View Pending
+        <a href="{% url 'library_admin:membership_requests' %}?status=PENDING" class="btn" style="background-color: #FF9933; color: white;">
+            <i class="fas fa-eye me-1"></i> लंबित देखें (View Pending)
         </a>
     </div>
 </div>
@@ -291,7 +293,11 @@
 <div class="row g-3">
     {% for request in membership_requests %}
     <div class="col-md-6">
-        <div class="card shadow-sm request-card {% if request.status == 'PENDING' %}pending{% elif request.status == 'APPROVED' %}approved{% else %}rejected{% endif %}">
+        <div class="card shadow-sm request-card {% if request.status == 'PENDING' %}pending{% elif request.status == 'APPROVED' %}approved{% else %}rejected{% endif %}"
+             style="border-left: 4px solid {% if request.status == 'PENDING' %}#FF9933{% elif request.status == 'APPROVED' %}#138808{% else %}#000080{% endif %};
+                    background: linear-gradient(135deg,
+                                {% if request.status == 'PENDING' %}rgba(255, 153, 51, 0.05){% elif request.status == 'APPROVED' %}rgba(19, 136, 8, 0.05){% else %}rgba(0, 0, 128, 0.05){% endif %} 0%,
+                                rgba(255, 255, 255, 1) 100%);">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div class="d-flex align-items-center">
@@ -299,7 +305,9 @@
                             {% if request.user.profile_picture %}
                             <img src="{{ request.user.profile_picture.url }}" alt="{{ request.user.get_full_name }}" class="user-avatar">
                             {% else %}
-                            <div class="user-avatar-placeholder">
+                            <div class="user-avatar-placeholder" style="background: linear-gradient(135deg,
+                                        {% if request.status == 'PENDING' %}#FF9933{% elif request.status == 'APPROVED' %}#138808{% else %}#000080{% endif %} 0%,
+                                        {% if request.status == 'PENDING' %}#FF9933{% elif request.status == 'APPROVED' %}#138808{% else %}#000080{% endif %} 100%);">
                                 {{ request.user.first_name|slice:":1" }}{{ request.user.last_name|slice:":1" }}
                             </div>
                             {% endif %}
@@ -311,48 +319,53 @@
                             </p>
                         </div>
                     </div>
-                    <span class="badge status-badge {% if request.status == 'PENDING' %}bg-warning{% elif request.status == 'APPROVED' %}bg-success{% else %}bg-danger{% endif %}">
-                        {{ request.get_status_display }}
+                    <span class="badge status-badge" style="background-color: {% if request.status == 'PENDING' %}#FF9933{% elif request.status == 'APPROVED' %}#138808{% else %}#000080{% endif %}; color: white;">
+                        {% if request.status == 'PENDING' %}लंबित{% elif request.status == 'APPROVED' %}स्वीकृत{% else %}अस्वीकृत{% endif %} ({{ request.get_status_display }})
                     </span>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <p class="card-text mb-1">
-                            <i class="fas fa-phone me-1 text-muted"></i> {{ request.user.phone_number|default:"Phone not provided" }}
+                            <i class="fas fa-phone me-1" style="color: {% if request.status == 'PENDING' %}#FF9933{% elif request.status == 'APPROVED' %}#138808{% else %}#000080{% endif %};"></i>
+                            <span class="text-muted">फोन (Phone):</span> {{ request.user.phone_number|default:"Not provided" }}
                         </p>
                     </div>
                     <div class="col-md-6">
                         <p class="card-text mb-1">
-                            <i class="fas fa-calendar me-1 text-muted"></i> {{ request.request_date|date:"M d, Y" }}
+                            <i class="fas fa-calendar me-1" style="color: {% if request.status == 'PENDING' %}#FF9933{% elif request.status == 'APPROVED' %}#138808{% else %}#000080{% endif %};"></i>
+                            <span class="text-muted">दिनांक (Date):</span> {{ request.request_date|date:"M d, Y" }}
                         </p>
                     </div>
                 </div>
 
                 <div class="action-buttons text-end">
                     {% if request.status == 'PENDING' %}
-                    <button type="button" class="btn btn-sm btn-success approve-btn"
+                    <button type="button" class="btn btn-sm approve-btn"
                             data-bs-toggle="modal" data-bs-target="#approveModal"
                             data-request-id="{{ request.id }}"
-                            data-user-name="{{ request.user.first_name }} {{ request.user.last_name }}">
-                        <i class="fas fa-check me-1"></i> Approve
+                            data-user-name="{{ request.user.first_name }} {{ request.user.last_name }}"
+                            style="background-color: #138808; color: white; border-color: #138808;">
+                        <i class="fas fa-check me-1"></i> स्वीकृत करें (Approve)
                     </button>
-                    <button type="button" class="btn btn-sm btn-danger reject-btn"
+                    <button type="button" class="btn btn-sm reject-btn"
                             data-bs-toggle="modal" data-bs-target="#rejectModal"
                             data-request-id="{{ request.id }}"
-                            data-user-name="{{ request.user.first_name }} {{ request.user.last_name }}">
-                        <i class="fas fa-times me-1"></i> Reject
+                            data-user-name="{{ request.user.first_name }} {{ request.user.last_name }}"
+                            style="background-color: #000080; color: white; border-color: #000080;">
+                        <i class="fas fa-times me-1"></i> अस्वीकार करें (Reject)
                     </button>
                     {% endif %}
-                    <button type="button" class="btn btn-sm btn-info view-btn"
+                    <button type="button" class="btn btn-sm view-btn"
                             data-bs-toggle="modal" data-bs-target="#viewModal"
                             data-request-id="{{ request.id }}"
                             data-user-name="{{ request.user.first_name }} {{ request.user.last_name }}"
                             data-user-email="{{ request.user.email }}"
                             data-user-phone="{{ request.user.phone_number|default:'Not provided' }}"
                             data-user-address="{{ request.user.address|default:'Not provided' }}"
-                            data-request-date="{{ request.request_date|date:'M d, Y' }}">
-                        <i class="fas fa-eye me-1"></i> View Details
+                            data-request-date="{{ request.request_date|date:'M d, Y' }}"
+                            style="background-color: #FF9933; color: white; border-color: #FF9933;">
+                        <i class="fas fa-eye me-1"></i> विवरण देखें (View Details)
                     </button>
                 </div>
             </div>
@@ -360,16 +373,16 @@
     </div>
     {% empty %}
     <div class="col-12">
-        <div class="card shadow-sm">
+        <div class="card shadow-sm" style="border-top: 3px solid #FF9933;">
             <div class="card-body empty-state">
-                <div class="empty-state-icon">
+                <div class="empty-state-icon" style="color: #FF9933;">
                     <i class="fas fa-inbox"></i>
                 </div>
-                <h4>No membership requests found</h4>
-                <p class="text-muted">There are no membership requests matching your criteria.</p>
+                <h4>कोई सदस्यता अनुरोध नहीं मिला (No membership requests found)</h4>
+                <p class="text-muted">आपके मापदंडों से मेल खाने वाले कोई सदस्यता अनुरोध नहीं हैं। (There are no membership requests matching your criteria.)</p>
                 {% if status %}
-                <a href="{% url 'library_admin:membership_requests' %}" class="btn btn-primary mt-3">
-                    <i class="fas fa-list me-1"></i> View All Requests
+                <a href="{% url 'library_admin:membership_requests' %}" class="btn mt-3" style="background-color: #FF9933; color: white;">
+                    <i class="fas fa-list me-1"></i> सभी अनुरोध देखें (View All Requests)
                 </a>
                 {% endif %}
             </div>
@@ -425,23 +438,32 @@
 <div class="modal fade" id="approveModal" tabindex="-1" aria-labelledby="approveModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="approveModalLabel">Approve Membership Request</h5>
+            <div class="modal-header" style="background-color: rgba(19, 136, 8, 0.1); border-bottom: 2px solid #138808;">
+                <h5 class="modal-title" id="approveModalLabel" style="color: #138808;">
+                    <i class="fas fa-check-circle me-2"></i> सदस्यता अनुरोध स्वीकृत करें (Approve Membership Request)
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="{% url 'library_admin:approve_membership_request' %}" method="post">
                 {% csrf_token %}
                 <div class="modal-body">
                     <input type="hidden" name="request_id" id="approveRequestId">
-                    <p>Are you sure you want to approve the membership request for <strong id="approveUserName"></strong>?</p>
-                    <div class="mb-3">
-                        <label for="approveNotes" class="form-label">Notes (optional)</label>
-                        <textarea class="form-control" id="approveNotes" name="notes" rows="3"></textarea>
+                    <div class="alert" style="background-color: rgba(19, 136, 8, 0.1); border-left: 4px solid #138808;">
+                        <p class="mb-0">क्या आप वाकई <strong id="approveUserName" style="color: #138808;"></strong> के लिए सदस्यता अनुरोध को स्वीकृत करना चाहते हैं?</p>
+                        <p class="mb-0">(Are you sure you want to approve the membership request for this user?)</p>
+                    </div>
+                    <div class="mb-3 mt-4">
+                        <label for="approveNotes" class="form-label">नोट्स (Notes) <span class="text-muted">(optional)</span></label>
+                        <textarea class="form-control" id="approveNotes" name="notes" rows="3" placeholder="Add any notes about this approval..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-success">Approve</button>
+                    <button type="button" class="btn" data-bs-dismiss="modal" style="background-color: #6c757d; color: white;">
+                        <i class="fas fa-times me-1"></i> रद्द करें (Cancel)
+                    </button>
+                    <button type="submit" class="btn" style="background-color: #138808; color: white;">
+                        <i class="fas fa-check me-1"></i> स्वीकृत करें (Approve)
+                    </button>
                 </div>
             </form>
         </div>
@@ -452,23 +474,32 @@
 <div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="rejectModalLabel">Reject Membership Request</h5>
+            <div class="modal-header" style="background-color: rgba(0, 0, 128, 0.1); border-bottom: 2px solid #000080;">
+                <h5 class="modal-title" id="rejectModalLabel" style="color: #000080;">
+                    <i class="fas fa-times-circle me-2"></i> सदस्यता अनुरोध अस्वीकार करें (Reject Membership Request)
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="{% url 'library_admin:reject_membership_request' %}" method="post">
                 {% csrf_token %}
                 <div class="modal-body">
                     <input type="hidden" name="request_id" id="rejectRequestId">
-                    <p>Are you sure you want to reject the membership request for <strong id="rejectUserName"></strong>?</p>
-                    <div class="mb-3">
-                        <label for="rejectNotes" class="form-label">Reason for rejection</label>
-                        <textarea class="form-control" id="rejectNotes" name="notes" rows="3" required></textarea>
+                    <div class="alert" style="background-color: rgba(0, 0, 128, 0.1); border-left: 4px solid #000080;">
+                        <p class="mb-0">क्या आप वाकई <strong id="rejectUserName" style="color: #000080;"></strong> के लिए सदस्यता अनुरोध को अस्वीकार करना चाहते हैं?</p>
+                        <p class="mb-0">(Are you sure you want to reject the membership request for this user?)</p>
+                    </div>
+                    <div class="mb-3 mt-4">
+                        <label for="rejectNotes" class="form-label">अस्वीकृति का कारण (Reason for rejection) <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="rejectNotes" name="notes" rows="3" required placeholder="Please provide a reason for rejection..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-danger">Reject</button>
+                    <button type="button" class="btn" data-bs-dismiss="modal" style="background-color: #6c757d; color: white;">
+                        <i class="fas fa-times me-1"></i> रद्द करें (Cancel)
+                    </button>
+                    <button type="submit" class="btn" style="background-color: #000080; color: white;">
+                        <i class="fas fa-ban me-1"></i> अस्वीकार करें (Reject)
+                    </button>
                 </div>
             </form>
         </div>
@@ -479,34 +510,42 @@
 <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="viewModalLabel">Membership Request Details</h5>
+            <div class="modal-header" style="background-color: rgba(255, 153, 51, 0.1); border-bottom: 2px solid #FF9933;">
+                <h5 class="modal-title" id="viewModalLabel" style="color: #FF9933;">
+                    <i class="fas fa-user-circle me-2"></i> सदस्यता अनुरोध विवरण (Membership Request Details)
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="row mb-3">
-                    <div class="col-4 fw-bold">Name:</div>
-                    <div class="col-8" id="viewUserName"></div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-4 fw-bold">Email:</div>
-                    <div class="col-8" id="viewUserEmail"></div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-4 fw-bold">Phone:</div>
-                    <div class="col-8" id="viewUserPhone"></div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-4 fw-bold">Address:</div>
-                    <div class="col-8" id="viewUserAddress"></div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-4 fw-bold">Request Date:</div>
-                    <div class="col-8" id="viewRequestDate"></div>
+                <div class="card mb-3" style="border-left: 4px solid #FF9933; background-color: rgba(255, 153, 51, 0.05);">
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-4 fw-bold" style="color: #FF9933;">नाम (Name):</div>
+                            <div class="col-8" id="viewUserName"></div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-4 fw-bold" style="color: #FF9933;">ईमेल (Email):</div>
+                            <div class="col-8" id="viewUserEmail"></div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-4 fw-bold" style="color: #FF9933;">फोन (Phone):</div>
+                            <div class="col-8" id="viewUserPhone"></div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-4 fw-bold" style="color: #FF9933;">पता (Address):</div>
+                            <div class="col-8" id="viewUserAddress"></div>
+                        </div>
+                        <div class="row mb-0">
+                            <div class="col-4 fw-bold" style="color: #FF9933;">अनुरोध दिनांक (Request Date):</div>
+                            <div class="col-8" id="viewRequestDate"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn" data-bs-dismiss="modal" style="background-color: #FF9933; color: white;">
+                    <i class="fas fa-times me-1"></i> बंद करें (Close)
+                </button>
             </div>
         </div>
     </div>

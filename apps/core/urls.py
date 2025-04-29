@@ -7,6 +7,7 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('about/', views.about, name='about'),
+    path('mission/', views.mission, name='mission'),
     path('contact/', views.contact, name='contact'),
 
     # Custom Admin Panel URLs
