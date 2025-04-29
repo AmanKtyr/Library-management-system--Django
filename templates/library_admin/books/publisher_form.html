@@ -1,0 +1,386 @@
+{% extends 'core/admin_base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - Library Management System{% endblock %}
+{% block breadcrumb_title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'library_admin:publishers' %}" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-arrow-left"></i> Back to Publishers
+</a>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .publisher-form-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .form-section {
+        margin-bottom: 30px;
+    }
+    
+    .form-section-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        color: var(--primary-color);
+    }
+    
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 8px;
+        color: var(--gray-700);
+    }
+    
+    .form-control {
+        border-radius: 8px;
+        padding: 12px 15px;
+        border: 1px solid var(--gray-300);
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(58, 90, 120, 0.15);
+    }
+    
+    .form-text {
+        font-size: 12px;
+        color: var(--gray-600);
+    }
+    
+    .form-check-label {
+        font-size: 14px;
+        color: var(--gray-700);
+    }
+    
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .publisher-logo-preview {
+        width: 100px;
+        height: 100px;
+        border-radius: 12px;
+        background-color: var(--gray-200);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        color: var(--gray-500);
+        margin-bottom: 15px;
+        overflow: hidden;
+    }
+    
+    .publisher-logo-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .custom-file-upload {
+        display: inline-block;
+        padding: 8px 16px;
+        cursor: pointer;
+        background-color: var(--gray-200);
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--gray-700);
+        transition: all 0.2s ease;
+    }
+    
+    .custom-file-upload:hover {
+        background-color: var(--gray-300);
+    }
+    
+    .custom-file-upload i {
+        margin-right: 8px;
+    }
+    
+    .input-with-icon {
+        position: relative;
+    }
+    
+    .input-with-icon .form-control {
+        padding-left: 40px;
+    }
+    
+    .input-with-icon i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gray-500);
+    }
+    
+    /* Animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .fade-in-up {
+        animation: fadeInUp 0.5s ease forwards;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-pro-card fade-in-up">
+    <div class="admin-pro-card-body">
+        <div class="publisher-form-container">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- Basic Information Section -->
+                <div class="form-section">
+                    <h3 class="form-section-title">
+                        <i class="fas fa-info-circle me-2"></i>Basic Information
+                    </h3>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <label for="id_name" class="form-label">Publisher Name <span class="text-danger">*</span></label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-building"></i>
+                                {{ form.name }}
+                            </div>
+                            {% if form.name.errors %}
+                                <div class="text-danger mt-1">{{ form.name.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">Enter the official name of the publisher.</div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="id_established_year" class="form-label">Established Year</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                                {{ form.established_year }}
+                            </div>
+                            {% if form.established_year.errors %}
+                                <div class="text-danger mt-1">{{ form.established_year.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">Year when the publisher was established.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="id_slug" class="form-label">Slug</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-link"></i>
+                                {{ form.slug }}
+                            </div>
+                            {% if form.slug.errors %}
+                                <div class="text-danger mt-1">{{ form.slug.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">URL-friendly version of the name. Leave blank to auto-generate.</div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="id_website" class="form-label">Website</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-globe"></i>
+                                {{ form.website }}
+                            </div>
+                            {% if form.website.errors %}
+                                <div class="text-danger mt-1">{{ form.website.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">Official website URL of the publisher.</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Contact Information Section -->
+                <div class="form-section">
+                    <h3 class="form-section-title">
+                        <i class="fas fa-address-card me-2"></i>Contact Information
+                    </h3>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="id_email" class="form-label">Email</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-envelope"></i>
+                                {{ form.email }}
+                            </div>
+                            {% if form.email.errors %}
+                                <div class="text-danger mt-1">{{ form.email.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="id_phone" class="form-label">Phone</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-phone"></i>
+                                {{ form.phone }}
+                            </div>
+                            {% if form.phone.errors %}
+                                <div class="text-danger mt-1">{{ form.phone.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_address" class="form-label">Address</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                            {{ form.address }}
+                        </div>
+                        {% if form.address.errors %}
+                            <div class="text-danger mt-1">{{ form.address.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Additional Information Section -->
+                <div class="form-section">
+                    <h3 class="form-section-title">
+                        <i class="fas fa-file-alt me-2"></i>Additional Information
+                    </h3>
+                    
+                    <div class="mb-3">
+                        <label for="id_description" class="form-label">Description</label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <div class="text-danger mt-1">{{ form.description.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">Provide a brief description of the publisher.</div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Publisher Logo</label>
+                            <div class="publisher-logo-preview">
+                                {% if form.instance.logo %}
+                                    <img src="{{ form.instance.logo.url }}" alt="{{ form.instance.name }}" id="logo-preview">
+                                {% else %}
+                                    <i class="fas fa-building" id="logo-placeholder"></i>
+                                {% endif %}
+                            </div>
+                            <label for="id_logo" class="custom-file-upload">
+                                <i class="fas fa-upload"></i> Upload Logo
+                            </label>
+                            {{ form.logo }}
+                            {% if form.logo.errors %}
+                                <div class="text-danger mt-1">{{ form.logo.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">Upload a logo image for the publisher (optional).</div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="id_is_active" class="form-label">Status</label>
+                                <div class="form-check form-switch">
+                                    {{ form.is_active }}
+                                    <label class="form-check-label" for="id_is_active">Active</label>
+                                </div>
+                                {% if form.is_active.errors %}
+                                    <div class="text-danger mt-1">{{ form.is_active.errors }}</div>
+                                {% endif %}
+                                <div class="form-text">Inactive publishers won't appear in search results.</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_is_featured" class="form-label">Featured</label>
+                                <div class="form-check form-switch">
+                                    {{ form.is_featured }}
+                                    <label class="form-check-label" for="id_is_featured">Featured Publisher</label>
+                                </div>
+                                {% if form.is_featured.errors %}
+                                    <div class="text-danger mt-1">{{ form.is_featured.errors }}</div>
+                                {% endif %}
+                                <div class="form-text">Featured publishers appear prominently on the website.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <a href="{% url 'library_admin:publishers' %}" class="admin-pro-btn admin-pro-btn-outline">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                    <button type="submit" class="admin-pro-btn admin-pro-btn-primary">
+                        <i class="fas fa-save"></i> {% if form.instance.pk %}Update{% else %}Save{% endif %} Publisher
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Logo preview functionality
+        const logoInput = document.getElementById('id_logo');
+        const logoPreview = document.getElementById('logo-preview');
+        const logoPlaceholder = document.getElementById('logo-placeholder');
+        
+        if (logoInput) {
+            logoInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        if (logoPlaceholder) {
+                            logoPlaceholder.style.display = 'none';
+                        }
+                        
+                        if (!logoPreview) {
+                            const img = document.createElement('img');
+                            img.id = 'logo-preview';
+                            img.src = e.target.result;
+                            img.alt = 'Publisher Logo';
+                            
+                            const previewContainer = document.querySelector('.publisher-logo-preview');
+                            previewContainer.appendChild(img);
+                        } else {
+                            logoPreview.src = e.target.result;
+                            logoPreview.style.display = 'block';
+                        }
+                    };
+                    
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        }
+        
+        // Auto-generate slug from name
+        const nameInput = document.getElementById('id_name');
+        const slugInput = document.getElementById('id_slug');
+        
+        if (nameInput && slugInput) {
+            nameInput.addEventListener('blur', function() {
+                if (slugInput.value === '') {
+                    // Convert name to slug format
+                    let slug = this.value.toLowerCase()
+                        .replace(/[^\w\s-]/g, '') // Remove special characters
+                        .replace(/\s+/g, '-')     // Replace spaces with hyphens
+                        .replace(/-+/g, '-');     // Replace multiple hyphens with single hyphen
+                    
+                    slugInput.value = slug;
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

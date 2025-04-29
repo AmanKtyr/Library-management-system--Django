@@ -1,0 +1,370 @@
+{% extends 'super_admin/base.html' %}
+{% load static %}
+
+{% block title %}Manage Books - Super Admin{% endblock %}
+{% block breadcrumb_title %}Books{% endblock %}
+{% block page_title %}Manage Books{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'books:add_book' %}" class="admin-pro-btn admin-pro-btn-primary">
+    <i class="fas fa-plus"></i> Add Book
+</a>
+<a href="{% url 'superadmin:reports' %}?type=books" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-chart-bar"></i> Book Reports
+</a>
+{% endblock %}
+
+{% block content %}
+<!-- Book Stats Overview -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="super-admin-stats-card primary">
+            <div class="super-admin-stats-header">
+                <div class="super-admin-stats-icon primary">
+                    <i class="fas fa-book"></i>
+                </div>
+            </div>
+            <div class="super-admin-stats-content">
+                <h3 class="super-admin-stats-value counter-value" data-target="{{ books.count|default:'0' }}">0</h3>
+                <p class="super-admin-stats-label">Total Books</p>
+                <div class="super-admin-stats-trend up">
+                    <i class="fas fa-arrow-up"></i> Growing collection
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="super-admin-stats-card success">
+            <div class="super-admin-stats-header">
+                <div class="super-admin-stats-icon success">
+                    <i class="fas fa-copy"></i>
+                </div>
+            </div>
+            <div class="super-admin-stats-content">
+                <h3 class="super-admin-stats-value counter-value" data-target="{{ total_copies|default:'0' }}">0</h3>
+                <p class="super-admin-stats-label">Total Copies</p>
+                <div class="super-admin-stats-trend up">
+                    <i class="fas fa-arrow-up"></i> Available for borrowing
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="super-admin-stats-card info">
+            <div class="super-admin-stats-header">
+                <div class="super-admin-stats-icon info">
+                    <i class="fas fa-tags"></i>
+                </div>
+            </div>
+            <div class="super-admin-stats-content">
+                <h3 class="super-admin-stats-value counter-value" data-target="{{ total_categories|default:'0' }}">0</h3>
+                <p class="super-admin-stats-label">Categories</p>
+                <div class="super-admin-stats-trend up">
+                    <i class="fas fa-arrow-up"></i> Diverse collection
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="super-admin-stats-card warning">
+            <div class="super-admin-stats-header">
+                <div class="super-admin-stats-icon warning">
+                    <i class="fas fa-pen-fancy"></i>
+                </div>
+            </div>
+            <div class="super-admin-stats-content">
+                <h3 class="super-admin-stats-value counter-value" data-target="{{ total_authors|default:'0' }}">0</h3>
+                <p class="super-admin-stats-label">Authors</p>
+                <div class="super-admin-stats-trend up">
+                    <i class="fas fa-arrow-up"></i> From around the world
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Books Table -->
+<div class="super-admin-card">
+    <div class="super-admin-card-header">
+        <h5 class="super-admin-card-title">
+            <i class="fas fa-book"></i> Books
+        </h5>
+        <div class="super-admin-card-actions">
+            <div class="dropdown me-2">
+                <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-filter me-1"></i> Filter
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+                    <li><a class="dropdown-item {% if not category %}active{% endif %}" href="?{% if query %}q={{ query }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">All Categories</a></li>
+                    {% for cat in categories %}
+                    <li><a class="dropdown-item {% if category == cat.slug %}active{% endif %}" href="?category={{ cat.slug }}{% if query %}&q={{ query }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">{{ cat.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="dropdown me-2">
+                <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-sort me-1"></i> Sort
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                    <li><a class="dropdown-item {% if sort == 'title' %}active{% endif %}" href="?sort=title{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category }}{% endif %}">Title (A-Z)</a></li>
+                    <li><a class="dropdown-item {% if sort == '-title' %}active{% endif %}" href="?sort=-title{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category }}{% endif %}">Title (Z-A)</a></li>
+                    <li><a class="dropdown-item {% if sort == 'created_at' %}active{% endif %}" href="?sort=created_at{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category }}{% endif %}">Oldest First</a></li>
+                    <li><a class="dropdown-item {% if sort == '-created_at' %}active{% endif %}" href="?sort=-created_at{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category }}{% endif %}">Newest First</a></li>
+                </ul>
+            </div>
+            <form class="admin-pro-search-form">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search books..." name="q" value="{{ query }}">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="super-admin-card-body">
+        <div class="admin-pro-table-responsive">
+            <table class="table super-admin-table">
+                <thead>
+                    <tr>
+                        <th>Book</th>
+                        <th>Author(s)</th>
+                        <th>Categories</th>
+                        <th>ISBN</th>
+                        <th>Copies</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in books %}
+                    <tr>
+                        <td>
+                            <div class="super-admin-table-item">
+                                <div class="super-admin-table-item-img">
+                                    {% if book.cover_image %}
+                                    <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
+                                    {% else %}
+                                    <img src="{% static 'images/book-placeholder.jpg' %}" alt="{{ book.title }}">
+                                    {% endif %}
+                                </div>
+                                <div class="super-admin-table-item-content">
+                                    <h4>
+                                        <a href="{% url 'books:book_detail' slug=book.slug %}">
+                                            {{ book.title }}
+                                        </a>
+                                    </h4>
+                                    <p>{{ book.publication_year }}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {% for author in book.authors.all %}
+                            <span class="super-admin-badge super-admin-badge-secondary">
+                                {{ author.name }}
+                            </span>
+                            {% empty %}
+                            <span class="text-muted">No authors</span>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% for category in book.categories.all %}
+                            <span class="super-admin-badge super-admin-badge-info">
+                                {{ category.name }}
+                            </span>
+                            {% empty %}
+                            <span class="text-muted">Uncategorized</span>
+                            {% endfor %}
+                        </td>
+                        <td>{{ book.isbn|default:"--" }}</td>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <div class="mb-1">
+                                    <i class="fas fa-copy text-primary me-2"></i>
+                                    <strong>{{ book.copies.count }}</strong> Total
+                                </div>
+                                <div class="mb-1">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    <strong>{{ book.available_copies.count }}</strong> Available
+                                </div>
+                                <div>
+                                    <i class="fas fa-times-circle text-danger me-2"></i>
+                                    <strong>{{ book.borrowed_copies.count }}</strong> Borrowed
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="super-admin-actions">
+                                <a href="{% url 'books:book_detail' slug=book.slug %}" class="super-admin-action-btn" data-tooltip="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{% url 'books:edit_book' slug=book.slug %}" class="super-admin-action-btn" data-tooltip="Edit Book">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'books:manage_book_copies' %}?book={{ book.id }}" class="super-admin-action-btn" data-tooltip="Manage Copies">
+                                    <i class="fas fa-copy"></i>
+                                </a>
+                                <button type="button" class="super-admin-action-btn text-danger" data-bs-toggle="modal" data-bs-target="#deleteBookModal{{ book.id }}" data-tooltip="Delete Book">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Delete Modal -->
+                            <div class="modal fade" id="deleteBookModal{{ book.id }}" tabindex="-1" aria-labelledby="deleteBookModalLabel{{ book.id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-danger text-white">
+                                            <h5 class="modal-title" id="deleteBookModalLabel{{ book.id }}">
+                                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                                Confirm Delete
+                                            </h5>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="text-center mb-4">
+                                                <div class="display-1 text-danger">
+                                                    <i class="fas fa-book-dead"></i>
+                                                </div>
+                                            </div>
+                                            <p class="fs-5">Are you sure you want to delete the book "<strong>{{ book.title }}</strong>"?</p>
+                                            <div class="alert alert-warning">
+                                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                                This will delete:
+                                                <ul class="mb-0 mt-2">
+                                                    <li>All book information</li>
+                                                    <li>All book copies</li>
+                                                    <li>All transaction records related to this book</li>
+                                                </ul>
+                                            </div>
+                                            <p class="text-danger fw-bold">This action cannot be undone!</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                <i class="fas fa-times me-1"></i> Cancel
+                                            </button>
+                                            <form action="{% url 'books:delete_book' slug=book.slug %}" method="post">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-danger">
+                                                    <i class="fas fa-trash-alt me-1"></i> Delete Permanently
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <h4>No Books Found</h4>
+                                <p>There are no books matching your search criteria.</p>
+                                <a href="{% url 'books:add_book' %}" class="btn btn-primary mt-3">
+                                    <i class="fas fa-plus me-1"></i> Add New Book
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="super-admin-card-footer">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="super-admin-pagination-info">
+                {% if books %}
+                Showing {{ books.start_index }} to {{ books.end_index }} of {{ books.paginator.count }} books
+                {% endif %}
+            </div>
+            <div class="super-admin-pagination">
+                {% if books.has_other_pages %}
+                <nav>
+                    <ul class="pagination">
+                        {% if books.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ books.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" aria-label="Previous">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="Previous">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% if books.number > 3 %}
+                        <li class="page-item"><a class="page-link" href="?page=1{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">1</a></li>
+                        {% if books.number > 4 %}
+                        <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+                        {% endif %}
+                        {% endif %}
+                        
+                        {% for i in books.paginator.page_range %}
+                            {% if books.number == i %}
+                            <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+                            {% elif i > books.number|add:"-3" and i < books.number|add:"3" %}
+                            <li class="page-item"><a class="page-link" href="?page={{ i }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">{{ i }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if books.number < books.paginator.num_pages|add:"-2" %}
+                        {% if books.number < books.paginator.num_pages|add:"-3" %}
+                        <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+                        {% endif %}
+                        <li class="page-item"><a class="page-link" href="?page={{ books.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">{{ books.paginator.num_pages }}</a></li>
+                        {% endif %}
+                        
+                        {% if books.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ books.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" aria-label="Next">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="Next">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize counters
+    document.addEventListener('DOMContentLoaded', function() {
+        // Counter animation
+        const counters = document.querySelectorAll('.counter-value');
+        const speed = 200;
+
+        counters.forEach(counter => {
+            const animate = () => {
+                const value = +counter.getAttribute('data-target');
+                const data = +counter.innerText;
+                const time = value / speed;
+                
+                if (data < value) {
+                    counter.innerText = Math.ceil(data + time);
+                    setTimeout(animate, 1);
+                } else {
+                    counter.innerText = value;
+                }
+            }
+            animate();
+        });
+    });
+</script>
+{% endblock %}

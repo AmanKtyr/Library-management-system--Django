@@ -1,0 +1,412 @@
+{% extends 'super_admin/base.html' %}
+{% load static %}
+
+{% block title %}Manage Transactions - Super Admin{% endblock %}
+{% block breadcrumb_title %}Transactions{% endblock %}
+{% block page_title %}Manage Transactions{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'transactions:borrow_book' %}" class="admin-pro-btn admin-pro-btn-primary">
+    <i class="fas fa-book"></i> New Borrow
+</a>
+<a href="{% url 'superadmin:reports' %}?type=transactions" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-chart-bar"></i> Transaction Reports
+</a>
+{% endblock %}
+
+{% block content %}
+<!-- Transaction Stats Overview -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="super-admin-stats-card primary">
+            <div class="super-admin-stats-header">
+                <div class="super-admin-stats-icon primary">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+            </div>
+            <div class="super-admin-stats-content">
+                <h3 class="super-admin-stats-value counter-value" data-target="{{ transactions.count|default:'0' }}">0</h3>
+                <p class="super-admin-stats-label">Total Transactions</p>
+                <div class="super-admin-stats-trend up">
+                    <i class="fas fa-arrow-up"></i> Active circulation
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="super-admin-stats-card success">
+            <div class="super-admin-stats-header">
+                <div class="super-admin-stats-icon success">
+                    <i class="fas fa-arrow-circle-down"></i>
+                </div>
+            </div>
+            <div class="super-admin-stats-content">
+                <h3 class="super-admin-stats-value counter-value" data-target="{{ borrows|default:'0' }}">0</h3>
+                <p class="super-admin-stats-label">Borrows</p>
+                <div class="super-admin-stats-trend up">
+                    <i class="fas fa-arrow-up"></i> Books in circulation
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="super-admin-stats-card info">
+            <div class="super-admin-stats-header">
+                <div class="super-admin-stats-icon info">
+                    <i class="fas fa-arrow-circle-up"></i>
+                </div>
+            </div>
+            <div class="super-admin-stats-content">
+                <h3 class="super-admin-stats-value counter-value" data-target="{{ returns|default:'0' }}">0</h3>
+                <p class="super-admin-stats-label">Returns</p>
+                <div class="super-admin-stats-trend up">
+                    <i class="fas fa-arrow-up"></i> Books returned
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="super-admin-stats-card warning">
+            <div class="super-admin-stats-header">
+                <div class="super-admin-stats-icon warning">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+            </div>
+            <div class="super-admin-stats-content">
+                <h3 class="super-admin-stats-value counter-value" data-target="{{ overdue|default:'0' }}">0</h3>
+                <p class="super-admin-stats-label">Overdue</p>
+                <div class="super-admin-stats-trend down">
+                    <i class="fas fa-arrow-down"></i> Need attention
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Transactions Table -->
+<div class="super-admin-card">
+    <div class="super-admin-card-header">
+        <h5 class="super-admin-card-title">
+            <i class="fas fa-exchange-alt"></i> Transactions
+        </h5>
+        <div class="super-admin-card-actions">
+            <div class="dropdown me-2">
+                <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline dropdown-toggle" type="button" id="typeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-filter me-1"></i> Type
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="typeDropdown">
+                    <li><a class="dropdown-item {% if not transaction_type %}active{% endif %}" href="?{% if status %}&status={{ status }}{% endif %}">All Types</a></li>
+                    <li><a class="dropdown-item {% if transaction_type == 'BORROW' %}active{% endif %}" href="?type=BORROW{% if status %}&status={{ status }}{% endif %}">Borrows</a></li>
+                    <li><a class="dropdown-item {% if transaction_type == 'RETURN' %}active{% endif %}" href="?type=RETURN{% if status %}&status={{ status }}{% endif %}">Returns</a></li>
+                    <li><a class="dropdown-item {% if transaction_type == 'RESERVE' %}active{% endif %}" href="?type=RESERVE{% if status %}&status={{ status }}{% endif %}">Reservations</a></li>
+                </ul>
+            </div>
+            <div class="dropdown me-2">
+                <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline dropdown-toggle" type="button" id="statusDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-filter me-1"></i> Status
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="statusDropdown">
+                    <li><a class="dropdown-item {% if not status %}active{% endif %}" href="?{% if transaction_type %}&type={{ transaction_type }}{% endif %}">All Statuses</a></li>
+                    <li><a class="dropdown-item {% if status == 'PENDING' %}active{% endif %}" href="?status=PENDING{% if transaction_type %}&type={{ transaction_type }}{% endif %}">Pending</a></li>
+                    <li><a class="dropdown-item {% if status == 'COMPLETED' %}active{% endif %}" href="?status=COMPLETED{% if transaction_type %}&type={{ transaction_type }}{% endif %}">Completed</a></li>
+                    <li><a class="dropdown-item {% if status == 'CANCELLED' %}active{% endif %}" href="?status=CANCELLED{% if transaction_type %}&type={{ transaction_type }}{% endif %}">Cancelled</a></li>
+                    <li><a class="dropdown-item {% if status == 'OVERDUE' %}active{% endif %}" href="?status=OVERDUE{% if transaction_type %}&type={{ transaction_type }}{% endif %}">Overdue</a></li>
+                </ul>
+            </div>
+            <form class="admin-pro-search-form">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search transactions..." name="q" value="{{ query }}">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="super-admin-card-body">
+        <div class="admin-pro-table-responsive">
+            <table class="table super-admin-table">
+                <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Book</th>
+                        <th>User</th>
+                        <th>Library</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Dates</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'transactions:transaction_detail' transaction_id=transaction.transaction_id %}">
+                                #{{ transaction.transaction_id|truncatechars:8 }}
+                            </a>
+                        </td>
+                        <td>
+                            <div class="super-admin-table-item">
+                                <div class="super-admin-table-item-img">
+                                    {% if transaction.book_copy.book.cover_image %}
+                                    <img src="{{ transaction.book_copy.book.cover_image.url }}" alt="{{ transaction.book_copy.book.title }}">
+                                    {% else %}
+                                    <img src="{% static 'images/book-placeholder.jpg' %}" alt="{{ transaction.book_copy.book.title }}">
+                                    {% endif %}
+                                </div>
+                                <div class="super-admin-table-item-content">
+                                    <h4>
+                                        <a href="{% url 'books:book_detail' slug=transaction.book_copy.book.slug %}">
+                                            {{ transaction.book_copy.book.title|truncatechars:25 }}
+                                        </a>
+                                    </h4>
+                                    <p>Copy #{{ transaction.book_copy.copy_number }}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="super-admin-table-item">
+                                <div class="super-admin-table-item-img">
+                                    {% if transaction.user.profile_picture %}
+                                    <img src="{{ transaction.user.profile_picture.url }}" alt="{{ transaction.user.get_full_name }}">
+                                    {% else %}
+                                    <div class="admin-pro-user-avatar-placeholder">
+                                        {{ transaction.user.get_initials }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="super-admin-table-item-content">
+                                    <h4>{{ transaction.user.get_full_name|default:transaction.user.email|truncatechars:20 }}</h4>
+                                    <p>
+                                        {% if transaction.user.is_super_admin %}
+                                        Super Admin
+                                        {% elif transaction.user.is_library_admin %}
+                                        Library Admin
+                                        {% elif transaction.user.is_staff_member %}
+                                        Staff
+                                        {% else %}
+                                        Member
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ transaction.library.name }}</td>
+                        <td>
+                            {% if transaction.transaction_type == 'BORROW' %}
+                            <span class="super-admin-badge super-admin-badge-success">
+                                <i class="fas fa-arrow-circle-down"></i> Borrow
+                            </span>
+                            {% elif transaction.transaction_type == 'RETURN' %}
+                            <span class="super-admin-badge super-admin-badge-info">
+                                <i class="fas fa-arrow-circle-up"></i> Return
+                            </span>
+                            {% elif transaction.transaction_type == 'RESERVE' %}
+                            <span class="super-admin-badge super-admin-badge-warning">
+                                <i class="fas fa-clock"></i> Reserve
+                            </span>
+                            {% else %}
+                            <span class="super-admin-badge super-admin-badge-secondary">
+                                <i class="fas fa-question-circle"></i> {{ transaction.transaction_type }}
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if transaction.status == 'COMPLETED' %}
+                            <span class="super-admin-badge super-admin-badge-success">
+                                <i class="fas fa-check-circle"></i> Completed
+                            </span>
+                            {% elif transaction.status == 'PENDING' %}
+                            <span class="super-admin-badge super-admin-badge-warning">
+                                <i class="fas fa-clock"></i> Pending
+                            </span>
+                            {% elif transaction.status == 'CANCELLED' %}
+                            <span class="super-admin-badge super-admin-badge-danger">
+                                <i class="fas fa-times-circle"></i> Cancelled
+                            </span>
+                            {% else %}
+                            <span class="super-admin-badge super-admin-badge-secondary">
+                                <i class="fas fa-question-circle"></i> {{ transaction.status }}
+                            </span>
+                            {% endif %}
+                            
+                            {% if transaction.transaction_type == 'BORROW' and transaction.status == 'COMPLETED' and transaction.due_date and transaction.due_date < now and not transaction.return_date %}
+                            <span class="super-admin-badge super-admin-badge-danger mt-1">
+                                <i class="fas fa-exclamation-circle"></i> Overdue
+                            </span>
+                            {% endif %}
+                            
+                            {% if transaction.fine_amount and transaction.fine_amount > 0 %}
+                            <span class="super-admin-badge super-admin-badge-warning mt-1">
+                                <i class="fas fa-money-bill-wave"></i> Fine: ${{ transaction.fine_amount }}
+                                {% if transaction.fine_paid %}
+                                <i class="fas fa-check-circle text-success ms-1"></i>
+                                {% endif %}
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <div class="mb-1">
+                                    <i class="fas fa-calendar-alt text-primary me-2"></i>
+                                    {{ transaction.transaction_date|date:"M d, Y" }}
+                                </div>
+                                {% if transaction.due_date %}
+                                <div class="mb-1">
+                                    <i class="fas fa-calendar-times text-warning me-2"></i>
+                                    Due: {{ transaction.due_date|date:"M d, Y" }}
+                                </div>
+                                {% endif %}
+                                {% if transaction.return_date %}
+                                <div>
+                                    <i class="fas fa-calendar-check text-success me-2"></i>
+                                    Returned: {{ transaction.return_date|date:"M d, Y" }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="super-admin-actions">
+                                <a href="{% url 'transactions:transaction_detail' transaction_id=transaction.transaction_id %}" class="super-admin-action-btn" data-tooltip="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                
+                                {% if transaction.transaction_type == 'BORROW' and transaction.status == 'COMPLETED' and not transaction.return_date %}
+                                <a href="{% url 'transactions:return_book' %}?transaction_id={{ transaction.transaction_id }}" class="super-admin-action-btn" data-tooltip="Return Book">
+                                    <i class="fas fa-undo"></i>
+                                </a>
+                                {% endif %}
+                                
+                                {% if transaction.status == 'PENDING' %}
+                                <a href="#" class="super-admin-action-btn" data-tooltip="Approve">
+                                    <i class="fas fa-check"></i>
+                                </a>
+                                <a href="#" class="super-admin-action-btn" data-tooltip="Reject">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                                {% endif %}
+                                
+                                {% if transaction.fine_amount > 0 and not transaction.fine_paid %}
+                                <a href="#" class="super-admin-action-btn" data-tooltip="Mark Fine as Paid">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-5">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </div>
+                                <h4>No Transactions Found</h4>
+                                <p>There are no transactions matching your search criteria.</p>
+                                <a href="{% url 'transactions:borrow_book' %}" class="btn btn-primary mt-3">
+                                    <i class="fas fa-book me-1"></i> Create New Borrow
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="super-admin-card-footer">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="super-admin-pagination-info">
+                {% if transactions %}
+                Showing {{ transactions.start_index }} to {{ transactions.end_index }} of {{ transactions.paginator.count }} transactions
+                {% endif %}
+            </div>
+            <div class="super-admin-pagination">
+                {% if transactions.has_other_pages %}
+                <nav>
+                    <ul class="pagination">
+                        {% if transactions.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ transactions.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if transaction_type %}&type={{ transaction_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}" aria-label="Previous">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="Previous">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% if transactions.number > 3 %}
+                        <li class="page-item"><a class="page-link" href="?page=1{% if query %}&q={{ query }}{% endif %}{% if transaction_type %}&type={{ transaction_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}">1</a></li>
+                        {% if transactions.number > 4 %}
+                        <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+                        {% endif %}
+                        {% endif %}
+                        
+                        {% for i in transactions.paginator.page_range %}
+                            {% if transactions.number == i %}
+                            <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+                            {% elif i > transactions.number|add:"-3" and i < transactions.number|add:"3" %}
+                            <li class="page-item"><a class="page-link" href="?page={{ i }}{% if query %}&q={{ query }}{% endif %}{% if transaction_type %}&type={{ transaction_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}">{{ i }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if transactions.number < transactions.paginator.num_pages|add:"-2" %}
+                        {% if transactions.number < transactions.paginator.num_pages|add:"-3" %}
+                        <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+                        {% endif %}
+                        <li class="page-item"><a class="page-link" href="?page={{ transactions.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}{% if transaction_type %}&type={{ transaction_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}">{{ transactions.paginator.num_pages }}</a></li>
+                        {% endif %}
+                        
+                        {% if transactions.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ transactions.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if transaction_type %}&type={{ transaction_type }}{% endif %}{% if status %}&status={{ status }}{% endif %}" aria-label="Next">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="Next">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize counters
+    document.addEventListener('DOMContentLoaded', function() {
+        // Counter animation
+        const counters = document.querySelectorAll('.counter-value');
+        const speed = 200;
+
+        counters.forEach(counter => {
+            const animate = () => {
+                const value = +counter.getAttribute('data-target');
+                const data = +counter.innerText;
+                const time = value / speed;
+                
+                if (data < value) {
+                    counter.innerText = Math.ceil(data + time);
+                    setTimeout(animate, 1);
+                } else {
+                    counter.innerText = value;
+                }
+            }
+            animate();
+        });
+    });
+</script>
+{% endblock %}

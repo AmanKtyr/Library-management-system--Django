@@ -4,14 +4,19 @@ from . import views
 app_name = 'library_admin'
 
 urlpatterns = [
+    # Dashboard URLs
     path('dashboard/', views.dashboard, name='dashboard'),
-    path('staff/', views.manage_staff, name='staff'),
+    path('analytics/', views.analytics, name='analytics'),
+    path('statistics/', views.statistics, name='statistics'),
+
+    # Catalog Management URLs
     path('books/', views.manage_books, name='books'),
 
     # Categories URLs
     path('categories/', views.manage_categories, name='categories'),
     path('categories/add/', views.add_category, name='add_category'),
     path('categories/<slug:slug>/', views.category_detail, name='category_detail'),
+    path('categories/<slug:slug>/edit/', views.edit_category, name='edit_category'),
 
     # Authors URLs
     path('authors/', views.manage_authors, name='authors'),
@@ -19,23 +24,41 @@ urlpatterns = [
     path('authors/<slug:slug>/edit/', views.edit_author, name='edit_author'),
     path('authors/<slug:slug>/', views.author_detail, name='author_detail'),
 
+    # Publishers URLs
+    path('publishers/', views.manage_publishers, name='publishers'),
+    path('publishers/add/', views.add_publisher, name='add_publisher'),
+    path('publishers/<slug:slug>/edit/', views.edit_publisher, name='edit_publisher'),
+    path('publishers/<slug:slug>/', views.publisher_detail, name='publisher_detail'),
+
+    # People Management URLs
     path('members/', views.manage_members, name='members'),
-    path('transactions/', views.manage_transactions, name='transactions'),
-    path('reports/', views.reports, name='reports'),
+    path('staff/', views.manage_staff, name='staff'),
 
     # Circulation URLs
     path('circulation/', views.circulation, name='circulation'),
     path('circulation/issue-book/', views.issue_book, name='issue_book'),
     path('circulation/return-book/', views.return_book, name='return_book'),
-
-    # New pages
-    path('settings/', views.settings, name='settings'),
-    path('notifications/', views.notifications, name='notifications'),
-    path('help/', views.help_documentation, name='help'),
-    path('analytics/', views.analytics, name='analytics'),
+    path('transactions/', views.manage_transactions, name='transactions'),
+    path('reservations/', views.manage_reservations, name='reservations'),
 
     # Membership request URLs
     path('membership-requests/', views.membership_requests, name='membership_requests'),
     path('membership-requests/approve/', views.approve_membership_request, name='approve_membership_request'),
     path('membership-requests/reject/', views.reject_membership_request, name='reject_membership_request'),
+
+    # Reports & Analytics URLs
+    path('reports/', views.reports, name='reports'),
+    path('reports/custom/', views.custom_reports, name='custom_reports'),
+    path('reports/export/', views.export_reports, name='export_reports'),
+
+    # Administration URLs
+    path('settings/', views.settings, name='settings'),
+    path('settings/general/', views.general_settings, name='general_settings'),
+    path('settings/circulation/', views.circulation_settings, name='circulation_settings'),
+    path('settings/notifications/', views.notification_settings, name='notification_settings'),
+    path('settings/appearance/', views.appearance_settings, name='appearance_settings'),
+
+    path('notifications/', views.notifications, name='notifications'),
+    path('help/', views.help_documentation, name='help'),
+    path('system-status/', views.system_status, name='system_status'),
 ]

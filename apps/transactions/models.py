@@ -1,9 +1,10 @@
 from django.db import models
 from django.conf import settings
-from apps.books.models import BookCopy
+from apps.books.models import BookCopy, Book
 from apps.libraries.models import Library
 from django.utils import timezone
 import uuid
+from datetime import timedelta
 
 class Transaction(models.Model):
     """Model representing a transaction (borrowing or returning a book)."""
@@ -108,6 +109,158 @@ class Membership(models.Model):
             # Generate a unique membership number
             self.membership_number = f"MEM-{uuid.uuid4().hex[:8].upper()}"
         super().save(*args, **kwargs)
+
+
+class Reservation(models.Model):
+    """Model representing a book reservation."""
+    STATUS_CHOICES = (
+        ('PENDING', 'Pending'),
+        ('CONFIRMED', 'Confirmed'),
+        ('CANCELLED', 'Cancelled'),
+        ('COMPLETED', 'Completed'),
+        ('EXPIRED', 'Expired'),
+    )
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='reservations')
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reservations')
+    library = models.ForeignKey(Library, on_delete=models.CASCADE, related_name='reservations')
+
+    reservation_date = models.DateTimeField(auto_now_add=True)
+    expiry_date = models.DateTimeField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+
+    notes = models.TextField(blank=True, null=True)
+    processed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='processed_reservations'
+    )
+    processed_date = models.DateTimeField(blank=True, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-reservation_date']
+
+    def __str__(self):
+        return f"{self.user.get_full_name()} - {self.book.title}"
+
+    def save(self, *args, **kwargs):
+        # Set expiry date if not already set (default to 3 days from reservation)
+        if not self.expiry_date:
+            self.expiry_date = timezone.now() + timedelta(days=3)
+        super().save(*args, **kwargs)
+
+    def is_expired(self):
+        return timezone.now() > self.expiry_date
+
+    def mark_as_expired(self):
+        if self.status in ['PENDING', 'CONFIRMED'] and self.is_expired():
+            self.status = 'EXPIRED'
+            self.save()
+
+    def confirm(self, staff_user=None):
+        if self.status == 'PENDING':
+            self.status = 'CONFIRMED'
+            if staff_user:
+                self.processed_by = staff_user
+                self.processed_date = timezone.now()
+            self.save()
+
+    def cancel(self, staff_user=None):
+        if self.status in ['PENDING', 'CONFIRMED']:
+            self.status = 'CANCELLED'
+            if staff_user:
+                self.processed_by = staff_user
+                self.processed_date = timezone.now()
+            self.save()
+
+    def complete(self, staff_user=None):
+        if self.status == 'CONFIRMED':
+            self.status = 'COMPLETED'
+            if staff_user:
+                self.processed_by = staff_user
+                self.processed_date = timezone.now()
+            self.save()
+
+
+class Reservation(models.Model):
+    """Model representing a book reservation."""
+    STATUS_CHOICES = (
+        ('PENDING', 'Pending'),
+        ('CONFIRMED', 'Confirmed'),
+        ('CANCELLED', 'Cancelled'),
+        ('COMPLETED', 'Completed'),
+        ('EXPIRED', 'Expired'),
+    )
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='reservations')
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reservations')
+    library = models.ForeignKey(Library, on_delete=models.CASCADE, related_name='reservations')
+
+    reservation_date = models.DateTimeField(auto_now_add=True)
+    expiry_date = models.DateTimeField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+
+    notes = models.TextField(blank=True, null=True)
+    processed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='processed_reservations'
+    )
+    processed_date = models.DateTimeField(blank=True, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-reservation_date']
+
+    def __str__(self):
+        return f"{self.user.get_full_name()} - {self.book.title}"
+
+    def save(self, *args, **kwargs):
+        # Set expiry date if not already set (default to 3 days from reservation)
+        if not self.expiry_date:
+            self.expiry_date = timezone.now() + timedelta(days=3)
+        super().save(*args, **kwargs)
+
+    def is_expired(self):
+        return timezone.now() > self.expiry_date
+
+    def mark_as_expired(self):
+        if self.status in ['PENDING', 'CONFIRMED'] and self.is_expired():
+            self.status = 'EXPIRED'
+            self.save()
+
+    def confirm(self, staff_user=None):
+        if self.status == 'PENDING':
+            self.status = 'CONFIRMED'
+            if staff_user:
+                self.processed_by = staff_user
+                self.processed_date = timezone.now()
+            self.save()
+
+    def cancel(self, staff_user=None):
+        if self.status in ['PENDING', 'CONFIRMED']:
+            self.status = 'CANCELLED'
+            if staff_user:
+                self.processed_by = staff_user
+                self.processed_date = timezone.now()
+            self.save()
+
+    def complete(self, staff_user=None):
+        if self.status == 'CONFIRMED':
+            self.status = 'COMPLETED'
+            if staff_user:
+                self.processed_by = staff_user
+                self.processed_date = timezone.now()
+            self.save()
 
 
 class MembershipRequest(models.Model):

@@ -46,6 +46,36 @@ class Category(models.Model):
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
+class Publisher(models.Model):
+    """Model representing a book publisher."""
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=120, unique=True, blank=True)
+    description = models.TextField(blank=True, null=True)
+    established_year = models.PositiveIntegerField(blank=True, null=True)
+    website = models.URLField(blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+    phone = models.CharField(max_length=20, blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
+    logo = models.ImageField(upload_to='publisher_logos/', blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
+
+    is_active = models.BooleanField(default=True)
+    is_featured = models.BooleanField(default=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
 class Book(models.Model):
     """Model representing a book (but not a specific copy of a book)."""
     title = models.CharField(max_length=200)
@@ -53,7 +83,8 @@ class Book(models.Model):
     authors = models.ManyToManyField(Author, related_name='books')
     categories = models.ManyToManyField(Category, related_name='books')
     isbn = models.CharField('ISBN', max_length=13, unique=True)
-    publisher = models.CharField(max_length=100, blank=True, null=True)
+    publisher = models.ForeignKey(Publisher, on_delete=models.SET_NULL, related_name='books', blank=True, null=True)
+    publication_year = models.PositiveIntegerField(blank=True, null=True)
     publication_date = models.DateField(blank=True, null=True)
     summary = models.TextField(blank=True, null=True)
     cover_image = models.ImageField(upload_to='book_covers/', blank=True, null=True)

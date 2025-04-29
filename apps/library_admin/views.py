@@ -4,16 +4,22 @@ from django.contrib import messages
 from django.db.models import Count, Sum, Q, F, Avg
 from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import HttpResponseForbidden, JsonResponse
+from django.http import HttpResponseForbidden, JsonResponse, HttpResponse
 from datetime import timedelta
 import json
 import random
+import csv
+import io
+import psutil
+import platform
+import os
+from django.conf import settings
 
 from apps.accounts.models import User
 from apps.libraries.models import Library
-from apps.books.models import Book, BookCopy, Author, Category
-from apps.books.forms import CategoryForm, AuthorForm
-from apps.transactions.models import Transaction, Membership, MembershipPlan, MembershipRequest
+from apps.books.models import Book, BookCopy, Author, Category, Publisher
+from apps.books.forms import CategoryForm, AuthorForm, PublisherForm
+from apps.transactions.models import Transaction, Membership, MembershipPlan, MembershipRequest, Reservation
 
 def is_library_admin(user):
     """Check if user is a library admin."""
@@ -482,6 +488,488 @@ def reject_membership_request(request):
     )
 
     return redirect('library_admin:membership_requests')
+
+
+# New placeholder views for enhanced sidebar functionality
+
+@login_required
+@user_passes_test(is_library_admin)
+def statistics(request):
+    """View function for library statistics dashboard."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    # Placeholder statistics data
+    context = {
+        'library': library,
+        'page_title': 'Library Statistics',
+        'pending_requests_count': MembershipRequest.objects.filter(library=library, status='PENDING').count(),
+    }
+
+    return render(request, 'library_admin/statistics.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def edit_category(request, slug):
+    """View function for editing a category."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+    category = get_object_or_404(Category, slug=slug)
+
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Category '{category.name}' has been updated successfully.")
+            return redirect('library_admin:categories')
+    else:
+        form = CategoryForm(instance=category)
+
+    context = {
+        'library': library,
+        'form': form,
+        'category': category,
+        'title': 'Edit Category',
+        'pending_requests_count': MembershipRequest.objects.filter(library=library, status='PENDING').count(),
+    }
+
+    return render(request, 'library_admin/books/category_form.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def manage_publishers(request):
+    """View function for managing publishers."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    # Get all publishers with book count
+    publishers = Publisher.objects.annotate(
+        book_count=Count('books', filter=Q(books__copies__library=library), distinct=True)
+    ).order_by('name')
+
+    # Search functionality
+    search_query = request.GET.get('q', '')
+    if search_query:
+        publishers = publishers.filter(
+            Q(name__icontains=search_query) |
+            Q(description__icontains=search_query)
+        )
+
+    context = {
+        'library': library,
+        'publishers': publishers,
+        'search_query': search_query,
+        'pending_requests_count': MembershipRequest.objects.filter(library=library, status='PENDING').count(),
+    }
+
+    return render(request, 'library_admin/books/publisher_list.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def add_publisher(request):
+    """View function for adding a new publisher."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    if request.method == 'POST':
+        form = PublisherForm(request.POST)
+        if form.is_valid():
+            publisher = form.save()
+            messages.success(request, f"Publisher '{publisher.name}' has been added successfully.")
+            return redirect('library_admin:publishers')
+    else:
+        form = PublisherForm()
+
+    context = {
+        'library': library,
+        'form': form,
+        'title': 'Add New Publisher',
+        'pending_requests_count': MembershipRequest.objects.filter(library=library, status='PENDING').count(),
+    }
+
+    return render(request, 'library_admin/books/publisher_form.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def edit_publisher(request, slug):
+    """View function for editing a publisher."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+    publisher = get_object_or_404(Publisher, slug=slug)
+
+    if request.method == 'POST':
+        form = PublisherForm(request.POST, instance=publisher)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Publisher '{publisher.name}' has been updated successfully.")
+            return redirect('library_admin:publishers')
+    else:
+        form = PublisherForm(instance=publisher)
+
+    context = {
+        'library': library,
+        'form': form,
+        'publisher': publisher,
+        'title': 'Edit Publisher',
+        'pending_requests_count': MembershipRequest.objects.filter(library=library, status='PENDING').count(),
+    }
+
+    return render(request, 'library_admin/books/publisher_form.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def publisher_detail(request, slug):
+    """View function for displaying details of a specific publisher."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    # Get the publisher
+    publisher = get_object_or_404(Publisher, slug=slug)
+
+    # Get books by this publisher that are available in the library
+    books = Book.objects.filter(
+        publisher=publisher,
+        copies__library=library
+    ).distinct()
+
+    context = {
+        'library': library,
+        'publisher': publisher,
+        'books': books,
+        'pending_requests_count': MembershipRequest.objects.filter(library=library, status='PENDING').count(),
+    }
+
+    return render(request, 'library_admin/books/publisher_detail.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def manage_reservations(request):
+    """View function for managing book reservations."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    # Get all reservations for this library
+    reservations = Reservation.objects.filter(library=library).order_by('-reservation_date')
+
+    # Filter by status
+    status = request.GET.get('status', '')
+    if status:
+        reservations = reservations.filter(status=status)
+
+    # Search functionality
+    search_query = request.GET.get('q', '')
+    if search_query:
+        reservations = reservations.filter(
+            Q(user__email__icontains=search_query) |
+            Q(user__first_name__icontains=search_query) |
+            Q(user__last_name__icontains=search_query) |
+            Q(book__title__icontains=search_query)
+        )
+
+    context = {
+        'library': library,
+        'reservations': reservations,
+        'status': status,
+        'search_query': search_query,
+        'pending_requests_count': MembershipRequest.objects.filter(library=library, status='PENDING').count(),
+    }
+
+    return render(request, 'library_admin/circulation/reservations.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def custom_reports(request):
+    """View function for generating custom reports."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    context = {
+        'library': library,
+        'pending_requests_count': MembershipRequest.objects.filter(library=library, status='PENDING').count(),
+    }
+
+    return render(request, 'library_admin/reports/custom_reports.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def export_reports(request):
+    """View function for exporting reports to CSV."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    # Get report type from GET parameters
+    report_type = request.GET.get('type', 'transactions')
+
+    # Create a CSV response
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="{report_type}_report.csv"'
+
+    # Create CSV writer
+    writer = csv.writer(response)
+
+    if report_type == 'transactions':
+        # Write header row
+        writer.writerow(['Transaction ID', 'User', 'Book', 'Type', 'Status', 'Date', 'Due Date', 'Return Date'])
+
+        # Get transactions
+        transactions = Transaction.objects.filter(library=library).order_by('-transaction_date')
+
+        # Write data rows
+        for transaction in transactions:
+            writer.writerow([
+                transaction.transaction_id,
+                transaction.user.email,
+                transaction.book_copy.book.title,
+                transaction.transaction_type,
+                transaction.status,
+                transaction.transaction_date.strftime('%Y-%m-%d %H:%M:%S'),
+                transaction.due_date.strftime('%Y-%m-%d') if transaction.due_date else '',
+                transaction.return_date.strftime('%Y-%m-%d %H:%M:%S') if transaction.return_date else ''
+            ])
+
+    elif report_type == 'members':
+        # Write header row
+        writer.writerow(['Member ID', 'Name', 'Email', 'Membership Number', 'Plan', 'Start Date', 'End Date', 'Status'])
+
+        # Get memberships
+        memberships = Membership.objects.filter(library=library)
+
+        # Write data rows
+        for membership in memberships:
+            writer.writerow([
+                membership.user.id,
+                f"{membership.user.first_name} {membership.user.last_name}",
+                membership.user.email,
+                membership.membership_number,
+                membership.plan.name if membership.plan else '',
+                membership.start_date.strftime('%Y-%m-%d') if membership.start_date else '',
+                membership.end_date.strftime('%Y-%m-%d') if membership.end_date else '',
+                'Active' if membership.is_active else 'Inactive'
+            ])
+
+    elif report_type == 'books':
+        # Write header row
+        writer.writerow(['Book ID', 'Title', 'Author(s)', 'ISBN', 'Publisher', 'Publication Year', 'Copies', 'Available Copies'])
+
+        # Get books
+        books = Book.objects.filter(copies__library=library).distinct()
+
+        # Write data rows
+        for book in books:
+            total_copies = book.copies.filter(library=library).count()
+            available_copies = book.copies.filter(library=library, status='AVAILABLE').count()
+
+            writer.writerow([
+                book.id,
+                book.title,
+                ', '.join([author.name for author in book.authors.all()]),
+                book.isbn,
+                book.publisher.name if book.publisher else '',
+                book.publication_year,
+                total_copies,
+                available_copies
+            ])
+
+    return response
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def general_settings(request):
+    """View function for general library settings."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    context = {
+        'library': library,
+        'pending_requests_count': MembershipRequest.objects.filter(library=library, status='PENDING').count(),
+    }
+
+    return render(request, 'library_admin/settings/general.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def circulation_settings(request):
+    """View function for circulation settings."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    context = {
+        'library': library,
+        'pending_requests_count': MembershipRequest.objects.filter(library=library, status='PENDING').count(),
+    }
+
+    return render(request, 'library_admin/settings/circulation.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def notification_settings(request):
+    """View function for notification settings."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    context = {
+        'library': library,
+        'pending_requests_count': MembershipRequest.objects.filter(library=library, status='PENDING').count(),
+    }
+
+    return render(request, 'library_admin/settings/notifications.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def appearance_settings(request):
+    """View function for appearance settings."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    context = {
+        'library': library,
+        'pending_requests_count': MembershipRequest.objects.filter(library=library, status='PENDING').count(),
+    }
+
+    return render(request, 'library_admin/settings/appearance.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def system_status(request):
+    """View function for system status page."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    # System information
+    system_info = {
+        'platform': platform.platform(),
+        'python_version': platform.python_version(),
+        'django_version': settings.DJANGO_VERSION if hasattr(settings, 'DJANGO_VERSION') else 'Unknown',
+    }
+
+    # Resource usage
+    try:
+        resource_usage = {
+            'cpu_percent': psutil.cpu_percent(),
+            'memory_percent': psutil.virtual_memory().percent,
+            'disk_percent': psutil.disk_usage('/').percent,
+        }
+    except:
+        resource_usage = {
+            'cpu_percent': 'N/A',
+            'memory_percent': 'N/A',
+            'disk_percent': 'N/A',
+        }
+
+    # Database statistics
+    db_stats = {
+        'total_books': Book.objects.count(),
+        'total_users': User.objects.count(),
+        'total_transactions': Transaction.objects.count(),
+        'total_libraries': Library.objects.count(),
+    }
+
+    context = {
+        'library': library,
+        'system_info': system_info,
+        'resource_usage': resource_usage,
+        'db_stats': db_stats,
+        'pending_requests_count': MembershipRequest.objects.filter(library=library, status='PENDING').count(),
+    }
+
+    return render(request, 'library_admin/system_status.html', context)
 
 
 @login_required

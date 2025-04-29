@@ -1,0 +1,574 @@
+{% extends 'super_admin/base.html' %}
+{% load static %}
+
+{% block title %}Super Admin Dashboard - Library Management System{% endblock %}
+{% block breadcrumb_title %}Dashboard{% endblock %}
+{% block page_title %}Super Admin Dashboard{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'libraries:create_library' %}" class="admin-pro-btn admin-pro-btn-primary">
+    <i class="fas fa-plus"></i> Add New Library
+</a>
+<a href="{% url 'accounts:user_add' %}" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-user-plus"></i> Add New Admin
+</a>
+{% endblock %}
+
+{% block content %}
+<!-- Welcome Section -->
+<div class="super-admin-welcome">
+    <div class="super-admin-welcome-content">
+        <div class="super-admin-welcome-icon">
+            <i class="fas fa-tachometer-alt"></i>
+        </div>
+        <div class="super-admin-welcome-text">
+            <h2>Welcome to Super Admin Dashboard</h2>
+            <p>Manage your entire library network from one central location. Monitor performance, add new libraries, and oversee all operations across your organization.</p>
+            <div class="super-admin-welcome-actions">
+                <a href="{% url 'libraries:create_library' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add New Library
+                </a>
+                <a href="{% url 'superadmin:reports' %}?type=libraries" class="btn btn-outline-primary">
+                    <i class="fas fa-chart-bar"></i> View Library Reports
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="super-admin-quick-actions">
+    <a href="{% url 'superadmin:libraries' %}" class="super-admin-quick-action">
+        <div class="super-admin-quick-action-icon primary">
+            <i class="fas fa-building"></i>
+        </div>
+        <div class="super-admin-quick-action-content">
+            <h5 class="super-admin-quick-action-title">Manage Libraries</h5>
+            <p class="super-admin-quick-action-desc">Add, edit or manage library branches</p>
+        </div>
+    </a>
+    <a href="{% url 'accounts:user_add' %}" class="super-admin-quick-action">
+        <div class="super-admin-quick-action-icon info">
+            <i class="fas fa-user-plus"></i>
+        </div>
+        <div class="super-admin-quick-action-content">
+            <h5 class="super-admin-quick-action-title">Add Admins</h5>
+            <p class="super-admin-quick-action-desc">Create new library admin accounts</p>
+        </div>
+    </a>
+    <a href="{% url 'superadmin:users' %}?user_type=LIBRARY_ADMIN" class="super-admin-quick-action">
+        <div class="super-admin-quick-action-icon success">
+            <i class="fas fa-user-tie"></i>
+        </div>
+        <div class="super-admin-quick-action-content">
+            <h5 class="super-admin-quick-action-title">Admin Management</h5>
+            <p class="super-admin-quick-action-desc">Manage library administrators</p>
+        </div>
+    </a>
+    <a href="{% url 'superadmin:reports' %}?type=libraries" class="super-admin-quick-action">
+        <div class="super-admin-quick-action-icon blue">
+            <i class="fas fa-chart-line"></i>
+        </div>
+        <div class="super-admin-quick-action-content">
+            <h5 class="super-admin-quick-action-title">Analytics & Reports</h5>
+            <p class="super-admin-quick-action-desc">View detailed library analytics</p>
+        </div>
+    </a>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="super-admin-stats-card primary">
+            <div class="super-admin-stats-header">
+                <div class="super-admin-stats-icon primary">
+                    <i class="fas fa-building"></i>
+                </div>
+            </div>
+            <div class="super-admin-stats-content">
+                <h3 class="super-admin-stats-value counter-value" data-target="{{ total_libraries }}">0</h3>
+                <p class="super-admin-stats-label">Total Libraries</p>
+                <div class="super-admin-stats-trend up">
+                    <i class="fas fa-arrow-up"></i> Active Libraries: {{ active_libraries }}
+                </div>
+                <div class="super-admin-stats-details">
+                    <div class="super-admin-stats-detail">
+                        <div class="super-admin-stats-detail-value">{{ active_libraries }}</div>
+                        <div class="super-admin-stats-detail-label">Active</div>
+                    </div>
+                    <div class="super-admin-stats-detail">
+                        <div class="super-admin-stats-detail-value">{{ total_libraries|add:"-"|add:active_libraries }}</div>
+                        <div class="super-admin-stats-detail-label">Inactive</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="super-admin-stats-card success">
+            <div class="super-admin-stats-header">
+                <div class="super-admin-stats-icon success">
+                    <i class="fas fa-book"></i>
+                </div>
+            </div>
+            <div class="super-admin-stats-content">
+                <h3 class="super-admin-stats-value counter-value" data-target="{{ total_books }}">0</h3>
+                <p class="super-admin-stats-label">Total Books</p>
+                <div class="super-admin-stats-trend up">
+                    <i class="fas fa-arrow-up"></i> Total Copies: {{ total_book_copies }}
+                </div>
+                <div class="super-admin-stats-details">
+                    <div class="super-admin-stats-detail">
+                        <div class="super-admin-stats-detail-value">{{ total_books }}</div>
+                        <div class="super-admin-stats-detail-label">Titles</div>
+                    </div>
+                    <div class="super-admin-stats-detail">
+                        <div class="super-admin-stats-detail-value">{{ total_book_copies }}</div>
+                        <div class="super-admin-stats-detail-label">Copies</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="super-admin-stats-card info">
+            <div class="super-admin-stats-header">
+                <div class="super-admin-stats-icon info">
+                    <i class="fas fa-users"></i>
+                </div>
+            </div>
+            <div class="super-admin-stats-content">
+                <h3 class="super-admin-stats-value counter-value" data-target="{{ total_users }}">0</h3>
+                <p class="super-admin-stats-label">Total Users</p>
+                <div class="super-admin-stats-trend up">
+                    <i class="fas fa-arrow-up"></i> Growing steadily
+                </div>
+                <div class="super-admin-stats-details">
+                    <div class="super-admin-stats-detail">
+                        <div class="super-admin-stats-detail-value">{{ super_admins }}</div>
+                        <div class="super-admin-stats-detail-label">Admins</div>
+                    </div>
+                    <div class="super-admin-stats-detail">
+                        <div class="super-admin-stats-detail-value">{{ library_admins }}</div>
+                        <div class="super-admin-stats-detail-label">Lib Admins</div>
+                    </div>
+                    <div class="super-admin-stats-detail">
+                        <div class="super-admin-stats-detail-value">{{ staff_members }}</div>
+                        <div class="super-admin-stats-detail-label">Staff</div>
+                    </div>
+                    <div class="super-admin-stats-detail">
+                        <div class="super-admin-stats-detail-value">{{ members }}</div>
+                        <div class="super-admin-stats-detail-label">Members</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="super-admin-stats-card warning">
+            <div class="super-admin-stats-header">
+                <div class="super-admin-stats-icon warning">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+            </div>
+            <div class="super-admin-stats-content">
+                <h3 class="super-admin-stats-value counter-value" data-target="{{ total_transactions }}">0</h3>
+                <p class="super-admin-stats-label">Transactions</p>
+                <div class="super-admin-stats-trend up">
+                    <i class="fas fa-arrow-up"></i> Active circulation
+                </div>
+                <div class="super-admin-stats-details">
+                    <div class="super-admin-stats-detail">
+                        <div class="super-admin-stats-detail-value">{{ borrows }}</div>
+                        <div class="super-admin-stats-detail-label">Borrows</div>
+                    </div>
+                    <div class="super-admin-stats-detail">
+                        <div class="super-admin-stats-detail-value">{{ returns }}</div>
+                        <div class="super-admin-stats-detail-label">Returns</div>
+                    </div>
+                    <div class="super-admin-stats-detail">
+                        <div class="super-admin-stats-detail-value">{{ reserves }}</div>
+                        <div class="super-admin-stats-detail-label">Reserves</div>
+                    </div>
+                    <div class="super-admin-stats-detail">
+                        <div class="super-admin-stats-detail-value">{{ overdue }}</div>
+                        <div class="super-admin-stats-detail-label">Overdue</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Analytics Section -->
+<div class="super-admin-analytics">
+    <div class="super-admin-analytics-header">
+        <h5 class="super-admin-analytics-title">
+            <i class="fas fa-chart-line"></i> System Performance
+        </h5>
+        <div class="super-admin-analytics-filters">
+            <div class="super-admin-analytics-filter active" data-period="week">This Week</div>
+            <div class="super-admin-analytics-filter" data-period="month">This Month</div>
+            <div class="super-admin-analytics-filter" data-period="quarter">This Quarter</div>
+            <div class="super-admin-analytics-filter" data-period="year">This Year</div>
+        </div>
+    </div>
+    <div class="super-admin-chart-container">
+        <canvas id="transactionChart"></canvas>
+    </div>
+    <div class="super-admin-chart-legend">
+        <div class="super-admin-chart-legend-item">
+            <div class="super-admin-chart-legend-color" style="background-color: var(--primary-color);"></div>
+            <span>Borrows</span>
+        </div>
+        <div class="super-admin-chart-legend-item">
+            <div class="super-admin-chart-legend-color" style="background-color: var(--secondary-color);"></div>
+            <span>Returns</span>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Libraries and Users -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="super-admin-card">
+            <div class="super-admin-card-header">
+                <h5 class="super-admin-card-title">
+                    <i class="fas fa-building"></i> Recent Libraries
+                </h5>
+                <div class="super-admin-card-actions">
+                    <a href="{% url 'superadmin:libraries' %}" class="super-admin-card-action" data-tooltip="View All Libraries">
+                        <i class="fas fa-list"></i>
+                    </a>
+                    <a href="{% url 'libraries:create_library' %}" class="super-admin-card-action" data-tooltip="Add New Library">
+                        <i class="fas fa-plus"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="super-admin-card-body">
+                <div class="admin-pro-table-responsive">
+                    <table class="table super-admin-table">
+                        <thead>
+                            <tr>
+                                <th>Library</th>
+                                <th>Location</th>
+                                <th>Admin</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for library in recent_libraries %}
+                            <tr>
+                                <td>
+                                    <div class="super-admin-table-item">
+                                        <div class="super-admin-table-item-img">
+                                            {% if library.image %}
+                                            <img src="{{ library.image.url }}" alt="{{ library.name }}">
+                                            {% else %}
+                                            <img src="{% static 'images/library-placeholder.jpg' %}" alt="{{ library.name }}">
+                                            {% endif %}
+                                        </div>
+                                        <div class="super-admin-table-item-content">
+                                            <h4>
+                                                <a href="{% url 'libraries:library_detail' slug=library.slug %}">
+                                                    {{ library.name }}
+                                                </a>
+                                            </h4>
+                                            <p>{{ library.books.count }} Books</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ library.city }}, {{ library.state }}</td>
+                                <td>
+                                    {% if library.admin %}
+                                    {{ library.admin.get_full_name|default:library.admin.email }}
+                                    {% else %}
+                                    <span class="text-muted">Not assigned</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if library.is_active %}
+                                    <span class="super-admin-badge super-admin-badge-success">
+                                        <i class="fas fa-check-circle"></i> Active
+                                    </span>
+                                    {% else %}
+                                    <span class="super-admin-badge super-admin-badge-danger">
+                                        <i class="fas fa-times-circle"></i> Inactive
+                                    </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center">No libraries found</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="super-admin-card">
+            <div class="super-admin-card-header">
+                <h5 class="super-admin-card-title">
+                    <i class="fas fa-users"></i> Recent Users
+                </h5>
+                <div class="super-admin-card-actions">
+                    <a href="{% url 'superadmin:users' %}" class="super-admin-card-action" data-tooltip="View All Users">
+                        <i class="fas fa-list"></i>
+                    </a>
+                    <a href="{% url 'accounts:user_add' %}" class="super-admin-card-action" data-tooltip="Add New User">
+                        <i class="fas fa-user-plus"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="super-admin-card-body">
+                <div class="admin-pro-table-responsive">
+                    <table class="table super-admin-table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Role</th>
+                                <th>Library</th>
+                                <th>Joined</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in recent_users %}
+                            <tr>
+                                <td>
+                                    <div class="super-admin-table-item">
+                                        <div class="super-admin-table-item-img">
+                                            {% if user.profile_image %}
+                                            <img src="{{ user.profile_image.url }}" alt="{{ user.get_full_name }}">
+                                            {% else %}
+                                            <img src="{% static 'images/user-placeholder.jpg' %}" alt="{{ user.get_full_name }}">
+                                            {% endif %}
+                                        </div>
+                                        <div class="super-admin-table-item-content">
+                                            <h4>{{ user.get_full_name|default:"--" }}</h4>
+                                            <p>{{ user.email }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if user.is_super_admin %}
+                                    <span class="super-admin-badge super-admin-badge-primary">
+                                        <i class="fas fa-user-shield"></i> Super Admin
+                                    </span>
+                                    {% elif user.is_library_admin %}
+                                    <span class="super-admin-badge super-admin-badge-success">
+                                        <i class="fas fa-user-tie"></i> Library Admin
+                                    </span>
+                                    {% elif user.is_staff_member %}
+                                    <span class="super-admin-badge super-admin-badge-info">
+                                        <i class="fas fa-user-cog"></i> Staff
+                                    </span>
+                                    {% else %}
+                                    <span class="super-admin-badge super-admin-badge-secondary">
+                                        <i class="fas fa-user"></i> Member
+                                    </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user.library %}
+                                    {{ user.library.name }}
+                                    {% else %}
+                                    <span class="text-muted">--</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center">No users found</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Transactions -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="super-admin-card">
+            <div class="super-admin-card-header">
+                <h5 class="super-admin-card-title">
+                    <i class="fas fa-exchange-alt"></i> Recent Transactions
+                </h5>
+                <div class="super-admin-card-actions">
+                    <a href="{% url 'superadmin:transactions' %}" class="super-admin-card-action" data-tooltip="View All Transactions">
+                        <i class="fas fa-list"></i>
+                    </a>
+                    <a href="{% url 'superadmin:transactions' %}?type=BORROW" class="super-admin-card-action" data-tooltip="View Borrows">
+                        <i class="fas fa-arrow-circle-down"></i>
+                    </a>
+                    <a href="{% url 'superadmin:transactions' %}?type=RETURN" class="super-admin-card-action" data-tooltip="View Returns">
+                        <i class="fas fa-arrow-circle-up"></i>
+                    </a>
+                    <a href="{% url 'superadmin:transactions' %}?type=RESERVE" class="super-admin-card-action" data-tooltip="View Reservations">
+                        <i class="fas fa-clock"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="super-admin-card-body">
+                <div class="admin-pro-table-responsive">
+                    <table class="table super-admin-table">
+                        <thead>
+                            <tr>
+                                <th>Transaction</th>
+                                <th>Book</th>
+                                <th>User</th>
+                                <th>Library</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in recent_transactions %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'transactions:transaction_detail' transaction_id=transaction.transaction_id %}">
+                                        #{{ transaction.transaction_id|truncatechars:8 }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <div class="super-admin-table-item">
+                                        <div class="super-admin-table-item-img">
+                                            {% if transaction.book_copy.book.cover_image %}
+                                            <img src="{{ transaction.book_copy.book.cover_image.url }}" alt="{{ transaction.book_copy.book.title }}">
+                                            {% else %}
+                                            <img src="{% static 'images/book-placeholder.jpg' %}" alt="{{ transaction.book_copy.book.title }}">
+                                            {% endif %}
+                                        </div>
+                                        <div class="super-admin-table-item-content">
+                                            <h4>
+                                                <a href="{% url 'books:book_detail' slug=transaction.book_copy.book.slug %}">
+                                                    {{ transaction.book_copy.book.title|truncatechars:25 }}
+                                                </a>
+                                            </h4>
+                                            <p>Copy #{{ transaction.book_copy.copy_number }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="super-admin-table-item">
+                                        <div class="super-admin-table-item-content">
+                                            <h4>{{ transaction.user.get_full_name|default:transaction.user.email|truncatechars:20 }}</h4>
+                                            <p>
+                                                {% if transaction.user.is_super_admin %}
+                                                Super Admin
+                                                {% elif transaction.user.is_library_admin %}
+                                                Library Admin
+                                                {% elif transaction.user.is_staff_member %}
+                                                Staff
+                                                {% else %}
+                                                Member
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ transaction.library.name }}</td>
+                                <td>
+                                    {% if transaction.transaction_type == 'BORROW' %}
+                                    <span class="super-admin-badge super-admin-badge-success">
+                                        <i class="fas fa-arrow-circle-down"></i> Borrow
+                                    </span>
+                                    {% elif transaction.transaction_type == 'RETURN' %}
+                                    <span class="super-admin-badge super-admin-badge-info">
+                                        <i class="fas fa-arrow-circle-up"></i> Return
+                                    </span>
+                                    {% elif transaction.transaction_type == 'RESERVE' %}
+                                    <span class="super-admin-badge super-admin-badge-warning">
+                                        <i class="fas fa-clock"></i> Reserve
+                                    </span>
+                                    {% else %}
+                                    <span class="super-admin-badge super-admin-badge-secondary">
+                                        <i class="fas fa-question-circle"></i> {{ transaction.transaction_type }}
+                                    </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if transaction.status == 'COMPLETED' %}
+                                    <span class="super-admin-badge super-admin-badge-success">
+                                        <i class="fas fa-check-circle"></i> Completed
+                                    </span>
+                                    {% elif transaction.status == 'PENDING' %}
+                                    <span class="super-admin-badge super-admin-badge-warning">
+                                        <i class="fas fa-hourglass-half"></i> Pending
+                                    </span>
+                                    {% elif transaction.status == 'OVERDUE' %}
+                                    <span class="super-admin-badge super-admin-badge-danger">
+                                        <i class="fas fa-exclamation-circle"></i> Overdue
+                                    </span>
+                                    {% else %}
+                                    <span class="super-admin-badge super-admin-badge-secondary">
+                                        <i class="fas fa-question-circle"></i> {{ transaction.status }}
+                                    </span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ transaction.transaction_date|date:"M d, Y" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center">No transactions found</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Library Performance Section -->
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="super-admin-card">
+            <div class="super-admin-card-header">
+                <h5 class="super-admin-card-title">
+                    <i class="fas fa-chart-pie"></i> Library Performance
+                </h5>
+                <div class="super-admin-card-actions">
+                    <a href="{% url 'superadmin:reports' %}" class="super-admin-card-action" data-tooltip="View Detailed Reports">
+                        <i class="fas fa-chart-bar"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="super-admin-card-body">
+                <div style="height: 300px;">
+                    <canvas id="libraryPerformanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="super-admin-card">
+            <div class="super-admin-card-header">
+                <h5 class="super-admin-card-title">
+                    <i class="fas fa-user-chart"></i> User Growth
+                </h5>
+                <div class="super-admin-card-actions">
+                    <a href="{% url 'superadmin:reports' %}" class="super-admin-card-action" data-tooltip="View Detailed Reports">
+                        <i class="fas fa-chart-bar"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="super-admin-card-body">
+                <div style="height: 300px;">
+                    <canvas id="userGrowthChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

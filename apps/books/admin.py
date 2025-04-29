@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Author, Category, Book, BookCopy
+from .models import Author, Category, Book, BookCopy, Publisher
 
 @admin.register(Author)
 class AuthorAdmin(admin.ModelAdmin):
@@ -20,6 +20,21 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
     prepopulated_fields = {'slug': ('name',)}
+
+@admin.register(Publisher)
+class PublisherAdmin(admin.ModelAdmin):
+    """Admin configuration for the Publisher model."""
+    list_display = ('name', 'established_year', 'website', 'is_active', 'is_featured')
+    list_filter = ('is_active', 'is_featured', 'established_year')
+    search_fields = ('name', 'description', 'website', 'email')
+    prepopulated_fields = {'slug': ('name',)}
+
+    fieldsets = (
+        (None, {'fields': ('name', 'slug', 'description', 'logo')}),
+        ('Contact Information', {'fields': ('website', 'email', 'phone', 'address')}),
+        ('Details', {'fields': ('established_year', 'notes')}),
+        ('Status', {'fields': ('is_active', 'is_featured')}),
+    )
 
 class BookCopyInline(admin.TabularInline):
     """Inline admin configuration for BookCopy model."""

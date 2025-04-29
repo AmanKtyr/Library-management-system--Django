@@ -115,3 +115,10 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [Font Awesome](https://fontawesome.com/)
 - [AOS Library](https://michalsnik.github.io/aos/)
 - [Google Fonts](https://fonts.google.com/)
+
+Id aman@gmail.com
+pass Aman@#12
+
+
+
+Make sure app pages are making professional, modern, and industrial use-ready, according to the Indian  market 

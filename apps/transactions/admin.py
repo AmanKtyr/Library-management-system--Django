@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Transaction, MembershipPlan, Membership
+from .models import Transaction, MembershipPlan, Membership, MembershipRequest, Reservation
 
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
@@ -44,3 +44,33 @@ class MembershipAdmin(admin.ModelAdmin):
     )
 
     readonly_fields = ('membership_number',)
+
+@admin.register(MembershipRequest)
+class MembershipRequestAdmin(admin.ModelAdmin):
+    """Admin configuration for the MembershipRequest model."""
+    list_display = ('user', 'library', 'status', 'request_date', 'processed_date', 'processed_by')
+    list_filter = ('status', 'request_date', 'processed_date', 'library')
+    search_fields = ('user__email', 'user__first_name', 'user__last_name', 'library__name', 'notes')
+    date_hierarchy = 'request_date'
+
+    fieldsets = (
+        (None, {'fields': ('user', 'library', 'status')}),
+        ('Processing', {'fields': ('processed_by', 'processed_date', 'notes')}),
+    )
+
+    readonly_fields = ('request_date',)
+
+@admin.register(Reservation)
+class ReservationAdmin(admin.ModelAdmin):
+    """Admin configuration for the Reservation model."""
+    list_display = ('user', 'book', 'library', 'status', 'reservation_date', 'expiry_date', 'processed_by')
+    list_filter = ('status', 'reservation_date', 'expiry_date', 'library')
+    search_fields = ('user__email', 'user__first_name', 'user__last_name', 'book__title', 'notes')
+    date_hierarchy = 'reservation_date'
+
+    fieldsets = (
+        (None, {'fields': ('user', 'book', 'library', 'status', 'expiry_date')}),
+        ('Processing', {'fields': ('processed_by', 'processed_date', 'notes')}),
+    )
+
+    readonly_fields = ('reservation_date',)

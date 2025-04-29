@@ -1,0 +1,736 @@
+{% extends 'core/admin_base.html' %}
+{% load static %}
+
+{% block title %}{{ publisher.name }} - Publisher Details{% endblock %}
+{% block breadcrumb_title %}Publisher Details{% endblock %}
+{% block page_title %}{{ publisher.name }}{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'library_admin:edit_publisher' slug=publisher.slug %}" class="admin-pro-btn admin-pro-btn-primary">
+    <i class="fas fa-edit"></i> Edit Publisher
+</a>
+<a href="{% url 'library_admin:publishers' %}" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-arrow-left"></i> Back to Publishers
+</a>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .publisher-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+    
+    .publisher-logo {
+        width: 100px;
+        height: 100px;
+        border-radius: 12px;
+        background-color: var(--primary-color);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 36px;
+        margin-right: 20px;
+        flex-shrink: 0;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .publisher-logo::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 100%);
+    }
+    
+    .publisher-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .publisher-info {
+        flex: 1;
+    }
+    
+    .publisher-name {
+        font-size: 24px;
+        font-weight: 700;
+        margin: 0 0 5px;
+        color: var(--dark-color);
+    }
+    
+    .publisher-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 10px;
+    }
+    
+    .publisher-meta-item {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        color: var(--gray-600);
+    }
+    
+    .publisher-meta-item i {
+        margin-right: 8px;
+        color: var(--primary-color);
+    }
+    
+    .publisher-status {
+        display: inline-flex;
+        align-items: center;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-right: 10px;
+    }
+    
+    .publisher-status.active {
+        background-color: rgba(39, 174, 96, 0.1);
+        color: #27ae60;
+    }
+    
+    .publisher-status.inactive {
+        background-color: rgba(231, 76, 60, 0.1);
+        color: #e74c3c;
+    }
+    
+    .publisher-status.featured {
+        background-color: rgba(230, 126, 34, 0.1);
+        color: #e67e22;
+    }
+    
+    .publisher-status i {
+        margin-right: 5px;
+    }
+    
+    .publisher-description {
+        background-color: var(--gray-100);
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        position: relative;
+    }
+    
+    .publisher-description::before {
+        content: '"';
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        font-size: 60px;
+        color: rgba(0, 0, 0, 0.05);
+        font-family: serif;
+        line-height: 1;
+    }
+    
+    .publisher-description p {
+        position: relative;
+        margin: 0;
+        font-size: 16px;
+        line-height: 1.6;
+        color: var(--gray-700);
+    }
+    
+    .publisher-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .publisher-stat-card {
+        background-color: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        text-align: center;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .publisher-stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .publisher-stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: var(--primary-color);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin: 0 auto 15px;
+    }
+    
+    .publisher-stat-value {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--dark-color);
+        margin-bottom: 5px;
+    }
+    
+    .publisher-stat-label {
+        font-size: 14px;
+        color: var(--gray-600);
+    }
+    
+    .book-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    
+    .book-card {
+        background-color: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .book-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .book-cover {
+        height: 200px;
+        background-color: var(--gray-200);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .book-cover img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .book-cover-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        color: var(--gray-400);
+        background: linear-gradient(135deg, var(--gray-200) 0%, var(--gray-300) 100%);
+    }
+    
+    .book-info {
+        padding: 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .book-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0 0 10px;
+        color: var(--dark-color);
+    }
+    
+    .book-authors {
+        font-size: 14px;
+        color: var(--gray-600);
+        margin-bottom: 10px;
+    }
+    
+    .book-meta {
+        display: flex;
+        justify-content: space-between;
+        margin-top: auto;
+        font-size: 13px;
+        color: var(--gray-600);
+    }
+    
+    .book-meta span {
+        display: flex;
+        align-items: center;
+    }
+    
+    .book-meta i {
+        margin-right: 5px;
+        font-size: 12px;
+    }
+    
+    .book-actions {
+        padding: 15px;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .book-btn {
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.2s ease;
+    }
+    
+    .book-btn i {
+        margin-right: 5px;
+    }
+    
+    .book-btn.btn-outline {
+        color: var(--gray-700);
+        border: 1px solid var(--gray-300);
+        background-color: transparent;
+    }
+    
+    .book-btn.btn-outline:hover {
+        background-color: var(--gray-100);
+        color: var(--gray-800);
+    }
+    
+    .book-btn.btn-primary {
+        color: white;
+        background-color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+    }
+    
+    .book-btn.btn-primary:hover {
+        background-color: var(--primary-dark);
+    }
+    
+    .contact-info {
+        background-color: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        margin-bottom: 30px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .contact-info-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        color: var(--primary-color);
+    }
+    
+    .contact-info-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    
+    .contact-info-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .contact-info-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        background-color: var(--primary-color);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+    
+    .contact-info-content {
+        flex: 1;
+    }
+    
+    .contact-info-label {
+        font-size: 12px;
+        color: var(--gray-600);
+        margin-bottom: 3px;
+    }
+    
+    .contact-info-value {
+        font-size: 14px;
+        color: var(--gray-800);
+        font-weight: 500;
+    }
+    
+    .contact-info-value a {
+        color: var(--primary-color);
+        text-decoration: none;
+    }
+    
+    .contact-info-value a:hover {
+        text-decoration: underline;
+    }
+    
+    /* Animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .fade-in-up {
+        animation: fadeInUp 0.5s ease forwards;
+    }
+    
+    .delay-1 {
+        animation-delay: 0.1s;
+    }
+    
+    .delay-2 {
+        animation-delay: 0.2s;
+    }
+    
+    .delay-3 {
+        animation-delay: 0.3s;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <!-- Publisher Header -->
+        <div class="admin-pro-card mb-4 fade-in-up">
+            <div class="admin-pro-card-body">
+                <div class="publisher-header">
+                    <div class="publisher-logo">
+                        {% if publisher.logo %}
+                            <img src="{{ publisher.logo.url }}" alt="{{ publisher.name }}">
+                        {% else %}
+                            <i class="fas fa-building"></i>
+                        {% endif %}
+                    </div>
+                    <div class="publisher-info">
+                        <h1 class="publisher-name">{{ publisher.name }}</h1>
+                        <div class="publisher-meta">
+                            {% if publisher.established_year %}
+                                <div class="publisher-meta-item">
+                                    <i class="fas fa-calendar-alt"></i> Established in {{ publisher.established_year }}
+                                </div>
+                            {% endif %}
+                            <div class="publisher-meta-item">
+                                <i class="fas fa-book"></i> {{ books.count }} book{{ books.count|pluralize }}
+                            </div>
+                            {% if publisher.website %}
+                                <div class="publisher-meta-item">
+                                    <i class="fas fa-globe"></i> 
+                                    <a href="{{ publisher.website }}" target="_blank" rel="noopener noreferrer">
+                                        {{ publisher.website|truncatechars:30 }}
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div>
+                            {% if publisher.is_active %}
+                                <span class="publisher-status active">
+                                    <i class="fas fa-check-circle"></i> Active
+                                </span>
+                            {% else %}
+                                <span class="publisher-status inactive">
+                                    <i class="fas fa-times-circle"></i> Inactive
+                                </span>
+                            {% endif %}
+                            
+                            {% if publisher.is_featured %}
+                                <span class="publisher-status featured">
+                                    <i class="fas fa-star"></i> Featured
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                {% if publisher.description %}
+                    <div class="publisher-description">
+                        <p>{{ publisher.description }}</p>
+                    </div>
+                {% endif %}
+                
+                <!-- Publisher Stats -->
+                <div class="publisher-stats">
+                    <div class="publisher-stat-card fade-in-up">
+                        <div class="publisher-stat-icon" style="background-color: #3498db;">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="publisher-stat-value">{{ books.count }}</div>
+                        <div class="publisher-stat-label">Books</div>
+                    </div>
+                    
+                    <div class="publisher-stat-card fade-in-up delay-1">
+                        <div class="publisher-stat-icon" style="background-color: #2ecc71;">
+                            <i class="fas fa-pen-fancy"></i>
+                        </div>
+                        <div class="publisher-stat-value">
+                            {% with author_count=books.values_list('authors', flat=True).distinct.count %}
+                                {{ author_count|default:"0" }}
+                            {% endwith %}
+                        </div>
+                        <div class="publisher-stat-label">Authors</div>
+                    </div>
+                    
+                    <div class="publisher-stat-card fade-in-up delay-2">
+                        <div class="publisher-stat-icon" style="background-color: #9b59b6;">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <div class="publisher-stat-value">
+                            {% with category_count=books.values_list('categories', flat=True).distinct.count %}
+                                {{ category_count|default:"0" }}
+                            {% endwith %}
+                        </div>
+                        <div class="publisher-stat-label">Categories</div>
+                    </div>
+                    
+                    <div class="publisher-stat-card fade-in-up delay-3">
+                        <div class="publisher-stat-icon" style="background-color: #e67e22;">
+                            <i class="fas fa-copy"></i>
+                        </div>
+                        <div class="publisher-stat-value">
+                            {% with copy_count=books.values_list('copies', flat=True).count %}
+                                {{ copy_count|default:"0" }}
+                            {% endwith %}
+                        </div>
+                        <div class="publisher-stat-label">Book Copies</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Books by this Publisher -->
+        <div class="admin-pro-card mb-4 fade-in-up delay-1">
+            <div class="admin-pro-card-header d-flex justify-content-between align-items-center">
+                <h3 class="admin-pro-card-title">
+                    <i class="fas fa-book me-2 text-primary"></i>Books by {{ publisher.name }}
+                </h3>
+                <div class="admin-pro-card-actions">
+                    <a href="{% url 'books:manage_books' %}?publisher={{ publisher.id }}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
+                        <i class="fas fa-search"></i> View All
+                    </a>
+                </div>
+            </div>
+            <div class="admin-pro-card-body">
+                {% if books %}
+                    <div class="book-grid">
+                        {% for book in books|slice:":6" %}
+                            <div class="book-card fade-in-up" style="animation-delay: {{ forloop.counter0|divisibleby:3 }}00ms;">
+                                <div class="book-cover">
+                                    {% if book.cover_image %}
+                                        <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
+                                    {% else %}
+                                        <div class="book-cover-placeholder">
+                                            <i class="fas fa-book"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="book-info">
+                                    <h3 class="book-title">{{ book.title }}</h3>
+                                    <div class="book-authors">
+                                        {% for author in book.authors.all %}
+                                            {% if not forloop.first %}, {% endif %}
+                                            {{ author.name }}
+                                        {% empty %}
+                                            <span class="text-muted">Unknown Author</span>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="book-meta">
+                                        <span><i class="fas fa-calendar-alt"></i> {{ book.publication_year|default:"Unknown" }}</span>
+                                        <span><i class="fas fa-copy"></i> {{ book.copies.count }} copies</span>
+                                    </div>
+                                </div>
+                                <div class="book-actions">
+                                    <a href="{% url 'books:book_detail' slug=book.slug %}" class="book-btn btn-outline">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                    <a href="{% url 'books:edit_book' slug=book.slug %}" class="book-btn btn-primary">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    {% if books.count > 6 %}
+                        <div class="text-center mt-4">
+                            <a href="{% url 'books:manage_books' %}?publisher={{ publisher.id }}" class="admin-pro-btn admin-pro-btn-primary">
+                                <i class="fas fa-book"></i> View All {{ books.count }} Books
+                            </a>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="text-center py-5">
+                        <div style="font-size: 48px; color: var(--gray-300); margin-bottom: 20px;">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h4 class="mb-3">No Books Found</h4>
+                        <p class="text-muted mb-4">There are no books from this publisher in your library yet.</p>
+                        <a href="{% url 'books:add_book' %}" class="admin-pro-btn admin-pro-btn-primary">
+                            <i class="fas fa-plus"></i> Add a Book
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Contact Information -->
+        <div class="admin-pro-card mb-4 fade-in-up delay-1">
+            <div class="admin-pro-card-header">
+                <h3 class="admin-pro-card-title">
+                    <i class="fas fa-address-card me-2 text-primary"></i>Contact Information
+                </h3>
+            </div>
+            <div class="admin-pro-card-body">
+                <div class="contact-info">
+                    {% if publisher.email %}
+                        <div class="contact-info-item">
+                            <div class="contact-info-icon" style="background-color: #3498db;">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="contact-info-content">
+                                <div class="contact-info-label">Email</div>
+                                <div class="contact-info-value">
+                                    <a href="mailto:{{ publisher.email }}">{{ publisher.email }}</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    {% if publisher.phone %}
+                        <div class="contact-info-item">
+                            <div class="contact-info-icon" style="background-color: #2ecc71;">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="contact-info-content">
+                                <div class="contact-info-label">Phone</div>
+                                <div class="contact-info-value">
+                                    <a href="tel:{{ publisher.phone }}">{{ publisher.phone }}</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    {% if publisher.website %}
+                        <div class="contact-info-item">
+                            <div class="contact-info-icon" style="background-color: #9b59b6;">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <div class="contact-info-content">
+                                <div class="contact-info-label">Website</div>
+                                <div class="contact-info-value">
+                                    <a href="{{ publisher.website }}" target="_blank" rel="noopener noreferrer">
+                                        {{ publisher.website|truncatechars:30 }}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    {% if publisher.address %}
+                        <div class="contact-info-item">
+                            <div class="contact-info-icon" style="background-color: #e67e22;">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="contact-info-content">
+                                <div class="contact-info-label">Address</div>
+                                <div class="contact-info-value">
+                                    {{ publisher.address }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    {% if not publisher.email and not publisher.phone and not publisher.website and not publisher.address %}
+                        <div class="text-center py-4">
+                            <div style="font-size: 48px; color: var(--gray-300); margin-bottom: 20px;">
+                                <i class="fas fa-address-card"></i>
+                            </div>
+                            <p class="text-muted">No contact information available.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="admin-pro-card mb-4 fade-in-up delay-2">
+            <div class="admin-pro-card-header">
+                <h3 class="admin-pro-card-title">
+                    <i class="fas fa-bolt me-2 text-primary"></i>Quick Actions
+                </h3>
+            </div>
+            <div class="admin-pro-card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'books:add_book' %}?publisher={{ publisher.id }}" class="admin-pro-btn admin-pro-btn-primary">
+                        <i class="fas fa-plus"></i> Add Book from this Publisher
+                    </a>
+                    <a href="{% url 'library_admin:edit_publisher' slug=publisher.slug %}" class="admin-pro-btn admin-pro-btn-outline">
+                        <i class="fas fa-edit"></i> Edit Publisher Details
+                    </a>
+                    <a href="{% url 'books:manage_books' %}?publisher={{ publisher.id }}" class="admin-pro-btn admin-pro-btn-outline">
+                        <i class="fas fa-search"></i> View All Books
+                    </a>
+                    <a href="#" class="admin-pro-btn admin-pro-btn-outline">
+                        <i class="fas fa-file-export"></i> Export Publisher Data
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Publisher Notes -->
+        <div class="admin-pro-card fade-in-up delay-3">
+            <div class="admin-pro-card-header">
+                <h3 class="admin-pro-card-title">
+                    <i class="fas fa-sticky-note me-2 text-primary"></i>Notes
+                </h3>
+            </div>
+            <div class="admin-pro-card-body">
+                <form method="post" action="{% url 'library_admin:update_publisher_notes' slug=publisher.slug %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <textarea class="form-control" rows="5" name="notes" placeholder="Add notes about this publisher...">{{ publisher.notes }}</textarea>
+                    </div>
+                    <button type="submit" class="admin-pro-btn admin-pro-btn-primary">
+                        <i class="fas fa-save"></i> Save Notes
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add any JavaScript functionality here
+    });
+</script>
+{% endblock %}

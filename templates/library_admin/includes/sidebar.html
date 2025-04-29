@@ -1,14 +1,23 @@
-<div class="admin-pro-menu-category">Main</div>
+<!-- Dashboard Section -->
+<div class="admin-pro-menu-category">
+    <i class="fas fa-th-large category-icon"></i>
+    <span>Dashboard</span>
+</div>
 <a href="{% url 'library_admin:dashboard' %}" class="admin-pro-menu-item {% if '/library-admin/dashboard/' in request.path %}active{% endif %}">
     <i class="fas fa-tachometer-alt"></i>
-    <span>Dashboard</span>
+    <span>Overview</span>
 </a>
 <a href="{% url 'library_admin:analytics' %}" class="admin-pro-menu-item {% if '/library-admin/analytics/' in request.path %}active{% endif %}">
     <i class="fas fa-chart-line"></i>
     <span>Analytics</span>
+    <span class="menu-feature">Pro</span>
 </a>
 
-<div class="admin-pro-menu-category">Catalog</div>
+<!-- Catalog Management Section -->
+<div class="admin-pro-menu-category">
+    <i class="fas fa-book-open category-icon"></i>
+    <span>Catalog</span>
+</div>
 <a href="{% url 'books:manage_books' %}" class="admin-pro-menu-item {% if '/books/manage/' in request.path and not '/copies/' in request.path %}active{% endif %}">
     <i class="fas fa-book"></i>
     <span>Books</span>
@@ -25,8 +34,17 @@
     <i class="fas fa-tags"></i>
     <span>Categories</span>
 </a>
+<a href="{% url 'library_admin:publishers' %}" class="admin-pro-menu-item {% if '/library-admin/publishers/' in request.path %}active{% endif %}">
+    <i class="fas fa-building"></i>
+    <span>Publishers</span>
+    <span class="menu-badge">New</span>
+</a>
 
-<div class="admin-pro-menu-category">Circulation</div>
+<!-- Circulation Section -->
+<div class="admin-pro-menu-category">
+    <i class="fas fa-sync category-icon"></i>
+    <span>Circulation</span>
+</div>
 <a href="{% url 'transactions:borrow_book' %}" class="admin-pro-menu-item {% if '/transactions/borrow/' in request.path %}active{% endif %}">
     <i class="fas fa-arrow-circle-right"></i>
     <span>Issue Books</span>
@@ -39,13 +57,24 @@
     <i class="fas fa-exchange-alt"></i>
     <span>Transactions</span>
 </a>
+<a href="{% url 'library_admin:reservations' %}" class="admin-pro-menu-item {% if '/library-admin/reservations/' in request.path %}active{% endif %}">
+    <i class="fas fa-bookmark"></i>
+    <span>Reservations</span>
+    <span class="menu-badge">New</span>
+</a>
 <a href="{% url 'library_admin:membership_requests' %}" class="admin-pro-menu-item {% if '/library-admin/membership-requests/' in request.path %}active{% endif %}">
     <i class="fas fa-user-clock"></i>
     <span>Membership Requests</span>
-    <span class="menu-badge">New</span>
+    {% if pending_requests_count > 0 %}
+    <span class="menu-badge">{{ pending_requests_count }}</span>
+    {% endif %}
 </a>
 
-<div class="admin-pro-menu-category">People</div>
+<!-- User Management Section -->
+<div class="admin-pro-menu-category">
+    <i class="fas fa-users category-icon"></i>
+    <span>People</span>
+</div>
 <a href="{% url 'libraries:manage_library_members' slug=library.slug %}" class="admin-pro-menu-item {% if '/libraries/manage/' in request.path and '/members/' in request.path %}active{% endif %}">
     <i class="fas fa-user-friends"></i>
     <span>Members</span>
@@ -55,17 +84,30 @@
     <span>Staff</span>
 </a>
 
-<div class="admin-pro-menu-category">Reports & Analytics</div>
+<!-- Reports & Analytics Section -->
+<div class="admin-pro-menu-category">
+    <i class="fas fa-chart-pie category-icon"></i>
+    <span>Reports</span>
+</div>
 <a href="{% url 'transactions:transaction_reports' %}" class="admin-pro-menu-item {% if '/transactions/reports/' in request.path %}active{% endif %}">
     <i class="fas fa-chart-bar"></i>
-    <span>Reports</span>
+    <span>Transaction Reports</span>
 </a>
 <a href="{% url 'library_admin:reports' %}" class="admin-pro-menu-item {% if '/library-admin/reports/' in request.path %}active{% endif %}">
     <i class="fas fa-file-alt"></i>
     <span>Custom Reports</span>
 </a>
+<a href="{% url 'library_admin:statistics' %}" class="admin-pro-menu-item {% if '/library-admin/statistics/' in request.path %}active{% endif %}">
+    <i class="fas fa-chart-pie"></i>
+    <span>Statistics</span>
+    <span class="menu-feature">Pro</span>
+</a>
 
-<div class="admin-pro-menu-category">Administration</div>
+<!-- Administration Section -->
+<div class="admin-pro-menu-category">
+    <i class="fas fa-cogs category-icon"></i>
+    <span>Administration</span>
+</div>
 <a href="{% url 'libraries:manage_library' slug=library.slug %}" class="admin-pro-menu-item {% if '/libraries/manage/' in request.path and not '/members/' in request.path and not '/staff/' in request.path %}active{% endif %}">
     <i class="fas fa-building"></i>
     <span>Library Details</span>
@@ -77,9 +119,16 @@
 <a href="{% url 'library_admin:notifications' %}" class="admin-pro-menu-item {% if '/library-admin/notifications/' in request.path %}active{% endif %}">
     <i class="fas fa-bell"></i>
     <span>Notifications</span>
-    <span class="menu-badge">3</span>
+    {% if notifications_count > 0 %}
+    <span class="menu-badge">{{ notifications_count }}</span>
+    {% endif %}
 </a>
 <a href="{% url 'library_admin:help' %}" class="admin-pro-menu-item {% if '/library-admin/help/' in request.path %}active{% endif %}">
     <i class="fas fa-question-circle"></i>
     <span>Help & Support</span>
+</a>
+<a href="{% url 'library_admin:system_status' %}" class="admin-pro-menu-item {% if '/library-admin/system-status/' in request.path %}active{% endif %}">
+    <i class="fas fa-server"></i>
+    <span>System Status</span>
+    <span class="menu-badge">New</span>
 </a>

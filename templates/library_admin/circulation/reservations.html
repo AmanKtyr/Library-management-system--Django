@@ -1,0 +1,576 @@
+{% extends 'core/admin_base.html' %}
+{% load static %}
+
+{% block title %}Manage Reservations - Library Management System{% endblock %}
+{% block breadcrumb_title %}Reservations{% endblock %}
+{% block page_title %}Manage Book Reservations{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'transactions:transaction_list' %}" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-exchange-alt"></i> Transactions
+</a>
+<a href="{% url 'transactions:borrow_book' %}" class="admin-pro-btn admin-pro-btn-primary">
+    <i class="fas fa-arrow-circle-right"></i> Issue Book
+</a>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .reservation-filters {
+        margin-bottom: 30px;
+    }
+    
+    .reservation-status-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    
+    .reservation-status-badge.pending {
+        background-color: rgba(230, 126, 34, 0.1);
+        color: #e67e22;
+    }
+    
+    .reservation-status-badge.confirmed {
+        background-color: rgba(39, 174, 96, 0.1);
+        color: #27ae60;
+    }
+    
+    .reservation-status-badge.cancelled {
+        background-color: rgba(231, 76, 60, 0.1);
+        color: #e74c3c;
+    }
+    
+    .reservation-status-badge.completed {
+        background-color: rgba(52, 152, 219, 0.1);
+        color: #3498db;
+    }
+    
+    .reservation-status-badge.expired {
+        background-color: rgba(149, 165, 166, 0.1);
+        color: #95a5a6;
+    }
+    
+    .reservation-status-badge i {
+        margin-right: 5px;
+    }
+    
+    .reservation-table th {
+        font-weight: 600;
+        color: var(--gray-700);
+        border-top: none;
+        border-bottom: 2px solid var(--gray-200);
+        padding: 12px 15px;
+        background-color: var(--gray-100);
+    }
+    
+    .reservation-table td {
+        padding: 15px;
+        vertical-align: middle;
+        border-bottom: 1px solid var(--gray-200);
+    }
+    
+    .reservation-table tr:hover {
+        background-color: var(--gray-50);
+    }
+    
+    .reservation-table .book-info {
+        display: flex;
+        align-items: center;
+    }
+    
+    .reservation-table .book-cover {
+        width: 50px;
+        height: 70px;
+        background-color: var(--gray-200);
+        border-radius: 5px;
+        overflow: hidden;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+    
+    .reservation-table .book-cover img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .reservation-table .book-cover-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        color: var(--gray-400);
+    }
+    
+    .reservation-table .book-title {
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: var(--gray-800);
+    }
+    
+    .reservation-table .book-author {
+        font-size: 13px;
+        color: var(--gray-600);
+    }
+    
+    .reservation-table .member-info {
+        display: flex;
+        align-items: center;
+    }
+    
+    .reservation-table .member-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--primary-color);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        margin-right: 10px;
+        flex-shrink: 0;
+    }
+    
+    .reservation-table .member-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+    
+    .reservation-table .member-name {
+        font-weight: 500;
+        margin-bottom: 3px;
+        color: var(--gray-800);
+    }
+    
+    .reservation-table .member-email {
+        font-size: 12px;
+        color: var(--gray-600);
+    }
+    
+    .reservation-table .date-info {
+        font-size: 13px;
+        color: var(--gray-700);
+    }
+    
+    .reservation-table .date-label {
+        font-size: 11px;
+        color: var(--gray-500);
+        display: block;
+        margin-bottom: 3px;
+    }
+    
+    .reservation-actions {
+        display: flex;
+        gap: 5px;
+    }
+    
+    .reservation-action-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .reservation-action-btn.confirm {
+        background-color: #27ae60;
+    }
+    
+    .reservation-action-btn.confirm:hover {
+        background-color: #219653;
+    }
+    
+    .reservation-action-btn.cancel {
+        background-color: #e74c3c;
+    }
+    
+    .reservation-action-btn.cancel:hover {
+        background-color: #c0392b;
+    }
+    
+    .reservation-action-btn.view {
+        background-color: #3498db;
+    }
+    
+    .reservation-action-btn.view:hover {
+        background-color: #2980b9;
+    }
+    
+    .reservation-action-btn.issue {
+        background-color: #9b59b6;
+    }
+    
+    .reservation-action-btn.issue:hover {
+        background-color: #8e44ad;
+    }
+    
+    .reservation-action-btn[disabled] {
+        background-color: var(--gray-400);
+        cursor: not-allowed;
+    }
+    
+    .reservation-filters .form-select,
+    .reservation-filters .form-control {
+        border-radius: 8px;
+        padding: 10px 15px;
+        border: 1px solid var(--gray-300);
+    }
+    
+    .reservation-filters .form-select:focus,
+    .reservation-filters .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(58, 90, 120, 0.15);
+    }
+    
+    .reservation-empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+    
+    .reservation-empty-icon {
+        width: 80px;
+        height: 80px;
+        background-color: var(--gray-200);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        color: var(--gray-500);
+        margin: 0 auto 20px;
+    }
+    
+    .reservation-empty-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: var(--gray-700);
+    }
+    
+    .reservation-empty-text {
+        font-size: 16px;
+        color: var(--gray-600);
+        max-width: 500px;
+        margin: 0 auto 20px;
+    }
+    
+    /* Animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .fade-in-up {
+        animation: fadeInUp 0.5s ease forwards;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Filters and Search -->
+<div class="admin-pro-card mb-4 reservation-filters fade-in-up">
+    <div class="admin-pro-card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label for="status" class="form-label">Status</label>
+                <select name="status" id="status" class="form-select">
+                    <option value="">All Statuses</option>
+                    <option value="PENDING" {% if status == 'PENDING' %}selected{% endif %}>Pending</option>
+                    <option value="CONFIRMED" {% if status == 'CONFIRMED' %}selected{% endif %}>Confirmed</option>
+                    <option value="CANCELLED" {% if status == 'CANCELLED' %}selected{% endif %}>Cancelled</option>
+                    <option value="COMPLETED" {% if status == 'COMPLETED' %}selected{% endif %}>Completed</option>
+                    <option value="EXPIRED" {% if status == 'EXPIRED' %}selected{% endif %}>Expired</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="date_range" class="form-label">Date Range</label>
+                <select name="date_range" id="date_range" class="form-select">
+                    <option value="">All Time</option>
+                    <option value="today">Today</option>
+                    <option value="yesterday">Yesterday</option>
+                    <option value="this_week">This Week</option>
+                    <option value="last_week">Last Week</option>
+                    <option value="this_month">This Month</option>
+                    <option value="last_month">Last Month</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="search" class="form-label">Search</label>
+                <input type="text" class="form-control" id="search" name="q" placeholder="Search by book title, member name or email..." value="{{ search_query }}">
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-search"></i> Filter
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Reservations Table -->
+<div class="admin-pro-card fade-in-up">
+    <div class="admin-pro-card-header d-flex justify-content-between align-items-center">
+        <h3 class="admin-pro-card-title">
+            <i class="fas fa-bookmark me-2 text-primary"></i>Book Reservations
+        </h3>
+        <div class="admin-pro-card-actions">
+            <button type="button" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline" id="refreshBtn">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+            <a href="#" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
+                <i class="fas fa-file-export"></i> Export
+            </a>
+        </div>
+    </div>
+    <div class="admin-pro-card-body">
+        {% if reservations %}
+            <div class="table-responsive">
+                <table class="table reservation-table">
+                    <thead>
+                        <tr>
+                            <th>Book</th>
+                            <th>Member</th>
+                            <th>Reservation Date</th>
+                            <th>Expiry Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for reservation in reservations %}
+                            <tr>
+                                <td>
+                                    <div class="book-info">
+                                        <div class="book-cover">
+                                            {% if reservation.book.cover_image %}
+                                                <img src="{{ reservation.book.cover_image.url }}" alt="{{ reservation.book.title }}">
+                                            {% else %}
+                                                <div class="book-cover-placeholder">
+                                                    <i class="fas fa-book"></i>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            <div class="book-title">{{ reservation.book.title }}</div>
+                                            <div class="book-author">
+                                                {% for author in reservation.book.authors.all %}
+                                                    {% if not forloop.first %}, {% endif %}
+                                                    {{ author.name }}
+                                                {% empty %}
+                                                    Unknown Author
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="member-info">
+                                        <div class="member-avatar">
+                                            {% if reservation.user.profile_image %}
+                                                <img src="{{ reservation.user.profile_image.url }}" alt="{{ reservation.user.get_full_name }}">
+                                            {% else %}
+                                                <i class="fas fa-user"></i>
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            <div class="member-name">{{ reservation.user.get_full_name }}</div>
+                                            <div class="member-email">{{ reservation.user.email }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="date-label">Reserved On</span>
+                                    <div class="date-info">{{ reservation.reservation_date|date:"M d, Y" }}</div>
+                                    <div class="date-info">{{ reservation.reservation_date|date:"g:i A" }}</div>
+                                </td>
+                                <td>
+                                    <span class="date-label">Valid Until</span>
+                                    <div class="date-info">{{ reservation.expiry_date|date:"M d, Y" }}</div>
+                                    <div class="date-info">{{ reservation.expiry_date|date:"g:i A" }}</div>
+                                </td>
+                                <td>
+                                    {% if reservation.status == 'PENDING' %}
+                                        <span class="reservation-status-badge pending">
+                                            <i class="fas fa-clock"></i> Pending
+                                        </span>
+                                    {% elif reservation.status == 'CONFIRMED' %}
+                                        <span class="reservation-status-badge confirmed">
+                                            <i class="fas fa-check-circle"></i> Confirmed
+                                        </span>
+                                    {% elif reservation.status == 'CANCELLED' %}
+                                        <span class="reservation-status-badge cancelled">
+                                            <i class="fas fa-times-circle"></i> Cancelled
+                                        </span>
+                                    {% elif reservation.status == 'COMPLETED' %}
+                                        <span class="reservation-status-badge completed">
+                                            <i class="fas fa-check-double"></i> Completed
+                                        </span>
+                                    {% elif reservation.status == 'EXPIRED' %}
+                                        <span class="reservation-status-badge expired">
+                                            <i class="fas fa-calendar-times"></i> Expired
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="reservation-actions">
+                                        <a href="#" class="reservation-action-btn view" title="View Details" data-bs-toggle="tooltip">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        
+                                        {% if reservation.status == 'PENDING' %}
+                                            <form method="post" action="{% url 'library_admin:confirm_reservation' reservation_id=reservation.id %}" class="d-inline">
+                                                {% csrf_token %}
+                                                <button type="submit" class="reservation-action-btn confirm" title="Confirm Reservation" data-bs-toggle="tooltip">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                            </form>
+                                            
+                                            <form method="post" action="{% url 'library_admin:cancel_reservation' reservation_id=reservation.id %}" class="d-inline">
+                                                {% csrf_token %}
+                                                <button type="submit" class="reservation-action-btn cancel" title="Cancel Reservation" data-bs-toggle="tooltip">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                        
+                                        {% if reservation.status == 'CONFIRMED' %}
+                                            <a href="{% url 'transactions:borrow_book' %}?reservation={{ reservation.id }}" class="reservation-action-btn issue" title="Issue Book" data-bs-toggle="tooltip">
+                                                <i class="fas fa-arrow-circle-right"></i>
+                                            </a>
+                                            
+                                            <form method="post" action="{% url 'library_admin:cancel_reservation' reservation_id=reservation.id %}" class="d-inline">
+                                                {% csrf_token %}
+                                                <button type="submit" class="reservation-action-btn cancel" title="Cancel Reservation" data-bs-toggle="tooltip">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="reservation-empty-state">
+                <div class="reservation-empty-icon">
+                    <i class="fas fa-bookmark"></i>
+                </div>
+                <h3 class="reservation-empty-title">No Reservations Found</h3>
+                <p class="reservation-empty-text">
+                    {% if search_query or status %}
+                        No reservations match your search criteria. Try different filters or <a href="{% url 'library_admin:reservations' %}">view all reservations</a>.
+                    {% else %}
+                        There are no book reservations in the system yet.
+                    {% endif %}
+                </p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if reservations.paginator.num_pages > 1 %}
+<div class="admin-pro-pagination mt-4">
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if reservations.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}{% if status %}&status={{ status }}{% endif %}" aria-label="First">
+                        <span aria-hidden="true">&laquo;&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ reservations.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status %}&status={{ status }}{% endif %}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="First">
+                        <span aria-hidden="true">&laquo;&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+            
+            {% for i in reservations.paginator.page_range %}
+                {% if reservations.number == i %}
+                    <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+                {% elif i > reservations.number|add:"-3" and i < reservations.number|add:"3" %}
+                    <li class="page-item"><a class="page-link" href="?page={{ i }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status %}&status={{ status }}{% endif %}">{{ i }}</a></li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if reservations.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ reservations.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status %}&status={{ status }}{% endif %}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ reservations.paginator.num_pages }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status %}&status={{ status }}{% endif %}" aria-label="Last">
+                        <span aria-hidden="true">&raquo;&raquo;</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="Last">
+                        <span aria-hidden="true">&raquo;&raquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Refresh button functionality
+        document.getElementById('refreshBtn').addEventListener('click', function() {
+            location.reload();
+        });
+    });
+</script>
+{% endblock %}

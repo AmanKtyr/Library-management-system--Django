@@ -1,4 +1,4 @@
-{% extends 'superadmin/base.html' %}
+{% extends 'super_admin/base.html' %}
 {% load static %}
 
 {% block title %}Manage Libraries - Super Admin{% endblock %}
@@ -9,13 +9,110 @@
 <a href="{% url 'libraries:create_library' %}" class="admin-pro-btn admin-pro-btn-primary">
     <i class="fas fa-plus"></i> Add Library
 </a>
+<a href="{% url 'superadmin:reports' %}?type=libraries" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-chart-bar"></i> Library Reports
+</a>
 {% endblock %}
 
 {% block content %}
-<div class="admin-pro-card">
-    <div class="admin-pro-card-header">
-        <h5 class="admin-pro-card-title">Libraries</h5>
-        <div class="admin-pro-card-toolbar">
+<!-- Library Stats Overview -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="super-admin-stats-card primary">
+            <div class="super-admin-stats-header">
+                <div class="super-admin-stats-icon primary">
+                    <i class="fas fa-building"></i>
+                </div>
+            </div>
+            <div class="super-admin-stats-content">
+                <h3 class="super-admin-stats-value counter-value" data-target="{{ libraries.paginator.count }}">0</h3>
+                <p class="super-admin-stats-label">Total Libraries</p>
+                <div class="super-admin-stats-trend up">
+                    <i class="fas fa-arrow-up"></i> Growing network
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="super-admin-stats-card success">
+            <div class="super-admin-stats-header">
+                <div class="super-admin-stats-icon success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+            </div>
+            <div class="super-admin-stats-content">
+                <h3 class="super-admin-stats-value counter-value" data-target="{{ active_libraries|default:'0' }}">0</h3>
+                <p class="super-admin-stats-label">Active Libraries</p>
+                <div class="super-admin-stats-trend up">
+                    <i class="fas fa-arrow-up"></i> Operational
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="super-admin-stats-card info">
+            <div class="super-admin-stats-header">
+                <div class="super-admin-stats-icon info">
+                    <i class="fas fa-book"></i>
+                </div>
+            </div>
+            <div class="super-admin-stats-content">
+                <h3 class="super-admin-stats-value counter-value" data-target="{{ total_books|default:'0' }}">0</h3>
+                <p class="super-admin-stats-label">Total Books</p>
+                <div class="super-admin-stats-trend up">
+                    <i class="fas fa-arrow-up"></i> Across all libraries
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="super-admin-stats-card warning">
+            <div class="super-admin-stats-header">
+                <div class="super-admin-stats-icon warning">
+                    <i class="fas fa-users"></i>
+                </div>
+            </div>
+            <div class="super-admin-stats-content">
+                <h3 class="super-admin-stats-value counter-value" data-target="{{ total_members|default:'0' }}">0</h3>
+                <p class="super-admin-stats-label">Total Members</p>
+                <div class="super-admin-stats-trend up">
+                    <i class="fas fa-arrow-up"></i> Growing community
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Libraries Table -->
+<div class="super-admin-card">
+    <div class="super-admin-card-header">
+        <h5 class="super-admin-card-title">
+            <i class="fas fa-building"></i> Libraries
+        </h5>
+        <div class="super-admin-card-actions">
+            <div class="dropdown me-2">
+                <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-filter me-1"></i> Filter
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+                    <li><a class="dropdown-item {% if not status %}active{% endif %}" href="?{% if query %}q={{ query }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">All Libraries</a></li>
+                    <li><a class="dropdown-item {% if status == 'active' %}active{% endif %}" href="?status=active{% if query %}&q={{ query }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">Active Libraries</a></li>
+                    <li><a class="dropdown-item {% if status == 'inactive' %}active{% endif %}" href="?status=inactive{% if query %}&q={{ query }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">Inactive Libraries</a></li>
+                </ul>
+            </div>
+            <div class="dropdown me-2">
+                <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-sort me-1"></i> Sort
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                    <li><a class="dropdown-item {% if sort == 'name' %}active{% endif %}" href="?sort=name{% if query %}&q={{ query }}{% endif %}{% if status %}&status={{ status }}{% endif %}">Name (A-Z)</a></li>
+                    <li><a class="dropdown-item {% if sort == '-name' %}active{% endif %}" href="?sort=-name{% if query %}&q={{ query }}{% endif %}{% if status %}&status={{ status }}{% endif %}">Name (Z-A)</a></li>
+                    <li><a class="dropdown-item {% if sort == 'created_at' %}active{% endif %}" href="?sort=created_at{% if query %}&q={{ query }}{% endif %}{% if status %}&status={{ status }}{% endif %}">Oldest First</a></li>
+                    <li><a class="dropdown-item {% if sort == '-created_at' %}active{% endif %}" href="?sort=-created_at{% if query %}&q={{ query }}{% endif %}{% if status %}&status={{ status }}{% endif %}">Newest First</a></li>
+                    <li><a class="dropdown-item {% if sort == 'book_count' %}active{% endif %}" href="?sort=book_count{% if query %}&q={{ query }}{% endif %}{% if status %}&status={{ status }}{% endif %}">Book Count (Low to High)</a></li>
+                    <li><a class="dropdown-item {% if sort == '-book_count' %}active{% endif %}" href="?sort=-book_count{% if query %}&q={{ query }}{% endif %}{% if status %}&status={{ status }}{% endif %}">Book Count (High to Low)</a></li>
+                </ul>
+            </div>
             <form class="admin-pro-search-form">
                 <div class="input-group">
                     <input type="text" class="form-control" placeholder="Search libraries..." name="q" value="{{ query }}">
@@ -26,15 +123,15 @@
             </form>
         </div>
     </div>
-    <div class="admin-pro-card-body">
+    <div class="super-admin-card-body">
         <div class="admin-pro-table-responsive">
-            <table class="table admin-pro-table">
+            <table class="table super-admin-table">
                 <thead>
                     <tr>
-                        <th>Name</th>
+                        <th>Library</th>
                         <th>Location</th>
                         <th>Admin</th>
-                        <th>Books</th>
+                        <th>Statistics</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -43,66 +140,150 @@
                     {% for library in libraries %}
                     <tr>
                         <td>
-                            <div class="d-flex align-items-center">
-                                {% if library.image %}
-                                <img src="{{ library.image.url }}" alt="{{ library.name }}" class="admin-pro-table-img me-3">
-                                {% else %}
-                                <div class="admin-pro-table-img-placeholder me-3">
-                                    <i class="fas fa-building"></i>
+                            <div class="super-admin-table-item">
+                                <div class="super-admin-table-item-img">
+                                    {% if library.image %}
+                                    <img src="{{ library.image.url }}" alt="{{ library.name }}">
+                                    {% else %}
+                                    <img src="{% static 'images/library-placeholder.jpg' %}" alt="{{ library.name }}">
+                                    {% endif %}
                                 </div>
-                                {% endif %}
-                                <div>
-                                    <h6 class="mb-0">{{ library.name }}</h6>
-                                    <small class="text-muted">{{ library.email }}</small>
+                                <div class="super-admin-table-item-content">
+                                    <h4>
+                                        <a href="{% url 'libraries:library_detail' slug=library.slug %}">
+                                            {{ library.name }}
+                                        </a>
+                                    </h4>
+                                    <p>{{ library.email }}</p>
                                 </div>
                             </div>
                         </td>
-                        <td>{{ library.city }}, {{ library.country }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                {{ library.city }}{% if library.state %}, {{ library.state }}{% endif %}{% if library.country %}, {{ library.country }}{% endif %}
+                            </div>
+                            {% if library.phone %}
+                            <div class="mt-1">
+                                <i class="fas fa-phone text-primary me-2"></i>
+                                {{ library.phone }}
+                            </div>
+                            {% endif %}
+                        </td>
                         <td>
                             {% if library.admin %}
-                            {{ library.admin.get_full_name|default:library.admin.email }}
+                            <div class="super-admin-table-item">
+                                <div class="super-admin-table-item-img" style="width: 35px; height: 35px;">
+                                    {% if library.admin.profile_picture %}
+                                    <img src="{{ library.admin.profile_picture.url }}" alt="{{ library.admin.get_full_name }}">
+                                    {% else %}
+                                    <div class="admin-pro-user-avatar-placeholder" style="width: 35px; height: 35px; font-size: 14px;">
+                                        {{ library.admin.get_initials }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="super-admin-table-item-content">
+                                    <h4 style="font-size: 14px;">{{ library.admin.get_full_name|default:library.admin.email }}</h4>
+                                    <p style="font-size: 12px;">Library Admin</p>
+                                </div>
+                            </div>
                             {% else %}
-                            <span class="text-muted">Not assigned</span>
+                            <div class="d-flex align-items-center">
+                                <span class="super-admin-badge super-admin-badge-warning">
+                                    <i class="fas fa-exclamation-triangle"></i> Not Assigned
+                                </span>
+                            </div>
+                            <a href="{% url 'libraries:assign_admin' slug=library.slug %}" class="btn btn-sm btn-outline-primary mt-1">
+                                <i class="fas fa-user-plus"></i> Assign Admin
+                            </a>
                             {% endif %}
                         </td>
-                        <td>{{ library.book_copies.count }}</td>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <div class="mb-1">
+                                    <i class="fas fa-book text-primary me-2"></i>
+                                    <strong>{{ library.book_copies.count }}</strong> Books
+                                </div>
+                                <div class="mb-1">
+                                    <i class="fas fa-users text-success me-2"></i>
+                                    <strong>{{ library.members.count }}</strong> Members
+                                </div>
+                                <div>
+                                    <i class="fas fa-exchange-alt text-info me-2"></i>
+                                    <strong>{{ library.transactions.count }}</strong> Transactions
+                                </div>
+                            </div>
+                        </td>
                         <td>
                             {% if library.is_active %}
-                            <span class="badge bg-success">Active</span>
+                            <span class="super-admin-badge super-admin-badge-success">
+                                <i class="fas fa-check-circle"></i> Active
+                            </span>
                             {% else %}
-                            <span class="badge bg-danger">Inactive</span>
+                            <span class="super-admin-badge super-admin-badge-danger">
+                                <i class="fas fa-times-circle"></i> Inactive
+                            </span>
                             {% endif %}
+                            <div class="mt-2 small">
+                                <i class="fas fa-calendar-alt text-muted me-1"></i>
+                                Created: {{ library.created_at|date:"M d, Y" }}
+                            </div>
                         </td>
                         <td>
-                            <div class="admin-pro-actions">
-                                <a href="{% url 'libraries:library_detail' slug=library.slug %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-icon" data-bs-toggle="tooltip" title="View">
+                            <div class="super-admin-actions">
+                                <a href="{% url 'libraries:library_detail' slug=library.slug %}" class="super-admin-action-btn" data-tooltip="View Details">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="{% url 'libraries:manage_library' slug=library.slug %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-icon admin-pro-btn-primary" data-bs-toggle="tooltip" title="Edit">
+                                <a href="{% url 'libraries:manage_library' slug=library.slug %}" class="super-admin-action-btn" data-tooltip="Edit Library">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <button type="button" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-icon admin-pro-btn-danger" data-bs-toggle="modal" data-bs-target="#deleteLibraryModal{{ library.id }}" title="Delete">
+                                <a href="{% url 'superadmin:reports' %}?library={{ library.id }}" class="super-admin-action-btn" data-tooltip="View Reports">
+                                    <i class="fas fa-chart-bar"></i>
+                                </a>
+                                <button type="button" class="super-admin-action-btn text-danger" data-bs-toggle="modal" data-bs-target="#deleteLibraryModal{{ library.id }}" data-tooltip="Delete Library">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
-                            
+
                             <!-- Delete Modal -->
                             <div class="modal fade" id="deleteLibraryModal{{ library.id }}" tabindex="-1" aria-labelledby="deleteLibraryModalLabel{{ library.id }}" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="deleteLibraryModalLabel{{ library.id }}">Confirm Delete</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        <div class="modal-header bg-danger text-white">
+                                            <h5 class="modal-title" id="deleteLibraryModalLabel{{ library.id }}">
+                                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                                Confirm Delete
+                                            </h5>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <p>Are you sure you want to delete the library "{{ library.name }}"?</p>
-                                            <p class="text-danger">This action cannot be undone and will remove all associated data.</p>
+                                            <div class="text-center mb-4">
+                                                <div class="display-1 text-danger">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </div>
+                                            </div>
+                                            <p class="fs-5">Are you sure you want to delete the library "<strong>{{ library.name }}</strong>"?</p>
+                                            <div class="alert alert-warning">
+                                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                                This will delete:
+                                                <ul class="mb-0 mt-2">
+                                                    <li>All book copies in this library</li>
+                                                    <li>All transaction records</li>
+                                                    <li>All staff assignments</li>
+                                                    <li>All member associations</li>
+                                                </ul>
+                                            </div>
+                                            <p class="text-danger fw-bold">This action cannot be undone!</p>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                <i class="fas fa-times me-1"></i> Cancel
+                                            </button>
                                             <form action="{% url 'libraries:delete_library' slug=library.slug %}" method="post">
                                                 {% csrf_token %}
-                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                                <button type="submit" class="btn btn-danger">
+                                                    <i class="fas fa-trash-alt me-1"></i> Delete Permanently
+                                                </button>
                                             </form>
                                         </div>
                                     </div>
@@ -112,7 +293,18 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center">No libraries found</td>
+                        <td colspan="6" class="text-center py-5">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">
+                                    <i class="fas fa-building"></i>
+                                </div>
+                                <h4>No Libraries Found</h4>
+                                <p>There are no libraries matching your search criteria.</p>
+                                <a href="{% url 'libraries:create_library' %}" class="btn btn-primary mt-3">
+                                    <i class="fas fa-plus me-1"></i> Add New Library
+                                </a>
+                            </div>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -137,7 +329,7 @@
                         </a>
                     </li>
                     {% endif %}
-                    
+
                     {% for i in libraries.paginator.page_range %}
                         {% if libraries.number == i %}
                         <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
@@ -145,7 +337,7 @@
                         <li class="page-item"><a class="page-link" href="?page={{ i }}{% if query %}&q={{ query }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">{{ i }}</a></li>
                         {% endif %}
                     {% endfor %}
-                    
+
                     {% if libraries.has_next %}
                     <li class="page-item">
                         <a class="page-link" href="?page={{ libraries.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}" aria-label="Next">

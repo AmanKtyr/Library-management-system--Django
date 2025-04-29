@@ -1,0 +1,453 @@
+{% extends 'core/admin_base.html' %}
+{% load static %}
+
+{% block title %}General Settings - Library Management System{% endblock %}
+{% block breadcrumb_title %}General Settings{% endblock %}
+{% block page_title %}Library General Settings{% endblock %}
+
+{% block page_actions %}
+<button type="submit" form="settings-form" class="admin-pro-btn admin-pro-btn-primary">
+    <i class="fas fa-save"></i> Save Changes
+</button>
+<a href="{% url 'library_admin:dashboard' %}" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-arrow-left"></i> Back to Dashboard
+</a>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .settings-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .settings-nav {
+        display: flex;
+        border-bottom: 1px solid var(--gray-200);
+        margin-bottom: 30px;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .settings-nav-item {
+        padding: 15px 20px;
+        font-weight: 500;
+        color: var(--gray-600);
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+    }
+    
+    .settings-nav-item:hover {
+        color: var(--primary-color);
+        border-bottom-color: var(--gray-300);
+    }
+    
+    .settings-nav-item.active {
+        color: var(--primary-color);
+        border-bottom-color: var(--primary-color);
+    }
+    
+    .settings-nav-item i {
+        margin-right: 8px;
+    }
+    
+    .settings-section {
+        margin-bottom: 40px;
+    }
+    
+    .settings-section-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--gray-200);
+        color: var(--gray-800);
+    }
+    
+    .settings-section-title i {
+        margin-right: 8px;
+        color: var(--primary-color);
+    }
+    
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 8px;
+        color: var(--gray-700);
+    }
+    
+    .form-control {
+        border-radius: 8px;
+        padding: 12px 15px;
+        border: 1px solid var(--gray-300);
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(58, 90, 120, 0.15);
+    }
+    
+    .form-text {
+        font-size: 12px;
+        color: var(--gray-600);
+    }
+    
+    .form-check-label {
+        font-size: 14px;
+        color: var(--gray-700);
+    }
+    
+    .settings-footer {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid var(--gray-200);
+    }
+    
+    .settings-footer-info {
+        font-size: 13px;
+        color: var(--gray-600);
+    }
+    
+    .settings-footer-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .logo-preview {
+        width: 150px;
+        height: 150px;
+        border-radius: 12px;
+        background-color: var(--gray-200);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        color: var(--gray-500);
+        margin-bottom: 15px;
+        overflow: hidden;
+    }
+    
+    .logo-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .custom-file-upload {
+        display: inline-block;
+        padding: 8px 16px;
+        cursor: pointer;
+        background-color: var(--gray-200);
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--gray-700);
+        transition: all 0.2s ease;
+    }
+    
+    .custom-file-upload:hover {
+        background-color: var(--gray-300);
+    }
+    
+    .custom-file-upload i {
+        margin-right: 8px;
+    }
+    
+    /* Animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .fade-in-up {
+        animation: fadeInUp 0.5s ease forwards;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    <!-- Settings Navigation -->
+    <div class="settings-nav">
+        <a href="{% url 'library_admin:general_settings' %}" class="settings-nav-item active">
+            <i class="fas fa-cog"></i> General
+        </a>
+        <a href="{% url 'library_admin:circulation_settings' %}" class="settings-nav-item">
+            <i class="fas fa-exchange-alt"></i> Circulation
+        </a>
+        <a href="{% url 'library_admin:notification_settings' %}" class="settings-nav-item">
+            <i class="fas fa-bell"></i> Notifications
+        </a>
+        <a href="{% url 'library_admin:appearance_settings' %}" class="settings-nav-item">
+            <i class="fas fa-palette"></i> Appearance
+        </a>
+    </div>
+    
+    <!-- Settings Form -->
+    <form id="settings-form" method="post" enctype="multipart/form-data" class="fade-in-up">
+        {% csrf_token %}
+        
+        <!-- Library Information Section -->
+        <div class="settings-section">
+            <h3 class="settings-section-title">
+                <i class="fas fa-info-circle"></i> Library Information
+            </h3>
+            
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <div class="mb-3">
+                        <label for="library_name" class="form-label">Library Name</label>
+                        <input type="text" class="form-control" id="library_name" name="library_name" value="{{ library.name }}" required>
+                        <div class="form-text">The official name of your library.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="library_description" class="form-label">Description</label>
+                        <textarea class="form-control" id="library_description" name="library_description" rows="4">{{ library.description }}</textarea>
+                        <div class="form-text">A brief description of your library.</div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="established_date" class="form-label">Established Date</label>
+                                <input type="date" class="form-control" id="established_date" name="established_date" value="{{ library.established_date|date:'Y-m-d' }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="library_type" class="form-label">Library Type</label>
+                                <select class="form-select" id="library_type" name="library_type">
+                                    <option value="public" {% if library.type == 'public' %}selected{% endif %}>Public Library</option>
+                                    <option value="academic" {% if library.type == 'academic' %}selected{% endif %}>Academic Library</option>
+                                    <option value="school" {% if library.type == 'school' %}selected{% endif %}>School Library</option>
+                                    <option value="special" {% if library.type == 'special' %}selected{% endif %}>Special Library</option>
+                                    <option value="corporate" {% if library.type == 'corporate' %}selected{% endif %}>Corporate Library</option>
+                                    <option value="other" {% if library.type == 'other' %}selected{% endif %}>Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <label class="form-label">Library Logo</label>
+                    <div class="logo-preview">
+                        {% if library.image %}
+                            <img src="{{ library.image.url }}" alt="{{ library.name }}" id="logo-preview">
+                        {% else %}
+                            <i class="fas fa-building" id="logo-placeholder"></i>
+                        {% endif %}
+                    </div>
+                    <label for="library_logo" class="custom-file-upload">
+                        <i class="fas fa-upload"></i> Upload Logo
+                    </label>
+                    <input type="file" id="library_logo" name="library_logo" style="display: none;">
+                    <div class="form-text">Recommended size: 400x400 pixels.</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contact Information Section -->
+        <div class="settings-section">
+            <h3 class="settings-section-title">
+                <i class="fas fa-address-card"></i> Contact Information
+            </h3>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ library.email }}" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" value="{{ library.phone }}">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="website" class="form-label">Website</label>
+                <input type="url" class="form-control" id="website" name="website" value="{{ library.website }}">
+            </div>
+            
+            <div class="mb-3">
+                <label for="address" class="form-label">Address</label>
+                <textarea class="form-control" id="address" name="address" rows="3">{{ library.address }}</textarea>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="city" class="form-label">City</label>
+                        <input type="text" class="form-control" id="city" name="city" value="{{ library.city }}">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="state" class="form-label">State/Province</label>
+                        <input type="text" class="form-control" id="state" name="state" value="{{ library.state }}">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="postal_code" class="form-label">Postal Code</label>
+                        <input type="text" class="form-control" id="postal_code" name="postal_code" value="{{ library.postal_code }}">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="country" class="form-label">Country</label>
+                <input type="text" class="form-control" id="country" name="country" value="{{ library.country }}">
+            </div>
+        </div>
+        
+        <!-- Operating Hours Section -->
+        <div class="settings-section">
+            <h3 class="settings-section-title">
+                <i class="fas fa-clock"></i> Operating Hours
+            </h3>
+            
+            <div class="mb-3">
+                <label for="opening_hours" class="form-label">Opening Hours</label>
+                <textarea class="form-control" id="opening_hours" name="opening_hours" rows="5">{{ library.opening_hours }}</textarea>
+                <div class="form-text">Enter your library's operating hours. For example: Monday-Friday: 9:00 AM - 6:00 PM, Saturday: 10:00 AM - 4:00 PM, Sunday: Closed</div>
+            </div>
+            
+            <div class="mb-3">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="is_open_weekends" name="is_open_weekends" {% if library.is_open_weekends %}checked{% endif %}>
+                    <label class="form-check-label" for="is_open_weekends">Open on Weekends</label>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="is_open_holidays" name="is_open_holidays" {% if library.is_open_holidays %}checked{% endif %}>
+                    <label class="form-check-label" for="is_open_holidays">Open on Holidays</label>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Social Media Section -->
+        <div class="settings-section">
+            <h3 class="settings-section-title">
+                <i class="fas fa-share-alt"></i> Social Media
+            </h3>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="facebook" class="form-label">Facebook</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fab fa-facebook-f"></i></span>
+                            <input type="url" class="form-control" id="facebook" name="facebook" value="{{ library.facebook }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="twitter" class="form-label">Twitter</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fab fa-twitter"></i></span>
+                            <input type="url" class="form-control" id="twitter" name="twitter" value="{{ library.twitter }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="instagram" class="form-label">Instagram</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fab fa-instagram"></i></span>
+                            <input type="url" class="form-control" id="instagram" name="instagram" value="{{ library.instagram }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="linkedin" class="form-label">LinkedIn</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fab fa-linkedin-in"></i></span>
+                            <input type="url" class="form-control" id="linkedin" name="linkedin" value="{{ library.linkedin }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Form Footer -->
+        <div class="settings-footer">
+            <div class="settings-footer-info">
+                <i class="fas fa-info-circle me-1"></i> Last updated: {% if library.updated_at %}{{ library.updated_at|date:"F j, Y, g:i a" }}{% else %}Never{% endif %}
+            </div>
+            <div class="settings-footer-actions">
+                <button type="reset" class="admin-pro-btn admin-pro-btn-outline">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+                <button type="submit" class="admin-pro-btn admin-pro-btn-primary">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Logo preview functionality
+        const logoInput = document.getElementById('library_logo');
+        const logoPreview = document.getElementById('logo-preview');
+        const logoPlaceholder = document.getElementById('logo-placeholder');
+        
+        if (logoInput) {
+            logoInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        if (logoPlaceholder) {
+                            logoPlaceholder.style.display = 'none';
+                        }
+                        
+                        if (!logoPreview) {
+                            const img = document.createElement('img');
+                            img.id = 'logo-preview';
+                            img.src = e.target.result;
+                            img.alt = 'Library Logo';
+                            
+                            const previewContainer = document.querySelector('.logo-preview');
+                            previewContainer.appendChild(img);
+                        } else {
+                            logoPreview.src = e.target.result;
+                            logoPreview.style.display = 'block';
+                        }
+                    };
+                    
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

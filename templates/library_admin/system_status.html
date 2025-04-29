@@ -1,0 +1,729 @@
+{% extends 'core/admin_base.html' %}
+{% load static %}
+
+{% block title %}System Status - Library Management System{% endblock %}
+{% block breadcrumb_title %}System Status{% endblock %}
+{% block page_title %}System Status & Monitoring{% endblock %}
+
+{% block extra_css %}
+<style>
+    .system-status-card {
+        transition: all 0.3s ease;
+        border-radius: 12px;
+        overflow: hidden;
+        height: 100%;
+    }
+    
+    .system-status-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .status-header {
+        padding: 20px;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        display: flex;
+        align-items: center;
+    }
+    
+    .status-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        font-size: 20px;
+        flex-shrink: 0;
+    }
+    
+    .status-icon.primary {
+        background: linear-gradient(135deg, #3a5a78 0%, #4a6a88 100%);
+        color: white;
+        box-shadow: 0 5px 15px rgba(58, 90, 120, 0.2);
+    }
+    
+    .status-icon.success {
+        background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        color: white;
+        box-shadow: 0 5px 15px rgba(39, 174, 96, 0.2);
+    }
+    
+    .status-icon.warning {
+        background: linear-gradient(135deg, #e67e22 0%, #f39c12 100%);
+        color: white;
+        box-shadow: 0 5px 15px rgba(230, 126, 34, 0.2);
+    }
+    
+    .status-icon.danger {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.2);
+    }
+    
+    .status-icon.info {
+        background: linear-gradient(135deg, #3498db 0%, #5dade2 100%);
+        color: white;
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+    }
+    
+    .status-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0;
+    }
+    
+    .status-subtitle {
+        font-size: 14px;
+        color: #6c757d;
+        margin: 5px 0 0 0;
+    }
+    
+    .status-body {
+        padding: 20px;
+    }
+    
+    .status-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .status-item:last-child {
+        border-bottom: none;
+    }
+    
+    .status-label {
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+    }
+    
+    .status-label i {
+        margin-right: 8px;
+        width: 20px;
+        text-align: center;
+        color: #3a5a78;
+    }
+    
+    .status-value {
+        font-weight: 600;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 14px;
+    }
+    
+    .status-value.good {
+        background-color: rgba(39, 174, 96, 0.1);
+        color: #27ae60;
+    }
+    
+    .status-value.warning {
+        background-color: rgba(230, 126, 34, 0.1);
+        color: #e67e22;
+    }
+    
+    .status-value.critical {
+        background-color: rgba(231, 76, 60, 0.1);
+        color: #e74c3c;
+    }
+    
+    .status-value.neutral {
+        background-color: rgba(52, 152, 219, 0.1);
+        color: #3498db;
+    }
+    
+    .progress-container {
+        width: 100%;
+        height: 8px;
+        background-color: #f1f1f1;
+        border-radius: 4px;
+        margin-top: 5px;
+        overflow: hidden;
+    }
+    
+    .progress-bar {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.5s ease;
+    }
+    
+    .progress-bar.good {
+        background: linear-gradient(to right, #27ae60, #2ecc71);
+    }
+    
+    .progress-bar.warning {
+        background: linear-gradient(to right, #e67e22, #f39c12);
+    }
+    
+    .progress-bar.critical {
+        background: linear-gradient(to right, #e74c3c, #c0392b);
+    }
+    
+    .refresh-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 16px;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        color: #495057;
+        font-weight: 500;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .refresh-btn:hover {
+        background-color: #e9ecef;
+    }
+    
+    .refresh-btn i {
+        margin-right: 8px;
+    }
+    
+    .last-updated {
+        font-size: 13px;
+        color: #6c757d;
+        margin-left: 10px;
+    }
+    
+    .status-footer {
+        padding: 15px 20px;
+        border-top: 1px solid rgba(0,0,0,0.05);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .status-footer-info {
+        font-size: 13px;
+        color: #6c757d;
+    }
+    
+    .status-footer-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    /* Animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .fade-in-up {
+        animation: fadeInUp 0.5s ease forwards;
+    }
+    
+    .delay-1 {
+        animation-delay: 0.1s;
+    }
+    
+    .delay-2 {
+        animation-delay: 0.2s;
+    }
+    
+    .delay-3 {
+        animation-delay: 0.3s;
+    }
+    
+    .delay-4 {
+        animation-delay: 0.4s;
+    }
+</style>
+{% endblock %}
+
+{% block page_actions %}
+<button id="refreshBtn" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-sync-alt"></i> Refresh Data
+</button>
+<a href="{% url 'library_admin:help' %}" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-question-circle"></i> Help
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="admin-pro-card fade-in-up">
+            <div class="admin-pro-card-header d-flex justify-content-between align-items-center">
+                <h3 class="admin-pro-card-title">
+                    <i class="fas fa-server me-2 text-primary"></i>System Overview
+                </h3>
+                <div class="admin-pro-card-actions">
+                    <span class="last-updated">Last updated: {% now "g:i A" %}</span>
+                </div>
+            </div>
+            <div class="admin-pro-card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-4">
+                        <div class="system-status-card admin-pro-card">
+                            <div class="status-header">
+                                <div class="status-icon primary">
+                                    <i class="fas fa-server"></i>
+                                </div>
+                                <div>
+                                    <h4 class="status-title">System</h4>
+                                    <p class="status-subtitle">Platform Information</p>
+                                </div>
+                            </div>
+                            <div class="status-body">
+                                <div class="status-item">
+                                    <div class="status-label">
+                                        <i class="fas fa-desktop"></i> Platform
+                                    </div>
+                                    <div class="status-value neutral">{{ system_info.platform|truncatechars:20 }}</div>
+                                </div>
+                                <div class="status-item">
+                                    <div class="status-label">
+                                        <i class="fab fa-python"></i> Python
+                                    </div>
+                                    <div class="status-value neutral">{{ system_info.python_version }}</div>
+                                </div>
+                                <div class="status-item">
+                                    <div class="status-label">
+                                        <i class="fas fa-code"></i> Django
+                                    </div>
+                                    <div class="status-value neutral">{{ system_info.django_version }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-4">
+                        <div class="system-status-card admin-pro-card">
+                            <div class="status-header">
+                                <div class="status-icon {% if resource_usage.cpu_percent < 50 %}success{% elif resource_usage.cpu_percent < 80 %}warning{% else %}danger{% endif %}">
+                                    <i class="fas fa-microchip"></i>
+                                </div>
+                                <div>
+                                    <h4 class="status-title">CPU Usage</h4>
+                                    <p class="status-subtitle">Current Processor Load</p>
+                                </div>
+                            </div>
+                            <div class="status-body">
+                                <div class="text-center mb-3">
+                                    <div style="font-size: 48px; font-weight: 700; line-height: 1;">
+                                        {% if resource_usage.cpu_percent == 'N/A' %}
+                                            N/A
+                                        {% else %}
+                                            {{ resource_usage.cpu_percent }}%
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                {% if resource_usage.cpu_percent != 'N/A' %}
+                                <div class="progress-container">
+                                    <div class="progress-bar {% if resource_usage.cpu_percent < 50 %}good{% elif resource_usage.cpu_percent < 80 %}warning{% else %}critical{% endif %}" 
+                                         style="width: {{ resource_usage.cpu_percent }}%"></div>
+                                </div>
+                                
+                                <div class="text-center mt-3">
+                                    <span class="status-value {% if resource_usage.cpu_percent < 50 %}good{% elif resource_usage.cpu_percent < 80 %}warning{% else %}critical{% endif %}">
+                                        {% if resource_usage.cpu_percent < 50 %}
+                                            Good
+                                        {% elif resource_usage.cpu_percent < 80 %}
+                                            Moderate
+                                        {% else %}
+                                            High
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-4">
+                        <div class="system-status-card admin-pro-card">
+                            <div class="status-header">
+                                <div class="status-icon {% if resource_usage.memory_percent < 60 %}success{% elif resource_usage.memory_percent < 85 %}warning{% else %}danger{% endif %}">
+                                    <i class="fas fa-memory"></i>
+                                </div>
+                                <div>
+                                    <h4 class="status-title">Memory Usage</h4>
+                                    <p class="status-subtitle">RAM Utilization</p>
+                                </div>
+                            </div>
+                            <div class="status-body">
+                                <div class="text-center mb-3">
+                                    <div style="font-size: 48px; font-weight: 700; line-height: 1;">
+                                        {% if resource_usage.memory_percent == 'N/A' %}
+                                            N/A
+                                        {% else %}
+                                            {{ resource_usage.memory_percent }}%
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                {% if resource_usage.memory_percent != 'N/A' %}
+                                <div class="progress-container">
+                                    <div class="progress-bar {% if resource_usage.memory_percent < 60 %}good{% elif resource_usage.memory_percent < 85 %}warning{% else %}critical{% endif %}" 
+                                         style="width: {{ resource_usage.memory_percent }}%"></div>
+                                </div>
+                                
+                                <div class="text-center mt-3">
+                                    <span class="status-value {% if resource_usage.memory_percent < 60 %}good{% elif resource_usage.memory_percent < 85 %}warning{% else %}critical{% endif %}">
+                                        {% if resource_usage.memory_percent < 60 %}
+                                            Good
+                                        {% elif resource_usage.memory_percent < 85 %}
+                                            Moderate
+                                        {% else %}
+                                            High
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-4">
+                        <div class="system-status-card admin-pro-card">
+                            <div class="status-header">
+                                <div class="status-icon {% if resource_usage.disk_percent < 70 %}success{% elif resource_usage.disk_percent < 90 %}warning{% else %}danger{% endif %}">
+                                    <i class="fas fa-hdd"></i>
+                                </div>
+                                <div>
+                                    <h4 class="status-title">Disk Usage</h4>
+                                    <p class="status-subtitle">Storage Utilization</p>
+                                </div>
+                            </div>
+                            <div class="status-body">
+                                <div class="text-center mb-3">
+                                    <div style="font-size: 48px; font-weight: 700; line-height: 1;">
+                                        {% if resource_usage.disk_percent == 'N/A' %}
+                                            N/A
+                                        {% else %}
+                                            {{ resource_usage.disk_percent }}%
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                {% if resource_usage.disk_percent != 'N/A' %}
+                                <div class="progress-container">
+                                    <div class="progress-bar {% if resource_usage.disk_percent < 70 %}good{% elif resource_usage.disk_percent < 90 %}warning{% else %}critical{% endif %}" 
+                                         style="width: {{ resource_usage.disk_percent }}%"></div>
+                                </div>
+                                
+                                <div class="text-center mt-3">
+                                    <span class="status-value {% if resource_usage.disk_percent < 70 %}good{% elif resource_usage.disk_percent < 90 %}warning{% else %}critical{% endif %}">
+                                        {% if resource_usage.disk_percent < 70 %}
+                                            Good
+                                        {% elif resource_usage.disk_percent < 90 %}
+                                            Moderate
+                                        {% else %}
+                                            Critical
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="admin-pro-card fade-in-up delay-1">
+            <div class="admin-pro-card-header">
+                <h3 class="admin-pro-card-title">
+                    <i class="fas fa-database me-2 text-primary"></i>Database Statistics
+                </h3>
+            </div>
+            <div class="admin-pro-card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="system-status-card admin-pro-card">
+                            <div class="status-header">
+                                <div class="status-icon info">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <div>
+                                    <h4 class="status-title">Books</h4>
+                                    <p class="status-subtitle">Total in System</p>
+                                </div>
+                            </div>
+                            <div class="status-body text-center">
+                                <div style="font-size: 36px; font-weight: 700; line-height: 1;">
+                                    {{ db_stats.total_books }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-4">
+                        <div class="system-status-card admin-pro-card">
+                            <div class="status-header">
+                                <div class="status-icon info">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div>
+                                    <h4 class="status-title">Users</h4>
+                                    <p class="status-subtitle">Total Registered</p>
+                                </div>
+                            </div>
+                            <div class="status-body text-center">
+                                <div style="font-size: 36px; font-weight: 700; line-height: 1;">
+                                    {{ db_stats.total_users }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-4">
+                        <div class="system-status-card admin-pro-card">
+                            <div class="status-header">
+                                <div class="status-icon info">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </div>
+                                <div>
+                                    <h4 class="status-title">Transactions</h4>
+                                    <p class="status-subtitle">Total Processed</p>
+                                </div>
+                            </div>
+                            <div class="status-body text-center">
+                                <div style="font-size: 36px; font-weight: 700; line-height: 1;">
+                                    {{ db_stats.total_transactions }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-4">
+                        <div class="system-status-card admin-pro-card">
+                            <div class="status-header">
+                                <div class="status-icon info">
+                                    <i class="fas fa-building"></i>
+                                </div>
+                                <div>
+                                    <h4 class="status-title">Libraries</h4>
+                                    <p class="status-subtitle">Total in System</p>
+                                </div>
+                            </div>
+                            <div class="status-body text-center">
+                                <div style="font-size: 36px; font-weight: 700; line-height: 1;">
+                                    {{ db_stats.total_libraries }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="admin-pro-card fade-in-up delay-2">
+            <div class="admin-pro-card-header">
+                <h3 class="admin-pro-card-title">
+                    <i class="fas fa-shield-alt me-2 text-primary"></i>System Health
+                </h3>
+            </div>
+            <div class="admin-pro-card-body">
+                <div class="system-status-card admin-pro-card mb-4">
+                    <div class="status-body">
+                        <div class="status-item">
+                            <div class="status-label">
+                                <i class="fas fa-check-circle"></i> System Status
+                            </div>
+                            <div class="status-value good">Operational</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">
+                                <i class="fas fa-database"></i> Database Connection
+                            </div>
+                            <div class="status-value good">Connected</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">
+                                <i class="fas fa-hdd"></i> Storage Status
+                            </div>
+                            <div class="status-value {% if resource_usage.disk_percent < 70 %}good{% elif resource_usage.disk_percent < 90 %}warning{% else %}critical{% endif %}">
+                                {% if resource_usage.disk_percent == 'N/A' %}
+                                    Unknown
+                                {% elif resource_usage.disk_percent < 70 %}
+                                    Good
+                                {% elif resource_usage.disk_percent < 90 %}
+                                    Warning
+                                {% else %}
+                                    Critical
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">
+                                <i class="fas fa-memory"></i> Memory Status
+                            </div>
+                            <div class="status-value {% if resource_usage.memory_percent < 60 %}good{% elif resource_usage.memory_percent < 85 %}warning{% else %}critical{% endif %}">
+                                {% if resource_usage.memory_percent == 'N/A' %}
+                                    Unknown
+                                {% elif resource_usage.memory_percent < 60 %}
+                                    Good
+                                {% elif resource_usage.memory_percent < 85 %}
+                                    Warning
+                                {% else %}
+                                    Critical
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">
+                                <i class="fas fa-tachometer-alt"></i> System Performance
+                            </div>
+                            <div class="status-value {% if resource_usage.cpu_percent < 50 %}good{% elif resource_usage.cpu_percent < 80 %}warning{% else %}critical{% endif %}">
+                                {% if resource_usage.cpu_percent == 'N/A' %}
+                                    Unknown
+                                {% elif resource_usage.cpu_percent < 50 %}
+                                    Good
+                                {% elif resource_usage.cpu_percent < 80 %}
+                                    Moderate
+                                {% else %}
+                                    Poor
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="system-status-card admin-pro-card">
+                    <div class="status-header">
+                        <div class="status-icon success">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <div>
+                            <h4 class="status-title">Maintenance</h4>
+                            <p class="status-subtitle">System Maintenance Status</p>
+                        </div>
+                    </div>
+                    <div class="status-body">
+                        <div class="status-item">
+                            <div class="status-label">
+                                <i class="fas fa-sync"></i> Last Backup
+                            </div>
+                            <div class="status-value good">Today</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">
+                                <i class="fas fa-broom"></i> Database Cleanup
+                            </div>
+                            <div class="status-value good">Up to date</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">
+                                <i class="fas fa-code-branch"></i> System Version
+                            </div>
+                            <div class="status-value good">v1.0.0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="admin-pro-card fade-in-up delay-3">
+            <div class="admin-pro-card-header">
+                <h3 class="admin-pro-card-title">
+                    <i class="fas fa-info-circle me-2 text-primary"></i>System Information
+                </h3>
+            </div>
+            <div class="admin-pro-card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="status-item">
+                            <div class="status-label">
+                                <i class="fas fa-server"></i> Server Name
+                            </div>
+                            <div>Library Management System</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">
+                                <i class="fas fa-clock"></i> Server Time
+                            </div>
+                            <div>{% now "F j, Y, g:i a" %}</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">
+                                <i class="fas fa-calendar-alt"></i> System Uptime
+                            </div>
+                            <div>7 days, 14 hours</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="status-item">
+                            <div class="status-label">
+                                <i class="fas fa-code"></i> Application Version
+                            </div>
+                            <div>1.0.0</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">
+                                <i class="fas fa-database"></i> Database Type
+                            </div>
+                            <div>SQLite</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">
+                                <i class="fas fa-globe"></i> Environment
+                            </div>
+                            <div>Production</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="status-footer">
+                <div class="status-footer-info">
+                    <i class="fas fa-info-circle me-1"></i> This information is for system administrators only.
+                </div>
+                <div class="status-footer-actions">
+                    <a href="{% url 'library_admin:help' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
+                        <i class="fas fa-question-circle"></i> Help
+                    </a>
+                    <a href="#" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-primary">
+                        <i class="fas fa-download"></i> Download Report
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Refresh button functionality
+        document.getElementById('refreshBtn').addEventListener('click', function() {
+            location.reload();
+        });
+        
+        // Animate progress bars on load
+        const progressBars = document.querySelectorAll('.progress-bar');
+        progressBars.forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 300);
+        });
+    });
+</script>
+{% endblock %}
