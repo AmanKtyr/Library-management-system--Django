@@ -518,7 +518,10 @@
 
 {% block content %}
 <!-- Enhanced Welcome Section with Indian Context -->
-<div class="admin-pro-welcome-message mb-4 fade-in-up" style="animation-delay: 0.1s; background: linear-gradient(135deg, rgba(255, 153, 51, 0.1) 0%, rgba(19, 136, 8, 0.05) 100%); border-left: 4px solid #FF9933; border-radius: 8px;">
+<div class="admin-pro-welcome-message mb-4 fade-in-up" style="animation-delay: 0.1s; background: linear-gradient(135deg, rgba(255, 153, 51, 0.1) 0%, rgba(19, 136, 8, 0.05) 100%); border-left: 4px solid #FF9933; border-radius: 8px; position: relative; overflow: hidden;">
+    <!-- Indian Decorative Pattern -->
+    <div style="position: absolute; top: 0; right: 0; width: 150px; height: 150px; opacity: 0.1; background-image: url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"100\" height=\"100\" viewBox=\"0 0 100 100\"><path d=\"M50,0 C77.6,0 100,22.4 100,50 C100,77.6 77.6,100 50,100 C22.4,100 0,77.6 0,50 C0,22.4 22.4,0 50,0 Z M50,25 C36.2,25 25,36.2 25,50 C25,63.8 36.2,75 50,75 C63.8,75 75,63.8 75,50 C75,36.2 63.8,25 50,25 Z\" fill=\"%23FF9933\"/></svg>'); background-repeat: no-repeat; background-position: center;"></div>
+
     <div class="admin-pro-welcome-icon pulse" style="background: linear-gradient(135deg, #FF9933 0%, #FF8C00 100%);">
         <i class="fas fa-book-reader"></i>
     </div>
@@ -529,6 +532,7 @@
             <span class="badge" style="background-color: #138808; color: white;"><i class="fas fa-clock me-1"></i>अपडेट: {% now "g:i A" %}</span>
             <span class="badge ms-2" style="background-color: #FF9933; color: white;"><i class="fas fa-calendar me-1"></i>{% now "F j, Y" %}</span>
             <span class="badge ms-2" style="background-color: #000080; color: white;"><i class="fas fa-map-marker-alt me-1"></i>{{ library.city }}, {{ library.state }}</span>
+            <span class="badge ms-2" style="background-color: #138808; color: white;"><i class="fas fa-book me-1"></i>पुस्तकालय आईडी: {{ library.id }}</span>
         </div>
     </div>
 </div>
@@ -990,73 +994,381 @@
         </div>
     </div>
 
-    <!-- Indian Literature Spotlight Section -->
+    <!-- Enhanced Indian Literature Spotlight Section -->
     <div class="row mb-4 fade-in-up" style="animation-delay: 0.55s">
         <div class="col-12">
             <div class="admin-pro-card">
                 <div class="admin-pro-card-header d-flex justify-content-between align-items-center" style="border-bottom: 2px solid #000080;">
                     <h3 class="admin-pro-card-title">
-                        <i class="fas fa-book-reader me-2" style="color: #000080;"></i>Literature Spotlight
+                        <i class="fas fa-book-reader me-2" style="color: #000080;"></i>भारतीय साहित्य प्रकाश (Indian Literature Spotlight)
                     </h3>
-                    <a href="{% url 'books:book_list' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline" style="border-color: #000080; color: #000080;">
-                        <i class="fas fa-external-link-alt"></i> Browse All Books
+                    <div>
+                        <select class="form-select form-select-sm d-inline-block me-2" style="width: auto;">
+                            <option value="all">All Languages</option>
+                            <option value="hindi">Hindi</option>
+                            <option value="tamil">Tamil</option>
+                            <option value="bengali">Bengali</option>
+                            <option value="telugu">Telugu</option>
+                            <option value="marathi">Marathi</option>
+                            <option value="gujarati">Gujarati</option>
+                            <option value="kannada">Kannada</option>
+                            <option value="malayalam">Malayalam</option>
+                            <option value="punjabi">Punjabi</option>
+                            <option value="odia">Odia</option>
+                            <option value="urdu">Urdu</option>
+                            <option value="sanskrit">Sanskrit</option>
+                        </select>
+                        <a href="{% url 'books:book_list' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline" style="border-color: #000080; color: #000080;">
+                            <i class="fas fa-external-link-alt"></i> Browse All Books
+                        </a>
+                    </div>
+                </div>
+                <div class="admin-pro-card-body">
+                    <!-- Language Categories Tabs -->
+                    <ul class="nav nav-tabs mb-3" id="literatureTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="categories-tab" data-bs-toggle="tab" data-bs-target="#categories" type="button" role="tab" aria-controls="categories" aria-selected="true">Categories</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="authors-tab" data-bs-toggle="tab" data-bs-target="#authors" type="button" role="tab" aria-controls="authors" aria-selected="false">Popular Authors</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="languages-tab" data-bs-toggle="tab" data-bs-target="#languages" type="button" role="tab" aria-controls="languages" aria-selected="false">Languages</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="initiatives-tab" data-bs-toggle="tab" data-bs-target="#initiatives" type="button" role="tab" aria-controls="initiatives" aria-selected="false">Initiatives</button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="literatureTabContent">
+                        <!-- Categories Tab -->
+                        <div class="tab-pane fade show active" id="categories" role="tabpanel" aria-labelledby="categories-tab">
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <div class="card h-100 border-0 shadow-sm hover-card">
+                                        <div class="card-body text-center p-3">
+                                            <div class="mb-3">
+                                                <span class="d-inline-block rounded-circle p-3" style="background-color: rgba(255, 153, 51, 0.1);">
+                                                    <i class="fas fa-book fa-2x" style="color: #FF9933;"></i>
+                                                </span>
+                                            </div>
+                                            <h5 class="card-title">Regional Literature</h5>
+                                            <p class="card-text small">Promote regional Indian literature by adding books in local languages.</p>
+                                            <a href="{% url 'books:add_book' %}" class="btn btn-sm" style="background-color: #FF9933; color: white;">Add Books</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="card h-100 border-0 shadow-sm hover-card">
+                                        <div class="card-body text-center p-3">
+                                            <div class="mb-3">
+                                                <span class="d-inline-block rounded-circle p-3" style="background-color: rgba(19, 136, 8, 0.1);">
+                                                    <i class="fas fa-users fa-2x" style="color: #138808;"></i>
+                                                </span>
+                                            </div>
+                                            <h5 class="card-title">Reading Groups</h5>
+                                            <p class="card-text small">Create reading groups focused on Indian authors and literature.</p>
+                                            <a href="#" class="btn btn-sm" style="background-color: #138808; color: white;">Create Group</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="card h-100 border-0 shadow-sm hover-card">
+                                        <div class="card-body text-center p-3">
+                                            <div class="mb-3">
+                                                <span class="d-inline-block rounded-circle p-3" style="background-color: rgba(0, 0, 128, 0.1);">
+                                                    <i class="fas fa-calendar-alt fa-2x" style="color: #000080;"></i>
+                                                </span>
+                                            </div>
+                                            <h5 class="card-title">Cultural Events</h5>
+                                            <p class="card-text small">Plan and organize cultural events and literary festivals.</p>
+                                            <a href="#" class="btn btn-sm" style="background-color: #000080; color: white;">Plan Event</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="card h-100 border-0 shadow-sm hover-card">
+                                        <div class="card-body text-center p-3">
+                                            <div class="mb-3">
+                                                <span class="d-inline-block rounded-circle p-3" style="background-color: rgba(255, 153, 51, 0.1);">
+                                                    <i class="fas fa-graduation-cap fa-2x" style="color: #FF9933;"></i>
+                                                </span>
+                                            </div>
+                                            <h5 class="card-title">Educational Resources</h5>
+                                            <p class="card-text small">Add educational resources about Indian history and culture.</p>
+                                            <a href="{% url 'books:add_book' %}" class="btn btn-sm" style="background-color: #FF9933; color: white;">Add Resources</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Authors Tab -->
+                        <div class="tab-pane fade" id="authors" role="tabpanel" aria-labelledby="authors-tab">
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <div class="card h-100 border-0 shadow-sm hover-card">
+                                        <div class="card-body p-3">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <div class="rounded-circle p-2 me-3" style="background-color: rgba(255, 153, 51, 0.1);">
+                                                    <i class="fas fa-user fa-lg" style="color: #FF9933;"></i>
+                                                </div>
+                                                <h5 class="card-title mb-0">Rabindranath Tagore</h5>
+                                            </div>
+                                            <p class="card-text small mb-2">Nobel laureate and author of Gitanjali, a collection of poems.</p>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span class="badge" style="background-color: #FF9933;">Bengali</span>
+                                                <a href="#" class="btn btn-sm btn-link" style="color: #FF9933;">View Books</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="card h-100 border-0 shadow-sm hover-card">
+                                        <div class="card-body p-3">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <div class="rounded-circle p-2 me-3" style="background-color: rgba(19, 136, 8, 0.1);">
+                                                    <i class="fas fa-user fa-lg" style="color: #138808;"></i>
+                                                </div>
+                                                <h5 class="card-title mb-0">Premchand</h5>
+                                            </div>
+                                            <p class="card-text small mb-2">Pioneer of Hindi and Urdu literature with works like Godaan.</p>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span class="badge" style="background-color: #138808; color: white;">Hindi/Urdu</span>
+                                                <a href="#" class="btn btn-sm btn-link" style="color: #138808;">View Books</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="card h-100 border-0 shadow-sm hover-card">
+                                        <div class="card-body p-3">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <div class="rounded-circle p-2 me-3" style="background-color: rgba(0, 0, 128, 0.1);">
+                                                    <i class="fas fa-user fa-lg" style="color: #000080;"></i>
+                                                </div>
+                                                <h5 class="card-title mb-0">R.K. Narayan</h5>
+                                            </div>
+                                            <p class="card-text small mb-2">Creator of the fictional town of Malgudi and author of The Guide.</p>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span class="badge" style="background-color: #000080; color: white;">English</span>
+                                                <a href="#" class="btn btn-sm btn-link" style="color: #000080;">View Books</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="card h-100 border-0 shadow-sm hover-card">
+                                        <div class="card-body p-3">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <div class="rounded-circle p-2 me-3" style="background-color: rgba(255, 153, 51, 0.1);">
+                                                    <i class="fas fa-user fa-lg" style="color: #FF9933;"></i>
+                                                </div>
+                                                <h5 class="card-title mb-0">Amrita Pritam</h5>
+                                            </div>
+                                            <p class="card-text small mb-2">Prominent Punjabi poet and novelist known for Pinjar.</p>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span class="badge" style="background-color: #FF9933;">Punjabi</span>
+                                                <a href="#" class="btn btn-sm btn-link" style="color: #FF9933;">View Books</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Languages Tab -->
+                        <div class="tab-pane fade" id="languages" role="tabpanel" aria-labelledby="languages-tab">
+                            <div class="row">
+                                <div class="col-md-2 col-sm-4 mb-3">
+                                    <div class="card h-100 border-0 shadow-sm hover-card">
+                                        <div class="card-body text-center p-3">
+                                            <h5 class="card-title">हिन्दी</h5>
+                                            <p class="card-text">Hindi</p>
+                                            <div class="progress mb-2" style="height: 5px;">
+                                                <div class="progress-bar" role="progressbar" style="width: 85%; background-color: #FF9933;" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <small class="text-muted">342 books</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-sm-4 mb-3">
+                                    <div class="card h-100 border-0 shadow-sm hover-card">
+                                        <div class="card-body text-center p-3">
+                                            <h5 class="card-title">தமிழ்</h5>
+                                            <p class="card-text">Tamil</p>
+                                            <div class="progress mb-2" style="height: 5px;">
+                                                <div class="progress-bar" role="progressbar" style="width: 65%; background-color: #138808;" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <small class="text-muted">256 books</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-sm-4 mb-3">
+                                    <div class="card h-100 border-0 shadow-sm hover-card">
+                                        <div class="card-body text-center p-3">
+                                            <h5 class="card-title">বাংলা</h5>
+                                            <p class="card-text">Bengali</p>
+                                            <div class="progress mb-2" style="height: 5px;">
+                                                <div class="progress-bar" role="progressbar" style="width: 70%; background-color: #000080;" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <small class="text-muted">278 books</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-sm-4 mb-3">
+                                    <div class="card h-100 border-0 shadow-sm hover-card">
+                                        <div class="card-body text-center p-3">
+                                            <h5 class="card-title">తెలుగు</h5>
+                                            <p class="card-text">Telugu</p>
+                                            <div class="progress mb-2" style="height: 5px;">
+                                                <div class="progress-bar" role="progressbar" style="width: 55%; background-color: #FF9933;" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <small class="text-muted">218 books</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-sm-4 mb-3">
+                                    <div class="card h-100 border-0 shadow-sm hover-card">
+                                        <div class="card-body text-center p-3">
+                                            <h5 class="card-title">मराठी</h5>
+                                            <p class="card-text">Marathi</p>
+                                            <div class="progress mb-2" style="height: 5px;">
+                                                <div class="progress-bar" role="progressbar" style="width: 60%; background-color: #138808;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <small class="text-muted">235 books</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-sm-4 mb-3">
+                                    <div class="card h-100 border-0 shadow-sm hover-card">
+                                        <div class="card-body text-center p-3">
+                                            <h5 class="card-title">ਪੰਜਾਬੀ</h5>
+                                            <p class="card-text">Punjabi</p>
+                                            <div class="progress mb-2" style="height: 5px;">
+                                                <div class="progress-bar" role="progressbar" style="width: 45%; background-color: #000080;" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <small class="text-muted">182 books</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Initiatives Tab -->
+                        <div class="tab-pane fade" id="initiatives" role="tabpanel" aria-labelledby="initiatives-tab">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100 border-0 shadow-sm hover-card">
+                                        <div class="card-body p-3">
+                                            <h5 class="card-title" style="color: #FF9933;">National Book Trust Collaboration</h5>
+                                            <p class="card-text">Partner with National Book Trust India to promote reading and literature across the country.</p>
+                                            <a href="#" class="btn btn-sm" style="background-color: #FF9933; color: white;">Learn More</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="card h-100 border-0 shadow-sm hover-card">
+                                        <div class="card-body p-3">
+                                            <h5 class="card-title" style="color: #138808;">Sahitya Akademi Awards</h5>
+                                            <p class="card-text">Highlight Sahitya Akademi award-winning books in your collection to promote literary excellence.</p>
+                                            <a href="#" class="btn btn-sm" style="background-color: #138808; color: white;">View Award Winners</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Indian Library Compliance and Standards -->
+    <div class="row mb-4 fade-in-up" style="animation-delay: 0.58s">
+        <div class="col-12">
+            <div class="admin-pro-card">
+                <div class="admin-pro-card-header d-flex justify-content-between align-items-center" style="border-bottom: 2px solid #FF9933;">
+                    <h3 class="admin-pro-card-title">
+                        <i class="fas fa-clipboard-check me-2" style="color: #FF9933;"></i>भारतीय पुस्तकालय अनुपालन (Library Compliance)
+                    </h3>
+                    <a href="#" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline" style="border-color: #FF9933; color: #FF9933;">
+                        <i class="fas fa-external-link-alt"></i> View All Requirements
                     </a>
                 </div>
                 <div class="admin-pro-card-body">
                     <div class="row">
-                        <div class="col-md-3 mb-3">
-                            <div class="card h-100 border-0 shadow-sm hover-card">
-                                <div class="card-body text-center p-3">
-                                    <div class="mb-3">
-                                        <span class="d-inline-block rounded-circle p-3" style="background-color: rgba(255, 153, 51, 0.1);">
-                                            <i class="fas fa-book fa-2x" style="color: #FF9933;"></i>
-                                        </span>
-                                    </div>
-                                    <h5 class="card-title">Regional Literature</h5>
-                                    <p class="card-text small">Promote regional Indian literature by adding books in local languages.</p>
-                                    <a href="{% url 'books:add_book' %}" class="btn btn-sm" style="background-color: #FF9933; color: white;">Add Books</a>
+                        <div class="col-md-6">
+                            <h5 class="mb-3" style="color: #000080;">Compliance Status</h5>
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span>Public Library Act Compliance</span>
+                                    <span class="badge bg-success">Compliant</span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar" role="progressbar" style="width: 100%; background-color: #138808;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span>Accessibility Standards</span>
+                                    <span class="badge bg-warning text-dark">In Progress</span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar" role="progressbar" style="width: 65%; background-color: #FF9933;" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span>Digital Library Standards</span>
+                                    <span class="badge bg-warning text-dark">In Progress</span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar" role="progressbar" style="width: 45%; background-color: #FF9933;" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span>Multi-language Support</span>
+                                    <span class="badge bg-success">Compliant</span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar" role="progressbar" style="width: 90%; background-color: #138808;" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-3 mb-3">
-                            <div class="card h-100 border-0 shadow-sm hover-card">
-                                <div class="card-body text-center p-3">
-                                    <div class="mb-3">
-                                        <span class="d-inline-block rounded-circle p-3" style="background-color: rgba(19, 136, 8, 0.1);">
-                                            <i class="fas fa-users fa-2x" style="color: #138808;"></i>
-                                        </span>
+                        <div class="col-md-6">
+                            <h5 class="mb-3" style="color: #000080;">Upcoming Requirements</h5>
+                            <div class="list-group">
+                                <div class="list-group-item border-0 mb-2 rounded" style="background-color: rgba(255, 153, 51, 0.1);">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">Digital Cataloging Standards</h6>
+                                        <small>Due: 30 days</small>
                                     </div>
-                                    <h5 class="card-title">Reading Groups</h5>
-                                    <p class="card-text small">Create reading groups focused on Indian authors and literature.</p>
-                                    <a href="#" class="btn btn-sm" style="background-color: #138808; color: white;">Create Group</a>
+                                    <p class="mb-1 small">Update catalog to comply with National Digital Library standards.</p>
+                                    <div class="d-flex justify-content-end">
+                                        <a href="#" class="btn btn-sm" style="background-color: #FF9933; color: white;">Start</a>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <div class="card h-100 border-0 shadow-sm hover-card">
-                                <div class="card-body text-center p-3">
-                                    <div class="mb-3">
-                                        <span class="d-inline-block rounded-circle p-3" style="background-color: rgba(0, 0, 128, 0.1);">
-                                            <i class="fas fa-calendar-alt fa-2x" style="color: #000080;"></i>
-                                        </span>
+                                <div class="list-group-item border-0 mb-2 rounded" style="background-color: rgba(19, 136, 8, 0.1);">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">Accessibility Audit</h6>
+                                        <small>Due: 45 days</small>
                                     </div>
-                                    <h5 class="card-title">Cultural Events</h5>
-                                    <p class="card-text small">Plan and organize cultural events and literary festivals.</p>
-                                    <a href="#" class="btn btn-sm" style="background-color: #000080; color: white;">Plan Event</a>
+                                    <p class="mb-1 small">Complete accessibility audit as per government guidelines.</p>
+                                    <div class="d-flex justify-content-end">
+                                        <a href="#" class="btn btn-sm" style="background-color: #138808; color: white;">Schedule</a>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <div class="card h-100 border-0 shadow-sm hover-card">
-                                <div class="card-body text-center p-3">
-                                    <div class="mb-3">
-                                        <span class="d-inline-block rounded-circle p-3" style="background-color: rgba(255, 153, 51, 0.1);">
-                                            <i class="fas fa-graduation-cap fa-2x" style="color: #FF9933;"></i>
-                                        </span>
+                                <div class="list-group-item border-0 mb-2 rounded" style="background-color: rgba(0, 0, 128, 0.1);">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">Annual Compliance Report</h6>
+                                        <small>Due: 90 days</small>
                                     </div>
-                                    <h5 class="card-title">Educational Resources</h5>
-                                    <p class="card-text small">Add educational resources about Indian history and culture.</p>
-                                    <a href="{% url 'books:add_book' %}" class="btn btn-sm" style="background-color: #FF9933; color: white;">Add Resources</a>
+                                    <p class="mb-1 small">Prepare and submit annual compliance report to library authorities.</p>
+                                    <div class="d-flex justify-content-end">
+                                        <a href="#" class="btn btn-sm" style="background-color: #000080; color: white;">Prepare</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1636,6 +1948,94 @@
         });
     </script>
 
+    <!-- Indian Government Library Initiatives -->
+    <div class="row mb-4 fade-in-up" style="animation-delay: 0.75s">
+        <div class="col-12">
+            <div class="admin-pro-card">
+                <div class="admin-pro-card-header d-flex justify-content-between align-items-center" style="border-bottom: 2px solid #138808;">
+                    <h3 class="admin-pro-card-title">
+                        <i class="fas fa-landmark me-2" style="color: #138808;"></i>भारत सरकार पुस्तकालय पहल (Government Library Initiatives)
+                    </h3>
+                    <a href="#" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline" style="border-color: #138808; color: #138808;">
+                        <i class="fas fa-external-link-alt"></i> View All Programs
+                    </a>
+                </div>
+                <div class="admin-pro-card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="rounded-circle p-2 me-3" style="background-color: rgba(255, 153, 51, 0.1);">
+                                            <i class="fas fa-book-reader fa-lg" style="color: #FF9933;"></i>
+                                        </div>
+                                        <h5 class="card-title mb-0">National Digital Library</h5>
+                                    </div>
+                                    <p class="card-text small mb-2">Connect your library to India's National Digital Library for expanded resources.</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="badge bg-light text-dark">Status: Not Connected</span>
+                                        <a href="#" class="btn btn-sm" style="background-color: #FF9933; color: white;">Connect</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="rounded-circle p-2 me-3" style="background-color: rgba(19, 136, 8, 0.1);">
+                                            <i class="fas fa-graduation-cap fa-lg" style="color: #138808;"></i>
+                                        </div>
+                                        <h5 class="card-title mb-0">RRRLF Grants</h5>
+                                    </div>
+                                    <p class="card-text small mb-2">Raja Rammohun Roy Library Foundation grants for library development.</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="badge bg-light text-dark">Status: Eligible</span>
+                                        <a href="#" class="btn btn-sm" style="background-color: #138808; color: white;">Apply</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="rounded-circle p-2 me-3" style="background-color: rgba(0, 0, 128, 0.1);">
+                                            <i class="fas fa-universal-access fa-lg" style="color: #000080;"></i>
+                                        </div>
+                                        <h5 class="card-title mb-0">Inclusive Library</h5>
+                                    </div>
+                                    <p class="card-text small mb-2">Make your library accessible to all with government accessibility standards.</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="badge bg-light text-dark">Status: In Progress</span>
+                                        <a href="#" class="btn btn-sm" style="background-color: #000080; color: white;">Continue</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="rounded-circle p-2 me-3" style="background-color: rgba(255, 153, 51, 0.1);">
+                                            <i class="fas fa-language fa-lg" style="color: #FF9933;"></i>
+                                        </div>
+                                        <h5 class="card-title mb-0">Multi-Lingual Program</h5>
+                                    </div>
+                                    <p class="card-text small mb-2">Support for Indian languages in your library collection and services.</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="badge bg-light text-dark">Status: 3/22 Languages</span>
+                                        <a href="#" class="btn btn-sm" style="background-color: #FF9933; color: white;">Expand</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Book Status -->
     <div class="row mb-4 fade-in-up" style="animation-delay: 0.8s">
         <div class="col-12">
@@ -1878,6 +2278,34 @@
     </style>
 
 
+    <!-- Indian Cultural Footer -->
+    <div class="row mb-4 fade-in-up" style="animation-delay: 0.9s">
+        <div class="col-12">
+            <div class="card border-0" style="background: transparent;">
+                <div class="card-body text-center">
+                    <!-- Indian Decorative Pattern -->
+                    <div style="height: 20px; margin-bottom: 15px; background-image: url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"40\" height=\"12\" viewBox=\"0 0 40 12\"><path d=\"M0,6 C10,0 10,12 20,6 C30,0 30,12 40,6\" fill=\"none\" stroke=\"%23FF9933\" stroke-width=\"1\"/></svg>'); background-repeat: repeat-x;"></div>
+
+                    <!-- Indian Quote -->
+                    <p class="mb-3" style="font-style: italic; color: #555;">
+                        "पुस्तकालय ज्ञान का मंदिर है" - Knowledge is the temple of wisdom
+                    </p>
+
+                    <!-- Indian Flag Colors -->
+                    <div class="d-flex justify-content-center mb-3">
+                        <div style="width: 30px; height: 3px; background-color: #FF9933;"></div>
+                        <div style="width: 30px; height: 3px; background-color: #FFFFFF; border: 1px solid #ddd;"></div>
+                        <div style="width: 30px; height: 3px; background-color: #138808;"></div>
+                    </div>
+
+                    <!-- Made in India -->
+                    <p class="small text-muted mb-0">
+                        <span style="color: #FF9933;">Satyameva</span> <span style="color: #000080;">Jayate</span> <span style="color: #138808;">.</span> Made with <i class="fas fa-heart" style="color: #FF9933;"></i> in India
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block extra_js %}

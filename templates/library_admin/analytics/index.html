@@ -1,0 +1,681 @@
+{% extends 'library_admin/base.html' %}
+{% load static %}
+
+{% block title %}Analytics - Library Management System{% endblock %}
+{% block breadcrumb_title %}Analytics{% endblock %}
+{% block page_title %}पुस्तकालय विश्लेषिकी (Library Analytics Dashboard){% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Indian-inspired color variables */
+    :root {
+        --indian-saffron: #FF9933;
+        --indian-white: #FFFFFF;
+        --indian-green: #138808;
+        --indian-navy: #000080;
+        --indian-peacock: #50C878;
+        --indian-lotus: #FFC0CB;
+        --indian-gold: #FFD700;
+        --indian-spice-red: #A02A2F;
+    }
+
+    .analytics-card {
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 20px;
+        border-top: 3px solid var(--indian-saffron);
+    }
+
+    .analytics-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .analytics-card-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        font-weight: 600;
+        color: var(--indian-navy);
+    }
+
+    .analytics-card-body {
+        padding: 20px;
+    }
+
+    .analytics-stat {
+        text-align: center;
+        padding: 15px;
+        position: relative;
+    }
+
+    .analytics-stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+        color: var(--indian-navy);
+    }
+
+    .analytics-stat-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+    .date-range-selector {
+        background: linear-gradient(135deg, rgba(255, 153, 51, 0.1) 0%, rgba(19, 136, 8, 0.05) 100%);
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-left: 4px solid var(--indian-saffron);
+    }
+
+    .chart-container {
+        height: 300px;
+        margin-bottom: 20px;
+    }
+
+    .table-responsive {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    /* Indian-inspired card styles */
+    .analytics-card.saffron {
+        border-top-color: var(--indian-saffron);
+    }
+
+    .analytics-card.green {
+        border-top-color: var(--indian-green);
+    }
+
+    .analytics-card.navy {
+        border-top-color: var(--indian-navy);
+    }
+
+    .analytics-card.white {
+        border-top-color: #ddd;
+    }
+
+    /* Indian pattern decorative element */
+    .indian-pattern {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        width: 30px;
+        height: 30px;
+        opacity: 0.2;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12,0 C18.6,0 24,5.4 24,12 C24,18.6 18.6,24 12,24 C5.4,24 0,18.6 0,12 C0,5.4 5.4,0 12,0 Z M12,6 C8.7,6 6,8.7 6,12 C6,15.3 8.7,18 12,18 C15.3,18 18,15.3 18,12 C18,8.7 15.3,6 12,6 Z" fill="%23FF9933"/></svg>');
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+    /* Section title with Indian styling */
+    .indian-section-title {
+        position: relative;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        color: var(--indian-navy);
+        font-weight: 600;
+    }
+
+    .indian-section-title::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background: linear-gradient(to right, var(--indian-saffron), var(--indian-green));
+    }
+
+    /* Language distribution styles */
+    .language-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .language-name {
+        width: 100px;
+        font-weight: 500;
+    }
+
+    .language-bar {
+        flex: 1;
+        height: 8px;
+        border-radius: 4px;
+        background-color: #e9ecef;
+        overflow: hidden;
+        margin: 0 10px;
+    }
+
+    .language-progress {
+        height: 100%;
+        border-radius: 4px;
+    }
+
+    .language-count {
+        width: 50px;
+        text-align: right;
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="date-range-selector">
+            <form method="get" class="d-flex align-items-center">
+                <label class="me-3 mb-0">Date Range:</label>
+                <select name="range" class="form-select me-3" style="width: auto;" onchange="this.form.submit()">
+                    <option value="7" {% if date_range == '7' %}selected{% endif %}>Last 7 Days</option>
+                    <option value="30" {% if date_range == '30' %}selected{% endif %}>Last 30 Days</option>
+                    <option value="90" {% if date_range == '90' %}selected{% endif %}>Last 90 Days</option>
+                    <option value="365" {% if date_range == '365' %}selected{% endif %}>Last Year</option>
+                </select>
+                <div class="ms-auto">
+                    <span class="text-muted">{{ start_date|date:"M d, Y" }} - {{ end_date|date:"M d, Y" }}</span>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Transaction Statistics with Indian Styling -->
+<div class="row mb-4">
+    <div class="col-12 mb-3">
+        <h4 class="indian-section-title">लेनदेन आँकड़े (Transaction Statistics)</h4>
+    </div>
+    <div class="col-md-3">
+        <div class="analytics-card saffron">
+            <div class="analytics-stat">
+                <div class="indian-pattern"></div>
+                <div class="analytics-stat-value">{{ transactions_count }}</div>
+                <div class="analytics-stat-label">Total Transactions</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="analytics-card green">
+            <div class="analytics-stat">
+                <div class="indian-pattern"></div>
+                <div class="analytics-stat-value">{{ borrows }}</div>
+                <div class="analytics-stat-label">Books Borrowed</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="analytics-card white">
+            <div class="analytics-stat">
+                <div class="indian-pattern"></div>
+                <div class="analytics-stat-value">{{ returns }}</div>
+                <div class="analytics-stat-label">Books Returned</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="analytics-card navy">
+            <div class="analytics-stat">
+                <div class="indian-pattern"></div>
+                <div class="analytics-stat-value">{{ reserves }}</div>
+                <div class="analytics-stat-label">Books Reserved</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Transaction Status with Indian Styling -->
+<div class="row mb-4">
+    <div class="col-12 mb-3">
+        <h4 class="indian-section-title">लेनदेन स्थिति (Transaction Status)</h4>
+    </div>
+    <div class="col-md-3">
+        <div class="analytics-card green">
+            <div class="analytics-stat">
+                <div class="indian-pattern"></div>
+                <div class="analytics-stat-value">{{ completed }}</div>
+                <div class="analytics-stat-label">Completed</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="analytics-card saffron">
+            <div class="analytics-stat">
+                <div class="indian-pattern"></div>
+                <div class="analytics-stat-value">{{ pending }}</div>
+                <div class="analytics-stat-label">Pending</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="analytics-card navy">
+            <div class="analytics-stat">
+                <div class="indian-pattern"></div>
+                <div class="analytics-stat-value">{{ overdue }}</div>
+                <div class="analytics-stat-label">Overdue</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="analytics-card white">
+            <div class="analytics-stat">
+                <div class="indian-pattern"></div>
+                <div class="analytics-stat-value">{{ cancelled }}</div>
+                <div class="analytics-stat-label">Cancelled</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Indian Language Distribution -->
+<div class="row mb-4">
+    <div class="col-12 mb-3">
+        <h4 class="indian-section-title">भारतीय भाषा वितरण (Indian Language Distribution)</h4>
+    </div>
+    <div class="col-md-6">
+        <div class="analytics-card">
+            <div class="analytics-card-header">
+                Books by Indian Languages
+            </div>
+            <div class="analytics-card-body">
+                <div class="language-item">
+                    <div class="language-name">Hindi</div>
+                    <div class="language-bar">
+                        <div class="language-progress" style="width: 85%; background-color: var(--indian-saffron);"></div>
+                    </div>
+                    <div class="language-count">342</div>
+                </div>
+                <div class="language-item">
+                    <div class="language-name">Bengali</div>
+                    <div class="language-bar">
+                        <div class="language-progress" style="width: 70%; background-color: var(--indian-green);"></div>
+                    </div>
+                    <div class="language-count">278</div>
+                </div>
+                <div class="language-item">
+                    <div class="language-name">Tamil</div>
+                    <div class="language-bar">
+                        <div class="language-progress" style="width: 65%; background-color: var(--indian-navy);"></div>
+                    </div>
+                    <div class="language-count">256</div>
+                </div>
+                <div class="language-item">
+                    <div class="language-name">Telugu</div>
+                    <div class="language-bar">
+                        <div class="language-progress" style="width: 55%; background-color: var(--indian-saffron);"></div>
+                    </div>
+                    <div class="language-count">218</div>
+                </div>
+                <div class="language-item">
+                    <div class="language-name">Marathi</div>
+                    <div class="language-bar">
+                        <div class="language-progress" style="width: 60%; background-color: var(--indian-green);"></div>
+                    </div>
+                    <div class="language-count">235</div>
+                </div>
+                <div class="language-item">
+                    <div class="language-name">Punjabi</div>
+                    <div class="language-bar">
+                        <div class="language-progress" style="width: 45%; background-color: var(--indian-navy);"></div>
+                    </div>
+                    <div class="language-count">182</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="analytics-card">
+            <div class="analytics-card-header">
+                Most Popular Indian Authors
+            </div>
+            <div class="analytics-card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Author</th>
+                                <th>Language</th>
+                                <th>Books</th>
+                                <th>Borrows</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Rabindranath Tagore</td>
+                                <td>Bengali</td>
+                                <td>24</td>
+                                <td>156</td>
+                            </tr>
+                            <tr>
+                                <td>Premchand</td>
+                                <td>Hindi</td>
+                                <td>18</td>
+                                <td>142</td>
+                            </tr>
+                            <tr>
+                                <td>R.K. Narayan</td>
+                                <td>English</td>
+                                <td>15</td>
+                                <td>128</td>
+                            </tr>
+                            <tr>
+                                <td>Amrita Pritam</td>
+                                <td>Punjabi</td>
+                                <td>12</td>
+                                <td>87</td>
+                            </tr>
+                            <tr>
+                                <td>Kalki Krishnamurthy</td>
+                                <td>Tamil</td>
+                                <td>10</td>
+                                <td>76</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts with Indian Styling -->
+<div class="row mb-4">
+    <div class="col-12 mb-3">
+        <h4 class="indian-section-title">चार्ट और ग्राफ (Charts & Graphs)</h4>
+    </div>
+    <div class="col-md-8">
+        <div class="analytics-card saffron">
+            <div class="analytics-card-header">
+                <i class="fas fa-chart-line me-2" style="color: var(--indian-saffron);"></i> Daily Transaction Activity
+            </div>
+            <div class="analytics-card-body">
+                <div class="chart-container">
+                    <canvas id="dailyTransactionsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="analytics-card green">
+            <div class="analytics-card-header">
+                <i class="fas fa-chart-pie me-2" style="color: var(--indian-green);"></i> Book Categories Distribution
+            </div>
+            <div class="analytics-card-body">
+                <div class="chart-container">
+                    <canvas id="categoriesChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Popular Books with Indian Styling -->
+<div class="row mb-4">
+    <div class="col-12 mb-3">
+        <h4 class="indian-section-title">लोकप्रिय पुस्तकें और सदस्य (Popular Books & Members)</h4>
+    </div>
+    <div class="col-md-6">
+        <div class="analytics-card navy">
+            <div class="analytics-card-header">
+                <i class="fas fa-book me-2" style="color: var(--indian-navy);"></i> Most Popular Books
+            </div>
+            <div class="analytics-card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Book Title</th>
+                                <th>Author</th>
+                                <th>Borrows</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for book in popular_books %}
+                            <tr>
+                                <td>{{ book.title }}</td>
+                                <td>{{ book.authors.first.name }}</td>
+                                <td>{{ book.borrow_count }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center">No data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="analytics-card saffron">
+            <div class="analytics-card-header">
+                <i class="fas fa-users me-2" style="color: var(--indian-saffron);"></i> Most Active Members
+            </div>
+            <div class="analytics-card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Member</th>
+                                <th>Email</th>
+                                <th>Transactions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for member in active_members %}
+                            <tr>
+                                <td>{{ member.get_full_name }}</td>
+                                <td>{{ member.email }}</td>
+                                <td>{{ member.transaction_count }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center">No data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Indian Cultural Footer -->
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0" style="background: transparent;">
+            <div class="card-body text-center">
+                <!-- Indian Decorative Pattern -->
+                <div style="height: 20px; margin-bottom: 15px; background-image: url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"40\" height=\"12\" viewBox=\"0 0 40 12\"><path d=\"M0,6 C10,0 10,12 20,6 C30,0 30,12 40,6\" fill=\"none\" stroke=\"%23FF9933\" stroke-width=\"1\"/></svg>'); background-repeat: repeat-x;"></div>
+
+                <!-- Indian Quote -->
+                <p class="mb-3" style="font-style: italic; color: #555;">
+                    "पुस्तकालय ज्ञान का मंदिर है" - A library is a temple of knowledge
+                </p>
+
+                <!-- Indian Flag Colors -->
+                <div class="d-flex justify-content-center mb-3">
+                    <div style="width: 30px; height: 3px; background-color: #FF9933;"></div>
+                    <div style="width: 30px; height: 3px; background-color: #FFFFFF; border: 1px solid #ddd;"></div>
+                    <div style="width: 30px; height: 3px; background-color: #138808;"></div>
+                </div>
+
+                <!-- Made in India -->
+                <p class="small text-muted mb-0">
+                    <span style="color: #FF9933;">Satyameva</span> <span style="color: #000080;">Jayate</span> <span style="color: #138808;">.</span> Made with <i class="fas fa-heart" style="color: #FF9933;"></i> in India
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Parse JSON data from Django context
+        const dailyData = JSON.parse('{{ daily_data|safe }}');
+        const categoryData = JSON.parse('{{ category_data|safe }}');
+
+        // Indian-inspired color palette
+        const indianColors = {
+            saffron: 'rgba(255, 153, 51, 0.7)',
+            saffronBorder: 'rgba(255, 153, 51, 1)',
+            saffronLight: 'rgba(255, 153, 51, 0.1)',
+            green: 'rgba(19, 136, 8, 0.7)',
+            greenBorder: 'rgba(19, 136, 8, 1)',
+            greenLight: 'rgba(19, 136, 8, 0.1)',
+            navy: 'rgba(0, 0, 128, 0.7)',
+            navyBorder: 'rgba(0, 0, 128, 1)',
+            navyLight: 'rgba(0, 0, 128, 0.1)'
+        };
+
+        // Daily Transactions Chart with Indian colors
+        const dailyCtx = document.getElementById('dailyTransactionsChart').getContext('2d');
+        const dailyChart = new Chart(dailyCtx, {
+            type: 'line',
+            data: {
+                labels: dailyData.map(item => item.date),
+                datasets: [
+                    {
+                        label: 'Borrows',
+                        data: dailyData.map(item => item.borrows),
+                        borderColor: indianColors.saffronBorder,
+                        backgroundColor: indianColors.saffronLight,
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Returns',
+                        data: dailyData.map(item => item.returns),
+                        borderColor: indianColors.greenBorder,
+                        backgroundColor: indianColors.greenLight,
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Reserves',
+                        data: dailyData.map(item => item.reserves),
+                        borderColor: indianColors.navyBorder,
+                        backgroundColor: indianColors.navyLight,
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'पुस्तकालय गतिविधि (Library Activity)',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        },
+                        color: indianColors.navyBorder,
+                        padding: {
+                            bottom: 10
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+
+        // Categories Chart with Indian Categories
+        const categoryCtx = document.getElementById('categoriesChart').getContext('2d');
+        const categoryChart = new Chart(categoryCtx, {
+            type: 'doughnut',
+            data: {
+                labels: categoryData.map(item => {
+                    // Add Indian category names to existing categories
+                    const indianCategories = {
+                        'Fiction': 'Fiction (कल्पना साहित्य)',
+                        'Non-Fiction': 'Non-Fiction (गैर-कल्पना)',
+                        'Science': 'Science (विज्ञान)',
+                        'History': 'History (इतिहास)',
+                        'Biography': 'Biography (जीवनी)',
+                        'Poetry': 'Poetry (कविता)',
+                        'Drama': 'Drama (नाटक)',
+                        'Religion': 'Religion (धर्म)',
+                        'Philosophy': 'Philosophy (दर्शन)'
+                    };
+                    return indianCategories[item.name] || item.name;
+                }),
+                datasets: [{
+                    data: categoryData.map(item => item.count),
+                    backgroundColor: [
+                        indianColors.saffron,
+                        indianColors.green,
+                        indianColors.navy,
+                        'rgba(80, 200, 120, 0.7)', // peacock
+                        'rgba(255, 192, 203, 0.7)', // lotus
+                        'rgba(160, 42, 47, 0.7)',   // spice red
+                        'rgba(255, 215, 0, 0.7)',   // gold
+                        'rgba(128, 0, 128, 0.7)'    // purple
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    },
+                    title: {
+                        display: true,
+                        text: 'पुस्तक श्रेणियां (Book Categories)',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        },
+                        color: indianColors.navyBorder,
+                        padding: {
+                            bottom: 10
+                        }
+                    }
+                },
+                cutout: '60%'
+            }
+        });
+
+        // Add animation to Indian pattern elements
+        const patterns = document.querySelectorAll('.indian-pattern');
+        patterns.forEach(pattern => {
+            pattern.style.transition = 'transform 0.5s ease';
+            pattern.addEventListener('mouseover', function() {
+                this.style.transform = 'rotate(45deg) scale(1.2)';
+            });
+            pattern.addEventListener('mouseout', function() {
+                this.style.transform = 'rotate(0deg) scale(1)';
+            });
+        });
+    });
+</script>
+{% endblock %}
