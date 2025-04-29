@@ -9,7 +9,8 @@
     <div class="hero-video-bg">
         <div class="hero-video-overlay"></div>
         <video autoplay muted loop playsinline class="hero-video">
-            <source src="{% static 'videos/library-ambient.mp4' %}" type="video/mp4" onerror="this.parentElement.style.display='none'">
+            {% comment %} <source src="{% static 'videos/library-ambient.mp4' %}" type="video/mp4" onerror="this.parentElement.style.display='none'"> {% endcomment %}
+            <source src="https://cdnl.iconscout.com/lottie/premium/preview-watermark/file-management-animation-download-in-lottie-json-gif-static-svg-formats--organizing-document-system-business-agency-pack-animations-5446127.mp4" type="video/mp4" onerror="this.parentElement.style.display='none'">
         </video>
     </div>
     <div class="hero-pattern-modern"></div>
@@ -67,7 +68,7 @@
                     <div class="hero-image-3d-wrapper">
                         <div class="hero-image-decoration-3d"></div>
                         <div class="hero-image-glow"></div>
-                        <img src="{% static 'images/library-hero.jpg' %}" alt="Modern Library"
+                        <img src="{% static 'images/library-hero.png' %}" alt="Modern Library"
                              class="hero-image-3d img-fluid rounded-xl shadow-2xl animate__animated animate__zoomIn"
                              onerror="this.src='https://placehold.co/600x400?text=Premium+Library'">
                         <div class="hero-image-floating-elements">
@@ -1524,7 +1525,7 @@
                                     <div class="contact-info-map">
                                         <div class="map-placeholder">
                                             <div class="map-overlay"></div>
-                                            <img src="{% static 'images/map-placeholder.jpg' %}" alt="Location Map" class="img-fluid" onerror="this.src='https://placehold.co/600x300?text=Our+Location'">
+                                            <img src="{% static 'images/map-placeholder.png' %}" alt="Location Map" class="img-fluid" onerror="this.src='https://placehold.co/600x300?text=Our+Location'">
                                             <div class="map-pin">
                                                 <i class="fas fa-map-pin"></i>
                                             </div>
