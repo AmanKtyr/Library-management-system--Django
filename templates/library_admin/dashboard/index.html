@@ -538,7 +538,7 @@
         <i class="fas fa-user-plus"></i>
     </div>
     <div class="flex-grow-1">
-        <h4 class="alert-heading mb-1" style="color: #000080;">लंबित सदस्यता अनुरोध (Pending Membership Requests)</h4>
+        <h4 class="alert-heading mb-1" style="color: #000080;">Pending Membership Requests</h4>
         <p class="mb-0">You have <strong style="color: #FF9933;">{{ pending_requests_count }}</strong> pending membership {% if pending_requests_count == 1 %}request{% else %}requests{% endif %} that {% if pending_requests_count == 1 %}requires{% else %}require{% endif %} your approval.</p>
     </div>
     <div>
@@ -555,7 +555,7 @@
             <div class="admin-pro-card">
                 <div class="admin-pro-card-header d-flex justify-content-between align-items-center" style="border-bottom: 2px solid #FF9933;">
                     <h3 class="admin-pro-card-title">
-                        <i class="fas fa-building me-2" style="color: #FF9933;"></i>पुस्तकालय जानकारी (Library Information)
+                        <i class="fas fa-building me-2" style="color: #FF9933;"></i>Library Information
                     </h3>
                     <div class="admin-pro-card-actions">
                         <a href="{% url 'libraries:manage_library' slug=library.slug %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-primary" style="background-color: #FF9933; border-color: #FF9933;">
@@ -649,7 +649,7 @@
                             <h3 class="admin-pro-stats-value mb-0">{{ total_books }}</h3>
                             <small class="ms-2" style="color: #fff;">+{{ new_books_count }} new</small>
                         </div>
-                        <p class="admin-pro-stats-label">पुस्तकें (Books)</p>
+                        <p class="admin-pro-stats-label">Books</p>
                         <div class="admin-pro-stats-trend up">
                             <i class="fas fa-chart-line"></i> 3% from last month
                         </div>
@@ -668,7 +668,7 @@
                             <h3 class="admin-pro-stats-value mb-0">{{ staff_members }}</h3>
                             <small class="ms-2 text-success">+{{ new_staff_count }} new</small>
                         </div>
-                        <p class="admin-pro-stats-label">कर्मचारी (Staff)</p>
+                        <p class="admin-pro-stats-label">Staff</p>
                         <div class="admin-pro-stats-trend up" style="color: #28a745;">
                             <i class="fas fa-chart-line"></i> 2% from last month
                         </div>
@@ -687,7 +687,7 @@
                             <h3 class="admin-pro-stats-value mb-0">{{ members }}</h3>
                             <small class="ms-2" style="color: #fff;">+{{ new_members_count }} new</small>
                         </div>
-                        <p class="admin-pro-stats-label">सदस्य (Members)</p>
+                        <p class="admin-pro-stats-label">Members</p>
                         <div class="admin-pro-stats-trend up">
                             <i class="fas fa-chart-line"></i> 5% from last month
                         </div>
@@ -706,7 +706,7 @@
                             <h3 class="admin-pro-stats-value mb-0">{{ transactions_count }}</h3>
                             <small class="ms-2" style="color: #fff;">+{{ new_transactions_count }} new</small>
                         </div>
-                        <p class="admin-pro-stats-label">लेनदेन (Transactions)</p>
+                        <p class="admin-pro-stats-label">Transactions</p>
                         <div class="admin-pro-stats-trend up">
                             <i class="fas fa-chart-line"></i> 8% from last month
                         </div>
@@ -722,7 +722,7 @@
             <div class="admin-pro-card">
                 <div class="admin-pro-card-header d-flex justify-content-between align-items-center" style="border-bottom: 2px solid #FF9933;">
                     <h3 class="admin-pro-card-title">
-                        <i class="fas fa-history me-2" style="color: #FF9933;"></i>हाल की गतिविधियां (Recent Activities)
+                        <i class="fas fa-history me-2" style="color: #FF9933;"></i>Recent Activities
                     </h3>
                     <div class="btn-group">
                         <button type="button" class="btn btn-sm btn-outline-primary active" style="border-color: #FF9933; color: #FF9933;">All</button>
@@ -817,7 +817,7 @@
             <div class="admin-pro-card">
                 <div class="admin-pro-card-header d-flex justify-content-between align-items-center" style="border-bottom: 2px solid #000080;">
                     <h3 class="admin-pro-card-title">
-                        <i class="fas fa-user-plus me-2" style="color: #000080;"></i>लंबित अनुरोध (Pending Requests)
+                        <i class="fas fa-user-plus me-2" style="color: #000080;"></i>Pending Requests
                     </h3>
                     <a href="{% url 'library_admin:membership_requests' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline" style="border-color: #000080; color: #000080;">
                         <i class="fas fa-external-link-alt"></i> View All
@@ -878,7 +878,7 @@
             <div class="admin-pro-card">
                 <div class="admin-pro-card-header" style="border-bottom: 2px solid #FF9933;">
                     <h3 class="admin-pro-card-title">
-                        <i class="fas fa-bolt me-2" style="color: #FF9933;"></i>त्वरित कार्य (Quick Actions)
+                        <i class="fas fa-bolt me-2" style="color: #FF9933;"></i>Quick Actions
                     </h3>
                 </div>
                 <div class="admin-pro-card-body">
@@ -890,7 +890,7 @@
                                 </div>
                                 <div>
                                     <h4 class="h6 mb-1">Add New Book</h4>
-                                    <small class="text-muted">नई पुस्तकें जोड़ें</small>
+                                    <small class="text-muted">Add to your collection</small>
                                 </div>
                             </a>
                         </div>
@@ -901,7 +901,7 @@
                                 </div>
                                 <div>
                                     <h4 class="h6 mb-1">Manage Staff</h4>
-                                    <small class="text-muted">कर्मचारियों का प्रबंधन</small>
+                                    <small class="text-muted">Add or edit staff</small>
                                 </div>
                             </a>
                         </div>
@@ -912,7 +912,7 @@
                                 </div>
                                 <div>
                                     <h4 class="h6 mb-1">Manage Books</h4>
-                                    <small class="text-muted">पुस्तकों का प्रबंधन</small>
+                                    <small class="text-muted">View and edit books</small>
                                 </div>
                             </a>
                         </div>
@@ -923,7 +923,7 @@
                                 </div>
                                 <div>
                                     <h4 class="h6 mb-1">Manage Members</h4>
-                                    <small class="text-muted">सदस्यों का प्रबंधन</small>
+                                    <small class="text-muted">View and edit members</small>
                                 </div>
                             </a>
                         </div>
@@ -945,7 +945,7 @@
                                 </div>
                                 <div>
                                     <h4 class="h6 mb-1">View Reports</h4>
-                                    <small class="text-muted">रिपोर्ट देखें</small>
+                                    <small class="text-muted">Analytics and statistics</small>
                                 </div>
                             </a>
                         </div>
@@ -956,7 +956,7 @@
                                 </div>
                                 <div>
                                     <h4 class="h6 mb-1">Borrow Book</h4>
-                                    <small class="text-muted">पुस्तक उधार दें</small>
+                                    <small class="text-muted">Issue books to members</small>
                                 </div>
                             </a>
                         </div>
@@ -967,7 +967,7 @@
                                 </div>
                                 <div>
                                     <h4 class="h6 mb-1">Return Book</h4>
-                                    <small class="text-muted">पुस्तक वापसी</small>
+                                    <small class="text-muted">Process book returns</small>
                                 </div>
                             </a>
                         </div>
@@ -978,7 +978,7 @@
                                 </div>
                                 <div>
                                     <h4 class="h6 mb-1">Settings</h4>
-                                    <small class="text-muted">सेटिंग्स</small>
+                                    <small class="text-muted">Configure your library</small>
                                 </div>
                             </a>
                         </div>
@@ -994,7 +994,7 @@
             <div class="admin-pro-card">
                 <div class="admin-pro-card-header d-flex justify-content-between align-items-center" style="border-bottom: 2px solid #000080;">
                     <h3 class="admin-pro-card-title">
-                        <i class="fas fa-book-reader me-2" style="color: #000080;"></i>भारतीय साहित्य प्रकाश (Indian Literature Spotlight)
+                        <i class="fas fa-book-reader me-2" style="color: #000080;"></i>Literature Spotlight
                     </h3>
                     <a href="{% url 'books:book_list' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline" style="border-color: #000080; color: #000080;">
                         <i class="fas fa-external-link-alt"></i> Browse All Books

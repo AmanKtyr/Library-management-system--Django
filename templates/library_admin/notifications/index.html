@@ -9,7 +9,7 @@
 <a href="{% url 'library_admin:settings' %}#notifications" class="admin-pro-btn admin-pro-btn-outline">
     <i class="fas fa-cog"></i> Notification Settings
 </a>
-<button class="admin-pro-btn admin-pro-btn-primary" id="mark-all-read">
+<button class="admin-pro-btn admin-pro-btn-primary pulse-animation" id="mark-all-read">
     <i class="fas fa-check-double"></i> Mark All as Read
 </button>
 {% endblock %}
@@ -19,43 +19,46 @@
     <div class="row">
         <!-- Notifications Sidebar -->
         <div class="col-md-3 mb-4">
-            <div class="admin-pro-card admin-pro-notifications-sidebar">
+            <div class="admin-pro-card admin-pro-notifications-sidebar slide-in-left">
+                <div class="admin-pro-card-header">
+                    <h5 class="mb-0"><i class="fas fa-filter me-2"></i> Filter Notifications</h5>
+                </div>
                 <div class="admin-pro-card-body p-0">
                     <div class="list-group list-group-flush">
                         <a href="#all" class="list-group-item list-group-item-action active" data-bs-toggle="list">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div><i class="fas fa-bell me-2"></i> All Notifications</div>
-                                <span class="badge bg-primary rounded-pill">{{ overdue_books.count|add:pending_requests.count|add:maintenance_books.count|add:books_with_counts.count }}</span>
+                                <span class="badge bg-primary rounded-pill notification-badge">{{ overdue_books.count|add:pending_requests.count|add:maintenance_books.count|add:books_with_counts.count }}</span>
                             </div>
                         </a>
                         <a href="#overdue" class="list-group-item list-group-item-action" data-bs-toggle="list">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div><i class="fas fa-exclamation-circle text-danger me-2"></i> Overdue Books</div>
-                                <span class="badge bg-danger rounded-pill">{{ overdue_books.count }}</span>
+                                <span class="badge bg-danger rounded-pill notification-badge {% if overdue_books.count > 0 %}pulse-badge{% endif %}">{{ overdue_books.count }}</span>
                             </div>
                         </a>
                         <a href="#requests" class="list-group-item list-group-item-action" data-bs-toggle="list">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div><i class="fas fa-user-plus text-primary me-2"></i> Membership Requests</div>
-                                <span class="badge bg-primary rounded-pill">{{ pending_requests.count }}</span>
+                                <span class="badge bg-primary rounded-pill notification-badge {% if pending_requests.count > 0 %}pulse-badge{% endif %}">{{ pending_requests.count }}</span>
                             </div>
                         </a>
                         <a href="#maintenance" class="list-group-item list-group-item-action" data-bs-toggle="list">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div><i class="fas fa-tools text-warning me-2"></i> Maintenance Needed</div>
-                                <span class="badge bg-warning rounded-pill">{{ maintenance_books.count }}</span>
+                                <span class="badge bg-warning rounded-pill notification-badge">{{ maintenance_books.count }}</span>
                             </div>
                         </a>
                         <a href="#inventory" class="list-group-item list-group-item-action" data-bs-toggle="list">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div><i class="fas fa-box-open text-info me-2"></i> Low Inventory</div>
-                                <span class="badge bg-info rounded-pill">{{ books_with_counts.count }}</span>
+                                <span class="badge bg-info rounded-pill notification-badge">{{ books_with_counts.count }}</span>
                             </div>
                         </a>
                         <a href="#recent" class="list-group-item list-group-item-action" data-bs-toggle="list">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div><i class="fas fa-history text-success me-2"></i> Recent Activity</div>
-                                <span class="badge bg-success rounded-pill">{{ recent_transactions.count }}</span>
+                                <span class="badge bg-success rounded-pill notification-badge">{{ recent_transactions.count }}</span>
                             </div>
                         </a>
                     </div>
@@ -65,26 +68,37 @@
 
         <!-- Notifications Content -->
         <div class="col-md-9">
-            <div class="admin-pro-card">
+            <div class="admin-pro-card slide-in-right">
+                <div class="admin-pro-card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-bell me-2"></i> Notifications</h5>
+                    <div class="notification-controls">
+                        <button class="btn btn-sm btn-outline-secondary refresh-btn" id="refresh-notifications">
+                            <i class="fas fa-sync-alt me-1"></i> Refresh
+                        </button>
+                    </div>
+                </div>
                 <div class="admin-pro-card-body">
                     <div class="tab-content">
                         <!-- All Notifications -->
                         <div class="tab-pane fade show active" id="all">
                             <h4 class="admin-pro-notifications-title">All Notifications</h4>
-                            
+
                             {% if overdue_books.count == 0 and pending_requests.count == 0 and maintenance_books.count == 0 and books_with_counts.count == 0 %}
-                                <div class="admin-pro-empty-state">
+                                <div class="admin-pro-empty-state fade-in-up">
                                     <div class="admin-pro-empty-icon">
                                         <i class="fas fa-bell-slash"></i>
                                     </div>
                                     <h4>No Notifications</h4>
                                     <p>You're all caught up! There are no notifications at this time.</p>
+                                    <button class="btn btn-outline-primary mt-3" id="refresh-empty">
+                                        <i class="fas fa-sync-alt me-2"></i> Refresh Notifications
+                                    </button>
                                 </div>
                             {% else %}
                                 <div class="admin-pro-notifications-list">
                                     <!-- Overdue Books Notifications -->
                                     {% for transaction in overdue_books|slice:":3" %}
-                                        <div class="admin-pro-notification-item unread">
+                                        <div class="admin-pro-notification-item unread fade-in-up" style="animation-delay: {{ forloop.counter0|multiply:0.1 }}s">
                                             <div class="admin-pro-notification-icon bg-danger">
                                                 <i class="fas fa-exclamation-circle"></i>
                                             </div>
@@ -109,7 +123,7 @@
                                             </div>
                                         </div>
                                     {% endfor %}
-                                    
+
                                     <!-- Membership Requests Notifications -->
                                     {% for request in pending_requests|slice:":3" %}
                                         <div class="admin-pro-notification-item unread">
@@ -134,7 +148,7 @@
                                             </div>
                                         </div>
                                     {% endfor %}
-                                    
+
                                     <!-- Maintenance Books Notifications -->
                                     {% for book_copy in maintenance_books|slice:":3" %}
                                         <div class="admin-pro-notification-item">
@@ -159,7 +173,7 @@
                                             </div>
                                         </div>
                                     {% endfor %}
-                                    
+
                                     <!-- Low Inventory Notifications -->
                                     {% for book in books_with_counts|slice:":3" %}
                                         <div class="admin-pro-notification-item">
@@ -184,7 +198,7 @@
                                             </div>
                                         </div>
                                     {% endfor %}
-                                    
+
                                     {% if overdue_books.count > 3 or pending_requests.count > 3 or maintenance_books.count > 3 or books_with_counts.count > 3 %}
                                         <div class="admin-pro-notifications-more">
                                             <button class="admin-pro-btn admin-pro-btn-outline admin-pro-btn-block">
@@ -199,7 +213,7 @@
                         <!-- Overdue Books -->
                         <div class="tab-pane fade" id="overdue">
                             <h4 class="admin-pro-notifications-title">Overdue Books</h4>
-                            
+
                             {% if overdue_books.count == 0 %}
                                 <div class="admin-pro-empty-state">
                                     <div class="admin-pro-empty-icon">
@@ -243,7 +257,7 @@
                         <!-- Membership Requests -->
                         <div class="tab-pane fade" id="requests">
                             <h4 class="admin-pro-notifications-title">Membership Requests</h4>
-                            
+
                             {% if pending_requests.count == 0 %}
                                 <div class="admin-pro-empty-state">
                                     <div class="admin-pro-empty-icon">
@@ -284,7 +298,7 @@
                         <!-- Maintenance Needed -->
                         <div class="tab-pane fade" id="maintenance">
                             <h4 class="admin-pro-notifications-title">Books Needing Maintenance</h4>
-                            
+
                             {% if maintenance_books.count == 0 %}
                                 <div class="admin-pro-empty-state">
                                     <div class="admin-pro-empty-icon">
@@ -325,7 +339,7 @@
                         <!-- Low Inventory -->
                         <div class="tab-pane fade" id="inventory">
                             <h4 class="admin-pro-notifications-title">Books with Low Inventory</h4>
-                            
+
                             {% if books_with_counts.count == 0 %}
                                 <div class="admin-pro-empty-state">
                                     <div class="admin-pro-empty-icon">
@@ -366,7 +380,7 @@
                         <!-- Recent Activity -->
                         <div class="tab-pane fade" id="recent">
                             <h4 class="admin-pro-notifications-title">Recent Activity</h4>
-                            
+
                             {% if recent_transactions.count == 0 %}
                                 <div class="admin-pro-empty-state">
                                     <div class="admin-pro-empty-icon">
@@ -379,7 +393,7 @@
                                 <div class="admin-pro-notifications-list">
                                     {% for transaction in recent_transactions %}
                                         <div class="admin-pro-notification-item">
-                                            <div class="admin-pro-notification-icon 
+                                            <div class="admin-pro-notification-icon
                                                 {% if transaction.transaction_type == 'BORROW' %}bg-primary
                                                 {% elif transaction.transaction_type == 'RETURN' %}bg-success
                                                 {% elif transaction.transaction_type == 'RESERVE' %}bg-warning
@@ -407,7 +421,7 @@
                                                     {% endif %}
                                                 </div>
                                                 <div class="admin-pro-notification-message">
-                                                    {{ transaction.user.get_full_name }} 
+                                                    {{ transaction.user.get_full_name }}
                                                     {% if transaction.transaction_type == 'BORROW' %}
                                                         borrowed
                                                     {% elif transaction.transaction_type == 'RETURN' %}
@@ -441,149 +455,355 @@
 </div>
 
 <style>
+    /* Main Container Styles */
     .admin-pro-notifications-container {
         margin-bottom: 30px;
     }
-    
+
+    /* Sidebar Styles */
+    .admin-pro-notifications-sidebar {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    .admin-pro-notifications-sidebar:hover {
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .admin-pro-notifications-sidebar .admin-pro-card-header {
+        padding: 15px;
+        background: linear-gradient(135deg, #FF9933 0%, #FF8C00 100%);
+        color: white;
+    }
+
     .admin-pro-notifications-sidebar .list-group-item {
         border-radius: 0;
         border-left: 3px solid transparent;
-        padding: 12px 15px;
+        padding: 14px 16px;
         transition: all 0.3s ease;
+        font-size: 15px;
     }
-    
+
     .admin-pro-notifications-sidebar .list-group-item.active {
-        background-color: rgba(var(--bs-primary-rgb), 0.1);
-        color: var(--primary-color);
-        border-left-color: var(--primary-color);
+        background-color: rgba(255, 153, 51, 0.1);
+        color: #FF9933;
+        border-left-color: #FF9933;
         font-weight: 500;
     }
-    
+
     .admin-pro-notifications-sidebar .list-group-item:hover:not(.active) {
-        background-color: rgba(var(--bs-primary-rgb), 0.05);
-        border-left-color: rgba(var(--bs-primary-rgb), 0.3);
+        background-color: rgba(255, 153, 51, 0.05);
+        border-left-color: rgba(255, 153, 51, 0.3);
+        transform: translateX(3px);
     }
-    
+
+    /* Notification Badge Styles */
+    .notification-badge {
+        transition: all 0.3s ease;
+        font-weight: 600;
+        min-width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .pulse-badge {
+        animation: pulse 2s infinite;
+    }
+
+    /* Notification Content Styles */
     .admin-pro-notifications-title {
         font-size: 18px;
         font-weight: 600;
         margin-bottom: 20px;
         padding-bottom: 10px;
-        border-bottom: 1px solid var(--gray-200);
-        color: var(--dark-color);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        color: #333;
     }
-    
+
     .admin-pro-notifications-list {
         display: flex;
         flex-direction: column;
-        gap: 15px;
+        gap: 16px;
     }
-    
+
     .admin-pro-notification-item {
         display: flex;
-        padding: 15px;
+        padding: 18px;
         background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        border-left: 3px solid transparent;
+        border-radius: 12px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        border-left: 4px solid transparent;
         transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
     }
-    
+
     .admin-pro-notification-item:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        transform: translateY(-3px);
     }
-    
+
     .admin-pro-notification-item.unread {
-        border-left-color: var(--primary-color);
-        background-color: rgba(var(--bs-primary-rgb), 0.02);
+        border-left-color: #FF9933;
+        background-color: rgba(255, 153, 51, 0.02);
     }
-    
+
+    .admin-pro-notification-item.unread::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 10px;
+        height: 10px;
+        background-color: #FF9933;
+        border-radius: 50%;
+        margin: 10px;
+    }
+
     .admin-pro-notification-icon {
-        width: 50px;
-        height: 50px;
+        width: 54px;
+        height: 54px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-right: 15px;
+        margin-right: 18px;
         color: white;
-        font-size: 20px;
+        font-size: 22px;
         flex-shrink: 0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
     }
-    
+
+    .admin-pro-notification-item:hover .admin-pro-notification-icon {
+        transform: scale(1.1);
+    }
+
     .admin-pro-notification-content {
         flex: 1;
     }
-    
+
     .admin-pro-notification-title {
         font-weight: 600;
-        font-size: 16px;
-        margin-bottom: 5px;
-        color: var(--dark-color);
+        font-size: 17px;
+        margin-bottom: 6px;
+        color: #333;
     }
-    
+
     .admin-pro-notification-message {
-        font-size: 14px;
-        color: var(--gray-700);
-        margin-bottom: 10px;
+        font-size: 15px;
+        color: #555;
+        margin-bottom: 12px;
+        line-height: 1.5;
     }
-    
+
     .admin-pro-notification-meta {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-size: 12px;
-        color: var(--gray-500);
+        font-size: 13px;
+        color: #777;
     }
-    
+
+    .admin-pro-notification-time {
+        display: flex;
+        align-items: center;
+    }
+
+    .admin-pro-notification-time::before {
+        content: '\f017';
+        font-family: 'Font Awesome 5 Free';
+        margin-right: 5px;
+        opacity: 0.7;
+    }
+
     .admin-pro-notification-actions {
         display: flex;
-        gap: 8px;
+        gap: 10px;
     }
-    
+
+    .admin-pro-notification-actions .admin-pro-btn {
+        transition: all 0.3s ease;
+    }
+
+    .admin-pro-notification-actions .admin-pro-btn:hover {
+        transform: translateY(-2px);
+    }
+
     .admin-pro-notifications-more {
-        margin-top: 15px;
+        margin-top: 20px;
+        text-align: center;
     }
-    
+
+    .admin-pro-notifications-more .admin-pro-btn {
+        padding: 10px 20px;
+        transition: all 0.3s ease;
+    }
+
+    .admin-pro-notifications-more .admin-pro-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    /* Empty State Styles */
     .admin-pro-empty-state {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 40px 20px;
+        padding: 50px 20px;
         text-align: center;
+        background-color: rgba(255, 255, 255, 0.5);
+        border-radius: 12px;
+        border: 1px dashed rgba(0, 0, 0, 0.1);
     }
-    
+
     .admin-pro-empty-icon {
-        width: 70px;
-        height: 70px;
+        width: 80px;
+        height: 80px;
         border-radius: 50%;
-        background-color: var(--gray-100);
+        background-color: rgba(255, 153, 51, 0.1);
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 15px;
-        color: var(--gray-500);
-        font-size: 30px;
+        margin-bottom: 20px;
+        color: #FF9933;
+        font-size: 32px;
+        box-shadow: 0 4px 10px rgba(255, 153, 51, 0.2);
     }
-    
+
     .admin-pro-empty-state h4 {
-        font-size: 18px;
+        font-size: 20px;
         font-weight: 600;
-        margin-bottom: 5px;
-        color: var(--gray-700);
+        margin-bottom: 8px;
+        color: #333;
     }
-    
+
     .admin-pro-empty-state p {
-        font-size: 14px;
-        color: var(--gray-600);
-        max-width: 300px;
+        font-size: 15px;
+        color: #666;
+        max-width: 350px;
+        margin-bottom: 20px;
+    }
+
+    /* Animation Styles */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.5s ease forwards;
+    }
+
+    .slide-in-left {
+        opacity: 0;
+        transform: translateX(-20px);
+        animation: slideInLeft 0.5s ease forwards;
+    }
+
+    .slide-in-right {
+        opacity: 0;
+        transform: translateX(20px);
+        animation: slideInRight 0.5s ease forwards;
+    }
+
+    .pulse-animation {
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideInLeft {
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes slideInRight {
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(255, 153, 51, 0.4);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(255, 153, 51, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(255, 153, 51, 0);
+        }
+    }
+
+    /* Refresh Button Styles */
+    .refresh-btn {
+        transition: all 0.3s ease;
+    }
+
+    .refresh-btn:hover {
+        transform: rotate(180deg);
+    }
+
+    .refresh-btn.loading {
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Dark Mode Adjustments */
+    [data-bs-theme="dark"] .admin-pro-notification-item {
+        background-color: #2b2b2b;
+    }
+
+    [data-bs-theme="dark"] .admin-pro-notification-title {
+        color: #f0f0f0;
+    }
+
+    [data-bs-theme="dark"] .admin-pro-notification-message {
+        color: #d0d0d0;
+    }
+
+    [data-bs-theme="dark"] .admin-pro-empty-state {
+        background-color: rgba(43, 43, 43, 0.5);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    [data-bs-theme="dark"] .admin-pro-empty-state h4 {
+        color: #f0f0f0;
+    }
+
+    [data-bs-theme="dark"] .admin-pro-empty-state p {
+        color: #d0d0d0;
     }
 </style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Initialize animations with delay
+        setTimeout(() => {
+            document.querySelectorAll('.slide-in-left, .slide-in-right, .fade-in-up').forEach(el => {
+                el.style.opacity = '1';
+                el.style.transform = 'translate(0, 0)';
+            });
+        }, 100);
+
         // Handle tab navigation via URL hash
         const hash = window.location.hash;
         if (hash) {
@@ -592,24 +812,150 @@
                 tab.click();
             }
         }
-        
-        // Mark all as read button
+
+        // Mark all as read button with animation
         const markAllReadBtn = document.getElementById('mark-all-read');
         if (markAllReadBtn) {
             markAllReadBtn.addEventListener('click', function() {
-                const unreadItems = document.querySelectorAll('.admin-pro-notification-item.unread');
-                unreadItems.forEach(item => {
-                    item.classList.remove('unread');
-                });
-                
-                // Update badge counts (in a real app, this would be an AJAX call)
-                const badges = document.querySelectorAll('.badge');
-                badges.forEach(badge => {
-                    badge.textContent = '0';
-                });
-                
-                // Show success message
-                alert('All notifications marked as read');
+                // Add loading animation
+                this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Processing...';
+                this.disabled = true;
+
+                setTimeout(() => {
+                    const unreadItems = document.querySelectorAll('.admin-pro-notification-item.unread');
+
+                    // Animate each item being marked as read
+                    unreadItems.forEach((item, index) => {
+                        setTimeout(() => {
+                            item.style.transition = 'all 0.5s ease';
+                            item.style.borderLeftColor = 'transparent';
+                            item.style.backgroundColor = 'white';
+
+                            // Remove the unread indicator dot with animation
+                            const dot = item.querySelector('.unread-dot');
+                            if (dot) {
+                                dot.style.transform = 'scale(0)';
+                                dot.style.opacity = '0';
+                            }
+
+                            setTimeout(() => {
+                                item.classList.remove('unread');
+                            }, 500);
+                        }, index * 100);
+                    });
+
+                    // Update badge counts with animation
+                    const badges = document.querySelectorAll('.notification-badge');
+                    badges.forEach(badge => {
+                        badge.style.transition = 'all 0.5s ease';
+                        badge.style.transform = 'scale(0)';
+                        setTimeout(() => {
+                            badge.textContent = '0';
+                            badge.classList.remove('pulse-badge');
+                            badge.style.transform = 'scale(1)';
+                        }, 300);
+                    });
+
+                    // Reset button state
+                    setTimeout(() => {
+                        markAllReadBtn.innerHTML = '<i class="fas fa-check-double"></i> Mark All as Read';
+                        markAllReadBtn.disabled = false;
+
+                        // Show success toast instead of alert
+                        showToast('Success', 'All notifications marked as read', 'success');
+                    }, 800);
+                }, 800);
+            });
+        }
+
+        // Refresh notifications button
+        const refreshBtn = document.getElementById('refresh-notifications');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', function() {
+                this.classList.add('loading');
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                // Simulate refresh (in a real app, this would be an AJAX call)
+                setTimeout(() => {
+                    // Reset button
+                    this.classList.remove('loading');
+                    this.innerHTML = '<i class="fas fa-sync-alt me-1"></i> Refresh';
+
+                    // Show success toast
+                    showToast('Refreshed', 'Notifications have been refreshed', 'info');
+
+                    // Animate notifications to show refresh effect
+                    const notifications = document.querySelectorAll('.admin-pro-notification-item');
+                    notifications.forEach((item, index) => {
+                        item.style.opacity = '0';
+                        item.style.transform = 'translateY(20px)';
+
+                        setTimeout(() => {
+                            item.style.transition = 'all 0.5s ease';
+                            item.style.opacity = '1';
+                            item.style.transform = 'translateY(0)';
+                        }, 100 + (index * 100));
+                    });
+                }, 1500);
+            });
+        }
+
+        // Empty state refresh button
+        const emptyRefreshBtn = document.getElementById('refresh-empty');
+        if (emptyRefreshBtn) {
+            emptyRefreshBtn.addEventListener('click', function() {
+                this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Refreshing...';
+                this.disabled = true;
+
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-sync-alt me-2"></i> Refresh Notifications';
+                    this.disabled = false;
+                    showToast('Refreshed', 'No new notifications found', 'info');
+                }, 1500);
+            });
+        }
+
+        // Toast notification function
+        function showToast(title, message, type) {
+            // Create toast container if it doesn't exist
+            let toastContainer = document.querySelector('.toast-container');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+                document.body.appendChild(toastContainer);
+            }
+
+            // Create toast element
+            const toastEl = document.createElement('div');
+            toastEl.className = `toast align-items-center text-white bg-${type} border-0`;
+            toastEl.setAttribute('role', 'alert');
+            toastEl.setAttribute('aria-live', 'assertive');
+            toastEl.setAttribute('aria-atomic', 'true');
+
+            // Toast content
+            toastEl.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <strong>${title}</strong>: ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            `;
+
+            // Add to container
+            toastContainer.appendChild(toastEl);
+
+            // Initialize and show toast
+            const toast = new bootstrap.Toast(toastEl, {
+                animation: true,
+                autohide: true,
+                delay: 3000
+            });
+            toast.show();
+
+            // Remove toast after it's hidden
+            toastEl.addEventListener('hidden.bs.toast', function() {
+                toastEl.remove();
             });
         }
     });
