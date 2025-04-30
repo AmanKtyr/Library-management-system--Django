@@ -1,18 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from django.db.models import Count, Sum, Q, F, Avg
+from django.db.models import Count, Sum, Q
 from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import HttpResponseForbidden, JsonResponse, HttpResponse
+from django.http import HttpResponse
 from datetime import timedelta, datetime
 import json
-import random
 import csv
-import io
-import psutil
 import platform
-import os
+import psutil
 from django.conf import settings
 
 from apps.accounts.models import User
@@ -112,6 +109,81 @@ def manage_staff(request):
 
     library = libraries.first()
     staff_members = library.staff.all()
+
+    if request.method == 'POST':
+        action = request.POST.get('action', 'add')
+
+        if action == 'add':
+            # Process the add staff form
+            email = request.POST.get('email')
+            first_name = request.POST.get('first_name')
+            last_name = request.POST.get('last_name')
+            phone_number = request.POST.get('phone_number', '')
+            password = request.POST.get('password')
+
+            # Check if user with this email already exists
+            if User.objects.filter(email=email).exists():
+                existing_user = User.objects.get(email=email)
+                if existing_user.user_type == 'STAFF':
+                    # Add existing staff to this library
+                    library.staff.add(existing_user)
+                    messages.success(request, f"Existing staff member {existing_user.get_full_name()} has been added to your library.")
+                else:
+                    messages.error(request, f"A user with email {email} already exists but is not a staff member.")
+            else:
+                # Create a new staff user
+                new_staff = User.objects.create_user(
+                    email=email,
+                    password=password,
+                    first_name=first_name,
+                    last_name=last_name,
+                    phone_number=phone_number,
+                    user_type='STAFF',
+                    approval_status='APPROVED',
+                    approved_by=user,
+                    approval_date=timezone.now()
+                )
+                # Add the new staff to this library
+                library.staff.add(new_staff)
+                messages.success(request, f"New staff member {new_staff.get_full_name()} has been created and added to your library.")
+
+            return redirect('library_admin:staff')
+
+        elif action == 'edit':
+            # Process the edit staff form
+            staff_id = request.POST.get('staff_id')
+            try:
+                staff_member = User.objects.get(id=staff_id, user_type='STAFF')
+
+                # Update staff details
+                staff_member.first_name = request.POST.get('first_name')
+                staff_member.last_name = request.POST.get('last_name')
+                staff_member.phone_number = request.POST.get('phone_number', '')
+                staff_member.is_active = request.POST.get('status') == 'active'
+
+                # Update password if provided
+                new_password = request.POST.get('password')
+                if new_password:
+                    staff_member.set_password(new_password)
+
+                staff_member.save()
+                messages.success(request, f"Staff member {staff_member.get_full_name()} has been updated successfully.")
+            except User.DoesNotExist:
+                messages.error(request, "Staff member not found.")
+
+            return redirect('library_admin:staff')
+
+        elif action == 'remove':
+            # Process the remove staff form
+            staff_id = request.POST.get('staff_id')
+            try:
+                staff_member = User.objects.get(id=staff_id, user_type='STAFF')
+                library.staff.remove(staff_member)
+                messages.success(request, f"Staff member {staff_member.get_full_name()} has been removed from your library.")
+            except User.DoesNotExist:
+                messages.error(request, "Staff member not found.")
+
+            return redirect('library_admin:staff')
 
     context = {
         'library': library,

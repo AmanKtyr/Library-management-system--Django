@@ -1,0 +1,907 @@
+{% extends 'library_admin/base.html' %}
+{% load static %}
+
+{% block title %}Staff Management - Library Management System{% endblock %}
+{% block breadcrumb_title %}Staff Management{% endblock %}
+{% block page_title %}Staff Management{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'library_admin:library_details' %}" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-arrow-left"></i> Back to Library Details
+</a>
+{% endblock %}
+
+{% block content %}
+<!-- Staff Overview Section -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="admin-pro-card h-100 fade-in-up">
+            <div class="admin-pro-card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="admin-pro-stats-icon primary me-3">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">Staff Overview</h5>
+                        <p class="text-muted mb-0">Manage your library staff</p>
+                    </div>
+                </div>
+                <div class="admin-pro-stats-item mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Total Staff</span>
+                        <span class="fw-bold">{{ staff_members|length }}</span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 100%;" aria-valuenow="{{ staff_members|length }}" aria-valuemin="0" aria-valuemax="{{ staff_members|length }}"></div>
+                    </div>
+                </div>
+                <div class="admin-pro-stats-item mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Active Staff</span>
+                        <span class="fw-bold">{{ staff_members|length }}</span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 100%;" aria-valuenow="{{ staff_members|length }}" aria-valuemin="0" aria-valuemax="{{ staff_members|length }}"></div>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <button type="button" class="admin-pro-btn admin-pro-btn-primary w-100" data-bs-toggle="modal" data-bs-target="#addStaffModal">
+                        <i class="fas fa-plus me-2"></i> Add New Staff Member
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="admin-pro-card h-100 fade-in-up">
+            <div class="admin-pro-card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="admin-pro-stats-icon warning me-3">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">Staff Management Guide</h5>
+                        <p class="text-muted mb-0">Quick tips for managing your library staff</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="admin-pro-guide-item mb-3">
+                            <div class="d-flex">
+                                <div class="admin-pro-guide-icon me-2">
+                                    <i class="fas fa-user-plus"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Adding Staff</h6>
+                                    <p class="small text-muted mb-0">Create accounts for librarians and assistants to help manage your library.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="admin-pro-guide-item mb-3">
+                            <div class="d-flex">
+                                <div class="admin-pro-guide-icon me-2">
+                                    <i class="fas fa-key"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Access Control</h6>
+                                    <p class="small text-muted mb-0">Staff members have limited access compared to library administrators.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="admin-pro-guide-item mb-3">
+                            <div class="d-flex">
+                                <div class="admin-pro-guide-icon me-2">
+                                    <i class="fas fa-user-shield"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Staff Permissions</h6>
+                                    <p class="small text-muted mb-0">Staff can issue/return books and manage members but cannot modify library settings.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="admin-pro-guide-item mb-3">
+                            <div class="d-flex">
+                                <div class="admin-pro-guide-icon me-2">
+                                    <i class="fas fa-user-times"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Removing Staff</h6>
+                                    <p class="small text-muted mb-0">You can deactivate staff accounts or remove them completely from your library.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Staff List Section -->
+<div class="admin-pro-card mb-4 fade-in-up">
+    <div class="admin-pro-card-header d-flex justify-content-between align-items-center">
+        <h5 class="admin-pro-card-title">Staff Members</h5>
+        <div class="d-flex">
+            <div class="input-group me-2" style="width: 250px;">
+                <input type="text" class="form-control" id="staffSearch" placeholder="Search staff..." aria-label="Search staff">
+                <button class="btn btn-outline-secondary" type="button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            <button type="button" class="admin-pro-btn admin-pro-btn-primary" data-bs-toggle="modal" data-bs-target="#addStaffModal">
+                <i class="fas fa-plus"></i> Add Staff
+            </button>
+        </div>
+    </div>
+    <div class="admin-pro-card-body">
+        {% if staff_members %}
+            <div class="table-responsive">
+                <table class="table table-hover admin-pro-table" id="staffTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 30%;">Staff Member</th>
+                            <th style="width: 20%;">Contact</th>
+                            <th style="width: 15%;">Role</th>
+                            <th style="width: 15%;">Status</th>
+                            <th style="width: 20%;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for staff in staff_members %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if staff.profile_picture %}
+                                            <img src="{{ staff.profile_picture.url }}" class="rounded-circle me-3" width="48" height="48" alt="{{ staff.get_full_name }}">
+                                        {% else %}
+                                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                        {% endif %}
+                                        <div>
+                                            <h6 class="mb-0">{{ staff.get_full_name|default:"Staff Member" }}</h6>
+                                            <small class="text-muted">{{ staff.email }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <div class="mb-1"><i class="fas fa-phone-alt me-2 text-muted"></i> {{ staff.phone_number|default:"Not provided" }}</div>
+                                        <div><i class="fas fa-calendar-alt me-2 text-muted"></i> Joined {{ staff.date_joined|date:"M d, Y" }}</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="admin-pro-badge admin-pro-badge-primary">
+                                        <i class="fas fa-user-tie me-1"></i> Staff
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if staff.is_active %}
+                                        <span class="admin-pro-badge admin-pro-badge-success">
+                                            <i class="fas fa-check-circle me-1"></i> Active
+                                        </span>
+                                    {% else %}
+                                        <span class="admin-pro-badge admin-pro-badge-danger">
+                                            <i class="fas fa-times-circle me-1"></i> Inactive
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="d-flex">
+                                        <button type="button" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-info me-2" data-bs-toggle="modal" data-bs-target="#viewStaffModal{{ staff.id }}" data-bs-tooltip="tooltip" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button type="button" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-primary me-2" data-bs-toggle="modal" data-bs-target="#editStaffModal{{ staff.id }}" data-bs-tooltip="tooltip" title="Edit Staff">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button type="button" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-danger" data-bs-toggle="modal" data-bs-target="#removeStaffModal{{ staff.id }}" data-bs-tooltip="tooltip" title="Remove Staff">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="admin-pro-empty-state py-5">
+                <div class="admin-pro-empty-icon mb-3">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h4>No Staff Members Yet</h4>
+                <p class="text-muted">You haven't added any staff members to your library yet. Staff members can help you manage day-to-day library operations.</p>
+                <button type="button" class="admin-pro-btn admin-pro-btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#addStaffModal">
+                    <i class="fas fa-plus me-2"></i> Add Your First Staff Member
+                </button>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Add Staff Modal -->
+<div class="modal fade" id="addStaffModal" tabindex="-1" aria-labelledby="addStaffModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="addStaffModalLabel">
+                    <i class="fas fa-user-plus me-2"></i> Add New Staff Member
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="admin-pro-step-indicator mb-4">
+                    <div class="admin-pro-step active">
+                        <div class="admin-pro-step-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="admin-pro-step-label">Account Details</div>
+                    </div>
+                    <div class="admin-pro-step-connector"></div>
+                    <div class="admin-pro-step">
+                        <div class="admin-pro-step-icon">
+                            <i class="fas fa-id-card"></i>
+                        </div>
+                        <div class="admin-pro-step-label">Personal Info</div>
+                    </div>
+                    <div class="admin-pro-step-connector"></div>
+                    <div class="admin-pro-step">
+                        <div class="admin-pro-step-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="admin-pro-step-label">Confirmation</div>
+                    </div>
+                </div>
+
+                <form id="addStaffForm" method="post" action="{% url 'library_admin:staff' %}" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="add">
+
+                    <!-- Step 1: Account Details -->
+                    <div class="admin-pro-form-step active" id="step1">
+                        <h6 class="admin-pro-form-section-title">
+                            <i class="fas fa-user-shield me-2"></i> Account Information
+                        </h6>
+                        <p class="text-muted mb-4">Create login credentials for the staff member</p>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                    <div class="invalid-feedback">Please enter a valid email address.</div>
+                                </div>
+                                <small class="form-text text-muted">This will be used as the login username</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                    <input type="password" class="form-control" id="password" name="password" required minlength="8">
+                                    <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <div class="invalid-feedback">Password must be at least 8 characters long.</div>
+                                </div>
+                                <small class="form-text text-muted">Minimum 8 characters</small>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="staff_role" class="form-label">Staff Role <span class="text-danger">*</span></label>
+                                <select class="form-select" id="staff_role" name="staff_role" required>
+                                    <option value="" selected disabled>Select a role</option>
+                                    <option value="librarian">Librarian</option>
+                                    <option value="assistant">Library Assistant</option>
+                                    <option value="clerk">Circulation Clerk</option>
+                                </select>
+                                <div class="invalid-feedback">Please select a staff role.</div>
+                                <small class="form-text text-muted">Determines the staff member's responsibilities</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="status" class="form-label">Account Status</label>
+                                <select class="form-select" id="status" name="status">
+                                    <option value="active" selected>Active</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
+                                <small class="form-text text-muted">Inactive accounts cannot log in</small>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="button" class="admin-pro-btn admin-pro-btn-primary" onclick="nextStep(1)">
+                                Next <i class="fas fa-arrow-right ms-1"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Personal Information -->
+                    <div class="admin-pro-form-step" id="step2">
+                        <h6 class="admin-pro-form-section-title">
+                            <i class="fas fa-id-card me-2"></i> Personal Information
+                        </h6>
+                        <p class="text-muted mb-4">Enter staff member's personal details</p>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="first_name" class="form-label">First Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" required>
+                                <div class="invalid-feedback">Please enter the first name.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="last_name" class="form-label">Last Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" required>
+                                <div class="invalid-feedback">Please enter the last name.</div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="phone_number" class="form-label">Phone Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                    <input type="tel" class="form-control" id="phone_number" name="phone_number">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="date_of_birth" class="form-label">Date of Birth</label>
+                                <input type="date" class="form-control" id="date_of_birth" name="date_of_birth">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <textarea class="form-control" id="address" name="address" rows="2"></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="admin-pro-btn admin-pro-btn-outline" onclick="prevStep(2)">
+                                <i class="fas fa-arrow-left me-1"></i> Previous
+                            </button>
+                            <button type="button" class="admin-pro-btn admin-pro-btn-primary" onclick="nextStep(2)">
+                                Next <i class="fas fa-arrow-right ms-1"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Confirmation -->
+                    <div class="admin-pro-form-step" id="step3">
+                        <h6 class="admin-pro-form-section-title">
+                            <i class="fas fa-check-circle me-2"></i> Confirm Staff Details
+                        </h6>
+                        <p class="text-muted mb-4">Review the information before adding the staff member</p>
+
+                        <div class="admin-pro-confirmation-box p-3 mb-4 border rounded">
+                            <div class="row mb-2">
+                                <div class="col-md-6">
+                                    <div class="admin-pro-confirmation-item">
+                                        <div class="admin-pro-confirmation-label">Email:</div>
+                                        <div class="admin-pro-confirmation-value" id="confirm-email"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="admin-pro-confirmation-item">
+                                        <div class="admin-pro-confirmation-label">Role:</div>
+                                        <div class="admin-pro-confirmation-value" id="confirm-role"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-md-6">
+                                    <div class="admin-pro-confirmation-item">
+                                        <div class="admin-pro-confirmation-label">Name:</div>
+                                        <div class="admin-pro-confirmation-value" id="confirm-name"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="admin-pro-confirmation-item">
+                                        <div class="admin-pro-confirmation-label">Phone:</div>
+                                        <div class="admin-pro-confirmation-value" id="confirm-phone"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="admin-pro-confirmation-item">
+                                        <div class="admin-pro-confirmation-label">Status:</div>
+                                        <div class="admin-pro-confirmation-value" id="confirm-status"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="admin-pro-confirmation-item">
+                                        <div class="admin-pro-confirmation-label">Address:</div>
+                                        <div class="admin-pro-confirmation-value" id="confirm-address"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <div class="d-flex">
+                                <div class="me-3">
+                                    <i class="fas fa-info-circle fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h5 class="alert-heading">Staff Account Information</h5>
+                                    <p class="mb-0">Staff members will be able to log in to the system and perform tasks like issuing books, managing returns, and viewing library information. They will not have access to administrative functions like adding new staff or changing library settings.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="admin-pro-btn admin-pro-btn-outline" onclick="prevStep(3)">
+                                <i class="fas fa-arrow-left me-1"></i> Previous
+                            </button>
+                            <button type="submit" class="admin-pro-btn admin-pro-btn-primary">
+                                <i class="fas fa-user-plus me-1"></i> Add Staff Member
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Staff View/Edit/Remove Modals would be added here for each staff member -->
+{% for staff in staff_members %}
+    <!-- View Staff Modal -->
+    <div class="modal fade" id="viewStaffModal{{ staff.id }}" tabindex="-1" aria-labelledby="viewStaffModalLabel{{ staff.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewStaffModalLabel{{ staff.id }}">Staff Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        {% if staff.profile_picture %}
+                            <img src="{{ staff.profile_picture.url }}" class="rounded-circle mb-3" width="100" height="100" alt="{{ staff.get_full_name }}">
+                        {% else %}
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 100px; height: 100px;">
+                                <i class="fas fa-user fa-3x"></i>
+                            </div>
+                        {% endif %}
+                        <h4>{{ staff.get_full_name }}</h4>
+                        <p class="text-muted">{{ staff.user_type }}</p>
+                    </div>
+
+                    <div class="row mb-2">
+                        <div class="col-4 fw-bold">Email:</div>
+                        <div class="col-8">{{ staff.email }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-4 fw-bold">Phone:</div>
+                        <div class="col-8">{{ staff.phone_number|default:"Not provided" }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-4 fw-bold">Joined:</div>
+                        <div class="col-8">{{ staff.date_joined|date:"F j, Y" }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-4 fw-bold">Status:</div>
+                        <div class="col-8">
+                            {% if staff.is_active %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Staff Modal -->
+    <div class="modal fade" id="editStaffModal{{ staff.id }}" tabindex="-1" aria-labelledby="editStaffModalLabel{{ staff.id }}" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editStaffModalLabel{{ staff.id }}">Edit Staff Member</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editStaffForm{{ staff.id }}" method="post" action="{% url 'library_admin:staff' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="staff_id" value="{{ staff.id }}">
+                        <input type="hidden" name="action" value="edit">
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="edit_email{{ staff.id }}" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="edit_email{{ staff.id }}" name="email" value="{{ staff.email }}" readonly>
+                                <small class="form-text text-muted">Email cannot be changed</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_password{{ staff.id }}" class="form-label">New Password</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="edit_password{{ staff.id }}" name="password">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('edit_password{{ staff.id }}')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <small class="form-text text-muted">Leave blank to keep current password</small>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="edit_first_name{{ staff.id }}" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="edit_first_name{{ staff.id }}" name="first_name" value="{{ staff.first_name }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_last_name{{ staff.id }}" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="edit_last_name{{ staff.id }}" name="last_name" value="{{ staff.last_name }}" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="edit_phone_number{{ staff.id }}" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="edit_phone_number{{ staff.id }}" name="phone_number" value="{{ staff.phone_number|default:'' }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_status{{ staff.id }}" class="form-label">Status</label>
+                                <select class="form-select" id="edit_status{{ staff.id }}" name="status" required>
+                                    <option value="active" {% if staff.is_active %}selected{% endif %}>Active</option>
+                                    <option value="inactive" {% if not staff.is_active %}selected{% endif %}>Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="edit_address{{ staff.id }}" class="form-label">Address</label>
+                                <textarea class="form-control" id="edit_address{{ staff.id }}" name="address" rows="2">{{ staff.address|default:'' }}</textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" form="editStaffForm{{ staff.id }}" class="btn btn-primary">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Remove Staff Modal -->
+    <div class="modal fade" id="removeStaffModal{{ staff.id }}" tabindex="-1" aria-labelledby="removeStaffModalLabel{{ staff.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="removeStaffModalLabel{{ staff.id }}">Remove Staff Member</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to remove <strong>{{ staff.get_full_name }}</strong> from your library staff?</p>
+                    <p class="text-danger">This action cannot be undone.</p>
+
+                    <form id="removeStaffForm{{ staff.id }}" method="post" action="{% url 'library_admin:staff' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="staff_id" value="{{ staff.id }}">
+                        <input type="hidden" name="action" value="remove">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" form="removeStaffForm{{ staff.id }}" class="btn btn-danger">Remove Staff</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-tooltip="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Toggle password visibility for the add staff form
+        const togglePasswordBtn = document.getElementById('togglePassword');
+        if (togglePasswordBtn) {
+            togglePasswordBtn.addEventListener('click', function() {
+                const passwordInput = document.getElementById('password');
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    this.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                } else {
+                    passwordInput.type = 'password';
+                    this.innerHTML = '<i class="fas fa-eye"></i>';
+                }
+            });
+        }
+
+        // Initialize form validation
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+
+        // Staff search functionality
+        const staffSearch = document.getElementById('staffSearch');
+        if (staffSearch) {
+            staffSearch.addEventListener('keyup', function() {
+                const searchValue = this.value.toLowerCase();
+                const staffTable = document.getElementById('staffTable');
+                const rows = staffTable.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+                for (let i = 0; i < rows.length; i++) {
+                    const nameCell = rows[i].getElementsByTagName('td')[0];
+                    const contactCell = rows[i].getElementsByTagName('td')[1];
+
+                    if (nameCell && contactCell) {
+                        const nameText = nameCell.textContent || nameCell.innerText;
+                        const contactText = contactCell.textContent || contactCell.innerText;
+
+                        if (nameText.toLowerCase().indexOf(searchValue) > -1 ||
+                            contactText.toLowerCase().indexOf(searchValue) > -1) {
+                            rows[i].style.display = "";
+                        } else {
+                            rows[i].style.display = "none";
+                        }
+                    }
+                }
+            });
+        }
+
+        // Add event listeners for the multi-step form
+        document.getElementById('addStaffModal').addEventListener('shown.bs.modal', function () {
+            resetStepForm();
+        });
+    });
+
+    // Function to toggle password visibility for edit forms
+    function togglePasswordVisibility(inputId) {
+        const passwordInput = document.getElementById(inputId);
+        const button = event.currentTarget;
+
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            button.innerHTML = '<i class="fas fa-eye-slash"></i>';
+        } else {
+            passwordInput.type = 'password';
+            button.innerHTML = '<i class="fas fa-eye"></i>';
+        }
+    }
+
+    // Multi-step form navigation
+    function nextStep(currentStep) {
+        // Validate current step
+        const currentStepElement = document.getElementById('step' + currentStep);
+        const inputs = currentStepElement.querySelectorAll('input[required], select[required]');
+        let isValid = true;
+
+        inputs.forEach(input => {
+            if (!input.checkValidity()) {
+                input.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                input.classList.remove('is-invalid');
+            }
+        });
+
+        if (!isValid) {
+            return;
+        }
+
+        // If validation passes, proceed to next step
+        const nextStepNumber = currentStep + 1;
+
+        // Update step indicators
+        document.querySelectorAll('.admin-pro-step').forEach((step, index) => {
+            if (index < nextStepNumber) {
+                step.classList.add('completed');
+            }
+            if (index === nextStepNumber - 1) {
+                step.classList.add('active');
+            } else {
+                step.classList.remove('active');
+            }
+        });
+
+        // Hide current step and show next step
+        document.querySelectorAll('.admin-pro-form-step').forEach((step, index) => {
+            step.classList.remove('active');
+        });
+        document.getElementById('step' + nextStepNumber).classList.add('active');
+
+        // If moving to confirmation step, populate confirmation values
+        if (nextStepNumber === 3) {
+            updateConfirmationValues();
+        }
+    }
+
+    function prevStep(currentStep) {
+        const prevStepNumber = currentStep - 1;
+
+        // Update step indicators
+        document.querySelectorAll('.admin-pro-step').forEach((step, index) => {
+            if (index === prevStepNumber - 1) {
+                step.classList.add('active');
+            } else {
+                step.classList.remove('active');
+            }
+        });
+
+        // Hide current step and show previous step
+        document.querySelectorAll('.admin-pro-form-step').forEach((step, index) => {
+            step.classList.remove('active');
+        });
+        document.getElementById('step' + prevStepNumber).classList.add('active');
+    }
+
+    function updateConfirmationValues() {
+        // Get form values
+        const email = document.getElementById('email').value;
+        const roleSelect = document.getElementById('staff_role');
+        const role = roleSelect.options[roleSelect.selectedIndex].text;
+        const firstName = document.getElementById('first_name').value;
+        const lastName = document.getElementById('last_name').value;
+        const phone = document.getElementById('phone_number').value || 'Not provided';
+        const statusSelect = document.getElementById('status');
+        const status = statusSelect.options[statusSelect.selectedIndex].text;
+        const address = document.getElementById('address').value || 'Not provided';
+
+        // Update confirmation display
+        document.getElementById('confirm-email').textContent = email;
+        document.getElementById('confirm-role').textContent = role;
+        document.getElementById('confirm-name').textContent = firstName + ' ' + lastName;
+        document.getElementById('confirm-phone').textContent = phone;
+        document.getElementById('confirm-status').textContent = status;
+        document.getElementById('confirm-address').textContent = address;
+    }
+
+    function resetStepForm() {
+        // Reset form validation
+        const form = document.getElementById('addStaffForm');
+        form.classList.remove('was-validated');
+
+        // Reset all inputs
+        form.reset();
+
+        // Reset step indicators
+        document.querySelectorAll('.admin-pro-step').forEach((step, index) => {
+            if (index === 0) {
+                step.classList.add('active');
+            } else {
+                step.classList.remove('active', 'completed');
+            }
+        });
+
+        // Show first step, hide others
+        document.querySelectorAll('.admin-pro-form-step').forEach((step, index) => {
+            if (index === 0) {
+                step.classList.add('active');
+            } else {
+                step.classList.remove('active');
+            }
+        });
+    }
+</script>
+
+<style>
+    /* Multi-step form styling */
+    .admin-pro-step-indicator {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .admin-pro-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    .admin-pro-step-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #f8f9fa;
+        border: 2px solid #dee2e6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.5rem;
+        color: #6c757d;
+        transition: all 0.3s ease;
+    }
+
+    .admin-pro-step.active .admin-pro-step-icon {
+        background-color: var(--bs-primary);
+        border-color: var(--bs-primary);
+        color: white;
+    }
+
+    .admin-pro-step.completed .admin-pro-step-icon {
+        background-color: var(--bs-success);
+        border-color: var(--bs-success);
+        color: white;
+    }
+
+    .admin-pro-step-label {
+        font-size: 0.875rem;
+        color: #6c757d;
+        text-align: center;
+    }
+
+    .admin-pro-step.active .admin-pro-step-label {
+        color: var(--bs-primary);
+        font-weight: 600;
+    }
+
+    .admin-pro-step-connector {
+        flex-grow: 1;
+        height: 2px;
+        background-color: #dee2e6;
+        margin: 0 10px;
+        position: relative;
+        top: -25px;
+        z-index: 0;
+    }
+
+    .admin-pro-form-step {
+        display: none;
+    }
+
+    .admin-pro-form-step.active {
+        display: block;
+    }
+
+    .admin-pro-form-section-title {
+        margin-bottom: 0.5rem;
+        color: var(--bs-primary);
+        font-weight: 600;
+    }
+
+    .admin-pro-guide-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: rgba(var(--bs-primary-rgb), 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--bs-primary);
+    }
+
+    .admin-pro-confirmation-item {
+        margin-bottom: 0.5rem;
+    }
+
+    .admin-pro-confirmation-label {
+        font-weight: 600;
+        color: #6c757d;
+        margin-bottom: 0.25rem;
+    }
+
+    .admin-pro-confirmation-value {
+        font-size: 0.95rem;
+    }
+
+    .admin-pro-confirmation-box {
+        background-color: #f8f9fa;
+        border-radius: 0.375rem;
+    }
+</style>
+{% endblock %}
