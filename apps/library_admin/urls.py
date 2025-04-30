@@ -40,6 +40,8 @@ urlpatterns = [
     path('circulation/return-book/', views.return_book, name='return_book'),
     path('transactions/', views.manage_transactions, name='transactions'),
     path('reservations/', views.manage_reservations, name='reservations'),
+    path('reservations/confirm/<int:reservation_id>/', views.confirm_reservation, name='confirm_reservation'),
+    path('reservations/cancel/<int:reservation_id>/', views.cancel_reservation, name='cancel_reservation'),
 
     # Membership request URLs
     path('membership-requests/', views.membership_requests, name='membership_requests'),

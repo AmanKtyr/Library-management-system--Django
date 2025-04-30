@@ -242,6 +242,227 @@ def manage_members(request):
         return redirect('core:home')
 
     library = libraries.first()
+
+    # Handle POST requests for adding/editing/removing members
+    if request.method == 'POST':
+        action = request.POST.get('action', '')
+
+        if action == 'add_new':
+            # Process the add new member form
+            email = request.POST.get('email')
+            first_name = request.POST.get('first_name')
+            last_name = request.POST.get('last_name')
+            phone_number = request.POST.get('phone_number', '')
+            address = request.POST.get('address', '')
+            notes = request.POST.get('notes', '')
+            membership_plan_id = request.POST.get('membership_plan')
+            start_date_str = request.POST.get('start_date')
+            send_welcome_email = request.POST.get('send_welcome_email') == 'on'
+
+            # Validate required fields
+            if not all([email, first_name, last_name, membership_plan_id, start_date_str]):
+                messages.error(request, "Please fill in all required fields.")
+                return redirect('library_admin:members')
+
+            try:
+                # Check if user already exists
+                if User.objects.filter(email=email).exists():
+                    existing_user = User.objects.get(email=email)
+                    # Check if user is already a member of this library
+                    if Membership.objects.filter(user=existing_user, library=library).exists():
+                        messages.error(request, f"User with email {email} is already a member of this library.")
+                        return redirect('library_admin:members')
+
+                    member = existing_user
+                else:
+                    # Create a new user with a random password
+                    import random
+                    import string
+                    random_password = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+
+                    # Create user with only the fields that exist in the User model
+                    member = User.objects.create_user(
+                        email=email,
+                        password=random_password,
+                        first_name=first_name,
+                        last_name=last_name,
+                        phone_number=phone_number,
+                        address=address,
+                        user_type='MEMBER',
+                        approval_status='APPROVED',
+                        approved_by=user,
+                        approval_date=timezone.now()
+                    )
+
+                # Get the membership plan
+                try:
+                    # Debug message to see what plan ID we're looking for
+                    messages.info(request, f"Looking for membership plan with ID: {membership_plan_id}")
+
+                    # Get all available plans for debugging
+                    all_plans = MembershipPlan.objects.all()
+                    plan_info = ", ".join([f"ID: {p.id}, Name: {p.name}" for p in all_plans])
+                    messages.info(request, f"Available plans: {plan_info}")
+
+                    membership_plan = MembershipPlan.objects.get(id=membership_plan_id)
+                except MembershipPlan.DoesNotExist:
+                    messages.error(request, "Selected membership plan does not exist.")
+                    return redirect('library_admin:members')
+
+                # Parse start date
+                try:
+                    start_date = timezone.datetime.strptime(start_date_str, '%Y-%m-%d').date()
+                    # Calculate end date based on plan duration
+                    end_date = start_date + timezone.timedelta(days=membership_plan.duration_days)
+                except ValueError:
+                    messages.error(request, "Invalid date format. Please use YYYY-MM-DD.")
+                    return redirect('library_admin:members')
+
+                # Create the membership - let the model's save method generate the membership number
+                membership = Membership(
+                    user=member,
+                    library=library,
+                    plan=membership_plan,
+                    start_date=start_date,
+                    end_date=end_date,
+                    is_active=True
+                )
+                membership.save()
+
+                messages.success(request, f"New member {member.get_full_name()} has been added successfully.")
+
+                # TODO: Send welcome email if requested
+                if send_welcome_email:
+                    # Implement email sending logic here
+                    pass
+
+            except Exception as e:
+                messages.error(request, f"Error adding member: {str(e)}")
+
+            return redirect('library_admin:members')
+
+        elif action == 'add_existing':
+            # Process the add existing user form
+            existing_user_id = request.POST.get('existing_user')
+            membership_plan_id = request.POST.get('membership_plan')
+            start_date_str = request.POST.get('start_date')
+            notes = request.POST.get('notes', '')
+            send_welcome_email = request.POST.get('send_welcome_email') == 'on'
+
+            # Validate required fields
+            if not all([existing_user_id, membership_plan_id, start_date_str]):
+                messages.error(request, "Please fill in all required fields.")
+                return redirect('library_admin:members')
+
+            try:
+                # Get the user
+                existing_user = User.objects.get(id=existing_user_id)
+
+                # Check if user is already a member of this library
+                if Membership.objects.filter(user=existing_user, library=library).exists():
+                    messages.error(request, f"User {existing_user.email} is already a member of this library.")
+                    return redirect('library_admin:members')
+
+                # Get the membership plan
+                membership_plan = MembershipPlan.objects.get(id=membership_plan_id)
+
+                # Parse start date
+                start_date = timezone.datetime.strptime(start_date_str, '%Y-%m-%d').date()
+                # Calculate end date based on plan duration
+                end_date = start_date + timezone.timedelta(days=membership_plan.duration_days)
+
+                # Create the membership - let the model's save method generate the membership number
+                membership = Membership(
+                    user=existing_user,
+                    library=library,
+                    plan=membership_plan,
+                    start_date=start_date,
+                    end_date=end_date,
+                    is_active=True
+                )
+                membership.save()
+
+                messages.success(request, f"User {existing_user.get_full_name()} has been added as a member successfully.")
+
+                # TODO: Send welcome email if requested
+                if send_welcome_email:
+                    # Implement email sending logic here
+                    pass
+
+            except User.DoesNotExist:
+                messages.error(request, "Selected user does not exist.")
+            except MembershipPlan.DoesNotExist:
+                messages.error(request, "Selected membership plan does not exist.")
+            except ValueError:
+                messages.error(request, "Invalid date format. Please use YYYY-MM-DD.")
+            except Exception as e:
+                messages.error(request, f"Error adding member: {str(e)}")
+
+            return redirect('library_admin:members')
+
+        elif action == 'edit':
+            # Process the edit member form
+            membership_id = request.POST.get('membership_id')
+            first_name = request.POST.get('first_name')
+            last_name = request.POST.get('last_name')
+            phone_number = request.POST.get('phone_number', '')
+            status = request.POST.get('status') == 'active'
+            start_date_str = request.POST.get('start_date')
+            end_date_str = request.POST.get('end_date')
+
+            try:
+                membership = Membership.objects.get(id=membership_id, library=library)
+                member = membership.user
+
+                # Update user details
+                member.first_name = first_name
+                member.last_name = last_name
+                member.phone_number = phone_number
+                member.save()
+
+                # Update membership details
+                membership.is_active = status
+
+                # Parse dates
+                start_date = timezone.datetime.strptime(start_date_str, '%Y-%m-%d').date()
+                end_date = timezone.datetime.strptime(end_date_str, '%Y-%m-%d').date()
+
+                membership.start_date = start_date
+                membership.end_date = end_date
+                membership.save()
+
+                messages.success(request, f"Member {member.get_full_name()} has been updated successfully.")
+
+            except Membership.DoesNotExist:
+                messages.error(request, "Membership not found.")
+            except ValueError:
+                messages.error(request, "Invalid date format. Please use YYYY-MM-DD.")
+            except Exception as e:
+                messages.error(request, f"Error updating member: {str(e)}")
+
+            return redirect('library_admin:members')
+
+        elif action == 'remove':
+            # Process the remove member form
+            membership_id = request.POST.get('membership_id')
+
+            try:
+                membership = Membership.objects.get(id=membership_id, library=library)
+                member_name = membership.user.get_full_name()
+
+                # Delete the membership
+                membership.delete()
+
+                messages.success(request, f"Member {member_name} has been removed successfully.")
+
+            except Membership.DoesNotExist:
+                messages.error(request, "Membership not found.")
+            except Exception as e:
+                messages.error(request, f"Error removing member: {str(e)}")
+
+            return redirect('library_admin:members')
+
+    # Get all memberships for this library
     memberships = Membership.objects.filter(library=library)
 
     # Search functionality
@@ -260,11 +481,23 @@ def manage_members(request):
         is_active_bool = is_active.lower() == 'true'
         memberships = memberships.filter(is_active=is_active_bool)
 
+    # Get membership plans for the form
+    membership_plans = MembershipPlan.objects.filter(is_active=True)
+
+    # Get today's date for the form
+    today = timezone.now().date()
+
+    # Get pending membership requests count
+    pending_requests_count = MembershipRequest.objects.filter(library=library, status='PENDING').count()
+
     context = {
         'library': library,
         'memberships': memberships,
         'search_query': search_query,
         'is_active': is_active,
+        'membership_plans': membership_plans,
+        'today': today,
+        'pending_requests_count': pending_requests_count,
     }
 
     return render(request, 'library_admin/users/member_list.html', context)
@@ -853,6 +1086,162 @@ def manage_reservations(request):
     }
 
     return render(request, 'library_admin/circulation/reservations.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def confirm_reservation(request, reservation_id):
+    """View function for confirming a book reservation."""
+    if request.method != 'POST':
+        return redirect('library_admin:reservations')
+
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    try:
+        # Get the reservation
+        reservation = Reservation.objects.get(id=reservation_id, library=library)
+
+        # Check if the reservation is already processed
+        if reservation.status != 'PENDING':
+            messages.warning(request, "This reservation has already been processed.")
+            return redirect('library_admin:reservations')
+
+        # Confirm the reservation
+        reservation.status = 'CONFIRMED'
+        reservation.processed_by = user
+        reservation.processed_date = timezone.now()
+        reservation.save()
+
+        messages.success(request, f"Reservation for '{reservation.book.title}' has been confirmed.")
+
+    except Reservation.DoesNotExist:
+        messages.error(request, "Reservation not found.")
+
+    return redirect('library_admin:reservations')
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def cancel_reservation(request, reservation_id):
+    """View function for canceling a book reservation."""
+    if request.method != 'POST':
+        return redirect('library_admin:reservations')
+
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    try:
+        # Get the reservation
+        reservation = Reservation.objects.get(id=reservation_id, library=library)
+
+        # Check if the reservation can be canceled
+        if reservation.status not in ['PENDING', 'CONFIRMED']:
+            messages.warning(request, "This reservation cannot be canceled.")
+            return redirect('library_admin:reservations')
+
+        # Cancel the reservation
+        reservation.status = 'CANCELLED'
+        reservation.processed_by = user
+        reservation.processed_date = timezone.now()
+        reservation.save()
+
+        messages.success(request, f"Reservation for '{reservation.book.title}' has been canceled.")
+
+    except Reservation.DoesNotExist:
+        messages.error(request, "Reservation not found.")
+
+    return redirect('library_admin:reservations')
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def confirm_reservation(request, reservation_id):
+    """View function for confirming a book reservation."""
+    if request.method != 'POST':
+        return redirect('library_admin:reservations')
+
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    try:
+        # Get the reservation
+        reservation = Reservation.objects.get(id=reservation_id, library=library)
+
+        # Check if the reservation is already processed
+        if reservation.status != 'PENDING':
+            messages.warning(request, "This reservation has already been processed.")
+            return redirect('library_admin:reservations')
+
+        # Confirm the reservation
+        reservation.status = 'CONFIRMED'
+        reservation.processed_by = user
+        reservation.processed_date = timezone.now()
+        reservation.save()
+
+        messages.success(request, f"Reservation for '{reservation.book.title}' has been confirmed.")
+
+    except Reservation.DoesNotExist:
+        messages.error(request, "Reservation not found.")
+
+    return redirect('library_admin:reservations')
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def cancel_reservation(request, reservation_id):
+    """View function for canceling a book reservation."""
+    if request.method != 'POST':
+        return redirect('library_admin:reservations')
+
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    try:
+        # Get the reservation
+        reservation = Reservation.objects.get(id=reservation_id, library=library)
+
+        # Check if the reservation can be canceled
+        if reservation.status not in ['PENDING', 'CONFIRMED']:
+            messages.warning(request, "This reservation cannot be canceled.")
+            return redirect('library_admin:reservations')
+
+        # Cancel the reservation
+        reservation.status = 'CANCELLED'
+        reservation.processed_by = user
+        reservation.processed_date = timezone.now()
+        reservation.save()
+
+        messages.success(request, f"Reservation for '{reservation.book.title}' has been canceled.")
+
+    except Reservation.DoesNotExist:
+        messages.error(request, "Reservation not found.")
+
+    return redirect('library_admin:reservations')
 
 
 @login_required

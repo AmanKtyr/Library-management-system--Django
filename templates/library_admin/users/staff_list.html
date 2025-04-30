@@ -453,48 +453,97 @@
     <div class="modal fade" id="viewStaffModal{{ staff.id }}" tabindex="-1" aria-labelledby="viewStaffModalLabel{{ staff.id }}" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="viewStaffModalLabel{{ staff.id }}">Staff Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title" id="viewStaffModalLabel{{ staff.id }}">
+                        <i class="fas fa-user-circle me-2"></i> Staff Details
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="text-center mb-4">
                         {% if staff.profile_picture %}
-                            <img src="{{ staff.profile_picture.url }}" class="rounded-circle mb-3" width="100" height="100" alt="{{ staff.get_full_name }}">
+                            <img src="{{ staff.profile_picture.url }}" class="rounded-circle mb-3" width="120" height="120" alt="{{ staff.get_full_name }}">
                         {% else %}
-                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 100px; height: 100px;">
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 120px; height: 120px;">
                                 <i class="fas fa-user fa-3x"></i>
                             </div>
                         {% endif %}
                         <h4>{{ staff.get_full_name }}</h4>
-                        <p class="text-muted">{{ staff.user_type }}</p>
+                        <div class="d-flex justify-content-center align-items-center">
+                            <span class="admin-pro-badge admin-pro-badge-primary me-2">
+                                <i class="fas fa-user-tie me-1"></i> {{ staff.user_type|title }}
+                            </span>
+                            {% if staff.is_active %}
+                                <span class="admin-pro-badge admin-pro-badge-success">
+                                    <i class="fas fa-check-circle me-1"></i> Active
+                                </span>
+                            {% else %}
+                                <span class="admin-pro-badge admin-pro-badge-danger">
+                                    <i class="fas fa-times-circle me-1"></i> Inactive
+                                </span>
+                            {% endif %}
+                        </div>
                     </div>
 
-                    <div class="row mb-2">
-                        <div class="col-4 fw-bold">Email:</div>
-                        <div class="col-8">{{ staff.email }}</div>
+                    <div class="admin-pro-info-card mb-4">
+                        <h6 class="admin-pro-info-card-header">
+                            <i class="fas fa-id-card me-2"></i> Contact Information
+                        </h6>
+                        <div class="admin-pro-info-card-body">
+                            <div class="admin-pro-info-item">
+                                <div class="admin-pro-info-label">
+                                    <i class="fas fa-envelope text-muted me-2"></i> Email
+                                </div>
+                                <div class="admin-pro-info-value">{{ staff.email }}</div>
+                            </div>
+                            <div class="admin-pro-info-item">
+                                <div class="admin-pro-info-label">
+                                    <i class="fas fa-phone text-muted me-2"></i> Phone
+                                </div>
+                                <div class="admin-pro-info-value">{{ staff.phone_number|default:"Not provided" }}</div>
+                            </div>
+                            <div class="admin-pro-info-item">
+                                <div class="admin-pro-info-label">
+                                    <i class="fas fa-map-marker-alt text-muted me-2"></i> Address
+                                </div>
+                                <div class="admin-pro-info-value">{{ staff.address|default:"Not provided" }}</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-4 fw-bold">Phone:</div>
-                        <div class="col-8">{{ staff.phone_number|default:"Not provided" }}</div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-4 fw-bold">Joined:</div>
-                        <div class="col-8">{{ staff.date_joined|date:"F j, Y" }}</div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-4 fw-bold">Status:</div>
-                        <div class="col-8">
-                            {% if staff.is_active %}
-                                <span class="badge bg-success">Active</span>
-                            {% else %}
-                                <span class="badge bg-danger">Inactive</span>
-                            {% endif %}
+
+                    <div class="admin-pro-info-card">
+                        <h6 class="admin-pro-info-card-header">
+                            <i class="fas fa-info-circle me-2"></i> Additional Information
+                        </h6>
+                        <div class="admin-pro-info-card-body">
+                            <div class="admin-pro-info-item">
+                                <div class="admin-pro-info-label">
+                                    <i class="fas fa-calendar-alt text-muted me-2"></i> Joined
+                                </div>
+                                <div class="admin-pro-info-value">{{ staff.date_joined|date:"F j, Y" }}</div>
+                            </div>
+                            <div class="admin-pro-info-item">
+                                <div class="admin-pro-info-label">
+                                    <i class="fas fa-id-badge text-muted me-2"></i> Staff ID
+                                </div>
+                                <div class="admin-pro-info-value">{{ staff.id }}</div>
+                            </div>
+                            <div class="admin-pro-info-item">
+                                <div class="admin-pro-info-label">
+                                    <i class="fas fa-clock text-muted me-2"></i> Last Login
+                                </div>
+                                <div class="admin-pro-info-value">{{ staff.last_login|date:"F j, Y H:i"|default:"Never" }}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="admin-pro-btn admin-pro-btn-outline" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i> Close
+                    </button>
+                    <button type="button" class="admin-pro-btn admin-pro-btn-primary" data-bs-toggle="modal" data-bs-target="#editStaffModal{{ staff.id }}" data-bs-dismiss="modal">
+                        <i class="fas fa-edit me-1"></i> Edit Staff
+                    </button>
                 </div>
             </div>
         </div>
@@ -504,67 +553,135 @@
     <div class="modal fade" id="editStaffModal{{ staff.id }}" tabindex="-1" aria-labelledby="editStaffModalLabel{{ staff.id }}" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editStaffModalLabel{{ staff.id }}">Edit Staff Member</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="editStaffModalLabel{{ staff.id }}">
+                        <i class="fas fa-user-edit me-2"></i> Edit Staff Member
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="editStaffForm{{ staff.id }}" method="post" action="{% url 'library_admin:staff' %}">
+                    <div class="d-flex align-items-center mb-4">
+                        {% if staff.profile_picture %}
+                            <img src="{{ staff.profile_picture.url }}" class="rounded-circle me-3" width="64" height="64" alt="{{ staff.get_full_name }}">
+                        {% else %}
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width: 64px; height: 64px;">
+                                <i class="fas fa-user fa-2x"></i>
+                            </div>
+                        {% endif %}
+                        <div>
+                            <h5 class="mb-1">{{ staff.get_full_name|default:"Staff Member" }}</h5>
+                            <p class="text-muted mb-0">Staff ID: {{ staff.id }} | Joined: {{ staff.date_joined|date:"M d, Y" }}</p>
+                        </div>
+                    </div>
+
+                    <form id="editStaffForm{{ staff.id }}" method="post" action="{% url 'library_admin:staff' %}" class="needs-validation" novalidate>
                         {% csrf_token %}
                         <input type="hidden" name="staff_id" value="{{ staff.id }}">
                         <input type="hidden" name="action" value="edit">
 
-                        <div class="row mb-3">
+                        <h6 class="admin-pro-form-section-title mb-3">
+                            <i class="fas fa-user-shield me-2"></i> Account Information
+                        </h6>
+
+                        <div class="row mb-4">
                             <div class="col-md-6">
                                 <label for="edit_email{{ staff.id }}" class="form-label">Email Address</label>
-                                <input type="email" class="form-control" id="edit_email{{ staff.id }}" name="email" value="{{ staff.email }}" readonly>
-                                <small class="form-text text-muted">Email cannot be changed</small>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                    <input type="email" class="form-control" id="edit_email{{ staff.id }}" name="email" value="{{ staff.email }}" readonly>
+                                </div>
+                                <small class="form-text text-muted">Email address cannot be changed</small>
                             </div>
                             <div class="col-md-6">
                                 <label for="edit_password{{ staff.id }}" class="form-label">New Password</label>
                                 <div class="input-group">
-                                    <input type="password" class="form-control" id="edit_password{{ staff.id }}" name="password">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                    <input type="password" class="form-control" id="edit_password{{ staff.id }}" name="password" minlength="8">
                                     <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('edit_password{{ staff.id }}')">
                                         <i class="fas fa-eye"></i>
                                     </button>
+                                    <div class="invalid-feedback">Password must be at least 8 characters long.</div>
                                 </div>
                                 <small class="form-text text-muted">Leave blank to keep current password</small>
                             </div>
                         </div>
-                        <div class="row mb-3">
+
+                        <div class="row mb-4">
                             <div class="col-md-6">
-                                <label for="edit_first_name{{ staff.id }}" class="form-label">First Name</label>
-                                <input type="text" class="form-control" id="edit_first_name{{ staff.id }}" name="first_name" value="{{ staff.first_name }}" required>
+                                <label for="edit_staff_role{{ staff.id }}" class="form-label">Staff Role</label>
+                                <select class="form-select" id="edit_staff_role{{ staff.id }}" name="staff_role" required>
+                                    <option value="librarian" {% if staff.user_type == 'librarian' %}selected{% endif %}>Librarian</option>
+                                    <option value="assistant" {% if staff.user_type == 'assistant' %}selected{% endif %}>Library Assistant</option>
+                                    <option value="clerk" {% if staff.user_type == 'clerk' %}selected{% endif %}>Circulation Clerk</option>
+                                </select>
+                                <div class="invalid-feedback">Please select a staff role.</div>
                             </div>
                             <div class="col-md-6">
-                                <label for="edit_last_name{{ staff.id }}" class="form-label">Last Name</label>
-                                <input type="text" class="form-control" id="edit_last_name{{ staff.id }}" name="last_name" value="{{ staff.last_name }}" required>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="edit_phone_number{{ staff.id }}" class="form-label">Phone Number</label>
-                                <input type="tel" class="form-control" id="edit_phone_number{{ staff.id }}" name="phone_number" value="{{ staff.phone_number|default:'' }}">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="edit_status{{ staff.id }}" class="form-label">Status</label>
+                                <label for="edit_status{{ staff.id }}" class="form-label">Account Status</label>
                                 <select class="form-select" id="edit_status{{ staff.id }}" name="status" required>
                                     <option value="active" {% if staff.is_active %}selected{% endif %}>Active</option>
                                     <option value="inactive" {% if not staff.is_active %}selected{% endif %}>Inactive</option>
                                 </select>
+                                <div class="invalid-feedback">Please select an account status.</div>
+                                <small class="form-text text-muted">Inactive accounts cannot log in</small>
                             </div>
                         </div>
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <label for="edit_address{{ staff.id }}" class="form-label">Address</label>
-                                <textarea class="form-control" id="edit_address{{ staff.id }}" name="address" rows="2">{{ staff.address|default:'' }}</textarea>
+
+                        <h6 class="admin-pro-form-section-title mb-3">
+                            <i class="fas fa-id-card me-2"></i> Personal Information
+                        </h6>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="edit_first_name{{ staff.id }}" class="form-label">First Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="edit_first_name{{ staff.id }}" name="first_name" value="{{ staff.first_name }}" required>
+                                <div class="invalid-feedback">Please enter the first name.</div>
                             </div>
+                            <div class="col-md-6">
+                                <label for="edit_last_name{{ staff.id }}" class="form-label">Last Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="edit_last_name{{ staff.id }}" name="last_name" value="{{ staff.last_name }}" required>
+                                <div class="invalid-feedback">Please enter the last name.</div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="edit_phone_number{{ staff.id }}" class="form-label">Phone Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                    <input type="tel" class="form-control" id="edit_phone_number{{ staff.id }}" name="phone_number" value="{{ staff.phone_number|default:'' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_date_of_birth{{ staff.id }}" class="form-label">Date of Birth</label>
+                                <input type="date" class="form-control" id="edit_date_of_birth{{ staff.id }}" name="date_of_birth" value="{{ staff.date_of_birth|date:'Y-m-d' }}">
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="edit_address{{ staff.id }}" class="form-label">Address</label>
+                            <textarea class="form-control" id="edit_address{{ staff.id }}" name="address" rows="2">{{ staff.address|default:'' }}</textarea>
+                        </div>
+
+                        <h6 class="admin-pro-form-section-title mb-3">
+                            <i class="fas fa-cog me-2"></i> Additional Settings
+                        </h6>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="edit_send_notification{{ staff.id }}" name="send_notification" checked>
+                            <label class="form-check-label" for="edit_send_notification{{ staff.id }}">
+                                Send email notification about account changes
+                            </label>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" form="editStaffForm{{ staff.id }}" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="admin-pro-btn admin-pro-btn-outline" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i> Cancel
+                    </button>
+                    <button type="submit" form="editStaffForm{{ staff.id }}" class="admin-pro-btn admin-pro-btn-primary">
+                        <i class="fas fa-save me-1"></i> Save Changes
+                    </button>
                 </div>
             </div>
         </div>
@@ -574,23 +691,75 @@
     <div class="modal fade" id="removeStaffModal{{ staff.id }}" tabindex="-1" aria-labelledby="removeStaffModalLabel{{ staff.id }}" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="removeStaffModalLabel{{ staff.id }}">Remove Staff Member</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="removeStaffModalLabel{{ staff.id }}">
+                        <i class="fas fa-user-minus me-2"></i> Remove Staff Member
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to remove <strong>{{ staff.get_full_name }}</strong> from your library staff?</p>
-                    <p class="text-danger">This action cannot be undone.</p>
+                    <div class="text-center mb-4">
+                        <div class="admin-pro-warning-icon mb-3">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h4 class="mb-3">Are you sure you want to remove this staff member?</h4>
+                        <div class="d-flex align-items-center justify-content-center mb-3">
+                            {% if staff.profile_picture %}
+                                <img src="{{ staff.profile_picture.url }}" class="rounded-circle me-3" width="48" height="48" alt="{{ staff.get_full_name }}">
+                            {% else %}
+                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            {% endif %}
+                            <div class="text-start">
+                                <h6 class="mb-0">{{ staff.get_full_name }}</h6>
+                                <small class="text-muted">{{ staff.email }}</small>
+                            </div>
+                        </div>
+                    </div>
 
-                    <form id="removeStaffForm{{ staff.id }}" method="post" action="{% url 'library_admin:staff' %}">
+                    <div class="alert alert-warning">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <i class="fas fa-info-circle fa-2x"></i>
+                            </div>
+                            <div>
+                                <h5 class="alert-heading">Important Information</h5>
+                                <p class="mb-0">This action will permanently remove the staff member from your library. They will no longer be able to log in or access any library resources. This action cannot be undone.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form id="removeStaffForm{{ staff.id }}" method="post" action="{% url 'library_admin:staff' %}" class="needs-validation" novalidate>
                         {% csrf_token %}
                         <input type="hidden" name="staff_id" value="{{ staff.id }}">
                         <input type="hidden" name="action" value="remove">
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="confirm_remove{{ staff.id }}" name="confirm_remove" required>
+                            <label class="form-check-label" for="confirm_remove{{ staff.id }}">
+                                I understand that this action cannot be undone
+                            </label>
+                            <div class="invalid-feedback">
+                                You must confirm that you understand the consequences of this action.
+                            </div>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="send_notification_remove{{ staff.id }}" name="send_notification" checked>
+                            <label class="form-check-label" for="send_notification_remove{{ staff.id }}">
+                                Send email notification to the staff member
+                            </label>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" form="removeStaffForm{{ staff.id }}" class="btn btn-danger">Remove Staff</button>
+                    <button type="button" class="admin-pro-btn admin-pro-btn-outline" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i> Cancel
+                    </button>
+                    <button type="submit" form="removeStaffForm{{ staff.id }}" class="admin-pro-btn admin-pro-btn-danger">
+                        <i class="fas fa-user-minus me-1"></i> Remove Staff Member
+                    </button>
                 </div>
             </div>
         </div>
@@ -902,6 +1071,70 @@
     .admin-pro-confirmation-box {
         background-color: #f8f9fa;
         border-radius: 0.375rem;
+    }
+
+    /* Staff details modal styling */
+    .admin-pro-warning-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background-color: rgba(var(--bs-warning-rgb), 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: var(--bs-warning);
+        margin: 0 auto;
+    }
+
+    .admin-pro-info-card {
+        border: 1px solid #e9ecef;
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+
+    .admin-pro-info-card-header {
+        background-color: rgba(var(--bs-primary-rgb), 0.05);
+        padding: 0.75rem 1rem;
+        margin: 0;
+        font-weight: 600;
+        color: var(--bs-primary);
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .admin-pro-info-card-body {
+        padding: 1rem;
+    }
+
+    .admin-pro-info-item {
+        margin-bottom: 0.75rem;
+    }
+
+    .admin-pro-info-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .admin-pro-info-label {
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+        color: #6c757d;
+    }
+
+    .admin-pro-info-value {
+        font-weight: 400;
+    }
+
+    /* Button styles */
+    .admin-pro-btn-danger {
+        background-color: var(--bs-danger);
+        border-color: var(--bs-danger);
+        color: white;
+    }
+
+    .admin-pro-btn-danger:hover {
+        background-color: #c82333;
+        border-color: #bd2130;
+        color: white;
     }
 </style>
 {% endblock %}

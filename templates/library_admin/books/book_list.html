@@ -6,12 +6,12 @@
 {% block page_title %}Books Collection{% endblock %}
 
 {% block page_actions %}
-<a href="{% url 'library_admin:add_book' %}" class="admin-pro-btn admin-pro-btn-primary">
-    <i class="fas fa-plus"></i> Add Book
-</a>
-<a href="{% url 'library_admin:import_books' %}" class="admin-pro-btn admin-pro-btn-outline">
-    <i class="fas fa-file-import"></i> Import Books
-</a>
+<button type="button" class="admin-pro-btn admin-pro-btn-primary" data-bs-toggle="modal" data-bs-target="#addBookModal">
+    <i class="fas fa-plus me-1"></i> Add Book
+</button>
+<button type="button" class="admin-pro-btn admin-pro-btn-outline" data-bs-toggle="modal" data-bs-target="#importBooksModal">
+    <i class="fas fa-file-import me-1"></i> Import Books
+</button>
 {% endblock %}
 
 {% block extra_css %}
@@ -411,111 +411,686 @@
 {% endblock %}
 
 {% block content %}
-<div class="admin-pro-container book-list-container">
-    <!-- Search Form -->
-    <div class="book-search-card">
-        <div class="book-search-form">
-            <form method="get" action="{% url 'books:book_list' %}" id="book-search-form">
-                <div class="row">
-                    <div class="col-lg-6 col-md-12">
-                        <div class="book-search-input-group">
-                            <input type="text" name="q" id="search-input" class="book-search-input" placeholder="Search by title, author, or ISBN" value="{{ query }}">
-                            <i class="fas fa-search book-search-icon"></i>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="mb-3">
-                            <select name="category" class="book-filter-select">
-                                <option value="">All Categories</option>
-                                {% for category in categories %}
-                                    <option value="{{ category.slug }}" {% if selected_category == category.slug %}selected{% endif %}>
-                                        {{ category.name }} ({{ category.book_count }})
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="mb-3">
-                            <select name="author" class="book-filter-select">
-                                <option value="">All Authors</option>
-                                {% for author in authors %}
-                                    <option value="{{ author.slug }}" {% if selected_author == author.slug %}selected{% endif %}>
-                                        {{ author.name }} ({{ author.book_count }})
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
+<!-- Book Statistics Overview -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="admin-pro-stats-card primary h-100 fade-in-up">
+            <div class="admin-pro-stats-icon">
+                <i class="fas fa-book"></i>
+            </div>
+            <div class="admin-pro-stats-content">
+                <div class="admin-pro-stats-value">{{ books|length }}</div>
+                <div class="admin-pro-stats-label">Total Books</div>
+                <div class="admin-pro-stats-trend up">
+                    <i class="fas fa-chart-line"></i> Growing Collection
                 </div>
-                <div class="book-search-actions">
-                    <button type="reset" class="book-search-btn book-search-btn-outline">
-                        <i class="fas fa-redo"></i> Reset
-                    </button>
-                    <button type="submit" class="book-search-btn book-search-btn-primary">
-                        <i class="fas fa-search"></i> Search Books
-                    </button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="admin-pro-stats-card success h-100 fade-in-up" style="animation-delay: 0.1s;">
+            <div class="admin-pro-stats-icon">
+                <i class="fas fa-book-reader"></i>
+            </div>
+            <div class="admin-pro-stats-content">
+                <div class="admin-pro-stats-value">{{ available_books|default:"0" }}</div>
+                <div class="admin-pro-stats-label">Available Books</div>
+                <div class="admin-pro-stats-trend up">
+                    <i class="fas fa-check-circle"></i> Ready to Issue
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="admin-pro-stats-card warning h-100 fade-in-up" style="animation-delay: 0.2s;">
+            <div class="admin-pro-stats-icon">
+                <i class="fas fa-bookmark"></i>
+            </div>
+            <div class="admin-pro-stats-content">
+                <div class="admin-pro-stats-value">{{ categories|length }}</div>
+                <div class="admin-pro-stats-label">Categories</div>
+                <div class="admin-pro-stats-trend">
+                    <i class="fas fa-tags"></i> Well Organized
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="admin-pro-stats-card danger h-100 fade-in-up" style="animation-delay: 0.3s;">
+            <div class="admin-pro-stats-icon">
+                <i class="fas fa-pen-fancy"></i>
+            </div>
+            <div class="admin-pro-stats-content">
+                <div class="admin-pro-stats-value">{{ authors|length }}</div>
+                <div class="admin-pro-stats-label">Authors</div>
+                <div class="admin-pro-stats-trend">
+                    <i class="fas fa-users"></i> Diverse Collection
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <!-- Books Grid -->
-    <div class="row">
-        {% for book in books %}
-            <div class="col-xl-3 col-lg-4 col-md-6 mb-4 book-card-wrapper">
-                <div class="book-card">
-                    <div class="book-card-cover">
-                        {% if book.cover_image %}
-                            <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
+<!-- Book Management Tools -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="admin-pro-card h-100 fade-in-up">
+            <div class="admin-pro-card-header">
+                <h5 class="admin-pro-card-title">Book Management Tools</h5>
+            </div>
+            <div class="admin-pro-card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="admin-pro-tool-card">
+                            <div class="admin-pro-tool-icon">
+                                <i class="fas fa-file-export"></i>
+                            </div>
+                            <div class="admin-pro-tool-content">
+                                <h6>Export Books</h6>
+                                <p class="small text-muted">Download book data as CSV or Excel</p>
+                                <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline w-100" id="exportBooksBtn">
+                                    <i class="fas fa-download me-1"></i> Export
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="admin-pro-tool-card">
+                            <div class="admin-pro-tool-icon">
+                                <i class="fas fa-qrcode"></i>
+                            </div>
+                            <div class="admin-pro-tool-content">
+                                <h6>Generate Labels</h6>
+                                <p class="small text-muted">Create QR codes and barcodes</p>
+                                <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline w-100" id="generateLabelsBtn">
+                                    <i class="fas fa-tags me-1"></i> Generate
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="admin-pro-tool-card">
+                            <div class="admin-pro-tool-icon">
+                                <i class="fas fa-print"></i>
+                            </div>
+                            <div class="admin-pro-tool-content">
+                                <h6>Print Catalog</h6>
+                                <p class="small text-muted">Generate printable book catalog</p>
+                                <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline w-100" id="printCatalogBtn">
+                                    <i class="fas fa-print me-1"></i> Print
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="admin-pro-card h-100 fade-in-up">
+            <div class="admin-pro-card-header">
+                <h5 class="admin-pro-card-title">Quick Actions</h5>
+            </div>
+            <div class="admin-pro-card-body">
+                <div class="d-grid gap-2">
+                    <button type="button" class="admin-pro-btn admin-pro-btn-primary" data-bs-toggle="modal" data-bs-target="#addBookModal">
+                        <i class="fas fa-plus me-2"></i> Add New Book
+                    </button>
+                    <button type="button" class="admin-pro-btn admin-pro-btn-outline" data-bs-toggle="modal" data-bs-target="#importBooksModal">
+                        <i class="fas fa-file-import me-2"></i> Import Books
+                    </button>
+                    <a href="{% url 'library_admin:categories' %}" class="admin-pro-btn admin-pro-btn-outline">
+                        <i class="fas fa-folder me-2"></i> Manage Categories
+                    </a>
+                    <a href="{% url 'library_admin:authors_collection' %}" class="admin-pro-btn admin-pro-btn-outline">
+                        <i class="fas fa-users me-2"></i> Manage Authors
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filter Section -->
+<div class="admin-pro-card mb-4 fade-in-up">
+    <div class="admin-pro-card-header">
+        <h5 class="admin-pro-card-title">Search & Filter Books</h5>
+    </div>
+    <div class="admin-pro-card-body">
+        <form method="get" action="{% url 'library_admin:books' %}" id="book-search-form">
+            <div class="row">
+                <div class="col-lg-6 col-md-12">
+                    <div class="mb-3">
+                        <label for="search-input" class="form-label">Search Books</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <input type="text" name="q" id="search-input" class="form-control" placeholder="Search by title, author, or ISBN" value="{{ query }}">
+                        </div>
+                        <small class="form-text text-muted">Enter keywords to search across titles, authors, and ISBN numbers</small>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="mb-3">
+                        <label for="category-filter" class="form-label">Category</label>
+                        <select name="category" id="category-filter" class="form-select">
+                            <option value="">All Categories</option>
+                            {% for category in categories %}
+                                <option value="{{ category.slug }}" {% if selected_category == category.slug %}selected{% endif %}>
+                                    {{ category.name }} ({{ category.book_count|default:"0" }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="mb-3">
+                        <label for="author-filter" class="form-label">Author</label>
+                        <select name="author" id="author-filter" class="form-select">
+                            <option value="">All Authors</option>
+                            {% for author in authors %}
+                                <option value="{{ author.slug }}" {% if selected_author == author.slug %}selected{% endif %}>
+                                    {{ author.name }} ({{ author.book_count|default:"0" }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="mb-3">
+                        <label for="publisher-filter" class="form-label">Publisher</label>
+                        <select name="publisher" id="publisher-filter" class="form-select">
+                            <option value="">All Publishers</option>
+                            {% for publisher in publishers %}
+                                <option value="{{ publisher.slug }}" {% if selected_publisher == publisher.slug %}selected{% endif %}>
+                                    {{ publisher.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="mb-3">
+                        <label for="year-filter" class="form-label">Publication Year</label>
+                        <select name="year" id="year-filter" class="form-select">
+                            <option value="">All Years</option>
+                            {% for year in publication_years %}
+                                <option value="{{ year }}" {% if selected_year == year %}selected{% endif %}>
+                                    {{ year }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="mb-3">
+                        <label for="availability-filter" class="form-label">Availability</label>
+                        <select name="availability" id="availability-filter" class="form-select">
+                            <option value="">All Books</option>
+                            <option value="available" {% if selected_availability == "available" %}selected{% endif %}>Available</option>
+                            <option value="issued" {% if selected_availability == "issued" %}selected{% endif %}>Issued</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="mb-3">
+                        <label for="sort-filter" class="form-label">Sort By</label>
+                        <select name="sort" id="sort-filter" class="form-select">
+                            <option value="title" {% if selected_sort == "title" %}selected{% endif %}>Title (A-Z)</option>
+                            <option value="-title" {% if selected_sort == "-title" %}selected{% endif %}>Title (Z-A)</option>
+                            <option value="author" {% if selected_sort == "author" %}selected{% endif %}>Author (A-Z)</option>
+                            <option value="-author" {% if selected_sort == "-author" %}selected{% endif %}>Author (Z-A)</option>
+                            <option value="-added" {% if selected_sort == "-added" %}selected{% endif %}>Recently Added</option>
+                            <option value="-year" {% if selected_sort == "-year" %}selected{% endif %}>Newest First</option>
+                            <option value="year" {% if selected_sort == "year" %}selected{% endif %}>Oldest First</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-end mt-3">
+                <a href="{% url 'library_admin:books' %}" class="admin-pro-btn admin-pro-btn-outline me-2">
+                    <i class="fas fa-redo me-1"></i> Reset
+                </a>
+                <button type="submit" class="admin-pro-btn admin-pro-btn-primary">
+                    <i class="fas fa-search me-1"></i> Apply Filters
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Books List Section -->
+<div class="admin-pro-card mb-4 fade-in-up">
+    <div class="admin-pro-card-header d-flex justify-content-between align-items-center">
+        <h5 class="admin-pro-card-title">
+            <i class="fas fa-book me-2"></i> Books Collection
+        </h5>
+        <div class="d-flex">
+            <div class="dropdown me-2">
+                <button class="admin-pro-btn admin-pro-btn-outline dropdown-toggle" type="button" id="viewDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-th-large me-1"></i> View
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="viewDropdown">
+                    <li><a class="dropdown-item active" href="#" data-view="grid"><i class="fas fa-th-large me-2"></i> Grid View</a></li>
+                    <li><a class="dropdown-item" href="#" data-view="list"><i class="fas fa-list me-2"></i> List View</a></li>
+                    <li><a class="dropdown-item" href="#" data-view="compact"><i class="fas fa-th me-2"></i> Compact View</a></li>
+                </ul>
+            </div>
+            <div class="dropdown">
+                <button class="admin-pro-btn admin-pro-btn-outline dropdown-toggle" type="button" id="bulkActionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-cog me-1"></i> Bulk Actions
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="bulkActionsDropdown">
+                    <li><a class="dropdown-item" href="#" id="bulkExportBtn"><i class="fas fa-file-export me-2"></i> Export Selected</a></li>
+                    <li><a class="dropdown-item" href="#" id="bulkLabelBtn"><i class="fas fa-tags me-2"></i> Generate Labels</a></li>
+                    <li><a class="dropdown-item" href="#" id="bulkCategoryBtn"><i class="fas fa-folder me-2"></i> Update Category</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="#" id="bulkDeleteBtn"><i class="fas fa-trash me-2"></i> Delete Selected</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="admin-pro-card-body">
+        {% if books %}
+            <!-- Bulk Actions Bar -->
+            <div class="admin-pro-bulk-actions-bar mb-3 p-2 rounded d-none" id="bulkActionsBar">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="me-2"><span id="selectedCount">0</span> books selected</span>
+                        <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline" id="clearSelectionBtn">
+                            <i class="fas fa-times me-1"></i> Clear
+                        </button>
+                    </div>
+                    <div>
+                        <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-primary me-2" id="quickExportBtn">
+                            <i class="fas fa-file-export me-1"></i> Export
+                        </button>
+                        <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-info me-2" id="quickLabelBtn">
+                            <i class="fas fa-tags me-1"></i> Labels
+                        </button>
+                        <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-danger" id="quickDeleteBtn">
+                            <i class="fas fa-trash me-1"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid View -->
+            <div class="book-view-container grid-view">
+                <div class="row">
+                    {% for book in books %}
+                        <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+                            <div class="admin-pro-book-card">
+                                <div class="admin-pro-book-card-checkbox">
+                                    <div class="form-check">
+                                        <input class="form-check-input book-checkbox" type="checkbox" value="{{ book.id }}">
+                                    </div>
+                                </div>
+                                <div class="admin-pro-book-card-cover">
+                                    {% if book.cover_image %}
+                                        <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
+                                    {% else %}
+                                        <img src="https://placehold.co/400x600?text=No+Cover" alt="No Cover">
+                                    {% endif %}
+                                    <div class="admin-pro-book-card-status">
+                                        {% if book.is_available %}
+                                            <span class="admin-pro-badge admin-pro-badge-success">Available</span>
+                                        {% else %}
+                                            <span class="admin-pro-badge admin-pro-badge-danger">Issued</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="admin-pro-book-card-content">
+                                    <h3 class="admin-pro-book-card-title">{{ book.title }}</h3>
+                                    <div class="admin-pro-book-card-author">
+                                        {% for author in book.authors.all %}
+                                            {% if forloop.first %}by {% endif %}
+                                            <a href="{% url 'library_admin:author_detail' slug=author.slug %}">{{ author.name }}</a>{% if not forloop.last %}, {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <div class="admin-pro-book-card-categories">
+                                        {% for category in book.categories.all %}
+                                            <a href="{% url 'library_admin:category_detail' slug=category.slug %}" class="admin-pro-book-card-category">{{ category.name }}</a>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="admin-pro-book-card-meta">
+                                        <div><i class="fas fa-barcode text-muted me-1"></i> {{ book.isbn }}</div>
+                                        <div><i class="fas fa-calendar-alt text-muted me-1"></i> {{ book.publication_year|default:"Unknown" }}</div>
+                                    </div>
+                                    <div class="admin-pro-book-card-actions">
+                                        <button type="button" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-primary me-1" data-bs-toggle="modal" data-bs-target="#viewBookModal{{ book.id }}" data-bs-tooltip="tooltip" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button type="button" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-info me-1" data-bs-toggle="modal" data-bs-target="#editBookModal{{ book.id }}" data-bs-tooltip="tooltip" title="Edit Book">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <div class="dropdown d-inline-block">
+                                            <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline dropdown-toggle" type="button" id="bookActionDropdown{{ book.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bookActionDropdown{{ book.id }}">
+                                                <li><a class="dropdown-item" href="#" onclick="issueBook({{ book.id }})"><i class="fas fa-paper-plane me-2"></i> Issue Book</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="generateLabel({{ book.id }})"><i class="fas fa-tag me-2"></i> Generate Label</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="duplicateBook({{ book.id }})"><i class="fas fa-copy me-2"></i> Duplicate</a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item text-danger" href="#" data-bs-toggle="modal" data-bs-target="#removeBookModal{{ book.id }}"><i class="fas fa-trash me-2"></i> Delete</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <div class="admin-pro-empty-state py-5">
+                <div class="admin-pro-empty-icon mb-3">
+                    <i class="fas fa-book"></i>
+                </div>
+                <h4>No Books Found</h4>
+                <p class="text-muted">We couldn't find any books matching your search criteria. Try adjusting your filters or add new books to your collection.</p>
+                <div class="mt-4">
+                    <button type="button" class="admin-pro-btn admin-pro-btn-primary me-2" data-bs-toggle="modal" data-bs-target="#addBookModal">
+                        <i class="fas fa-plus me-1"></i> Add New Book
+                    </button>
+                    <a href="{% url 'library_admin:books' %}" class="admin-pro-btn admin-pro-btn-outline">
+                        <i class="fas fa-redo me-1"></i> Reset Filters
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Pagination -->
+        {% if books.has_other_pages %}
+            <div class="admin-pro-pagination mt-4">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if books.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_author %}&author={{ selected_author }}{% endif %}{% if selected_publisher %}&publisher={{ selected_publisher }}{% endif %}{% if selected_year %}&year={{ selected_year }}{% endif %}{% if selected_availability %}&availability={{ selected_availability }}{% endif %}{% if selected_sort %}&sort={{ selected_sort }}{% endif %}" aria-label="First">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ books.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_author %}&author={{ selected_author }}{% endif %}{% if selected_publisher %}&publisher={{ selected_publisher }}{% endif %}{% if selected_year %}&year={{ selected_year }}{% endif %}{% if selected_availability %}&availability={{ selected_availability }}{% endif %}{% if selected_sort %}&sort={{ selected_sort }}{% endif %}" aria-label="Previous">
+                                    <i class="fas fa-angle-left"></i>
+                                </a>
+                            </li>
                         {% else %}
-                            <img src="https://placehold.co/400x600?text=No+Cover" alt="No Cover">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" aria-label="First">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" aria-label="Previous">
+                                    <i class="fas fa-angle-left"></i>
+                                </a>
+                            </li>
                         {% endif %}
-                        <div class="book-card-overlay"></div>
-                    </div>
-                    <div class="book-card-content">
-                        <h3 class="book-card-title">{{ book.title }}</h3>
-                        <div class="book-card-author">
-                            {% for author in book.authors.all %}
-                                {% if forloop.first %}by {% endif %}
-                                <a href="{% url 'books:author_detail' slug=author.slug %}">{{ author.name }}</a>{% if not forloop.last %}, {% endif %}
-                            {% endfor %}
-                        </div>
-                        <div class="book-card-categories">
-                            {% for category in book.categories.all %}
-                                <a href="{% url 'library_admin:category_detail' slug=category.slug %}" class="book-card-category">{{ category.name }}</a>
-                            {% endfor %}
-                        </div>
-                        <div class="book-card-isbn">ISBN: {{ book.isbn }}</div>
-                        <a href="{% url 'books:book_detail' slug=book.slug %}" class="book-card-action btn-ripple">
-                            <i class="fas fa-book-open"></i> View Details
-                        </a>
-                    </div>
-                </div>
-            </div>
-        {% empty %}
-            <div class="col-12">
-                <div class="book-empty-state">
-                    <div class="book-empty-icon">
-                        <i class="fas fa-search"></i>
-                    </div>
-                    <h3 class="book-empty-title">No Books Found</h3>
-                    <p class="book-empty-text">No books found matching your criteria. Try a different search or filter.</p>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
 
-    <!-- Back to Top Button -->
-    <div class="book-back-to-top" id="backToTop" style="opacity: 0; visibility: hidden;">
-        <i class="fas fa-arrow-up"></i>
+                        {% for num in books.paginator.page_range %}
+                            {% if books.number == num %}
+                                <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                            {% elif num > books.number|add:'-3' and num < books.number|add:'3' %}
+                                <li class="page-item"><a class="page-link" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_author %}&author={{ selected_author }}{% endif %}{% if selected_publisher %}&publisher={{ selected_publisher }}{% endif %}{% if selected_year %}&year={{ selected_year }}{% endif %}{% if selected_availability %}&availability={{ selected_availability }}{% endif %}{% if selected_sort %}&sort={{ selected_sort }}{% endif %}">{{ num }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if books.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ books.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_author %}&author={{ selected_author }}{% endif %}{% if selected_publisher %}&publisher={{ selected_publisher }}{% endif %}{% if selected_year %}&year={{ selected_year }}{% endif %}{% if selected_availability %}&availability={{ selected_availability }}{% endif %}{% if selected_sort %}&sort={{ selected_sort }}{% endif %}" aria-label="Next">
+                                    <i class="fas fa-angle-right"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ books.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_author %}&author={{ selected_author }}{% endif %}{% if selected_publisher %}&publisher={{ selected_publisher }}{% endif %}{% if selected_year %}&year={{ selected_year }}{% endif %}{% if selected_availability %}&availability={{ selected_availability }}{% endif %}{% if selected_sort %}&sort={{ selected_sort }}{% endif %}" aria-label="Last">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" aria-label="Next">
+                                    <i class="fas fa-angle-right"></i>
+                                </a>
+                            </li>
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" aria-label="Last">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                <div class="admin-pro-pagination-info text-center mt-2">
+                    Showing {{ books.start_index }} to {{ books.end_index }} of {{ books.paginator.count }} books
+                </div>
+            </div>
+        {% endif %}
     </div>
+</div>
+
+<!-- Back to Top Button -->
+<div class="admin-pro-back-to-top" id="backToTop">
+    <i class="fas fa-arrow-up"></i>
+</div>
+
+<!-- Add Book Modal -->
+<div class="modal fade" id="addBookModal" tabindex="-1" aria-labelledby="addBookModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="addBookModalLabel">
+                    <i class="fas fa-plus me-2"></i> Add New Book
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addBookForm" method="post" action="{% url 'library_admin:books' %}" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="add_book">
+
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <label for="title" class="form-label">Book Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                            <div class="invalid-feedback">Please enter a book title.</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="isbn" class="form-label">ISBN <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="isbn" name="isbn" required>
+                            <div class="invalid-feedback">Please enter a valid ISBN.</div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="author" class="form-label">Author <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="author" name="author" required>
+                                <button class="btn btn-outline-secondary" type="button" id="addAuthorBtn">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <div class="invalid-feedback">Please enter an author name.</div>
+                            <small class="form-text text-muted">Enter author name or select from existing authors</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="category" class="form-label">Category <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <select class="form-select" id="category" name="category" required>
+                                    <option value="" selected disabled>Select Category</option>
+                                    {% for category in categories %}
+                                        <option value="{{ category.id }}">{{ category.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button class="btn btn-outline-secondary" type="button" id="addCategoryBtn">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <div class="invalid-feedback">Please select a category.</div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="publisher" class="form-label">Publisher</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="publisher" name="publisher">
+                                <button class="btn btn-outline-secondary" type="button" id="addPublisherBtn">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="publication_year" class="form-label">Publication Year</label>
+                            <input type="number" class="form-control" id="publication_year" name="publication_year" min="1800" max="{{ current_year }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="language" class="form-label">Language</label>
+                            <select class="form-select" id="language" name="language">
+                                <option value="English">English</option>
+                                <option value="Hindi">Hindi</option>
+                                <option value="Bengali">Bengali</option>
+                                <option value="Telugu">Telugu</option>
+                                <option value="Marathi">Marathi</option>
+                                <option value="Tamil">Tamil</option>
+                                <option value="Urdu">Urdu</option>
+                                <option value="Gujarati">Gujarati</option>
+                                <option value="Kannada">Kannada</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <label for="pages" class="form-label">Pages</label>
+                            <input type="number" class="form-control" id="pages" name="pages" min="1">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="price" class="form-label">Price (₹)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">₹</span>
+                                <input type="number" class="form-control" id="price" name="price" min="0" step="0.01">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="quantity" class="form-label">Quantity <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="quantity" name="quantity" min="1" value="1" required>
+                            <div class="invalid-feedback">Please enter a valid quantity.</div>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="edition" class="form-label">Edition</label>
+                            <input type="text" class="form-control" id="edition" name="edition">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="cover_image" class="form-label">Cover Image</label>
+                        <input type="file" class="form-control" id="cover_image" name="cover_image" accept="image/*">
+                        <small class="form-text text-muted">Upload a cover image (optional, max 2MB)</small>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="generate_barcode" name="generate_barcode" checked>
+                        <label class="form-check-label" for="generate_barcode">
+                            Generate barcode and QR code
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="admin-pro-btn admin-pro-btn-outline" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i> Cancel
+                </button>
+                <button type="submit" form="addBookForm" class="admin-pro-btn admin-pro-btn-primary">
+                    <i class="fas fa-plus me-1"></i> Add Book
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Import Books Modal -->
+<div class="modal fade" id="importBooksModal" tabindex="-1" aria-labelledby="importBooksModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="importBooksModalLabel">
+                    <i class="fas fa-file-import me-2"></i> Import Books
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info mb-4">
+                    <div class="d-flex">
+                        <div class="me-3">
+                            <i class="fas fa-info-circle fa-2x"></i>
+                        </div>
+                        <div>
+                            <h5 class="alert-heading">Import Instructions</h5>
+                            <p class="mb-0">Upload a CSV file with book details. The file should have the following columns: title, isbn, author, category, publisher, publication_year, language, pages, price, quantity.</p>
+                            <a href="#" class="alert-link" id="downloadTemplateBtn">Download template</a>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="importBooksForm" method="post" action="{% url 'library_admin:books' %}" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="import_books">
+
+                    <div class="mb-4">
+                        <label for="csv_file" class="form-label">CSV File <span class="text-danger">*</span></label>
+                        <input type="file" class="form-control" id="csv_file" name="csv_file" accept=".csv" required>
+                        <div class="invalid-feedback">Please select a CSV file.</div>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="update_existing" name="update_existing">
+                        <label class="form-check-label" for="update_existing">
+                            Update existing books (if ISBN matches)
+                        </label>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="generate_barcodes" name="generate_barcodes" checked>
+                        <label class="form-check-label" for="generate_barcodes">
+                            Generate barcodes and QR codes
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="admin-pro-btn admin-pro-btn-outline" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i> Cancel
+                </button>
+                <button type="submit" form="importBooksForm" class="admin-pro-btn admin-pro-btn-primary">
+                    <i class="fas fa-file-import me-1"></i> Import Books
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-tooltip="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
         // Back to top button functionality
         const backToTopButton = document.getElementById('backToTop');
 
@@ -540,7 +1115,7 @@
         });
 
         // Add staggered animation to book cards
-        const bookCards = document.querySelectorAll('.book-card-wrapper');
+        const bookCards = document.querySelectorAll('.admin-pro-book-card');
         bookCards.forEach((card, index) => {
             card.style.opacity = '0';
             card.style.transform = 'translateY(20px)';
@@ -553,27 +1128,450 @@
             }, 100);
         });
 
-        // Add ripple effect to buttons
-        const rippleButtons = document.querySelectorAll('.btn-ripple');
-        rippleButtons.forEach(button => {
-            button.addEventListener('click', function(e) {
-                const x = e.clientX - e.target.getBoundingClientRect().left;
-                const y = e.clientY - e.target.getBoundingClientRect().top;
+        // Book checkboxes functionality
+        const bookCheckboxes = document.querySelectorAll('.book-checkbox');
+        const bulkActionsBar = document.getElementById('bulkActionsBar');
+        const selectedCountElement = document.getElementById('selectedCount');
 
-                const ripple = document.createElement('span');
-                ripple.style.width = '100px';
-                ripple.style.height = '100px';
-                ripple.style.left = `${x}px`;
-                ripple.style.top = `${y}px`;
-                ripple.classList.add('ripple-effect');
+        // Update bulk actions bar visibility and selected count
+        function updateBulkActionsBar() {
+            const selectedCount = document.querySelectorAll('.book-checkbox:checked').length;
 
-                this.appendChild(ripple);
+            if (selectedCount > 0) {
+                bulkActionsBar.classList.remove('d-none');
+                selectedCountElement.textContent = selectedCount;
+            } else {
+                bulkActionsBar.classList.add('d-none');
+            }
+        }
 
-                setTimeout(() => {
-                    ripple.remove();
-                }, 600);
+        // Add event listeners to checkboxes
+        bookCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateBulkActionsBar);
+        });
+
+        // Clear selection button
+        const clearSelectionBtn = document.getElementById('clearSelectionBtn');
+        if (clearSelectionBtn) {
+            clearSelectionBtn.addEventListener('click', function() {
+                bookCheckboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                updateBulkActionsBar();
+            });
+        }
+
+        // View switcher functionality
+        const viewOptions = document.querySelectorAll('[data-view]');
+        const bookViewContainer = document.querySelector('.book-view-container');
+
+        viewOptions.forEach(option => {
+            option.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // Remove active class from all options
+                viewOptions.forEach(opt => opt.classList.remove('active'));
+
+                // Add active class to clicked option
+                this.classList.add('active');
+
+                // Get view type
+                const viewType = this.getAttribute('data-view');
+
+                // Remove all view classes
+                bookViewContainer.classList.remove('grid-view', 'list-view', 'compact-view');
+
+                // Add selected view class
+                bookViewContainer.classList.add(viewType + '-view');
+
+                // Save preference in localStorage
+                localStorage.setItem('bookViewPreference', viewType);
             });
         });
+
+        // Load saved view preference
+        const savedViewPreference = localStorage.getItem('bookViewPreference');
+        if (savedViewPreference) {
+            const savedViewOption = document.querySelector(`[data-view="${savedViewPreference}"]`);
+            if (savedViewOption) {
+                savedViewOption.click();
+            }
+        }
+
+        // Bulk action buttons functionality
+        const bulkExportBtn = document.getElementById('bulkExportBtn');
+        const quickExportBtn = document.getElementById('quickExportBtn');
+        const bulkLabelBtn = document.getElementById('bulkLabelBtn');
+        const quickLabelBtn = document.getElementById('quickLabelBtn');
+        const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
+        const quickDeleteBtn = document.getElementById('quickDeleteBtn');
+        const bulkCategoryBtn = document.getElementById('bulkCategoryBtn');
+
+        function getSelectedBookIds() {
+            return Array.from(document.querySelectorAll('.book-checkbox:checked')).map(checkbox => checkbox.value);
+        }
+
+        // Export functionality
+        function exportSelectedBooks() {
+            const selectedIds = getSelectedBookIds();
+            if (selectedIds.length === 0) {
+                alert('Please select at least one book to export.');
+                return;
+            }
+
+            alert(`Exporting ${selectedIds.length} books. This feature will be implemented soon.`);
+            // Actual implementation would involve an AJAX call to a server endpoint
+        }
+
+        if (bulkExportBtn) bulkExportBtn.addEventListener('click', exportSelectedBooks);
+        if (quickExportBtn) quickExportBtn.addEventListener('click', exportSelectedBooks);
+
+        // Label generation functionality
+        function generateLabelsForSelectedBooks() {
+            const selectedIds = getSelectedBookIds();
+            if (selectedIds.length === 0) {
+                alert('Please select at least one book to generate labels.');
+                return;
+            }
+
+            alert(`Generating labels for ${selectedIds.length} books. This feature will be implemented soon.`);
+            // Actual implementation would involve an AJAX call to a server endpoint
+        }
+
+        if (bulkLabelBtn) bulkLabelBtn.addEventListener('click', generateLabelsForSelectedBooks);
+        if (quickLabelBtn) quickLabelBtn.addEventListener('click', generateLabelsForSelectedBooks);
+
+        // Delete functionality
+        function deleteSelectedBooks() {
+            const selectedIds = getSelectedBookIds();
+            if (selectedIds.length === 0) {
+                alert('Please select at least one book to delete.');
+                return;
+            }
+
+            if (confirm(`Are you sure you want to delete ${selectedIds.length} books? This action cannot be undone.`)) {
+                alert(`Deleting ${selectedIds.length} books. This feature will be implemented soon.`);
+                // Actual implementation would involve an AJAX call to a server endpoint
+            }
+        }
+
+        if (bulkDeleteBtn) bulkDeleteBtn.addEventListener('click', deleteSelectedBooks);
+        if (quickDeleteBtn) quickDeleteBtn.addEventListener('click', deleteSelectedBooks);
+
+        // Category update functionality
+        if (bulkCategoryBtn) {
+            bulkCategoryBtn.addEventListener('click', function() {
+                const selectedIds = getSelectedBookIds();
+                if (selectedIds.length === 0) {
+                    alert('Please select at least one book to update category.');
+                    return;
+                }
+
+                // Here you would show a modal with category selection options
+                alert(`Updating category for ${selectedIds.length} books. This feature will be implemented soon.`);
+            });
+        }
+
+        // Tool buttons functionality
+        const exportBooksBtn = document.getElementById('exportBooksBtn');
+        const generateLabelsBtn = document.getElementById('generateLabelsBtn');
+        const printCatalogBtn = document.getElementById('printCatalogBtn');
+
+        if (exportBooksBtn) {
+            exportBooksBtn.addEventListener('click', function() {
+                alert('Export books functionality will be implemented soon.');
+            });
+        }
+
+        if (generateLabelsBtn) {
+            generateLabelsBtn.addEventListener('click', function() {
+                alert('Generate labels functionality will be implemented soon.');
+            });
+        }
+
+        if (printCatalogBtn) {
+            printCatalogBtn.addEventListener('click', function() {
+                alert('Print catalog functionality will be implemented soon.');
+            });
+        }
     });
+
+    // Book action functions
+    function issueBook(id) {
+        // Redirect to issue book page or show modal
+        alert('Issue book ID: ' + id + '. This feature will be implemented soon.');
+    }
+
+    function generateLabel(id) {
+        // Generate and download label
+        alert('Generate label for book ID: ' + id + '. This feature will be implemented soon.');
+    }
+
+    function duplicateBook(id) {
+        // Duplicate book
+        alert('Duplicate book ID: ' + id + '. This feature will be implemented soon.');
+    }
 </script>
+
+<style>
+    /* Book card styles */
+    .admin-pro-book-card {
+        border: none;
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        height: 100%;
+        transition: all 0.3s ease;
+        background-color: var(--surface);
+        position: relative;
+    }
+
+    .admin-pro-book-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .admin-pro-book-card-checkbox {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 10;
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .admin-pro-book-card-cover {
+        position: relative;
+        height: 220px;
+        overflow: hidden;
+    }
+
+    .admin-pro-book-card-cover img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: all 0.5s ease;
+    }
+
+    .admin-pro-book-card:hover .admin-pro-book-card-cover img {
+        transform: scale(1.05);
+    }
+
+    .admin-pro-book-card-status {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 5;
+    }
+
+    .admin-pro-book-card-content {
+        padding: 1.25rem;
+    }
+
+    .admin-pro-book-card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        height: 2.8rem;
+    }
+
+    .admin-pro-book-card-author {
+        font-size: 0.9rem;
+        color: var(--medium);
+        margin-bottom: 0.75rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .admin-pro-book-card-author a {
+        color: var(--primary-color);
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .admin-pro-book-card-author a:hover {
+        color: var(--primary-dark);
+        text-decoration: underline;
+    }
+
+    .admin-pro-book-card-categories {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-bottom: 0.75rem;
+        min-height: 1.8rem;
+    }
+
+    .admin-pro-book-card-category {
+        display: inline-block;
+        padding: 0.2em 0.5em;
+        border-radius: 50rem;
+        font-size: 0.7rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        background-color: rgba(var(--secondary-color-rgb), 0.1);
+        color: var(--secondary-color);
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+
+    .admin-pro-book-card-category:hover {
+        background-color: var(--secondary-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .admin-pro-book-card-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        color: var(--medium-light);
+        margin-bottom: 1rem;
+    }
+
+    .admin-pro-book-card-actions {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    /* Bulk actions bar */
+    .admin-pro-bulk-actions-bar {
+        background-color: var(--light);
+        border: 1px solid var(--border-color);
+        border-left: 4px solid var(--primary-color);
+    }
+
+    [data-bs-theme="dark"] .admin-pro-bulk-actions-bar {
+        background-color: var(--dark);
+        border-color: var(--border-dark);
+    }
+
+    /* View switcher styles */
+    .book-view-container.list-view .admin-pro-book-card {
+        display: flex;
+        flex-direction: row;
+        height: auto;
+    }
+
+    .book-view-container.list-view .admin-pro-book-card-cover {
+        width: 120px;
+        height: 180px;
+        flex-shrink: 0;
+    }
+
+    .book-view-container.list-view .admin-pro-book-card-content {
+        flex-grow: 1;
+    }
+
+    .book-view-container.compact-view .col-xl-3 {
+        width: 20%;
+    }
+
+    .book-view-container.compact-view .admin-pro-book-card-cover {
+        height: 180px;
+    }
+
+    .book-view-container.compact-view .admin-pro-book-card-content {
+        padding: 0.75rem;
+    }
+
+    .book-view-container.compact-view .admin-pro-book-card-title {
+        font-size: 0.9rem;
+        height: 2.4rem;
+    }
+
+    .book-view-container.compact-view .admin-pro-book-card-author {
+        font-size: 0.8rem;
+    }
+
+    .book-view-container.compact-view .admin-pro-book-card-meta,
+    .book-view-container.compact-view .admin-pro-book-card-categories {
+        display: none;
+    }
+
+    /* Pagination styles */
+    .admin-pro-pagination .page-link {
+        color: var(--primary-color);
+        border-color: var(--border-color);
+        padding: 0.5rem 0.75rem;
+        min-width: 38px;
+        text-align: center;
+    }
+
+    .admin-pro-pagination .page-item.active .page-link {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+    }
+
+    .admin-pro-pagination .page-link:hover {
+        background-color: var(--light);
+        color: var(--primary-dark);
+    }
+
+    .admin-pro-pagination-info {
+        color: var(--medium);
+        font-size: 0.9rem;
+    }
+
+    /* Back to top button */
+    .admin-pro-back-to-top {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: var(--shadow-md);
+        transition: all 0.3s ease;
+        z-index: 100;
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .admin-pro-back-to-top:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    /* Dark mode adjustments */
+    [data-bs-theme="dark"] .admin-pro-book-card {
+        background-color: var(--dark-surface);
+    }
+
+    [data-bs-theme="dark"] .admin-pro-book-card-checkbox {
+        background-color: rgba(0, 0, 0, 0.6);
+    }
+
+    [data-bs-theme="dark"] .admin-pro-pagination .page-link {
+        background-color: var(--dark-surface);
+        border-color: var(--border-dark);
+        color: var(--light);
+    }
+
+    [data-bs-theme="dark"] .admin-pro-pagination .page-link:hover {
+        background-color: var(--dark);
+    }
+</style>
 {% endblock %}

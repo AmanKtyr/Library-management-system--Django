@@ -12,47 +12,215 @@
 {% endblock %}
 
 {% block content %}
-<div class="admin-pro-card mb-4 fade-in-up">
-    <div class="admin-pro-card-header d-flex justify-content-between align-items-center">
-        <h5 class="admin-pro-card-title">Library Members</h5>
-        <div class="d-flex">
-            <form class="d-flex me-2" method="GET" action="">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search members..." name="q" value="{{ search_query }}">
-                    <button class="btn btn-primary" type="submit">
-                        <i class="fas fa-search"></i>
+<!-- Member Overview Section -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="admin-pro-stats-card primary h-100 fade-in-up">
+            <div class="admin-pro-stats-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="admin-pro-stats-content">
+                <div class="admin-pro-stats-value">{{ memberships|length }}</div>
+                <div class="admin-pro-stats-label">Total Members</div>
+                <div class="admin-pro-stats-trend up">
+                    <i class="fas fa-chart-line"></i> Active Library
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="admin-pro-stats-card success h-100 fade-in-up" style="animation-delay: 0.1s;">
+            <div class="admin-pro-stats-icon">
+                <i class="fas fa-user-check"></i>
+            </div>
+            <div class="admin-pro-stats-content">
+                <div class="admin-pro-stats-value">{{ active_members|default:memberships|length }}</div>
+                <div class="admin-pro-stats-label">Active Members</div>
+                <div class="admin-pro-stats-trend up">
+                    <i class="fas fa-check-circle"></i> Good Standing
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="admin-pro-stats-card warning h-100 fade-in-up" style="animation-delay: 0.2s;">
+            <div class="admin-pro-stats-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="admin-pro-stats-content">
+                <div class="admin-pro-stats-value">{{ expiring_soon|default:"0" }}</div>
+                <div class="admin-pro-stats-label">Expiring Soon</div>
+                <div class="admin-pro-stats-trend">
+                    <i class="fas fa-exclamation-circle"></i> Next 30 Days
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="admin-pro-stats-card danger h-100 fade-in-up" style="animation-delay: 0.3s;">
+            <div class="admin-pro-stats-icon">
+                <i class="fas fa-user-times"></i>
+            </div>
+            <div class="admin-pro-stats-content">
+                <div class="admin-pro-stats-value">{{ expired_members|default:"0" }}</div>
+                <div class="admin-pro-stats-label">Expired Members</div>
+                <div class="admin-pro-stats-trend down">
+                    <i class="fas fa-exclamation-triangle"></i> Needs Renewal
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Member Management Tools -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="admin-pro-card h-100 fade-in-up">
+            <div class="admin-pro-card-header">
+                <h5 class="admin-pro-card-title">Member Management Tools</h5>
+            </div>
+            <div class="admin-pro-card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="admin-pro-tool-card">
+                            <div class="admin-pro-tool-icon">
+                                <i class="fas fa-file-export"></i>
+                            </div>
+                            <div class="admin-pro-tool-content">
+                                <h6>Export Members</h6>
+                                <p class="small text-muted">Download member data as CSV or Excel</p>
+                                <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline w-100" id="exportMembersBtn">
+                                    <i class="fas fa-download me-1"></i> Export
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="admin-pro-tool-card">
+                            <div class="admin-pro-tool-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="admin-pro-tool-content">
+                                <h6>Email Members</h6>
+                                <p class="small text-muted">Send announcements or reminders</p>
+                                <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline w-100" id="emailMembersBtn">
+                                    <i class="fas fa-paper-plane me-1"></i> Compose
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="admin-pro-tool-card">
+                            <div class="admin-pro-tool-icon">
+                                <i class="fas fa-id-card"></i>
+                            </div>
+                            <div class="admin-pro-tool-content">
+                                <h6>Print ID Cards</h6>
+                                <p class="small text-muted">Generate membership cards</p>
+                                <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline w-100" id="printCardsBtn">
+                                    <i class="fas fa-print me-1"></i> Print
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="admin-pro-card h-100 fade-in-up">
+            <div class="admin-pro-card-header">
+                <h5 class="admin-pro-card-title">Quick Actions</h5>
+            </div>
+            <div class="admin-pro-card-body">
+                <div class="d-grid gap-2">
+                    <button type="button" class="admin-pro-btn admin-pro-btn-primary" data-bs-toggle="modal" data-bs-target="#addMemberModal">
+                        <i class="fas fa-user-plus me-2"></i> Add New Member
+                    </button>
+                    <a href="{% url 'library_admin:membership_requests' %}" class="admin-pro-btn admin-pro-btn-outline">
+                        <i class="fas fa-user-clock me-2"></i> View Membership Requests
+                        {% if pending_requests_count > 0 %}
+                        <span class="badge bg-danger ms-2">{{ pending_requests_count }}</span>
+                        {% endif %}
+                    </a>
+                    <a href="{% url 'library_admin:settings' %}" class="admin-pro-btn admin-pro-btn-outline">
+                        <i class="fas fa-tags me-2"></i> Manage Membership Plans
+                    </a>
+                    <button type="button" class="admin-pro-btn admin-pro-btn-outline" id="bulkRenewalBtn">
+                        <i class="fas fa-sync-alt me-2"></i> Bulk Renewal
                     </button>
                 </div>
-            </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Member List Section -->
+<div class="admin-pro-card mb-4 fade-in-up">
+    <div class="admin-pro-card-header d-flex justify-content-between align-items-center">
+        <h5 class="admin-pro-card-title">
+            <i class="fas fa-users me-2"></i> Library Members
+        </h5>
+        <div class="d-flex">
+            <div class="input-group me-2" style="width: 250px;">
+                <span class="input-group-text bg-transparent">
+                    <i class="fas fa-search"></i>
+                </span>
+                <input type="text" class="form-control" id="memberSearch" placeholder="Search members..." aria-label="Search members">
+            </div>
+            <div class="dropdown me-2">
+                <button class="admin-pro-btn admin-pro-btn-outline dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-filter me-1"></i> Filter
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+                    <li><h6 class="dropdown-header">Status</h6></li>
+                    <li><a class="dropdown-item filter-item" href="#" data-filter="status" data-value="all">All Members</a></li>
+                    <li><a class="dropdown-item filter-item" href="#" data-filter="status" data-value="active">Active Members</a></li>
+                    <li><a class="dropdown-item filter-item" href="#" data-filter="status" data-value="expired">Expired Members</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><h6 class="dropdown-header">Membership Plan</h6></li>
+                    <li><a class="dropdown-item filter-item" href="#" data-filter="plan" data-value="all">All Plans</a></li>
+                    <!-- Membership plans would be dynamically added here -->
+                </ul>
+            </div>
             <button type="button" class="admin-pro-btn admin-pro-btn-primary" data-bs-toggle="modal" data-bs-target="#addMemberModal">
-                <i class="fas fa-plus"></i> Add Member
+                <i class="fas fa-plus me-1"></i> Add Member
             </button>
         </div>
     </div>
     <div class="admin-pro-card-body">
         {% if memberships %}
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover admin-pro-table" id="memberTable">
                     <thead>
                         <tr>
-                            <th>Member</th>
-                            <th>Membership #</th>
-                            <th>Plan</th>
-                            <th>Start Date</th>
-                            <th>End Date</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th style="width: 3%;">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="selectAllMembers">
+                                </div>
+                            </th>
+                            <th style="width: 25%;">Member</th>
+                            <th style="width: 15%;">Membership</th>
+                            <th style="width: 15%;">Plan</th>
+                            <th style="width: 15%;">Validity</th>
+                            <th style="width: 12%;">Status</th>
+                            <th style="width: 15%;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for membership in memberships %}
-                            <tr>
+                            <tr data-status="{% if membership.is_expired %}expired{% else %}active{% endif %}" data-plan="{{ membership.plan.id }}">
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input member-checkbox" type="checkbox" value="{{ membership.id }}">
+                                    </div>
+                                </td>
                                 <td>
                                     <div class="d-flex align-items-center">
                                         {% if membership.user.profile_picture %}
-                                            <img src="{{ membership.user.profile_picture.url }}" class="rounded-circle me-2" width="40" height="40" alt="{{ membership.user.get_full_name }}">
+                                            <img src="{{ membership.user.profile_picture.url }}" class="rounded-circle me-3" width="48" height="48" alt="{{ membership.user.get_full_name }}">
                                         {% else %}
-                                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
                                                 <i class="fas fa-user"></i>
                                             </div>
                                         {% endif %}
@@ -62,28 +230,54 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td>{{ membership.membership_number }}</td>
-                                <td>{{ membership.plan.name }}</td>
-                                <td>{{ membership.start_date|date:"M d, Y" }}</td>
-                                <td>{{ membership.end_date|date:"M d, Y" }}</td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-medium">{{ membership.membership_number }}</span>
+                                        <small class="text-muted">ID: {{ membership.id }}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="admin-pro-badge admin-pro-badge-primary">
+                                        <i class="fas fa-tag me-1"></i> {{ membership.plan.name }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <small><i class="fas fa-calendar-plus text-success me-1"></i> {{ membership.start_date|date:"M d, Y" }}</small>
+                                        <small><i class="fas fa-calendar-times text-danger me-1"></i> {{ membership.end_date|date:"M d, Y" }}</small>
+                                    </div>
+                                </td>
                                 <td>
                                     {% if membership.is_expired %}
-                                        <span class="badge bg-danger">Expired</span>
+                                        <span class="admin-pro-badge admin-pro-badge-danger">
+                                            <i class="fas fa-times-circle me-1"></i> Expired
+                                        </span>
                                     {% else %}
-                                        <span class="badge bg-success">Active</span>
+                                        <span class="admin-pro-badge admin-pro-badge-success">
+                                            <i class="fas fa-check-circle me-1"></i> Active
+                                        </span>
                                     {% endif %}
                                 </td>
                                 <td>
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#viewMemberModal{{ membership.id }}">
+                                    <div class="d-flex">
+                                        <button type="button" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-info me-1" data-bs-toggle="modal" data-bs-target="#viewMemberModal{{ membership.id }}" data-bs-tooltip="tooltip" title="View Details">
                                             <i class="fas fa-eye"></i>
                                         </button>
-                                        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editMemberModal{{ membership.id }}">
+                                        <button type="button" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-primary me-1" data-bs-toggle="modal" data-bs-target="#editMemberModal{{ membership.id }}" data-bs-tooltip="tooltip" title="Edit Member">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#removeMemberModal{{ membership.id }}">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
+                                        <div class="dropdown">
+                                            <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline dropdown-toggle" type="button" id="memberActionDropdown{{ membership.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="memberActionDropdown{{ membership.id }}">
+                                                <li><a class="dropdown-item" href="#" onclick="renewMembership({{ membership.id }})"><i class="fas fa-sync-alt me-2"></i> Renew Membership</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="printMemberCard({{ membership.id }})"><i class="fas fa-id-card me-2"></i> Print ID Card</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="viewTransactions({{ membership.id }})"><i class="fas fa-history me-2"></i> View Transactions</a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item text-danger" href="#" data-bs-toggle="modal" data-bs-target="#removeMemberModal{{ membership.id }}"><i class="fas fa-trash me-2"></i> Remove Member</a></li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
@@ -91,15 +285,38 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Bulk Actions Bar -->
+            <div class="admin-pro-bulk-actions-bar mt-3 p-2 rounded d-none" id="bulkActionsBar">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="me-2"><span id="selectedCount">0</span> members selected</span>
+                        <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline" id="clearSelectionBtn">
+                            <i class="fas fa-times me-1"></i> Clear
+                        </button>
+                    </div>
+                    <div>
+                        <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-primary me-2" id="bulkRenewBtn">
+                            <i class="fas fa-sync-alt me-1"></i> Renew
+                        </button>
+                        <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-info me-2" id="bulkEmailBtn">
+                            <i class="fas fa-envelope me-1"></i> Email
+                        </button>
+                        <button class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-danger" id="bulkRemoveBtn">
+                            <i class="fas fa-trash me-1"></i> Remove
+                        </button>
+                    </div>
+                </div>
+            </div>
         {% else %}
-            <div class="text-center py-5">
-                <div class="mb-3">
-                    <i class="fas fa-user-friends fa-4x text-muted"></i>
+            <div class="admin-pro-empty-state py-5">
+                <div class="admin-pro-empty-icon mb-3">
+                    <i class="fas fa-user-friends"></i>
                 </div>
                 <h4>No Members Yet</h4>
-                <p class="text-muted">Your library doesn't have any members yet.</p>
+                <p class="text-muted">Your library doesn't have any members yet. Add members to start building your community.</p>
                 <button type="button" class="admin-pro-btn admin-pro-btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#addMemberModal">
-                    <i class="fas fa-plus"></i> Add Member
+                    <i class="fas fa-plus me-2"></i> Add Your First Member
                 </button>
             </div>
         {% endif %}
@@ -110,55 +327,237 @@
 <div class="modal fade" id="addMemberModal" tabindex="-1" aria-labelledby="addMemberModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addMemberModalLabel">Add New Member</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="addMemberModalLabel">
+                    <i class="fas fa-user-plus me-2"></i> Add New Member
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="addMemberForm" method="post" action="{% url 'library_admin:members' %}">
-                    {% csrf_token %}
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="email" class="form-label">Email Address</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="membership_plan" class="form-label">Membership Plan</label>
-                            <select class="form-select" id="membership_plan" name="membership_plan" required>
-                                <option value="">Select Plan</option>
-                                <!-- Add membership plans here -->
-                            </select>
-                        </div>
+                <ul class="nav nav-tabs mb-4" id="memberTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="new-member-tab" data-bs-toggle="tab" data-bs-target="#new-member-tab-pane" type="button" role="tab" aria-controls="new-member-tab-pane" aria-selected="true">
+                            <i class="fas fa-user-plus me-1"></i> New Member
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="existing-user-tab" data-bs-toggle="tab" data-bs-target="#existing-user-tab-pane" type="button" role="tab" aria-controls="existing-user-tab-pane" aria-selected="false">
+                            <i class="fas fa-user-check me-1"></i> Existing User
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="bulk-import-tab" data-bs-toggle="tab" data-bs-target="#bulk-import-tab-pane" type="button" role="tab" aria-controls="bulk-import-tab-pane" aria-selected="false">
+                            <i class="fas fa-file-import me-1"></i> Bulk Import
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="memberTabsContent">
+                    <!-- New Member Tab -->
+                    <div class="tab-pane fade show active" id="new-member-tab-pane" role="tabpanel" aria-labelledby="new-member-tab" tabindex="0">
+                        <form id="addMemberForm" method="post" action="{% url 'library_admin:members' %}" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="add_new">
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                        <input type="email" class="form-control" id="email" name="email" required>
+                                        <div class="invalid-feedback">Please enter a valid email address.</div>
+                                    </div>
+                                    <small class="form-text text-muted">This will be used as the login username</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="membership_plan" class="form-label">Membership Plan <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="membership_plan" name="membership_plan" required>
+                                        <option value="" selected disabled>Select Plan</option>
+                                        {% for plan in membership_plans %}
+                                            <option value="{{ plan.id }}">{{ plan.name }} - {{ plan.duration_days }} days (₹{{ plan.price }})</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="invalid-feedback">Please select a membership plan.</div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="first_name" class="form-label">First Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="first_name" name="first_name" required>
+                                    <div class="invalid-feedback">Please enter the first name.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="last_name" class="form-label">Last Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="last_name" name="last_name" required>
+                                    <div class="invalid-feedback">Please enter the last name.</div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="phone_number" class="form-label">Phone Number</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                        <input type="tel" class="form-control" id="phone_number" name="phone_number">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="address" class="form-label">Address</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                                        <input type="text" class="form-control" id="address" name="address">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="start_date" class="form-label">Start Date <span class="text-danger">*</span></label>
+                                    <input type="date" class="form-control" id="start_date" name="start_date" required value="{{ today|date:'Y-m-d' }}">
+                                    <div class="invalid-feedback">Please select a start date.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="notes" class="form-label">Notes</label>
+                                    <textarea class="form-control" id="notes" name="notes" rows="1"></textarea>
+                                </div>
+                            </div>
+
+
+
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="send_welcome_email" name="send_welcome_email" checked>
+                                <label class="form-check-label" for="send_welcome_email">
+                                    Send welcome email with login details
+                                </label>
+                            </div>
+
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="admin-pro-btn admin-pro-btn-outline me-2" data-bs-dismiss="modal">
+                                    <i class="fas fa-times me-1"></i> Cancel
+                                </button>
+                                <button type="submit" class="admin-pro-btn admin-pro-btn-primary">
+                                    <i class="fas fa-user-plus me-1"></i> Add Member
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="first_name" class="form-label">First Name</label>
-                            <input type="text" class="form-control" id="first_name" name="first_name" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="last_name" class="form-label">Last Name</label>
-                            <input type="text" class="form-control" id="last_name" name="last_name" required>
-                        </div>
+
+                    <!-- Existing User Tab -->
+                    <div class="tab-pane fade" id="existing-user-tab-pane" role="tabpanel" aria-labelledby="existing-user-tab" tabindex="0">
+                        <form id="addExistingUserForm" method="post" action="{% url 'library_admin:members' %}" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="add_existing">
+
+                            <div class="mb-4">
+                                <label for="existing_user" class="form-label">Select User <span class="text-danger">*</span></label>
+                                <select class="form-select" id="existing_user" name="existing_user" required>
+                                    <option value="" selected disabled>Search for a user...</option>
+                                </select>
+                                <div class="invalid-feedback">Please select a user.</div>
+                                <small class="form-text text-muted">Search for users who are not already members of your library</small>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="existing_membership_plan" class="form-label">Membership Plan <span class="text-danger">*</span></label>
+                                <select class="form-select" id="existing_membership_plan" name="membership_plan" required>
+                                    <option value="" selected disabled>Select Plan</option>
+                                    {% for plan in membership_plans %}
+                                        <option value="{{ plan.id }}">{{ plan.name }} - {{ plan.duration_days }} days (₹{{ plan.price }})</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="invalid-feedback">Please select a membership plan.</div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="existing_start_date" class="form-label">Start Date <span class="text-danger">*</span></label>
+                                    <input type="date" class="form-control" id="existing_start_date" name="start_date" required value="{{ today|date:'Y-m-d' }}">
+                                    <div class="invalid-feedback">Please select a start date.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="existing_notes" class="form-label">Notes</label>
+                                    <textarea class="form-control" id="existing_notes" name="notes" rows="1"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="existing_send_welcome_email" name="send_welcome_email" checked>
+                                <label class="form-check-label" for="existing_send_welcome_email">
+                                    Send welcome email with membership details
+                                </label>
+                            </div>
+
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="admin-pro-btn admin-pro-btn-outline me-2" data-bs-dismiss="modal">
+                                    <i class="fas fa-times me-1"></i> Cancel
+                                </button>
+                                <button type="submit" class="admin-pro-btn admin-pro-btn-primary">
+                                    <i class="fas fa-user-plus me-1"></i> Add Member
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="phone_number" class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control" id="phone_number" name="phone_number">
-                        </div>
-                        <div class="col-md-6">
-                            <label for="start_date" class="form-label">Start Date</label>
-                            <input type="date" class="form-control" id="start_date" name="start_date" required>
-                        </div>
+
+                    <!-- Bulk Import Tab -->
+                    <div class="tab-pane fade" id="bulk-import-tab-pane" role="tabpanel" aria-labelledby="bulk-import-tab" tabindex="0">
+                        <form id="bulkImportForm" method="post" action="{% url 'library_admin:members' %}" enctype="multipart/form-data" class="needs-validation" novalidate>
+                            {% csrf_token %}
+
+                            <div class="alert alert-info mb-4">
+                                <div class="d-flex">
+                                    <div class="me-3">
+                                        <i class="fas fa-info-circle fa-2x"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="alert-heading">Bulk Import Instructions</h5>
+                                        <p class="mb-0">Upload a CSV file with member details. The file should have the following columns: email, first_name, last_name, phone_number, address (optional), and notes (optional).</p>
+                                        <a href="#" class="alert-link" id="downloadTemplateBtn">Download template</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="csv_file" class="form-label">CSV File <span class="text-danger">*</span></label>
+                                <input type="file" class="form-control" id="csv_file" name="csv_file" accept=".csv" required>
+                                <div class="invalid-feedback">Please select a CSV file.</div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="bulk_membership_plan" class="form-label">Membership Plan <span class="text-danger">*</span></label>
+                                <select class="form-select" id="bulk_membership_plan" name="membership_plan" required>
+                                    <option value="" selected disabled>Select Plan</option>
+                                    {% for plan in membership_plans %}
+                                        <option value="{{ plan.id }}">{{ plan.name }} - {{ plan.duration_days }} days (₹{{ plan.price }})</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="invalid-feedback">Please select a membership plan.</div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="bulk_start_date" class="form-label">Start Date <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="bulk_start_date" name="start_date" required value="{{ today|date:'Y-m-d' }}">
+                                <div class="invalid-feedback">Please select a start date.</div>
+                            </div>
+
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="bulk_send_welcome_email" name="send_welcome_email" checked>
+                                <label class="form-check-label" for="bulk_send_welcome_email">
+                                    Send welcome emails to all imported members
+                                </label>
+                            </div>
+
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="admin-pro-btn admin-pro-btn-outline me-2" data-bs-dismiss="modal">
+                                    <i class="fas fa-times me-1"></i> Cancel
+                                </button>
+                                <button type="submit" class="admin-pro-btn admin-pro-btn-primary">
+                                    <i class="fas fa-file-import me-1"></i> Import Members
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                    <div class="mb-3">
-                        <label for="notes" class="form-label">Notes</label>
-                        <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" form="addMemberForm" class="btn btn-primary">Add Member</button>
+                </div>
             </div>
         </div>
     </div>
@@ -186,7 +585,7 @@
                         <h4>{{ membership.user.get_full_name }}</h4>
                         <p class="text-muted">Member since {{ membership.start_date|date:"F j, Y" }}</p>
                     </div>
-                    
+
                     <div class="row mb-2">
                         <div class="col-4 fw-bold">Email:</div>
                         <div class="col-8">{{ membership.user.email }}</div>
@@ -228,7 +627,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Edit Member Modal -->
     <div class="modal fade" id="editMemberModal{{ membership.id }}" tabindex="-1" aria-labelledby="editMemberModalLabel{{ membership.id }}" aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -242,7 +641,7 @@
                         {% csrf_token %}
                         <input type="hidden" name="membership_id" value="{{ membership.id }}">
                         <input type="hidden" name="action" value="edit">
-                        
+
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="edit_email{{ membership.id }}" class="form-label">Email Address</label>
@@ -298,7 +697,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Remove Member Modal -->
     <div class="modal fade" id="removeMemberModal{{ membership.id }}" tabindex="-1" aria-labelledby="removeMemberModalLabel{{ membership.id }}" aria-hidden="true">
         <div class="modal-dialog">
@@ -310,7 +709,7 @@
                 <div class="modal-body">
                     <p>Are you sure you want to remove <strong>{{ membership.user.get_full_name }}</strong> from your library members?</p>
                     <p class="text-danger">This action cannot be undone. All membership data will be lost.</p>
-                    
+
                     <form id="removeMemberForm{{ membership.id }}" method="post" action="{% url 'library_admin:members' %}">
                         {% csrf_token %}
                         <input type="hidden" name="membership_id" value="{{ membership.id }}">
@@ -325,4 +724,442 @@
         </div>
     </div>
 {% endfor %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-tooltip="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Initialize form validation
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+
+        // Member search functionality
+        const memberSearch = document.getElementById('memberSearch');
+        if (memberSearch) {
+            memberSearch.addEventListener('keyup', function() {
+                const searchValue = this.value.toLowerCase();
+                const memberTable = document.getElementById('memberTable');
+                if (!memberTable) return;
+
+                const rows = memberTable.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+                for (let i = 0; i < rows.length; i++) {
+                    const nameCell = rows[i].getElementsByTagName('td')[1]; // Member column
+
+                    if (nameCell) {
+                        const nameText = nameCell.textContent || nameCell.innerText;
+
+                        if (nameText.toLowerCase().indexOf(searchValue) > -1) {
+                            rows[i].style.display = "";
+                        } else {
+                            rows[i].style.display = "none";
+                        }
+                    }
+                }
+            });
+        }
+
+        // Filter functionality
+        const filterItems = document.querySelectorAll('.filter-item');
+        filterItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const filterType = this.getAttribute('data-filter');
+                const filterValue = this.getAttribute('data-value');
+
+                const memberTable = document.getElementById('memberTable');
+                if (!memberTable) return;
+
+                const rows = memberTable.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+                for (let i = 0; i < rows.length; i++) {
+                    if (filterValue === 'all') {
+                        rows[i].style.display = "";
+                    } else {
+                        const rowValue = rows[i].getAttribute('data-' + filterType);
+
+                        if (rowValue === filterValue) {
+                            rows[i].style.display = "";
+                        } else {
+                            rows[i].style.display = "none";
+                        }
+                    }
+                }
+
+                // Update dropdown button text
+                document.getElementById('filterDropdown').innerHTML =
+                    '<i class="fas fa-filter me-1"></i> ' + this.textContent;
+            });
+        });
+
+        // Select all members checkbox
+        const selectAllCheckbox = document.getElementById('selectAllMembers');
+        if (selectAllCheckbox) {
+            selectAllCheckbox.addEventListener('change', function() {
+                const memberCheckboxes = document.querySelectorAll('.member-checkbox');
+                memberCheckboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+
+                updateBulkActionsBar();
+            });
+        }
+
+        // Individual member checkboxes
+        const memberCheckboxes = document.querySelectorAll('.member-checkbox');
+        memberCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                updateBulkActionsBar();
+
+                // Update "select all" checkbox state
+                const allChecked = document.querySelectorAll('.member-checkbox:checked').length ===
+                                  document.querySelectorAll('.member-checkbox').length;
+                document.getElementById('selectAllMembers').checked = allChecked;
+            });
+        });
+
+        // Clear selection button
+        const clearSelectionBtn = document.getElementById('clearSelectionBtn');
+        if (clearSelectionBtn) {
+            clearSelectionBtn.addEventListener('click', function() {
+                const memberCheckboxes = document.querySelectorAll('.member-checkbox');
+                memberCheckboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+
+                document.getElementById('selectAllMembers').checked = false;
+                updateBulkActionsBar();
+            });
+        }
+
+        // Bulk action buttons
+        const bulkRenewBtn = document.getElementById('bulkRenewBtn');
+        if (bulkRenewBtn) {
+            bulkRenewBtn.addEventListener('click', function() {
+                const selectedIds = getSelectedMemberIds();
+                if (selectedIds.length > 0) {
+                    // Show confirmation modal or perform action
+                    alert('Renew ' + selectedIds.length + ' memberships');
+                }
+            });
+        }
+
+        const bulkEmailBtn = document.getElementById('bulkEmailBtn');
+        if (bulkEmailBtn) {
+            bulkEmailBtn.addEventListener('click', function() {
+                const selectedIds = getSelectedMemberIds();
+                if (selectedIds.length > 0) {
+                    // Show email composition modal
+                    alert('Email ' + selectedIds.length + ' members');
+                }
+            });
+        }
+
+        const bulkRemoveBtn = document.getElementById('bulkRemoveBtn');
+        if (bulkRemoveBtn) {
+            bulkRemoveBtn.addEventListener('click', function() {
+                const selectedIds = getSelectedMemberIds();
+                if (selectedIds.length > 0) {
+                    // Show confirmation modal
+                    if (confirm('Are you sure you want to remove ' + selectedIds.length + ' members? This action cannot be undone.')) {
+                        // Perform removal action
+                        alert('Removing ' + selectedIds.length + ' members');
+                    }
+                }
+            });
+        }
+
+        // Export members button
+        const exportMembersBtn = document.getElementById('exportMembersBtn');
+        if (exportMembersBtn) {
+            exportMembersBtn.addEventListener('click', function() {
+                // Show export options modal or perform export
+                alert('Export members functionality');
+            });
+        }
+
+        // Email members button
+        const emailMembersBtn = document.getElementById('emailMembersBtn');
+        if (emailMembersBtn) {
+            emailMembersBtn.addEventListener('click', function() {
+                // Show email composition modal
+                alert('Email members functionality');
+            });
+        }
+
+        // Print ID cards button
+        const printCardsBtn = document.getElementById('printCardsBtn');
+        if (printCardsBtn) {
+            printCardsBtn.addEventListener('click', function() {
+                // Show print options modal or perform print
+                alert('Print ID cards functionality');
+            });
+        }
+
+        // Bulk renewal button
+        const bulkRenewalBtn = document.getElementById('bulkRenewalBtn');
+        if (bulkRenewalBtn) {
+            bulkRenewalBtn.addEventListener('click', function() {
+                // Show bulk renewal modal
+                alert('Bulk renewal functionality');
+            });
+        }
+
+        // Download template button
+        const downloadTemplateBtn = document.getElementById('downloadTemplateBtn');
+        if (downloadTemplateBtn) {
+            downloadTemplateBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                // Generate and download CSV template
+                const csvContent = "email,first_name,last_name,phone_number,address,notes\nexample@example.com,John,Doe,1234567890,\"123 Main St, City\",\"Sample notes\"";
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'members_import_template.csv');
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        }
+    });
+
+    // Function to update bulk actions bar visibility
+    function updateBulkActionsBar() {
+        const selectedCount = document.querySelectorAll('.member-checkbox:checked').length;
+        const bulkActionsBar = document.getElementById('bulkActionsBar');
+
+        if (selectedCount > 0) {
+            bulkActionsBar.classList.remove('d-none');
+            document.getElementById('selectedCount').textContent = selectedCount;
+        } else {
+            bulkActionsBar.classList.add('d-none');
+        }
+    }
+
+    // Function to get selected member IDs
+    function getSelectedMemberIds() {
+        const selectedCheckboxes = document.querySelectorAll('.member-checkbox:checked');
+        return Array.from(selectedCheckboxes).map(checkbox => checkbox.value);
+    }
+
+    // Member action functions
+    function renewMembership(id) {
+        // Show renewal modal or perform renewal
+        alert('Renew membership ID: ' + id);
+    }
+
+    function printMemberCard(id) {
+        // Show print options or perform print
+        alert('Print ID card for membership ID: ' + id);
+    }
+
+    function viewTransactions(id) {
+        // Navigate to transactions page or show modal
+        alert('View transactions for membership ID: ' + id);
+    }
+</script>
+
+<style>
+    /* Member management specific styles */
+    .admin-pro-stats-card {
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .admin-pro-stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .admin-pro-stats-card.primary {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        color: white;
+    }
+
+    .admin-pro-stats-card.success {
+        background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);
+        color: white;
+    }
+
+    .admin-pro-stats-card.warning {
+        background: linear-gradient(135deg, #f6c23e 0%, #dda20a 100%);
+        color: white;
+    }
+
+    .admin-pro-stats-card.danger {
+        background: linear-gradient(135deg, #e74a3b 0%, #be2617 100%);
+        color: white;
+    }
+
+    .admin-pro-stats-icon {
+        font-size: 2rem;
+        margin-bottom: 15px;
+        opacity: 0.8;
+    }
+
+    .admin-pro-stats-value {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .admin-pro-stats-label {
+        font-size: 0.9rem;
+        opacity: 0.8;
+        margin-bottom: 10px;
+    }
+
+    .admin-pro-stats-trend {
+        font-size: 0.8rem;
+        opacity: 0.9;
+    }
+
+    .admin-pro-stats-trend.up {
+        color: #a3ffcb;
+    }
+
+    .admin-pro-stats-trend.down {
+        color: #ffadad;
+    }
+
+    .admin-pro-tool-card {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .admin-pro-tool-card:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transform: translateY(-3px);
+    }
+
+    .admin-pro-tool-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        background-color: rgba(var(--bs-primary-rgb), 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: var(--bs-primary);
+        margin-bottom: 15px;
+    }
+
+    .admin-pro-tool-content {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .admin-pro-tool-content h6 {
+        margin-bottom: 5px;
+        font-weight: 600;
+    }
+
+    .admin-pro-tool-content p {
+        margin-bottom: 15px;
+    }
+
+    .admin-pro-tool-content .admin-pro-btn {
+        margin-top: auto;
+    }
+
+    .admin-pro-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.35em 0.65em;
+        font-size: 0.75em;
+        font-weight: 600;
+        line-height: 1;
+        color: #fff;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: 0.375rem;
+    }
+
+    .admin-pro-badge-primary {
+        background-color: var(--bs-primary);
+    }
+
+    .admin-pro-badge-success {
+        background-color: var(--bs-success);
+    }
+
+    .admin-pro-badge-warning {
+        background-color: var(--bs-warning);
+        color: #000;
+    }
+
+    .admin-pro-badge-danger {
+        background-color: var(--bs-danger);
+    }
+
+    .admin-pro-empty-state {
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .admin-pro-empty-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background-color: rgba(var(--bs-primary-rgb), 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: var(--bs-primary);
+        margin: 0 auto 1.5rem;
+    }
+
+    .admin-pro-bulk-actions-bar {
+        background-color: rgba(var(--bs-primary-rgb), 0.05);
+        border: 1px solid rgba(var(--bs-primary-rgb), 0.1);
+    }
+
+    /* Animation for stats cards */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translate3d(0, 30px, 0);
+        }
+        to {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+    .fade-in-up {
+        animation: fadeInUp 0.5s ease forwards;
+    }
+</style>
 {% endblock %}
