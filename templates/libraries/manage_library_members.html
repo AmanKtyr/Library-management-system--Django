@@ -13,7 +13,7 @@
                     {% if user.is_super_admin %}
                         <li class="breadcrumb-item"><a href="{% url 'libraries:manage_libraries' %}">Manage Libraries</a></li>
                     {% endif %}
-                    <li class="breadcrumb-item"><a href="{% url 'libraries:manage_library' slug=library.slug %}">Manage {{ library.name }}</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'library_admin:library_details' %}">Manage {{ library.name }}</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Members</li>
                 </ol>
             </nav>

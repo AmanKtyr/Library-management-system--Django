@@ -63,6 +63,9 @@ urlpatterns = [
     path('help/', views.help_documentation, name='help'),
     path('system-status/', views.system_status, name='system_status'),
 
-    # Library Details URL
-    path('library/', views.library_details, name='library_details'),
+    # Library Details URL - accessible at both paths
+    path('', views.library_details, name='library_details'),  # Root path
+    path('library/', views.library_details, name='library_details_alt'),
+    path('edit/', views.edit_library, name='edit_library'),
+    path('library/edit/', views.edit_library, name='edit_library_alt'),
 ]

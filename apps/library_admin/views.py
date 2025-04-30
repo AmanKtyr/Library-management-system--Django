@@ -17,6 +17,7 @@ from django.conf import settings
 
 from apps.accounts.models import User
 from apps.libraries.models import Library
+from apps.libraries.forms import LibraryForm
 from apps.books.models import Book, BookCopy, Author, Category, Publisher
 from apps.books.forms import CategoryForm, AuthorForm, PublisherForm
 from apps.transactions.models import Transaction, Membership, MembershipPlan, MembershipRequest, Reservation
@@ -1766,6 +1767,37 @@ def add_category(request):
 
     return render(request, 'library_admin/books/category_form.html', context)
 
+
+@login_required
+@user_passes_test(is_library_admin)
+def edit_library(request):
+    """View function for editing library details for the library admin."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    if request.method == 'POST':
+        form = LibraryForm(request.POST, request.FILES, instance=library)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Library '{library.name}' updated successfully.")
+            return redirect('library_admin:library_details')
+    else:
+        form = LibraryForm(instance=library)
+
+    context = {
+        'library': library,
+        'form': form,
+        'title': f'Edit Library: {library.name}',
+        'submit_text': 'Update Library',
+    }
+
+    return render(request, 'library_admin/libraries/edit_library.html', context)
 
 @login_required
 @user_passes_test(is_library_admin)

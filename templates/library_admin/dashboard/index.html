@@ -511,7 +511,7 @@
 <a href="{% url 'books:add_book' %}" class="admin-pro-btn admin-pro-btn-primary">
     <i class="fas fa-plus"></i> Add Book
 </a>
-<a href="{% url 'libraries:manage_library_staff' slug=library.slug %}" class="admin-pro-btn admin-pro-btn-outline">
+<a href="{% url 'library_admin:staff' %}" class="admin-pro-btn admin-pro-btn-outline">
     <i class="fas fa-user-plus"></i> Add Staff
 </a>
 {% endblock %}
@@ -564,7 +564,7 @@
                         <i class="fas fa-building me-2" style="color: #FF9933;"></i>Library Information
                     </h3>
                     <div class="admin-pro-card-actions">
-                        <a href="{% url 'libraries:manage_library' slug=library.slug %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-primary" style="background-color: #FF9933; border-color: #FF9933;">
+                        <a href="{% url 'library_admin:edit_library' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-primary" style="background-color: #FF9933; border-color: #FF9933;">
                             <i class="fas fa-edit"></i> Edit Library
                         </a>
                         <a href="{% url 'libraries:library_detail' slug=library.slug %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline" style="border-color: #FF9933; color: #FF9933;">
@@ -901,7 +901,7 @@
                             </a>
                         </div>
                         <div class="col-md-3 col-sm-6">
-                            <a href="{% url 'libraries:manage_library_staff' slug=library.slug %}" class="quick-action-card d-flex align-items-center p-3 rounded-3 text-decoration-none">
+                            <a href="{% url 'library_admin:staff' %}" class="quick-action-card d-flex align-items-center p-3 rounded-3 text-decoration-none">
                                 <div class="quick-action-icon rounded-circle p-3 me-3" style="background-color: #FFFFFF; border: 1px solid #ddd;">
                                     <i class="fas fa-users" style="color: #333;"></i>
                                 </div>
@@ -923,7 +923,7 @@
                             </a>
                         </div>
                         <div class="col-md-3 col-sm-6">
-                            <a href="{% url 'libraries:manage_library_members' slug=library.slug %}" class="quick-action-card d-flex align-items-center p-3 rounded-3 text-decoration-none">
+                            <a href="{% url 'library_admin:members' %}" class="quick-action-card d-flex align-items-center p-3 rounded-3 text-decoration-none">
                                 <div class="quick-action-icon rounded-circle p-3 me-3" style="background-color: #000080;">
                                     <i class="fas fa-user-friends text-white"></i>
                                 </div>

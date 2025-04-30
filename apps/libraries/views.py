@@ -74,31 +74,7 @@ def manage_libraries(request):
 
     return render(request, 'libraries/manage_libraries.html', context)
 
-@login_required
-def manage_library(request, slug):
-    """View function for managing a specific library."""
-    user = request.user
-    library = get_object_or_404(Library, slug=slug)
-
-    # Check if user has permission to manage this library
-    if not (user.is_super_admin or (user.is_library_admin and library.admin == user)):
-        return HttpResponseForbidden("You don't have permission to access this page.")
-
-    if request.method == 'POST':
-        form = LibraryForm(request.POST, request.FILES, instance=library)
-        if form.is_valid():
-            form.save()
-            messages.success(request, f"Library '{library.name}' updated successfully.")
-            return redirect('libraries:manage_library', slug=library.slug)
-    else:
-        form = LibraryForm(instance=library)
-
-    context = {
-        'library': library,
-        'form': form,
-    }
-
-    return render(request, 'libraries/manage_library.html', context)
+# manage_library view has been removed and replaced by edit_library in library_admin app
 
 @login_required
 def manage_library_staff(request, slug):

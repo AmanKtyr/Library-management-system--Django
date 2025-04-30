@@ -6,7 +6,10 @@
 {% block page_title %}{{ library.name }} Details{% endblock %}
 
 {% block page_actions %}
-<a href="{% url 'library_admin:staff' %}" class="admin-pro-btn admin-pro-btn-primary">
+<a href="{% url 'library_admin:edit_library' %}" class="admin-pro-btn admin-pro-btn-primary">
+    <i class="fas fa-edit"></i> Edit Library
+</a>
+<a href="{% url 'library_admin:staff' %}" class="admin-pro-btn admin-pro-btn-outline">
     <i class="fas fa-user-plus"></i> Manage Staff
 </a>
 <a href="{% url 'library_admin:settings' %}" class="admin-pro-btn admin-pro-btn-outline">
@@ -33,7 +36,7 @@
                     <div class="col-md-8">
                         <h4>{{ library.name }}</h4>
                         <p class="text-muted">{{ library.description }}</p>
-                        
+
                         <div class="mb-3">
                             <h6 class="fw-bold">Contact Information</h6>
                             <p><i class="fas fa-map-marker-alt me-2"></i> {{ library.address }}, {{ library.city }}, {{ library.state }}, {{ library.postal_code }}, {{ library.country }}</p>
@@ -43,12 +46,12 @@
                                 <p><i class="fas fa-globe me-2"></i> <a href="{{ library.website }}" target="_blank">{{ library.website }}</a></p>
                             {% endif %}
                         </div>
-                        
+
                         <div>
                             <h6 class="fw-bold">Opening Hours</h6>
                             <p>{{ library.opening_hours|linebreaks }}</p>
                         </div>
-                        
+
                         {% if library.established_date %}
                             <p class="text-muted"><i class="fas fa-calendar me-2"></i> Established: {{ library.established_date|date:"F j, Y" }}</p>
                         {% endif %}
@@ -57,7 +60,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-4">
         <div class="card mb-4">
             <div class="card-header">
