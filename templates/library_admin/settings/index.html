@@ -2129,27 +2129,37 @@
                 // Get the target tab content
                 const target = this.getAttribute('href');
 
+                // Extract just the tab ID without any additional parameters
+                const tabId = target.split('?')[0].split('&')[0];
+
                 // Hide all tab contents
                 tabContents.forEach(content => {
                     content.classList.remove('show', 'active');
                 });
 
                 // Show the target tab content
-                document.querySelector(target).classList.add('show', 'active');
+                const tabContent = document.querySelector(tabId);
+                if (tabContent) {
+                    tabContent.classList.add('show', 'active');
+                }
 
-                // Update URL hash
-                window.history.pushState(null, null, target);
+                // Update URL hash while preserving any existing query parameters
+                const currentUrl = window.location.href.split('#')[0];
+                window.history.pushState(null, null, currentUrl + tabId);
             });
         });
 
         // Handle tab navigation via URL hash
         const hash = window.location.hash || '#general';
-        const activeTab = document.querySelector(`.settings-nav-item[href="${hash}"]`);
+        // Extract just the tab name without any additional parameters
+        const tabName = hash.split('?')[0].split('&')[0];
+        const activeTab = document.querySelector(`.settings-nav-item[href="${tabName}"]`);
         if (activeTab) {
             activeTab.click();
         } else {
-            // Default to first tab
-            navItems[0].click();
+            // If no matching tab found or no hash, default to first tab (general)
+            const defaultTab = document.querySelector('.settings-nav-item[href="#general"]') || navItems[0];
+            defaultTab.click();
         }
 
         // Reset settings button

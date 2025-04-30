@@ -1,0 +1,98 @@
+/**
+ * Home Page Sequence CSS
+ * This file defines the order and styling for the home page sections
+ * to create a professional, industry-ready sequence
+ */
+
+/* Section Order - Using CSS Grid for flexible ordering */
+.home-page-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+    gap: 0;
+}
+
+/* Define the order of sections */
+.hero-section {
+    order: 1; /* Hero always first */
+}
+
+.key-features-section {
+    order: 2; /* Key features highlight right after hero */
+}
+
+.how-it-works-section {
+    order: 3; /* How it works process */
+}
+
+.enterprise-partners-section {
+    order: 4; /* Enterprise partnerships */
+}
+
+.stats-section {
+    order: 5; /* Statistics and metrics */
+}
+
+.featured-libraries-section {
+    order: 6; /* Featured libraries */
+}
+
+.testimonials-section {
+    order: 7; /* Testimonials */
+}
+
+.features-section {
+    order: 8; /* Detailed features */
+}
+
+.pricing-section {
+    order: 9; /* Pricing plans */
+}
+
+.security-section {
+    order: 10; /* Security & compliance */
+}
+
+.contact-section {
+    order: 11; /* Contact/CTA at the end */
+}
+
+/* Section spacing */
+.home-page-container > div,
+.home-page-container > section {
+    padding-top: 60px;
+    padding-bottom: 60px;
+}
+
+/* Reduce spacing between sections */
+.home-page-container > div + div,
+.home-page-container > section + section,
+.home-page-container > div + section,
+.home-page-container > section + div {
+    margin-top: -10px; /* Reduce gap between sections */
+}
+
+/* Section transitions */
+.home-page-container > div,
+.home-page-container > section {
+    position: relative;
+    z-index: 1;
+}
+
+/* Section dividers */
+.section-divider {
+    margin: 15px auto 25px;
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(to right, var(--button-color), var(--accent-color));
+    border-radius: 3px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .home-page-container > div,
+    .home-page-container > section {
+        padding-top: 40px;
+        padding-bottom: 40px;
+    }
+}

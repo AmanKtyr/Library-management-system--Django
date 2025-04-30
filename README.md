@@ -121,4 +121,3 @@ pass Aman@#12
 
 
 
-Make sure app pages are making professional, modern, and industrial use-ready, according to the Indian  market 

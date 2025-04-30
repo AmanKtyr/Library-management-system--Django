@@ -447,3 +447,7 @@ def admin_reports(request):
 def library_admin_panel(request):
     """View function for the custom library admin panel - redirects to library_admin dashboard."""
     return redirect('library_admin:dashboard')
+
+def test_modal(request):
+    """View function for testing modal functionality."""
+    return render(request, 'test-modal.html')

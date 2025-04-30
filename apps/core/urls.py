@@ -28,4 +28,7 @@ urlpatterns = [
     # User Login/Logout
     path('login/', views.user_login, name='user_login'),
     path('logout/', views.user_logout, name='user_logout'),
+
+    # Test pages
+    path('test-modal/', views.test_modal, name='test_modal'),
 ]

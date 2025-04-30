@@ -48,6 +48,7 @@ urlpatterns = [
 
     # Reports & Analytics URLs
     path('reports/', views.reports, name='reports'),
+    path('reports/transactions/', views.transaction_reports, name='transaction_reports'),
     path('reports/custom/', views.custom_reports, name='custom_reports'),
     path('reports/export/', views.export_reports, name='export_reports'),
 
@@ -61,4 +62,7 @@ urlpatterns = [
     path('notifications/', views.notifications, name='notifications'),
     path('help/', views.help_documentation, name='help'),
     path('system-status/', views.system_status, name='system_status'),
+
+    # Library Details URL
+    path('library/', views.library_details, name='library_details'),
 ]

@@ -1,0 +1,363 @@
+{% extends 'library_admin/base.html' %}
+{% load static %}
+
+{% block title %}Transaction Reports - Library Management System{% endblock %}
+{% block breadcrumb_title %}Transaction Reports{% endblock %}
+{% block page_title %}Transaction Reports{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'library_admin:export_reports' %}?type=transactions" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-file-export"></i> Export Data
+</a>
+<button class="admin-pro-btn admin-pro-btn-primary" onclick="window.print()">
+    <i class="fas fa-print"></i> Print Report
+</button>
+{% endblock %}
+
+{% block content %}
+<!-- Date Range Filter -->
+<div class="admin-pro-card mb-4 fade-in-up" style="animation-delay: 0.1s;">
+    <div class="admin-pro-card-header">
+        <h5 class="admin-pro-card-title">
+            <i class="fas fa-calendar-alt me-2"></i>Filter by Date Range
+        </h5>
+    </div>
+    <div class="admin-pro-card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label for="start_date" class="form-label">Start Date</label>
+                <input type="date" class="form-control" id="start_date" name="start_date" value="{{ start_date|date:'Y-m-d' }}">
+            </div>
+            <div class="col-md-4">
+                <label for="end_date" class="form-label">End Date</label>
+                <input type="date" class="form-control" id="end_date" name="end_date" value="{{ end_date|date:'Y-m-d' }}">
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-filter me-2"></i>Apply Filter
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Summary Stats -->
+<div class="row mb-4">
+    <div class="col-md-3 fade-in-up" style="animation-delay: 0.2s;">
+        <div class="admin-pro-card stats-card">
+            <div class="admin-pro-stats-card h-100" style="background: linear-gradient(135deg, #FF9933 0%, #FF9933 100%); color: white;">
+                <div class="admin-pro-stats-icon" style="background: rgba(255, 255, 255, 0.2);">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <div class="admin-pro-stats-content">
+                    <h3 class="admin-pro-stats-value mb-0">{{ total_transactions }}</h3>
+                    <p class="admin-pro-stats-label">Total Transactions</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 fade-in-up" style="animation-delay: 0.3s;">
+        <div class="admin-pro-card stats-card">
+            <div class="admin-pro-stats-card h-100" style="background: linear-gradient(135deg, #138808 0%, #138808 100%); color: white;">
+                <div class="admin-pro-stats-icon" style="background: rgba(255, 255, 255, 0.2);">
+                    <i class="fas fa-arrow-circle-right"></i>
+                </div>
+                <div class="admin-pro-stats-content">
+                    <h3 class="admin-pro-stats-value mb-0">{{ total_borrows }}</h3>
+                    <p class="admin-pro-stats-label">Books Borrowed</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 fade-in-up" style="animation-delay: 0.4s;">
+        <div class="admin-pro-card stats-card">
+            <div class="admin-pro-stats-card h-100" style="background: linear-gradient(135deg, #0000FF 0%, #0000FF 100%); color: white;">
+                <div class="admin-pro-stats-icon" style="background: rgba(255, 255, 255, 0.2);">
+                    <i class="fas fa-arrow-circle-left"></i>
+                </div>
+                <div class="admin-pro-stats-content">
+                    <h3 class="admin-pro-stats-value mb-0">{{ total_returns }}</h3>
+                    <p class="admin-pro-stats-label">Books Returned</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 fade-in-up" style="animation-delay: 0.5s;">
+        <div class="admin-pro-card stats-card">
+            <div class="admin-pro-stats-card h-100" style="background: linear-gradient(135deg, #DC3545 0%, #DC3545 100%); color: white;">
+                <div class="admin-pro-stats-icon" style="background: rgba(255, 255, 255, 0.2);">
+                    <i class="fas fa-rupee-sign"></i>
+                </div>
+                <div class="admin-pro-stats-content">
+                    <h3 class="admin-pro-stats-value mb-0">₹{{ total_fines }}</h3>
+                    <p class="admin-pro-stats-label">Total Fines</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts -->
+<div class="row mb-4">
+    <div class="col-md-6 fade-in-up" style="animation-delay: 0.6s;">
+        <div class="admin-pro-card">
+            <div class="admin-pro-card-header">
+                <h5 class="admin-pro-card-title">
+                    <i class="fas fa-chart-pie me-2"></i>Transaction Types
+                </h5>
+            </div>
+            <div class="admin-pro-card-body">
+                <canvas id="transactionTypeChart" width="400" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 fade-in-up" style="animation-delay: 0.7s;">
+        <div class="admin-pro-card">
+            <div class="admin-pro-card-header">
+                <h5 class="admin-pro-card-title">
+                    <i class="fas fa-chart-pie me-2"></i>Transaction Status
+                </h5>
+            </div>
+            <div class="admin-pro-card-body">
+                <canvas id="transactionStatusChart" width="400" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Transactions Table -->
+<div class="admin-pro-card mb-4 fade-in-up" style="animation-delay: 0.8s;">
+    <div class="admin-pro-card-header">
+        <h5 class="admin-pro-card-title">
+            <i class="fas fa-list me-2"></i>Transaction Details
+        </h5>
+    </div>
+    <div class="admin-pro-card-body">
+        <div class="table-responsive">
+            <table class="table table-striped admin-pro-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>User</th>
+                        <th>Book</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Due Date</th>
+                        <th>Return Date</th>
+                        <th>Fine</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                        <tr>
+                            <td>{{ transaction.transaction_date|date:"M d, Y" }}</td>
+                            <td>{{ transaction.user.get_full_name }}</td>
+                            <td>{{ transaction.book_copy.book.title }}</td>
+                            <td>
+                                {% if transaction.transaction_type == 'BORROW' %}
+                                    <span class="badge bg-primary">Borrow</span>
+                                {% elif transaction.transaction_type == 'RETURN' %}
+                                    <span class="badge bg-success">Return</span>
+                                {% elif transaction.transaction_type == 'RESERVE' %}
+                                    <span class="badge bg-warning">Reserve</span>
+                                {% elif transaction.transaction_type == 'CANCEL_RESERVATION' %}
+                                    <span class="badge bg-secondary">Cancel</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if transaction.status == 'COMPLETED' %}
+                                    <span class="badge bg-success">Completed</span>
+                                {% elif transaction.status == 'PENDING' %}
+                                    <span class="badge bg-warning">Pending</span>
+                                {% elif transaction.status == 'OVERDUE' %}
+                                    <span class="badge bg-danger">Overdue</span>
+                                {% elif transaction.status == 'CANCELLED' %}
+                                    <span class="badge bg-secondary">Cancelled</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if transaction.due_date %}
+                                    {{ transaction.due_date|date:"M d, Y" }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if transaction.return_date %}
+                                    {{ transaction.return_date|date:"M d, Y" }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if transaction.fine_amount %}
+                                    ₹{{ transaction.fine_amount }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center">No transactions found for the selected period.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Indian-inspired color palette
+        const indianColors = {
+            saffron: 'rgba(255, 153, 51, 0.7)',
+            saffronBorder: 'rgba(255, 153, 51, 1)',
+            green: 'rgba(19, 136, 8, 0.7)',
+            greenBorder: 'rgba(19, 136, 8, 1)',
+            white: 'rgba(255, 255, 255, 0.7)',
+            whiteBorder: 'rgba(255, 255, 255, 1)',
+            navy: 'rgba(0, 0, 128, 0.7)',
+            navyBorder: 'rgba(0, 0, 128, 1)'
+        };
+
+        // Transaction Type Chart
+        const typeCtx = document.getElementById('transactionTypeChart').getContext('2d');
+        const typeChart = new Chart(typeCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Borrow', 'Return', 'Reserve', 'Cancel Reservation'],
+                datasets: [{
+                    label: 'Transaction Types',
+                    data: [{{ total_borrows }}, {{ total_returns }}, {{ total_reserves }}, 0],
+                    backgroundColor: [
+                        indianColors.saffron,
+                        indianColors.green,
+                        indianColors.navy,
+                        'rgba(108, 117, 125, 0.7)'
+                    ],
+                    borderColor: [
+                        indianColors.saffronBorder,
+                        indianColors.greenBorder,
+                        indianColors.navyBorder,
+                        'rgba(108, 117, 125, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Transaction Types Distribution'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Transaction Status Chart
+        const statusCtx = document.getElementById('transactionStatusChart').getContext('2d');
+        const statusChart = new Chart(statusCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Completed', 'Pending', 'Overdue', 'Cancelled'],
+                datasets: [{
+                    label: 'Transaction Status',
+                    data: [
+                        {{ transactions.filter.status.COMPLETED.count|default:0 }}, 
+                        {{ transactions.filter.status.PENDING.count|default:0 }}, 
+                        {{ transactions.filter.status.OVERDUE.count|default:0 }}, 
+                        {{ transactions.filter.status.CANCELLED.count|default:0 }}
+                    ],
+                    backgroundColor: [
+                        indianColors.green,
+                        indianColors.saffron,
+                        'rgba(220, 53, 69, 0.7)',
+                        'rgba(108, 117, 125, 0.7)'
+                    ],
+                    borderColor: [
+                        indianColors.greenBorder,
+                        indianColors.saffronBorder,
+                        'rgba(220, 53, 69, 1)',
+                        'rgba(108, 117, 125, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Transaction Status Distribution'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Counter animation for statistics
+        const counterElements = document.querySelectorAll('.admin-pro-stats-value');
+        counterElements.forEach(counter => {
+            const target = parseInt(counter.textContent.replace(/[^\d]/g, ''), 10);
+            let count = 0;
+            const duration = 2000; // 2 seconds
+            const frameDuration = 1000 / 60; // 60fps
+            const totalFrames = Math.round(duration / frameDuration);
+            const increment = target / totalFrames;
+
+            const animate = () => {
+                count += increment;
+                if (count < target) {
+                    if (counter.textContent.includes('₹')) {
+                        counter.textContent = '₹' + Math.floor(count);
+                    } else {
+                        counter.textContent = Math.floor(count);
+                    }
+                    requestAnimationFrame(animate);
+                } else {
+                    if (counter.textContent.includes('₹')) {
+                        counter.textContent = '₹' + target;
+                    } else {
+                        counter.textContent = target;
+                    }
+                }
+            };
+
+            animate();
+        });
+    });
+</script>
+{% endblock %}

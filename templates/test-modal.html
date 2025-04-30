@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Test Modal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Modal Test Page</h4>
+                </div>
+                <div class="card-body">
+                    <p>This page is for testing the modal functionality.</p>
+                    
+                    <button type="button" class="btn btn-primary" id="openModalBtn">
+                        Open Test Modal
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Test Modal -->
+<div class="modal fade" id="testModal" tabindex="-1" aria-labelledby="testModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="testModalLabel">Test Modal</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>This is a test modal to verify that modals are working correctly.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the button and modal
+        const openModalBtn = document.getElementById('openModalBtn');
+        const testModal = document.getElementById('testModal');
+        
+        // Initialize the modal
+        const modal = new bootstrap.Modal(testModal);
+        
+        // Add click event to the button
+        openModalBtn.addEventListener('click', function() {
+            modal.show();
+        });
+    });
+</script>
+{% endblock %}

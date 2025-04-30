@@ -5,7 +5,7 @@ from django.db.models import Count, Sum, Q, F, Avg
 from django.utils import timezone
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponseForbidden, JsonResponse, HttpResponse
-from datetime import timedelta
+from datetime import timedelta, datetime
 import json
 import random
 import csv
@@ -231,6 +231,62 @@ def manage_transactions(request):
 
 @login_required
 @user_passes_test(is_library_admin)
+def transaction_reports(request):
+    """View function for generating transaction reports in the library admin section."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    # Get date range for filtering
+    end_date = timezone.now().date()
+    start_date = end_date - timedelta(days=30)  # Default to last 30 days
+
+    # Get custom date range if provided
+    if request.GET.get('start_date') and request.GET.get('end_date'):
+        try:
+            start_date = datetime.strptime(request.GET.get('start_date'), '%Y-%m-%d').date()
+            end_date = datetime.strptime(request.GET.get('end_date'), '%Y-%m-%d').date()
+        except ValueError:
+            messages.error(request, "Invalid date format. Please use YYYY-MM-DD.")
+
+    # Get transactions for the library within the date range
+    transactions = Transaction.objects.filter(
+        library=library,
+        transaction_date__date__gte=start_date,
+        transaction_date__date__lte=end_date
+    ).order_by('-transaction_date')
+
+    # Calculate statistics
+    total_transactions = transactions.count()
+    total_borrows = transactions.filter(transaction_type='BORROW').count()
+    total_returns = transactions.filter(transaction_type='RETURN').count()
+    total_reserves = transactions.filter(transaction_type='RESERVE').count()
+
+    # Calculate total fines
+    total_fines = transactions.filter(fine_amount__gt=0).aggregate(Sum('fine_amount'))['fine_amount__sum'] or 0
+
+    context = {
+        'library': library,
+        'start_date': start_date,
+        'end_date': end_date,
+        'total_transactions': total_transactions,
+        'total_borrows': total_borrows,
+        'total_returns': total_returns,
+        'total_reserves': total_reserves,
+        'total_fines': total_fines,
+        'transactions': transactions,
+        'pending_requests_count': MembershipRequest.objects.filter(library=library, status='PENDING').count(),
+    }
+
+    return render(request, 'library_admin/reports/transaction_reports.html', context)
+
+@login_required
+@user_passes_test(is_library_admin)
 def reports(request):
     """View function for generating library reports."""
     user = request.user
@@ -248,6 +304,7 @@ def reports(request):
     context = {
         'library': library,
         'report_type': report_type,
+        'pending_requests_count': MembershipRequest.objects.filter(library=library, status='PENDING').count(),
     }
 
     if report_type == 'transactions':
@@ -1708,3 +1765,45 @@ def add_category(request):
     }
 
     return render(request, 'library_admin/books/category_form.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def library_details(request):
+    """View function for displaying library details for the library admin."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    # Get library statistics
+    total_books = BookCopy.objects.filter(library=library).count()
+    available_books = BookCopy.objects.filter(library=library, status='AVAILABLE').count()
+    borrowed_books = BookCopy.objects.filter(library=library, status='BORROWED').count()
+    reserved_books = BookCopy.objects.filter(library=library, status='RESERVED').count()
+    maintenance_books = BookCopy.objects.filter(library=library, status='MAINTENANCE').count()
+
+    # Get user statistics
+    staff_members_count = library.staff.count()
+    members_count = Membership.objects.filter(library=library, is_active=True).count()
+
+    # Get recent transactions
+    recent_transactions = Transaction.objects.filter(library=library).order_by('-transaction_date')[:5]
+
+    context = {
+        'library': library,
+        'total_books': total_books,
+        'available_books': available_books,
+        'borrowed_books': borrowed_books,
+        'reserved_books': reserved_books,
+        'maintenance_books': maintenance_books,
+        'staff_members_count': staff_members_count,
+        'members_count': members_count,
+        'recent_transactions': recent_transactions,
+    }
+
+    return render(request, 'library_admin/libraries/library_details.html', context)

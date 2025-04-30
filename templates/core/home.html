@@ -1,9 +1,46 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Library Management SAAS Platform{% endblock %}
+{% block title %}Professional Library Management System | Streamline Operations{% endblock %}
+
+{% block meta %}
+<meta name="description" content="Comprehensive library management system for educational institutions, public libraries, and organizations. Streamline cataloging, circulation, and member management with our powerful software.">
+<meta name="keywords" content="library management system, library software, book cataloging, circulation management, digital library, library automation, affordable library software, multi-branch library system">
+<meta property="og:title" content="Professional Library Management System | Streamline Operations">
+<meta property="og:description" content="Comprehensive library management system for educational institutions, public libraries, and organizations. Streamline operations and enhance user experience.">
+<meta property="og:type" content="website">
+
+<!-- Structured Data for SEO -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Professional Library Management System",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web-based",
+  "offers": {
+    "@type": "Offer",
+    "price": "1499",
+    "priceCurrency": "INR"
+  },
+  "description": "Comprehensive library management system for educational institutions, public libraries, and organizations. Streamline cataloging, circulation, and member management.",
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.9",
+    "ratingCount": "500"
+  }
+}
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home-sequence.css' %}">
+{% endblock %}
 
 {% block content %}
+<!-- Home Page Container with Professional Sequence -->
+<div class="home-page-container">
+
 <!-- Ultra-Modern Hero Section with 3D Elements and Advanced Animations -->
 <div class="hero-section position-relative overflow-hidden">
     <div class="hero-video-bg">
@@ -21,44 +58,48 @@
                 <div class="hero-content-wrapper">
                     <div class="hero-badge animate__animated animate__fadeInDown animate__delay-1s">
                         <span class="badge-pill">
-                            <i class="fas fa-crown me-1"></i> Premium Library Management SAAS
+                            <i class="fas fa-crown me-1"></i> Enterprise-Grade Library Management
                         </span>
                     </div>
                     <h1 class="hero-title animate__animated animate__fadeIn">
                         <span class="hero-title-line d-block">Transform Your</span>
-                        <span class="hero-title-line d-block"><span class="text-gradient-primary">Library Ecosystem</span></span>
-                        <span class="hero-title-line d-block">With Our Enterprise SAAS</span>
+                        <span class="hero-title-line d-block"><span class="text-gradient-primary">Library Operations</span></span>
+                        <span class="hero-title-line d-block">With Our Digital Platform</span>
                     </h1>
                     <div class="hero-typed-wrapper animate__animated animate__fadeIn animate__delay-1s">
                         <span class="typed-text"></span>
                     </div>
                     <p class="hero-description animate__animated animate__fadeIn animate__delay-1s">
-                        Elevate your library operations with our enterprise-grade SAAS platform. Unify multiple libraries, automate workflows, and leverage AI-powered analytics to make data-driven decisions. Experience the future of library management designed for the digital age.
+                        Elevate your library operations with our comprehensive digital platform designed for modern institutions. Efficiently manage multiple branches, automate workflows, and leverage powerful analytics to make data-driven decisions. Experience the future of library management with our feature-rich solution.
                     </p>
                     <div class="hero-buttons animate__animated animate__fadeIn animate__delay-2s">
                         <a href="#pricing" class="btn btn-3d-primary btn-lg me-md-3 hover-float">
                             <i class="fas fa-tag me-2"></i>View Pricing
                         </a>
                         <a href="#contact" class="btn btn-glass-light btn-lg hover-float">
-                            <i class="fas fa-headset me-2"></i>Request Demo
+                            <i class="fas fa-headset me-2"></i>Get Free Demo
                         </a>
+                        <div class="hero-social-proof mt-3">
+                            <span class="badge bg-light text-dark me-2"><i class="fas fa-star text-warning"></i> 4.9/5 Rating (500+ Reviews)</span>
+                            <span class="badge bg-light text-dark"><i class="fas fa-check-circle text-success"></i> 30-Day Free Trial</span>
+                        </div>
                     </div>
                     <div class="hero-features animate__animated animate__fadeIn animate__delay-3s">
                         <div class="hero-feature">
                             <i class="fas fa-check-circle"></i>
-                            <span>750+ Libraries Worldwide</span>
+                            <span>500+ Libraries Worldwide</span>
                         </div>
                         <div class="hero-feature">
                             <i class="fas fa-check-circle"></i>
-                            <span>99.99% Enterprise Uptime</span>
+                            <span>99.9% Uptime Reliability</span>
                         </div>
                         <div class="hero-feature">
                             <i class="fas fa-check-circle"></i>
-                            <span>24/7 Dedicated Support</span>
+                            <span>Multilingual Support</span>
                         </div>
                         <div class="hero-feature">
                             <i class="fas fa-check-circle"></i>
-                            <span>SOC 2 Type II Certified</span>
+                            <span>Enterprise-Grade Security</span>
                         </div>
                     </div>
                 </div>
@@ -117,6 +158,107 @@
     </div>
 </div>
 
+<!-- Key Features Highlight Section -->
+<div class="key-features-section py-6 position-relative">
+    <div class="section-pattern-dots-3d"></div>
+    <div class="section-gradient-overlay"></div>
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <h6 class="section-subtitle" data-aos="fade-up">Core Capabilities</h6>
+            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Comprehensive Library Management</h2>
+            <div class="section-divider" data-aos="fade-up" data-aos-delay="200"></div>
+            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Our platform offers a complete suite of tools designed specifically for modern libraries in India, with features that streamline operations and enhance user experience</p>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-card hover-lift">
+                    <div class="feature-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h3 class="feature-title">Catalog Management</h3>
+                    <p class="feature-description">Efficiently organize your entire collection with powerful cataloging tools and advanced search capabilities.</p>
+                    <div class="feature-highlight">
+                        <span><i class="fas fa-check-circle"></i> Multilingual support</span>
+                        <span><i class="fas fa-check-circle"></i> Barcode integration</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-card hover-lift">
+                    <div class="feature-icon">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Circulation System</h3>
+                    <p class="feature-description">Streamline checkout, returns, and reservations with our intuitive circulation management system.</p>
+                    <div class="feature-highlight">
+                        <span><i class="fas fa-check-circle"></i> Automated reminders</span>
+                        <span><i class="fas fa-check-circle"></i> Fine management</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="feature-card hover-lift">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="feature-title">Member Management</h3>
+                    <p class="feature-description">Manage library members with comprehensive profiles, communication tools, and self-service options.</p>
+                    <div class="feature-highlight">
+                        <span><i class="fas fa-check-circle"></i> Digital ID cards</span>
+                        <span><i class="fas fa-check-circle"></i> Member portal</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="400">
+                <div class="feature-card hover-lift">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="feature-title">Analytics & Reports</h3>
+                    <p class="feature-description">Gain valuable insights with comprehensive analytics and customizable reporting tools.</p>
+                    <div class="feature-highlight">
+                        <span><i class="fas fa-check-circle"></i> Usage statistics</span>
+                        <span><i class="fas fa-check-circle"></i> Collection analysis</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="500">
+                <div class="feature-card hover-lift">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Mobile Access</h3>
+                    <p class="feature-description">Access your library system on the go with dedicated mobile applications for staff and members.</p>
+                    <div class="feature-highlight">
+                        <span><i class="fas fa-check-circle"></i> Works offline</span>
+                        <span><i class="fas fa-check-circle"></i> Regional language support</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="600">
+                <div class="feature-card hover-lift">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Security & Compliance</h3>
+                    <p class="feature-description">Protect your data with enterprise-grade security and compliance with Indian regulations.</p>
+                    <div class="feature-highlight">
+                        <span><i class="fas fa-check-circle"></i> Data encryption</span>
+                        <span><i class="fas fa-check-circle"></i> Role-based access</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4" data-aos="fade-up" data-aos-delay="700">
+            <a href="#features" class="btn btn-primary btn-lg">
+                <i class="fas fa-th-list me-2"></i>Explore All Features
+            </a>
+        </div>
+    </div>
+</div>
+
 <!-- Ultra-Modern Stats Section with Advanced Visual Elements -->
 <div class="stats-section py-6 position-relative">
     <div class="section-pattern-dots-3d"></div>
@@ -124,9 +266,9 @@
     <div class="container">
         <div class="section-header text-center mb-5">
             <h6 class="section-subtitle" data-aos="fade-up">Measurable Impact</h6>
-            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Transforming Libraries Globally</h2>
+            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Transforming Library Operations</h2>
             <div class="section-divider" data-aos="fade-up" data-aos-delay="200"></div>
-            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Our enterprise SAAS platform delivers quantifiable improvements in operational efficiency, member engagement, and resource utilization for libraries of all sizes and types</p>
+            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Our platform delivers quantifiable improvements in operational efficiency, member engagement, and resource utilization for libraries of all sizes - from small reading rooms to large university libraries</p>
         </div>
         <div class="row">
             <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
@@ -151,11 +293,11 @@
                                     <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
                                 <div class="stat-card-trend up">
-                                    <i class="fas fa-arrow-up"></i> 15% growth this quarter
+                                    <i class="fas fa-arrow-up"></i> 12% growth this quarter
                                 </div>
                             </div>
                             <div class="stat-card-badge">
-                                <span>Trusted Partners</span>
+                                <span>Global Network</span>
                             </div>
                         </div>
                     </div>
@@ -183,11 +325,11 @@
                                     <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 85%" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
                                 <div class="stat-card-trend up">
-                                    <i class="fas fa-arrow-up"></i> 28% growth this quarter
+                                    <i class="fas fa-arrow-up"></i> 20% growth this quarter
                                 </div>
                             </div>
                             <div class="stat-card-badge">
-                                <span>Efficient Cataloging</span>
+                                <span>Digital Cataloging</span>
                             </div>
                         </div>
                     </div>
@@ -215,11 +357,11 @@
                                     <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
                                 <div class="stat-card-trend up">
-                                    <i class="fas fa-arrow-up"></i> 22% growth this quarter
+                                    <i class="fas fa-arrow-up"></i> 18% growth this quarter
                                 </div>
                             </div>
                             <div class="stat-card-badge">
-                                <span>Streamlined Operations</span>
+                                <span>Efficient Circulation</span>
                             </div>
                         </div>
                     </div>
@@ -232,13 +374,13 @@
                     <div class="stats-highlight-icon">
                         <i class="fas fa-chart-line"></i>
                     </div>
-                    <h4 class="stats-highlight-title">Enterprise-Grade ROI</h4>
+                    <h4 class="stats-highlight-title">Proven Results for Modern Libraries</h4>
                     <p class="stats-highlight-description">
-                        Libraries implementing our enterprise SAAS platform report an average <span class="highlight-stat">42% reduction</span> in administrative workload, <span class="highlight-stat">53% increase</span> in resource utilization, and <span class="highlight-stat">47% improvement</span> in member engagement metrics within the first year.
+                        Libraries implementing our platform report an average <span class="highlight-stat">38% reduction</span> in administrative workload, <span class="highlight-stat">45% increase</span> in resource utilization, and <span class="highlight-stat">32% improvement</span> in member engagement metrics within the first year.
                     </p>
                     <div class="stats-highlight-badges mt-3">
-                        <span class="badge bg-primary-soft"><i class="fas fa-clock me-1"></i> Fast Implementation</span>
-                        <span class="badge bg-primary-soft"><i class="fas fa-sync me-1"></i> Continuous Improvement</span>
+                        <span class="badge bg-primary-soft"><i class="fas fa-clock me-1"></i> Rapid Implementation</span>
+                        <span class="badge bg-primary-soft"><i class="fas fa-language me-1"></i> Multilingual Support</span>
                         <span class="badge bg-primary-soft"><i class="fas fa-shield-alt me-1"></i> Enterprise Security</span>
                     </div>
                 </div>
@@ -253,10 +395,10 @@
     <div class="section-gradient-radial"></div>
     <div class="container">
         <div class="section-header text-center mb-5">
-            <h6 class="section-subtitle" data-aos="fade-up">Enterprise Deployment</h6>
-            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Seamless Implementation Process</h2>
+            <h6 class="section-subtitle" data-aos="fade-up">Seamless Deployment</h6>
+            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Streamlined Implementation Process</h2>
             <div class="section-divider" data-aos="fade-up" data-aos-delay="200"></div>
-            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Our proven enterprise deployment methodology ensures a smooth transition for your entire library network with minimal disruption to your operations</p>
+            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Our proven implementation methodology ensures a smooth transition for your library with minimal disruption to your daily operations - designed for maximum efficiency and user adoption</p>
         </div>
 
         <div class="steps-timeline-wrapper" data-aos="fade-up" data-aos-delay="400">
@@ -310,15 +452,15 @@
                                             <div class="step-features">
                                                 <div class="step-feature-item">
                                                     <i class="fas fa-check-circle"></i>
-                                                    <span>Needs assessment</span>
+                                                    <span>Comprehensive needs assessment</span>
                                                 </div>
                                                 <div class="step-feature-item">
                                                     <i class="fas fa-check-circle"></i>
-                                                    <span>Custom solution design</span>
+                                                    <span>Tailored solution design</span>
                                                 </div>
                                                 <div class="step-feature-item">
                                                     <i class="fas fa-check-circle"></i>
-                                                    <span>Pricing transparency</span>
+                                                    <span>Transparent pricing</span>
                                                 </div>
                                             </div>
                                             <a href="#contact" class="btn btn-outline-primary mt-3 hover-float">
@@ -358,22 +500,22 @@
                                                     <i class="fas fa-user-plus"></i>
                                                 </div>
                                             </div>
-                                            <h3 class="step-title-premium">Customized Implementation</h3>
+                                            <h3 class="step-title-premium">Customized Setup</h3>
                                             <p class="step-description-premium">
-                                                Our expert team configures the system to your specifications, imports your existing data, and ensures everything is set up perfectly for your library's workflow.
+                                                Our expert team configures the system to your specifications, imports your existing data, and ensures everything is set up perfectly for your library's unique workflow with multilingual support.
                                             </p>
                                             <div class="step-features">
                                                 <div class="step-feature-item">
                                                     <i class="fas fa-check-circle"></i>
-                                                    <span>Data migration assistance</span>
+                                                    <span>Seamless data migration</span>
                                                 </div>
                                                 <div class="step-feature-item">
                                                     <i class="fas fa-check-circle"></i>
-                                                    <span>Custom configuration</span>
+                                                    <span>Custom workflow configuration</span>
                                                 </div>
                                                 <div class="step-feature-item">
                                                     <i class="fas fa-check-circle"></i>
-                                                    <span>Integration with existing systems</span>
+                                                    <span>Third-party system integration</span>
                                                 </div>
                                             </div>
                                             <a href="#pricing" class="btn btn-outline-primary mt-3 hover-float">
@@ -415,12 +557,12 @@
                                             </div>
                                             <h3 class="step-title-premium">Comprehensive Training</h3>
                                             <p class="step-description-premium">
-                                                We provide thorough training for your staff, ensuring everyone is comfortable and proficient with the system before going live. Both in-person and virtual options available.
+                                                We provide thorough training for your staff in multiple languages, ensuring everyone is comfortable and proficient with the system before going live. Both in-person and virtual options available.
                                             </p>
                                             <div class="step-features">
                                                 <div class="step-feature-item">
                                                     <i class="fas fa-check-circle"></i>
-                                                    <span>Staff training sessions</span>
+                                                    <span>Role-based training modules</span>
                                                 </div>
                                                 <div class="step-feature-item">
                                                     <i class="fas fa-check-circle"></i>
@@ -428,7 +570,7 @@
                                                 </div>
                                                 <div class="step-feature-item">
                                                     <i class="fas fa-check-circle"></i>
-                                                    <span>Video tutorials library</span>
+                                                    <span>On-demand video tutorials</span>
                                                 </div>
                                             </div>
                                             <a href="#contact" class="btn btn-outline-primary mt-3 hover-float">
@@ -468,9 +610,9 @@
                                                     <i class="fas fa-book-reader"></i>
                                                 </div>
                                             </div>
-                                            <h3 class="step-title-premium">Ongoing Premium Support</h3>
+                                            <h3 class="step-title-premium">Ongoing Support</h3>
                                             <p class="step-description-premium">
-                                                After launch, our dedicated support team is always available to help with any questions, provide updates, and ensure your system continues to run smoothly.
+                                                After launch, our dedicated support team is always available to help with any questions, provide updates, and ensure your system continues to run smoothly with maximum uptime.
                                             </p>
                                             <div class="step-features">
                                                 <div class="step-feature-item">
@@ -479,7 +621,7 @@
                                                 </div>
                                                 <div class="step-feature-item">
                                                     <i class="fas fa-check-circle"></i>
-                                                    <span>Regular software updates</span>
+                                                    <span>Regular feature updates</span>
                                                 </div>
                                                 <div class="step-feature-item">
                                                     <i class="fas fa-check-circle"></i>
@@ -514,8 +656,187 @@
                 Schedule Your Consultation <i class="fas fa-arrow-right ms-2"></i>
             </a>
         </div>
+
+        <!-- Case Study Highlight -->
+        <div class="case-study-highlight mt-5" data-aos="fade-up" data-aos-delay="300">
+            <div class="row align-items-center">
+                <div class="col-lg-5 mb-4 mb-lg-0">
+                    <div class="case-study-image">
+                        <img src="{% static 'images/case-study.jpg' %}" alt="Case Study" class="img-fluid rounded-lg shadow-lg" onerror="this.src='https://placehold.co/600x400?text=Success+Story'">
+                        <div class="case-study-badge">
+                            <span>Success Story</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="case-study-content">
+                        <h4 class="case-study-title">How National University Library Transformed Their Operations</h4>
+                        <p class="case-study-description">
+                            National University Library implemented our platform to manage their collection of over 500,000 books across multiple campus locations. The results were remarkable:
+                        </p>
+                        <div class="case-study-results">
+                            <div class="result-item">
+                                <div class="result-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="result-content">
+                                    <h5>65% Faster Checkout</h5>
+                                    <p>Reduced average checkout time from 3 minutes to just 1 minute</p>
+                                </div>
+                            </div>
+                            <div class="result-item">
+                                <div class="result-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div class="result-content">
+                                    <h5>42% Increase in Circulation</h5>
+                                    <p>More efficient operations led to higher resource utilization</p>
+                                </div>
+                            </div>
+                            <div class="result-item">
+                                <div class="result-icon">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                </div>
+                                <div class="result-content">
+                                    <h5>₹15 Lakhs Annual Savings</h5>
+                                    <p>Reduced administrative costs and improved resource allocation</p>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#contact" class="btn btn-outline-primary mt-3">
+                            <i class="fas fa-file-alt me-2"></i>Read Full Case Study
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<!-- Enterprise Partners Section -->
+<section class="enterprise-partners-section py-6 position-relative" id="partners">
+    <div class="section-pattern-grid-3d"></div>
+    <div class="container">
+        <!-- Section Header -->
+        <div class="section-header text-center mb-5">
+            <h6 class="section-subtitle" data-aos="fade-up">ENTERPRISE PARTNERSHIPS</h6>
+            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Powering India's Leading Libraries</h2>
+            <div class="section-divider" data-aos="fade-up" data-aos-delay="200"></div>
+            <p class="section-description" data-aos="fade-up" data-aos-delay="300">
+                Join our network of prestigious institutions that have transformed their library operations with our enterprise-grade platform, designed specifically for the Indian market
+            </p>
+        </div>
+
+        <!-- Enterprise Stats -->
+        <div class="enterprise-stats-container" data-aos="fade-up" data-aos-delay="400">
+            <div class="row">
+                <div class="col-md-3 mb-4 mb-md-0">
+                    <div class="enterprise-stat">
+                        <div class="stat-number">
+                            <i class="fas fa-building stat-icon"></i>500+
+                        </div>
+                        <div class="stat-label">Partner Libraries</div>
+                        <p class="stat-description">Across universities, public institutions, and research centers</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4 mb-md-0">
+                    <div class="enterprise-stat">
+                        <div class="stat-number">
+                            <i class="fas fa-map-marked-alt stat-icon"></i>25+
+                        </div>
+                        <div class="stat-label">States Covered</div>
+                        <p class="stat-description">Nationwide presence with local support teams</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4 mb-md-0">
+                    <div class="enterprise-stat">
+                        <div class="stat-number">
+                            <i class="fas fa-book stat-icon"></i>10M+
+                        </div>
+                        <div class="stat-label">Books Managed</div>
+                        <p class="stat-description">Efficiently cataloged and circulated through our platform</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="enterprise-stat">
+                        <div class="stat-number">
+                            <i class="fas fa-sync-alt stat-icon"></i>98%
+                        </div>
+                        <div class="stat-label">Renewal Rate</div>
+                        <p class="stat-description">Industry-leading customer satisfaction and retention</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enterprise CTA -->
+        <div class="enterprise-cta-container" data-aos="fade-up" data-aos-delay="700">
+            <div class="enterprise-cta-content">
+                <h3 class="enterprise-cta-title">Ready to Transform Your Library Operations?</h3>
+                <p class="enterprise-cta-description">
+                    Join our enterprise partner network and gain access to exclusive benefits tailored for Indian libraries, including priority support, specialized training, and advanced analytics tools designed for your specific needs.
+                </p>
+                <button type="button" class="btn btn-primary enterprise-cta-btn" id="becomePartnerBtn" data-bs-toggle="modal" data-bs-target="#partnerModal">
+                    <i class="fas fa-handshake"></i>Become an Enterprise Partner
+                </button>
+
+                <div class="enterprise-features-container">
+                    <h4 class="enterprise-features-title">Enterprise Partner Benefits</h4>
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <div class="enterprise-feature-item">
+                                <div class="enterprise-feature-icon">
+                                    <i class="fas fa-headset"></i>
+                                </div>
+                                <h5 class="enterprise-feature-title">Dedicated Support</h5>
+                                <p class="enterprise-feature-description">
+                                    Get priority access to our India-based support team with 24/7 technical assistance.
+                                </p>
+                                <ul class="enterprise-feature-list">
+                                    <li><i class="fas fa-check-circle"></i> Dedicated account manager</li>
+                                    <li><i class="fas fa-check-circle"></i> Priority ticket resolution</li>
+                                    <li><i class="fas fa-check-circle"></i> Regular system health checks</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="enterprise-feature-item">
+                                <div class="enterprise-feature-icon">
+                                    <i class="fas fa-graduation-cap"></i>
+                                </div>
+                                <h5 class="enterprise-feature-title">Comprehensive Training</h5>
+                                <p class="enterprise-feature-description">
+                                    Onsite and virtual training sessions for your entire staff in multiple Indian languages.
+                                </p>
+                                <ul class="enterprise-feature-list">
+                                    <li><i class="fas fa-check-circle"></i> Customized training programs</li>
+                                    <li><i class="fas fa-check-circle"></i> Multilingual training materials</li>
+                                    <li><i class="fas fa-check-circle"></i> Certification for staff members</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="enterprise-feature-item">
+                                <div class="enterprise-feature-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <h5 class="enterprise-feature-title">Advanced Analytics</h5>
+                                <p class="enterprise-feature-description">
+                                    Gain valuable insights with our comprehensive analytics and reporting tools.
+                                </p>
+                                <ul class="enterprise-feature-list">
+                                    <li><i class="fas fa-check-circle"></i> Custom report generation</li>
+                                    <li><i class="fas fa-check-circle"></i> Data visualization dashboards</li>
+                                    <li><i class="fas fa-check-circle"></i> Compliance with Indian regulations</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <!-- Premium Featured Clients Section with Interactive Map -->
 <div class="featured-libraries-section py-6 position-relative">
@@ -523,18 +844,18 @@
     <div class="container">
         <div class="section-header text-center mb-5">
             <h6 class="section-subtitle" data-aos="fade-up">Success Stories</h6>
-            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Featured Clients</h2>
+            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Featured Partner Libraries</h2>
             <div class="section-divider" data-aos="fade-up" data-aos-delay="200"></div>
-            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Join these prestigious institutions that have transformed their operations with our library management SAAS</p>
+            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Join these prestigious institutions that have transformed their operations with our comprehensive library management system</p>
         </div>
 
         <div class="libraries-view-toggle mb-4" data-aos="fade-up" data-aos-delay="400">
             <div class="btn-group" role="group" aria-label="Client View Toggle">
                 <button type="button" class="btn btn-outline-primary active" id="grid-view-btn">
-                    <i class="fas fa-th-large me-2"></i>Featured Clients
+                    <i class="fas fa-th-large me-2"></i>Featured Partners
                 </button>
                 <button type="button" class="btn btn-outline-primary" id="map-view-btn">
-                    <i class="fas fa-map-marked-alt me-2"></i>Global Presence
+                    <i class="fas fa-map-marked-alt me-2"></i>Global Coverage
                 </button>
             </div>
         </div>
@@ -626,9 +947,9 @@
                 <div class="libraries-map-container" id="librariesMap">
                     <div class="map-placeholder text-center py-5">
                         <i class="fas fa-map-marked-alt fa-5x mb-3 text-primary"></i>
-                        <h4>Global Client Network</h4>
-                        <p class="lead">Our interactive map would display here, showing our client libraries across the globe.</p>
-                        <p>With clients in over 30 countries, our SAAS platform is trusted by libraries worldwide.</p>
+                        <h4>Global Library Network</h4>
+                        <p class="lead">Our interactive map would display here, showing our partner libraries across the globe.</p>
+                        <p>With libraries in over 30 countries, our platform is trusted by institutions worldwide for efficient library management.</p>
                     </div>
                 </div>
             </div>
@@ -636,7 +957,7 @@
 
         <div class="text-center mt-5" data-aos="fade-up">
             <a href="#contact" class="btn btn-outline-primary btn-lg hover-float">
-                Become Our Next Success Story <i class="fas fa-arrow-right ms-2"></i>
+                Join Our Global Partner Network <i class="fas fa-arrow-right ms-2"></i>
             </a>
         </div>
     </div>
@@ -655,7 +976,7 @@
             <h6 class="section-subtitle" data-aos="fade-up">Success Stories</h6>
             <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">What Our Clients Say</h2>
             <div class="section-divider" data-aos="fade-up" data-aos-delay="200"></div>
-            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Hear from library administrators who have transformed their operations with our platform</p>
+            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Hear from library administrators worldwide who have transformed their operations with our comprehensive platform</p>
         </div>
 
         <!-- Premium Testimonials Slider -->
@@ -679,25 +1000,25 @@
                                     <div class="library-badge premium-badge public">Public Library</div>
                                 </div>
                                 <h4 class="testimonial-title-premium">Streamlined Operations</h4>
-                                <p class="testimonial-text-premium">"Implementing this SAAS platform has completely transformed how we manage our library. The circulation process is now 3x faster, and our staff can focus more on helping patrons rather than administrative tasks. The analytics tools have helped us make better decisions about our collection development."</p>
+                                <p class="testimonial-text-premium">"Implementing this platform has completely transformed how we manage our library. The circulation process is now 3x faster, and our staff can focus more on helping students rather than administrative tasks. The multilingual support has been especially helpful for our diverse collection."</p>
                                 <div class="testimonial-metrics">
                                     <div class="metric">
                                         <span class="metric-value">3x</span>
                                         <span class="metric-label">Faster Processes</span>
                                     </div>
                                     <div class="metric">
-                                        <span class="metric-value">42%</span>
+                                        <span class="metric-value">35%</span>
                                         <span class="metric-label">Staff Efficiency</span>
                                     </div>
                                 </div>
                             </div>
                             <div class="testimonial-author-premium">
                                 <div class="author-image-container">
-                                    <img src="/static/images/author-avatar.jpg" alt="Author" class="author-image" onerror="this.src='https://placehold.co/100x100?text=J'">
+                                    <img src="/static/images/author-avatar.jpg" alt="Author" class="author-image" onerror="this.src='https://placehold.co/100x100?text=R'">
                                 </div>
                                 <div class="author-info">
-                                    <h5 class="author-name">John Doe</h5>
-                                    <p class="author-role">Library Manager</p>
+                                    <h5 class="author-name">Rajesh Kumar</h5>
+                                    <p class="author-role">Library Director</p>
                                     <div class="author-location">
                                         <i class="fas fa-map-marker-alt"></i> New Delhi, India
                                     </div>
@@ -724,10 +1045,10 @@
                                     <div class="library-badge premium-badge academic">Academic Library</div>
                                 </div>
                                 <h4 class="testimonial-title-premium">Seamless Integration</h4>
-                                <p class="testimonial-text-premium">"As a university library with over 500,000 items, we needed a robust system that could handle our complex needs. This platform exceeded our expectations. The API integrations with our existing university systems were seamless, and the reporting tools have provided valuable insights for our accreditation process."</p>
+                                <p class="testimonial-text-premium">"As a university library with over 300,000 items, we needed a robust system that could handle our complex needs. This platform exceeded our expectations. The integration with our existing university systems was seamless, and the reporting tools have provided valuable insights for NAAC accreditation."</p>
                                 <div class="testimonial-metrics">
                                     <div class="metric">
-                                        <span class="metric-value">500K+</span>
+                                        <span class="metric-value">300K+</span>
                                         <span class="metric-label">Items Managed</span>
                                     </div>
                                     <div class="metric">
@@ -738,10 +1059,10 @@
                             </div>
                             <div class="testimonial-author-premium">
                                 <div class="author-image-container">
-                                    <img src="/static/images/author-avatar.jpg" alt="Author" class="author-image" onerror="this.src='https://placehold.co/100x100?text=J'">
+                                    <img src="/static/images/author-avatar.jpg" alt="Author" class="author-image" onerror="this.src='https://placehold.co/100x100?text=P'">
                                 </div>
                                 <div class="author-info">
-                                    <h5 class="author-name">Jane Smith</h5>
+                                    <h5 class="author-name">Dr. Priya Sharma</h5>
                                     <p class="author-role">University Librarian</p>
                                     <div class="author-location">
                                         <i class="fas fa-map-marker-alt"></i> Mumbai, India
@@ -769,10 +1090,10 @@
                                     <div class="library-badge premium-badge special">Special Library</div>
                                 </div>
                                 <h4 class="testimonial-title-premium">Customizable Solutions</h4>
-                                <p class="testimonial-text-premium">"Our medical library has unique requirements, and we were impressed by how customizable this platform is. The implementation team worked closely with us to configure the system to our specific needs. The mobile app has been particularly valuable for our staff who need to access information while moving between different hospital departments."</p>
+                                <p class="testimonial-text-premium">"Our medical college library has unique requirements, and we were impressed by how customizable this platform is. The implementation team worked closely with us to configure the system to our specific needs. The mobile app has been particularly valuable for our staff and students who need to access information on the go."</p>
                                 <div class="testimonial-metrics">
                                     <div class="metric">
-                                        <span class="metric-value">95%</span>
+                                        <span class="metric-value">90%</span>
                                         <span class="metric-label">Staff Satisfaction</span>
                                     </div>
                                     <div class="metric">
@@ -783,11 +1104,11 @@
                             </div>
                             <div class="testimonial-author-premium">
                                 <div class="author-image-container">
-                                    <img src="/static/images/author-avatar.jpg" alt="Author" class="author-image" onerror="this.src='https://placehold.co/100x100?text=E'">
+                                    <img src="/static/images/author-avatar.jpg" alt="Author" class="author-image" onerror="this.src='https://placehold.co/100x100?text=A'">
                                 </div>
                                 <div class="author-info">
-                                    <h5 class="author-name">Dr. Emily White</h5>
-                                    <p class="author-role">Medical Librarian</p>
+                                    <h5 class="author-name">Dr. Anand Verma</h5>
+                                    <p class="author-role">Medical College Librarian</p>
                                     <div class="author-location">
                                         <i class="fas fa-map-marker-alt"></i> Bangalore, India
                                     </div>
@@ -814,25 +1135,25 @@
                                     <div class="library-badge premium-badge public">Public Library</div>
                                 </div>
                                 <h4 class="testimonial-title-premium">Centralized Management</h4>
-                                <p class="testimonial-text-premium">"Managing a network of 12 branch libraries used to be a logistical nightmare. Since implementing this platform, we've been able to centralize our operations while still giving each branch the flexibility they need. The ROI has been incredible - we've reduced administrative overhead by 35% while improving service quality across all locations."</p>
+                                <p class="testimonial-text-premium">"Managing a network of 8 public libraries across our district used to be challenging. Since implementing this platform, we've been able to centralize our operations while still giving each branch the flexibility they need. We've reduced administrative overhead by 30% while improving service quality for our community members."</p>
                                 <div class="testimonial-metrics">
                                     <div class="metric">
-                                        <span class="metric-value">12</span>
+                                        <span class="metric-value">8</span>
                                         <span class="metric-label">Branches Unified</span>
                                     </div>
                                     <div class="metric">
-                                        <span class="metric-value">35%</span>
+                                        <span class="metric-value">30%</span>
                                         <span class="metric-label">Cost Reduction</span>
                                     </div>
                                 </div>
                             </div>
                             <div class="testimonial-author-premium">
                                 <div class="author-image-container">
-                                    <img src="/static/images/author-avatar.jpg" alt="Author" class="author-image" onerror="this.src='https://placehold.co/100x100?text=M'">
+                                    <img src="/static/images/author-avatar.jpg" alt="Author" class="author-image" onerror="this.src='https://placehold.co/100x100?text=S'">
                                 </div>
                                 <div class="author-info">
-                                    <h5 class="author-name">Michael Brown</h5>
-                                    <p class="author-role">Regional Library Director</p>
+                                    <h5 class="author-name">Sunita Patel</h5>
+                                    <p class="author-role">District Library Director</p>
                                     <div class="author-location">
                                         <i class="fas fa-map-marker-alt"></i> Chennai, India
                                     </div>
@@ -862,7 +1183,7 @@
                     <i class="fas fa-shield-alt"></i>
                 </div>
                 <div class="trust-text">
-                    <span>Trusted by 750+ Libraries</span>
+                    <span>Trusted by 500+ Libraries</span>
                 </div>
             </div>
             <div class="trust-indicator">
@@ -882,6 +1203,283 @@
                 </div>
             </div>
         </div>
+
+        <!-- Enterprise Partner Modal -->
+        <div class="modal fade" id="partnerModal" tabindex="-1" aria-labelledby="partnerModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content enterprise-modal">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="partnerModalLabel"><i class="fas fa-building"></i>Enterprise Partnership Application</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="enterprise-form-intro">
+                            <h4>Join Our Network of Leading Indian Institutions</h4>
+                            <p>Complete the form below to start your enterprise partnership journey. Our India-based team will contact you within 24 hours to discuss your specific requirements and next steps.</p>
+                        </div>
+
+                        <form id="partnerForm" class="enterprise-form needs-validation" novalidate>
+                            <div class="row g-4">
+                                <!-- Institution Information -->
+                                <div class="col-12">
+                                    <h5 class="mb-3"><i class="fas fa-university me-2"></i>Institution Information</h5>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="institutionName" class="form-label">Institution Name*</label>
+                                    <input type="text" class="form-control" id="institutionName" required>
+                                    <div class="invalid-feedback">
+                                        Please provide your institution name.
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="institutionType" class="form-label">Institution Type*</label>
+                                    <select class="form-select" id="institutionType" required>
+                                        <option value="" selected disabled>Select type...</option>
+                                        <option value="university">University Library</option>
+                                        <option value="public">Public Library</option>
+                                        <option value="school">School Library</option>
+                                        <option value="research">Research Institution</option>
+                                        <option value="medical">Medical Library</option>
+                                        <option value="corporate">Corporate Library</option>
+                                        <option value="government">Government Library</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Please select an institution type.
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="institutionLocation" class="form-label">City*</label>
+                                    <input type="text" class="form-control" id="institutionLocation" required>
+                                    <div class="invalid-feedback">
+                                        Please provide your city.
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="institutionState" class="form-label">State*</label>
+                                    <select class="form-select" id="institutionState" required>
+                                        <option value="" selected disabled>Select state...</option>
+                                        <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                        <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                                        <option value="Assam">Assam</option>
+                                        <option value="Bihar">Bihar</option>
+                                        <option value="Chhattisgarh">Chhattisgarh</option>
+                                        <option value="Goa">Goa</option>
+                                        <option value="Gujarat">Gujarat</option>
+                                        <option value="Haryana">Haryana</option>
+                                        <option value="Himachal Pradesh">Himachal Pradesh</option>
+                                        <option value="Jharkhand">Jharkhand</option>
+                                        <option value="Karnataka">Karnataka</option>
+                                        <option value="Kerala">Kerala</option>
+                                        <option value="Madhya Pradesh">Madhya Pradesh</option>
+                                        <option value="Maharashtra">Maharashtra</option>
+                                        <option value="Manipur">Manipur</option>
+                                        <option value="Meghalaya">Meghalaya</option>
+                                        <option value="Mizoram">Mizoram</option>
+                                        <option value="Nagaland">Nagaland</option>
+                                        <option value="Odisha">Odisha</option>
+                                        <option value="Punjab">Punjab</option>
+                                        <option value="Rajasthan">Rajasthan</option>
+                                        <option value="Sikkim">Sikkim</option>
+                                        <option value="Tamil Nadu">Tamil Nadu</option>
+                                        <option value="Telangana">Telangana</option>
+                                        <option value="Tripura">Tripura</option>
+                                        <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                        <option value="Uttarakhand">Uttarakhand</option>
+                                        <option value="West Bengal">West Bengal</option>
+                                        <option value="Delhi">Delhi</option>
+                                        <option value="Other">Other Union Territory</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Please select your state.
+                                    </div>
+                                </div>
+
+                                <!-- Contact Information -->
+                                <div class="col-12 mt-4">
+                                    <h5 class="mb-3"><i class="fas fa-user me-2"></i>Contact Information</h5>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="contactName" class="form-label">Contact Person*</label>
+                                    <input type="text" class="form-control" id="contactName" required>
+                                    <div class="invalid-feedback">
+                                        Please provide a contact person.
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="contactPosition" class="form-label">Position/Title*</label>
+                                    <input type="text" class="form-control" id="contactPosition" required>
+                                    <div class="invalid-feedback">
+                                        Please provide your position.
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="contactEmail" class="form-label">Email Address*</label>
+                                    <input type="email" class="form-control" id="contactEmail" required>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid email address.
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="contactPhone" class="form-label">Phone Number*</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">+91</span>
+                                        <input type="tel" class="form-control" id="contactPhone" required>
+                                    </div>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid phone number.
+                                    </div>
+                                </div>
+
+                                <!-- Library Information -->
+                                <div class="col-12 mt-4">
+                                    <h5 class="mb-3"><i class="fas fa-book me-2"></i>Library Information</h5>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="institutionSize" class="form-label">Collection Size*</label>
+                                    <select class="form-select" id="institutionSize" required>
+                                        <option value="" selected disabled>Select size...</option>
+                                        <option value="small">Small (up to 10,000 items)</option>
+                                        <option value="medium">Medium (10,000-50,000 items)</option>
+                                        <option value="large">Large (50,000-200,000 items)</option>
+                                        <option value="xlarge">Very Large (200,000+ items)</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Please select your collection size.
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="staffSize" class="form-label">Library Staff Size*</label>
+                                    <select class="form-select" id="staffSize" required>
+                                        <option value="" selected disabled>Select staff size...</option>
+                                        <option value="1-5">1-5 staff members</option>
+                                        <option value="6-15">6-15 staff members</option>
+                                        <option value="16-30">16-30 staff members</option>
+                                        <option value="31+">31+ staff members</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Please select your staff size.
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="currentSystem" class="form-label">Current System (if any)</label>
+                                    <input type="text" class="form-control" id="currentSystem">
+                                    <div class="form-text">If you're using any library management system currently, please specify.</div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="implementationTimeframe" class="form-label">Implementation Timeframe*</label>
+                                    <select class="form-select" id="implementationTimeframe" required>
+                                        <option value="" selected disabled>Select timeframe...</option>
+                                        <option value="immediate">Immediate (0-1 month)</option>
+                                        <option value="short">Short-term (1-3 months)</option>
+                                        <option value="medium">Medium-term (3-6 months)</option>
+                                        <option value="long">Long-term (6+ months)</option>
+                                        <option value="planning">Just planning/researching</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Please select your implementation timeframe.
+                                    </div>
+                                </div>
+
+                                <!-- Partnership Interests -->
+                                <div class="col-12 mt-4">
+                                    <h5 class="mb-3"><i class="fas fa-handshake me-2"></i>Partnership Interests</h5>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label">Areas of Interest*</label>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input interest-checkbox" type="checkbox" id="interestCatalog" name="interests[]" value="Catalog Management">
+                                                <label class="form-check-label" for="interestCatalog">Catalog Management</label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input interest-checkbox" type="checkbox" id="interestCirculation" name="interests[]" value="Circulation Management">
+                                                <label class="form-check-label" for="interestCirculation">Circulation Management</label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input interest-checkbox" type="checkbox" id="interestMembers" name="interests[]" value="Member Management">
+                                                <label class="form-check-label" for="interestMembers">Member Management</label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input interest-checkbox" type="checkbox" id="interestDigital" name="interests[]" value="Digital Library">
+                                                <label class="form-check-label" for="interestDigital">Digital Library</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input interest-checkbox" type="checkbox" id="interestAnalytics" name="interests[]" value="Analytics & Reporting">
+                                                <label class="form-check-label" for="interestAnalytics">Analytics & Reporting</label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input interest-checkbox" type="checkbox" id="interestMobile" name="interests[]" value="Mobile Applications">
+                                                <label class="form-check-label" for="interestMobile">Mobile Applications</label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input interest-checkbox" type="checkbox" id="interestIntegration" name="interests[]" value="System Integration">
+                                                <label class="form-check-label" for="interestIntegration">System Integration</label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input interest-checkbox" type="checkbox" id="interestTraining" name="interests[]" value="Staff Training">
+                                                <label class="form-check-label" for="interestTraining">Staff Training</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="invalid-feedback" id="interestsValidationFeedback">
+                                        Please select at least one area of interest.
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label for="additionalInfo" class="form-label">Additional Requirements</label>
+                                    <textarea class="form-control" id="additionalInfo" rows="3" placeholder="Tell us more about your specific requirements and challenges..."></textarea>
+                                </div>
+
+                                <div class="col-12 mt-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="demoRequest" name="demoRequest" value="yes">
+                                        <label class="form-check-label" for="demoRequest">
+                                            I would like to schedule a personalized demo
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="privacyConsent" required>
+                                        <label class="form-check-label" for="privacyConsent">
+                                            I agree to the <a href="#" class="text-decoration-underline">Privacy Policy</a> and consent to being contacted about enterprise partnership opportunities*
+                                        </label>
+                                        <div class="invalid-feedback">
+                                            You must agree before submitting.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="submitPartnerForm">
+                            <i class="fas fa-paper-plane me-2"></i>Submit Application
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -893,7 +1491,7 @@
             <h6 class="section-subtitle" data-aos="fade-up">Platform Features</h6>
             <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Powerful Library Management Tools</h2>
             <div class="section-divider" data-aos="fade-up" data-aos-delay="200"></div>
-            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Our comprehensive platform provides everything you need to manage your library efficiently</p>
+            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Our comprehensive platform provides everything you need to manage your library efficiently with features designed for modern institutions</p>
         </div>
 
         <div class="row">
@@ -905,10 +1503,10 @@
                     <h3 class="feature-title">Catalog Management</h3>
                     <p class="feature-description">Easily manage your entire collection with our powerful cataloging tools.</p>
                     <ul class="feature-list">
-                        <li><i class="fas fa-check"></i> Bulk import/export</li>
+                        <li><i class="fas fa-check"></i> Multilingual catalog support</li>
                         <li><i class="fas fa-check"></i> Barcode generation</li>
-                        <li><i class="fas fa-check"></i> Custom fields</li>
-                        <li><i class="fas fa-check"></i> Advanced search</li>
+                        <li><i class="fas fa-check"></i> Multiple classification systems</li>
+                        <li><i class="fas fa-check"></i> Advanced search capabilities</li>
                     </ul>
                 </div>
             </div>
@@ -921,8 +1519,8 @@
                     <p class="feature-description">Streamline checkout, returns, and holds with our intuitive circulation system.</p>
                     <ul class="feature-list">
                         <li><i class="fas fa-check"></i> Quick checkout</li>
-                        <li><i class="fas fa-check"></i> Self-service options</li>
-                        <li><i class="fas fa-check"></i> Automated reminders</li>
+                        <li><i class="fas fa-check"></i> Reading room management</li>
+                        <li><i class="fas fa-check"></i> SMS/Email reminders</li>
                         <li><i class="fas fa-check"></i> Fine management</li>
                     </ul>
                 </div>
@@ -936,9 +1534,9 @@
                     <p class="feature-description">Manage your library members with comprehensive profiles and communication tools.</p>
                     <ul class="feature-list">
                         <li><i class="fas fa-check"></i> Member portal</li>
-                        <li><i class="fas fa-check"></i> ID card generation</li>
-                        <li><i class="fas fa-check"></i> Communication tools</li>
-                        <li><i class="fas fa-check"></i> Membership tiers</li>
+                        <li><i class="fas fa-check"></i> ID verification</li>
+                        <li><i class="fas fa-check"></i> Multilingual communication</li>
+                        <li><i class="fas fa-check"></i> Customizable membership tiers</li>
                     </ul>
                 </div>
             </div>
@@ -950,10 +1548,10 @@
                     <h3 class="feature-title">Analytics & Reporting</h3>
                     <p class="feature-description">Gain valuable insights with our comprehensive analytics and reporting tools.</p>
                     <ul class="feature-list">
-                        <li><i class="fas fa-check"></i> Custom reports</li>
+                        <li><i class="fas fa-check"></i> Customizable reports</li>
                         <li><i class="fas fa-check"></i> Usage statistics</li>
                         <li><i class="fas fa-check"></i> Collection analysis</li>
-                        <li><i class="fas fa-check"></i> Data visualization</li>
+                        <li><i class="fas fa-check"></i> Interactive data visualization</li>
                     </ul>
                 </div>
             </div>
@@ -967,8 +1565,8 @@
                     <ul class="feature-list">
                         <li><i class="fas fa-check"></i> Admin mobile app</li>
                         <li><i class="fas fa-check"></i> Member mobile app</li>
-                        <li><i class="fas fa-check"></i> Offline capabilities</li>
-                        <li><i class="fas fa-check"></i> Mobile notifications</li>
+                        <li><i class="fas fa-check"></i> Works on low bandwidth</li>
+                        <li><i class="fas fa-check"></i> Regional language support</li>
                     </ul>
                 </div>
             </div>
@@ -980,10 +1578,10 @@
                     <h3 class="feature-title">Integrations</h3>
                     <p class="feature-description">Connect with your existing systems through our extensive integration options.</p>
                     <ul class="feature-list">
-                        <li><i class="fas fa-check"></i> API access</li>
-                        <li><i class="fas fa-check"></i> Third-party plugins</li>
-                        <li><i class="fas fa-check"></i> Payment gateways</li>
+                        <li><i class="fas fa-check"></i> Comprehensive API</li>
+                        <li><i class="fas fa-check"></i> Multiple payment gateways</li>
                         <li><i class="fas fa-check"></i> SSO authentication</li>
+                        <li><i class="fas fa-check"></i> Institution ERP integration</li>
                     </ul>
                 </div>
             </div>
@@ -999,7 +1597,7 @@
             <h6 class="section-subtitle" data-aos="fade-up">Affordable Pricing</h6>
             <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Transparent & Flexible Plans</h2>
             <div class="section-divider" data-aos="fade-up" data-aos-delay="200"></div>
-            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Choose from our cost-effective plans designed specifically for Indian libraries of all sizes. No hidden fees, just straightforward pricing with all the features you need.</p>
+            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Choose from our cost-effective plans designed for libraries of all sizes. No hidden fees, just straightforward pricing with all the features you need to streamline your operations.</p>
         </div>
 
         <div class="row">
@@ -1010,7 +1608,7 @@
                         <p class="pricing-card-subtitle">Perfect for small libraries & schools</p>
                         <div class="pricing-card-price">
                             <span class="currency">₹</span>
-                            <span class="amount">2,999</span>
+                            <span class="amount">1,499</span>
                             <span class="period">/month</span>
                         </div>
                     </div>
@@ -1041,7 +1639,7 @@
                         <p class="pricing-card-subtitle">Ideal for growing libraries & institutions</p>
                         <div class="pricing-card-price">
                             <span class="currency">₹</span>
-                            <span class="amount">5,999</span>
+                            <span class="amount">2,999</span>
                             <span class="period">/month</span>
                         </div>
                     </div>
@@ -1071,7 +1669,7 @@
                         <p class="pricing-card-subtitle">Complete solution for large library networks</p>
                         <div class="pricing-card-price">
                             <span class="currency">₹</span>
-                            <span class="amount">11,999</span>
+                            <span class="amount">5,999</span>
                             <span class="period">/month</span>
                         </div>
                     </div>
@@ -1097,11 +1695,21 @@
         </div>
 
         <div class="text-center mt-4" data-aos="fade-up">
+            <div class="special-offer-badge mb-3">
+                <span><i class="fas fa-gift me-2"></i>Limited Time Offer: Get 3 Months Free with Annual Subscription</span>
+            </div>
+
             <p class="pricing-note mb-4">All plans include a 30-day free trial with full access to all features. 18% GST applicable as per government regulations. No credit card required to start your trial.</p>
 
-            <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#pricingComparisonTable" aria-expanded="false" aria-controls="pricingComparisonTable">
-                <i class="fas fa-table me-2"></i>View Full Comparison
-            </button>
+            <div class="pricing-actions">
+                <button class="btn btn-outline-primary me-3" type="button" data-bs-toggle="collapse" data-bs-target="#pricingComparisonTable" aria-expanded="false" aria-controls="pricingComparisonTable">
+                    <i class="fas fa-table me-2"></i>View Full Comparison
+                </button>
+
+                <a href="#contact" class="btn btn-primary">
+                    <i class="fas fa-headset me-2"></i>Talk to Sales Expert
+                </a>
+            </div>
 
             <div class="collapse mt-5" id="pricingComparisonTable">
                 <div class="pricing-comparison-table-wrapper">
@@ -1284,15 +1892,15 @@
                                 </tr>
                                 <tr>
                                     <td>Monthly Price</td>
+                                    <td>₹1,499/month</td>
                                     <td>₹2,999/month</td>
                                     <td>₹5,999/month</td>
-                                    <td>₹11,999/month</td>
                                 </tr>
                                 <tr>
                                     <td>Annual Price (Save 20%)</td>
+                                    <td>₹14,390/year</td>
                                     <td>₹28,790/year</td>
                                     <td>₹57,590/year</td>
-                                    <td>₹115,190/year</td>
                                 </tr>
                                 <tr>
                                     <td>GST</td>
@@ -1327,9 +1935,9 @@
     <div class="container">
         <div class="section-header text-center mb-5">
             <h6 class="section-subtitle" data-aos="fade-up">Security & Compliance</h6>
-            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Enterprise-Grade Security</h2>
+            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">Enterprise-Grade Data Protection</h2>
             <div class="section-divider" data-aos="fade-up" data-aos-delay="200"></div>
-            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Your library's data is protected by industry-leading security measures and compliance standards</p>
+            <p class="section-description" data-aos="fade-up" data-aos-delay="300">Your library's data is protected by industry-leading security measures and compliance with stringent data protection standards</p>
         </div>
 
         <div class="row">
@@ -1368,7 +1976,7 @@
                                 <i class="fas fa-check-circle"></i>
                                 <div>
                                     <h5>Secure Data Centers</h5>
-                                    <p>Hosted in SOC 2 certified data centers with 99.9% uptime guarantee and redundant systems.</p>
+                                    <p>Hosted in state-of-the-art data centers with 99.9% uptime guarantee and compliance with international standards.</p>
                                 </div>
                             </li>
                         </ul>
@@ -1388,8 +1996,8 @@
                             <li>
                                 <i class="fas fa-check-circle"></i>
                                 <div>
-                                    <h5>GDPR Compliance</h5>
-                                    <p>Full compliance with GDPR requirements for data protection and privacy.</p>
+                                    <h5>Data Protection Compliance</h5>
+                                    <p>Full compliance with international data protection laws and privacy regulations.</p>
                                 </div>
                             </li>
                             <li>
@@ -1424,7 +2032,7 @@
                 <div class="col-md-10">
                     <div class="security-badges">
                         <div class="security-badge">
-                            <img src="{% static 'images/security/gdpr.png' %}" alt="GDPR Compliant" onerror="this.src='https://placehold.co/120x60?text=GDPR'">
+                            <img src="{% static 'images/security/gdpr.png' %}" alt="GDPR Compliant" onerror="this.src='https://placehold.co/120x60?text=GDPR+Compliant'">
                         </div>
                         <div class="security-badge">
                             <img src="{% static 'images/security/soc2.png' %}" alt="SOC 2" onerror="this.src='https://placehold.co/120x60?text=SOC+2'">
@@ -1433,10 +2041,10 @@
                             <img src="{% static 'images/security/iso27001.png' %}" alt="ISO 27001" onerror="this.src='https://placehold.co/120x60?text=ISO+27001'">
                         </div>
                         <div class="security-badge">
-                            <img src="{% static 'images/security/hipaa.png' %}" alt="HIPAA Compliant" onerror="this.src='https://placehold.co/120x60?text=HIPAA'">
+                            <img src="{% static 'images/security/hipaa.png' %}" alt="Secure Payments" onerror="this.src='https://placehold.co/120x60?text=Secure+Payments'">
                         </div>
                         <div class="security-badge">
-                            <img src="{% static 'images/security/ccpa.png' %}" alt="CCPA Compliant" onerror="this.src='https://placehold.co/120x60?text=CCPA'">
+                            <img src="{% static 'images/security/ccpa.png' %}" alt="Data Security" onerror="this.src='https://placehold.co/120x60?text=Data+Security'">
                         </div>
                     </div>
                     <p class="security-note mt-3">Our platform undergoes regular security audits and penetration testing to ensure the highest level of protection for your data.</p>
@@ -1470,6 +2078,20 @@
             <p class="section-description" data-aos="fade-up" data-aos-delay="300">
                 Experience how our enterprise platform can revolutionize your library operations with a customized demonstration tailored to your specific needs
             </p>
+            <div class="demo-benefits mt-4" data-aos="fade-up" data-aos-delay="400">
+                <div class="benefit-badge">
+                    <i class="fas fa-check-circle"></i> 30-Minute Personalized Demo
+                </div>
+                <div class="benefit-badge">
+                    <i class="fas fa-check-circle"></i> Custom Implementation Plan
+                </div>
+                <div class="benefit-badge">
+                    <i class="fas fa-check-circle"></i> Pricing Consultation
+                </div>
+                <div class="benefit-badge">
+                    <i class="fas fa-check-circle"></i> Free Trial Setup
+                </div>
+            </div>
         </div>
 
         <!-- Modern Contact Card Design -->
@@ -1496,7 +2118,7 @@
                                             </div>
                                             <div class="contact-text">
                                                 <h5>Our Location</h5>
-                                                <p>123 Library Avenue, Tech Park<br>New Delhi, India 110001</p>
+                                                <p>123 Library Avenue, Tech Park<br>Gurugram, India 122002</p>
                                             </div>
                                         </div>
 
@@ -1557,6 +2179,9 @@
                             <div class="col-lg-7">
                                 <div class="contact-form-side">
                                     <div class="contact-form-header">
+                                        <div class="special-offer-banner mb-3">
+                                            <i class="fas fa-gift me-2"></i> Limited Time: Get 3 Months Free with Annual Plan
+                                        </div>
                                         <h4>Request a Demo</h4>
                                         <p>Fill out the form below and our team will contact you within 24 hours</p>
                                     </div>
@@ -1598,9 +2223,10 @@
                                                     <select class="form-select" id="libraryTypeSelect" required>
                                                         <option value="" selected disabled>Select library type</option>
                                                         <option value="public">Public Library</option>
-                                                        <option value="academic">Academic Library</option>
+                                                        <option value="academic">College/University Library</option>
                                                         <option value="school">School Library</option>
-                                                        <option value="special">Special Library</option>
+                                                        <option value="medical">Medical College Library</option>
+                                                        <option value="reading">Reading Room</option>
                                                         <option value="other">Other</option>
                                                     </select>
                                                     <label for="libraryTypeSelect"><i class="fas fa-building me-2"></i>Library Type</label>
@@ -1610,9 +2236,9 @@
                                                 <div class="form-floating mb-3">
                                                     <select class="form-select" id="librarySize" required>
                                                         <option value="" selected disabled>Select library size</option>
-                                                        <option value="small">Small (up to 20,000 items)</option>
-                                                        <option value="medium">Medium (20,000-100,000 items)</option>
-                                                        <option value="large">Large (100,000+ items)</option>
+                                                        <option value="small">Small (up to 10,000 items)</option>
+                                                        <option value="medium">Medium (10,000-50,000 items)</option>
+                                                        <option value="large">Large (50,000+ items)</option>
                                                     </select>
                                                     <label for="librarySize"><i class="fas fa-chart-bar me-2"></i>Library Size</label>
                                                 </div>
@@ -1657,11 +2283,18 @@
                                             </label>
                                         </div>
 
+                                        <!-- Limited Slots Alert -->
+                                        <div class="limited-slots-alert mb-3">
+                                            <i class="fas fa-clock text-warning me-2"></i> <strong>Only 5 demo slots remaining this week</strong>
+                                        </div>
+
                                         <!-- Modern 3D Button -->
                                         <button class="btn btn-3d-primary w-100" type="submit">
-                                            <i class="fas fa-calendar-check me-2"></i>Schedule Your Demo
+                                            <i class="fas fa-calendar-check me-2"></i>Schedule Your Demo Now
                                             <span class="btn-hover-effect"></span>
                                         </button>
+
+                                        <p class="text-center text-muted mt-2"><small>Our team will respond within 24 hours</small></p>
                                     </form>
                                 </div>
                             </div>
@@ -1727,6 +2360,7 @@
 
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+<script src="{% static 'js/partner-form.js' %}"></script>
 <script>
     // Modern Demo Request Form Handling
     document.addEventListener('DOMContentLoaded', function() {
@@ -1977,11 +2611,11 @@
         // Initialize Typed.js with enhanced options
         new Typed('.typed-text', {
             strings: [
-                'Unify Your Library Network',
-                'Optimize Multi-Branch Operations',
-                'Leverage Enterprise Analytics',
-                'Scale Your Library System Seamlessly',
-                'Transform with AI-Powered Insights'
+                'Digitize Your Library Collection',
+                'Streamline Circulation Operations',
+                'Enhance Member Experience',
+                'Optimize Resource Management',
+                'Generate Comprehensive Analytics'
             ],
             typeSpeed: 50,
             backSpeed: 30,
@@ -2889,4 +3523,5 @@
         indicator.classList.add('fade-in');
     });
 </script>
+</div> <!-- End of home-page-container -->
 {% endblock %}

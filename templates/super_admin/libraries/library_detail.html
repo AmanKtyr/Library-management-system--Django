@@ -16,7 +16,7 @@
             </nav>
         </div>
     </div>
-    
+
     <!-- Library Details -->
     <div class="row mb-4">
         <div class="col-md-4">
@@ -25,7 +25,7 @@
             {% else %}
                 <img src="https://placehold.co/400x300?text=Library" class="library-image img-fluid mb-3" alt="Library">
             {% endif %}
-            
+
             <div class="card mb-3">
                 <div class="card-header bg-primary text-white">
                     <h5 class="mb-0">Contact Information</h5>
@@ -39,7 +39,7 @@
                     {% endif %}
                 </div>
             </div>
-            
+
             <div class="card">
                 <div class="card-header bg-primary text-white">
                     <h5 class="mb-0">Opening Hours</h5>
@@ -53,10 +53,10 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="col-md-8">
             <h1 class="mb-3">{{ library.name }}</h1>
-            
+
             <div class="d-flex justify-content-between mb-3">
                 <div>
                     <span class="badge bg-primary">{{ total_books }} Books</span>
@@ -65,14 +65,14 @@
                         <span class="badge bg-info">Established {{ library.established_date|date:"Y" }}</span>
                     {% endif %}
                 </div>
-                
+
                 {% if user.is_authenticated and user.is_library_member %}
                     <a href="{% url 'transactions:new_membership' %}" class="btn btn-primary btn-sm">
                         <i class="fas fa-user-plus me-1"></i> Become a Member
                     </a>
                 {% endif %}
             </div>
-            
+
             <div class="card mb-4">
                 <div class="card-header bg-primary text-white">
                     <h5 class="mb-0">About This Library</h5>
@@ -85,16 +85,16 @@
                     {% endif %}
                 </div>
             </div>
-            
+
             <div class="card">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Available Books</h5>
                     <a href="{% url 'books:book_list' %}" class="btn btn-sm btn-light">View All Books</a>
                 </div>
-                <div class="card-body">
+                <div class="admin-pro-card-body">
                     {% if book_copies %}
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover">
+                        <div class="admin-pro-table-responsive">
+                            <table class="admin-pro-table">
                                 <thead>
                                     <tr>
                                         <th>Title</th>
@@ -113,17 +113,19 @@
                                                 {% endfor %}
                                             </td>
                                             <td>
-                                                <span class="badge bg-success">Available</span>
+                                                <span class="admin-pro-badge admin-pro-badge-success">Available</span>
                                             </td>
                                             <td>
-                                                <a href="{% url 'books:book_detail' slug=book_copy.book.slug %}" class="btn btn-sm btn-info">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                {% if user.is_authenticated and user.is_library_member %}
-                                                    <a href="{% url 'transactions:borrow_book' %}?book_copy={{ book_copy.id }}" class="btn btn-sm btn-primary">
-                                                        <i class="fas fa-book"></i> Borrow
+                                                <div class="admin-pro-actions">
+                                                    <a href="{% url 'books:book_detail' slug=book_copy.book.slug %}" class="admin-pro-action-btn" data-tooltip="View Details">
+                                                        <i class="fas fa-eye"></i>
                                                     </a>
-                                                {% endif %}
+                                                    {% if user.is_authenticated and user.is_library_member %}
+                                                        <a href="{% url 'transactions:borrow_book' %}?book_copy={{ book_copy.id }}" class="admin-pro-action-btn" data-tooltip="Borrow Book">
+                                                            <i class="fas fa-book"></i>
+                                                        </a>
+                                                    {% endif %}
+                                                </div>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -131,7 +133,13 @@
                             </table>
                         </div>
                     {% else %}
-                        <p>No books available in this library at the moment.</p>
+                        <div class="admin-pro-empty-state">
+                            <div class="admin-pro-empty-state-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <h3 class="admin-pro-empty-state-title">No Books Available</h3>
+                            <p class="admin-pro-empty-state-description">No books available in this library at the moment.</p>
+                        </div>
                     {% endif %}
                 </div>
             </div>

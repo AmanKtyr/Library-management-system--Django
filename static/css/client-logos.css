@@ -1,0 +1,124 @@
+/* Client Logos Section Styles */
+.client-logos-section {
+    padding: 30px 0;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    margin: 30px auto;
+    max-width: 1000px;
+}
+
+.client-logos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    padding: 20px;
+}
+
+.client-logo {
+    flex: 0 0 150px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.client-logo:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.client-logo img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    filter: grayscale(100%);
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+.client-logo:hover img {
+    filter: grayscale(0%);
+    opacity: 1;
+}
+
+/* Client Testimonial Highlight */
+.client-testimonial-highlight {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.testimonial-quote {
+    position: relative;
+    padding: 30px;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+.testimonial-quote i.fa-quote-left {
+    font-size: 2rem;
+    color: var(--primary-color, #2563eb);
+    opacity: 0.3;
+    margin-bottom: 15px;
+}
+
+.testimonial-quote p {
+    font-size: 1.2rem;
+    font-style: italic;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    color: var(--dark, #111827);
+}
+
+.testimonial-author {
+    font-size: 1rem;
+    color: var(--medium, #4b5563);
+}
+
+.testimonial-author strong {
+    color: var(--dark, #111827);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .client-logos {
+        gap: 20px;
+    }
+
+    .client-logo {
+        flex: 0 0 120px;
+        height: 70px;
+    }
+
+    .testimonial-quote p {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .client-logos {
+        gap: 15px;
+    }
+
+    .client-logo {
+        flex: 0 0 100px;
+        height: 60px;
+    }
+
+    .testimonial-quote {
+        padding: 20px;
+    }
+
+    .testimonial-quote p {
+        font-size: 1rem;
+    }
+}

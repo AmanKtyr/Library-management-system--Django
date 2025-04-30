@@ -1,0 +1,161 @@
+{% extends 'library_admin/base.html' %}
+{% load static %}
+
+{% block title %}Library Details - Library Management System{% endblock %}
+{% block breadcrumb_title %}Library Details{% endblock %}
+{% block page_title %}{{ library.name }} Details{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'library_admin:staff' %}" class="admin-pro-btn admin-pro-btn-primary">
+    <i class="fas fa-user-plus"></i> Manage Staff
+</a>
+<a href="{% url 'library_admin:settings' %}" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-cog"></i> Library Settings
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Library Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        {% if library.image %}
+                            <img src="{{ library.image.url }}" class="img-fluid rounded mb-3" alt="{{ library.name }}">
+                        {% else %}
+                            <img src="https://placehold.co/400x300?text=Library" class="img-fluid rounded mb-3" alt="Library">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <h4>{{ library.name }}</h4>
+                        <p class="text-muted">{{ library.description }}</p>
+                        
+                        <div class="mb-3">
+                            <h6 class="fw-bold">Contact Information</h6>
+                            <p><i class="fas fa-map-marker-alt me-2"></i> {{ library.address }}, {{ library.city }}, {{ library.state }}, {{ library.postal_code }}, {{ library.country }}</p>
+                            <p><i class="fas fa-phone me-2"></i> {{ library.phone }}</p>
+                            <p><i class="fas fa-envelope me-2"></i> {{ library.email }}</p>
+                            {% if library.website %}
+                                <p><i class="fas fa-globe me-2"></i> <a href="{{ library.website }}" target="_blank">{{ library.website }}</a></p>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <h6 class="fw-bold">Opening Hours</h6>
+                            <p>{{ library.opening_hours|linebreaks }}</p>
+                        </div>
+                        
+                        {% if library.established_date %}
+                            <p class="text-muted"><i class="fas fa-calendar me-2"></i> Established: {{ library.established_date|date:"F j, Y" }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Library Statistics</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Total Books:</span>
+                    <span class="fw-bold">{{ total_books }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Available Books:</span>
+                    <span class="fw-bold text-success">{{ available_books }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Borrowed Books:</span>
+                    <span class="fw-bold text-primary">{{ borrowed_books }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Reserved Books:</span>
+                    <span class="fw-bold text-warning">{{ reserved_books }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Maintenance Books:</span>
+                    <span class="fw-bold text-danger">{{ maintenance_books }}</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Staff Members:</span>
+                    <span class="fw-bold">{{ staff_members_count }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Active Members:</span>
+                    <span class="fw-bold">{{ members_count }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Recent Transactions</h5>
+                <a href="{% url 'library_admin:transactions' %}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>User</th>
+                                <th>Book</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in recent_transactions %}
+                                <tr>
+                                    <td>{{ transaction.transaction_date|date:"M d, Y" }}</td>
+                                    <td>{{ transaction.user.get_full_name }}</td>
+                                    <td>{{ transaction.book_copy.book.title }}</td>
+                                    <td>
+                                        {% if transaction.transaction_type == 'BORROW' %}
+                                            <span class="badge bg-primary">Borrow</span>
+                                        {% elif transaction.transaction_type == 'RETURN' %}
+                                            <span class="badge bg-success">Return</span>
+                                        {% elif transaction.transaction_type == 'RESERVE' %}
+                                            <span class="badge bg-warning">Reserve</span>
+                                        {% elif transaction.transaction_type == 'CANCEL_RESERVATION' %}
+                                            <span class="badge bg-danger">Cancel</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if transaction.status == 'COMPLETED' %}
+                                            <span class="badge bg-success">Completed</span>
+                                        {% elif transaction.status == 'PENDING' %}
+                                            <span class="badge bg-warning">Pending</span>
+                                        {% elif transaction.status == 'OVERDUE' %}
+                                            <span class="badge bg-danger">Overdue</span>
+                                        {% elif transaction.status == 'CANCELLED' %}
+                                            <span class="badge bg-secondary">Cancelled</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center">No recent transactions</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

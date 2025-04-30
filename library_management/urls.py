@@ -36,6 +36,9 @@ urlpatterns = [
     path('books/', include('apps.books.urls')),
     path('transactions/', include('apps.transactions.urls')),
 
+    # Redirect old library details URL to new one
+    path('libraries/manage/<slug:slug>/', lambda request, slug: redirect('library_admin:library_details')),
+
     # Role-based URLs
     path('superadmin/', include('apps.superadmin.urls')),
     path('library-admin/', include('apps.library_admin.urls')),

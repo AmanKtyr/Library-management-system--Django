@@ -93,7 +93,7 @@
     <i class="fas fa-chart-pie category-icon"></i>
     <span>Reports</span>
 </div>
-<a href="{% url 'transactions:transaction_reports' %}" class="admin-pro-menu-item {% if '/transactions/reports/' in request.path %}active{% endif %}">
+<a href="{% url 'library_admin:transaction_reports' %}" class="admin-pro-menu-item {% if '/library-admin/reports/transactions/' in request.path %}active{% endif %}">
     <i class="fas fa-chart-bar"></i>
     <span>Transaction Reports</span>
 </a>
@@ -112,7 +112,7 @@
     <i class="fas fa-cogs category-icon"></i>
     <span>Administration</span>
 </div>
-<a href="{% url 'libraries:manage_library' slug=library.slug %}" class="admin-pro-menu-item {% if '/libraries/manage/' in request.path and not '/members/' in request.path and not '/staff/' in request.path %}active{% endif %}">
+<a href="{% url 'library_admin:library_details' %}" class="admin-pro-menu-item {% if '/library-admin/library/' in request.path %}active{% endif %}">
     <i class="fas fa-building"></i>
     <span>Library Details</span>
 </a>
