@@ -526,13 +526,13 @@
         <i class="fas fa-book-reader"></i>
     </div>
     <div class="admin-pro-welcome-content">
-        <h2>नमस्ते (Namaste), {{ user.get_full_name|default:"Library Admin" }}! 🙏</h2>
-        <p class="lead">आज {{ library.name }} में क्या हो रहा है | Here's what's happening at your library today.</p>
+        <h2>Welcome, {{ user.get_full_name|default:"Library Admin" }}! 🙏</h2>
+        <p class="lead">Here's what's happening at your library today.</p>
         <div class="mt-3">
-            <span class="badge" style="background-color: #138808; color: white;"><i class="fas fa-clock me-1"></i>अपडेट: {% now "g:i A" %}</span>
+            <span class="badge" style="background-color: #138808; color: white;"><i class="fas fa-clock me-1"></i>Updated: {% now "g:i A" %}</span>
             <span class="badge ms-2" style="background-color: #FF9933; color: white;"><i class="fas fa-calendar me-1"></i>{% now "F j, Y" %}</span>
             <span class="badge ms-2" style="background-color: #000080; color: white;"><i class="fas fa-map-marker-alt me-1"></i>{{ library.city }}, {{ library.state }}</span>
-            <span class="badge ms-2" style="background-color: #138808; color: white;"><i class="fas fa-book me-1"></i>पुस्तकालय आईडी: {{ library.id }}</span>
+            <span class="badge ms-2" style="background-color: #138808; color: white;"><i class="fas fa-book me-1"></i>Library ID: {{ library.id }}</span>
         </div>
     </div>
 </div>
@@ -1000,7 +1000,7 @@
             <div class="admin-pro-card">
                 <div class="admin-pro-card-header d-flex justify-content-between align-items-center" style="border-bottom: 2px solid #000080;">
                     <h3 class="admin-pro-card-title">
-                        <i class="fas fa-book-reader me-2" style="color: #000080;"></i>भारतीय साहित्य प्रकाश (Indian Literature Spotlight)
+                        <i class="fas fa-book-reader me-2" style="color: #000080;"></i>Indian Literature Spotlight
                     </h3>
                     <div>
                         <select class="form-select form-select-sm d-inline-block me-2" style="width: auto;">
@@ -1183,7 +1183,7 @@
                                 <div class="col-md-2 col-sm-4 mb-3">
                                     <div class="card h-100 border-0 shadow-sm hover-card">
                                         <div class="card-body text-center p-3">
-                                            <h5 class="card-title">हिन्दी</h5>
+                                            <h5 class="card-title">Hindi</h5>
                                             <p class="card-text">Hindi</p>
                                             <div class="progress mb-2" style="height: 5px;">
                                                 <div class="progress-bar" role="progressbar" style="width: 85%; background-color: #FF9933;" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
@@ -1195,7 +1195,7 @@
                                 <div class="col-md-2 col-sm-4 mb-3">
                                     <div class="card h-100 border-0 shadow-sm hover-card">
                                         <div class="card-body text-center p-3">
-                                            <h5 class="card-title">தமிழ்</h5>
+                                            <h5 class="card-title">Tamil</h5>
                                             <p class="card-text">Tamil</p>
                                             <div class="progress mb-2" style="height: 5px;">
                                                 <div class="progress-bar" role="progressbar" style="width: 65%; background-color: #138808;" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
@@ -1207,7 +1207,7 @@
                                 <div class="col-md-2 col-sm-4 mb-3">
                                     <div class="card h-100 border-0 shadow-sm hover-card">
                                         <div class="card-body text-center p-3">
-                                            <h5 class="card-title">বাংলা</h5>
+                                            <h5 class="card-title">Bengali</h5>
                                             <p class="card-text">Bengali</p>
                                             <div class="progress mb-2" style="height: 5px;">
                                                 <div class="progress-bar" role="progressbar" style="width: 70%; background-color: #000080;" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
@@ -1219,7 +1219,7 @@
                                 <div class="col-md-2 col-sm-4 mb-3">
                                     <div class="card h-100 border-0 shadow-sm hover-card">
                                         <div class="card-body text-center p-3">
-                                            <h5 class="card-title">తెలుగు</h5>
+                                            <h5 class="card-title">Telugu</h5>
                                             <p class="card-text">Telugu</p>
                                             <div class="progress mb-2" style="height: 5px;">
                                                 <div class="progress-bar" role="progressbar" style="width: 55%; background-color: #FF9933;" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100"></div>
@@ -1231,7 +1231,7 @@
                                 <div class="col-md-2 col-sm-4 mb-3">
                                     <div class="card h-100 border-0 shadow-sm hover-card">
                                         <div class="card-body text-center p-3">
-                                            <h5 class="card-title">मराठी</h5>
+                                            <h5 class="card-title">Marathi</h5>
                                             <p class="card-text">Marathi</p>
                                             <div class="progress mb-2" style="height: 5px;">
                                                 <div class="progress-bar" role="progressbar" style="width: 60%; background-color: #138808;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
@@ -1243,7 +1243,7 @@
                                 <div class="col-md-2 col-sm-4 mb-3">
                                     <div class="card h-100 border-0 shadow-sm hover-card">
                                         <div class="card-body text-center p-3">
-                                            <h5 class="card-title">ਪੰਜਾਬੀ</h5>
+                                            <h5 class="card-title">Punjabi</h5>
                                             <p class="card-text">Punjabi</p>
                                             <div class="progress mb-2" style="height: 5px;">
                                                 <div class="progress-bar" role="progressbar" style="width: 45%; background-color: #000080;" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
@@ -1290,7 +1290,7 @@
             <div class="admin-pro-card">
                 <div class="admin-pro-card-header d-flex justify-content-between align-items-center" style="border-bottom: 2px solid #FF9933;">
                     <h3 class="admin-pro-card-title">
-                        <i class="fas fa-clipboard-check me-2" style="color: #FF9933;"></i>भारतीय पुस्तकालय अनुपालन (Library Compliance)
+                        <i class="fas fa-clipboard-check me-2" style="color: #FF9933;"></i>Library Compliance
                     </h3>
                     <a href="#" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline" style="border-color: #FF9933; color: #FF9933;">
                         <i class="fas fa-external-link-alt"></i> View All Requirements
@@ -1384,7 +1384,7 @@
             <div class="admin-pro-card">
                 <div class="admin-pro-card-header d-flex justify-content-between align-items-center" style="border-bottom: 2px solid #138808;">
                     <h3 class="admin-pro-card-title">
-                        <i class="fas fa-exchange-alt me-2" style="color: #138808;"></i>हाल के लेनदेन (Recent Transactions)
+                        <i class="fas fa-exchange-alt me-2" style="color: #138808;"></i>Recent Transactions
                     </h3>
                     <div class="admin-pro-card-actions">
                         <div class="btn-group me-2">
@@ -1534,7 +1534,7 @@
             <div class="admin-pro-card">
                 <div class="admin-pro-card-header d-flex justify-content-between align-items-center" style="border-bottom: 2px solid #FF9933;">
                     <h3 class="admin-pro-card-title">
-                        <i class="fas fa-calendar-day me-2" style="color: #FF9933;"></i>भारतीय त्योहार और कार्यक्रम (Indian Festivals & Events)
+                        <i class="fas fa-calendar-day me-2" style="color: #FF9933;"></i>Indian Festivals & Events
                     </h3>
                     <a href="#" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline" style="border-color: #FF9933; color: #FF9933;">
                         <i class="fas fa-plus"></i> Add Event

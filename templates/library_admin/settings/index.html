@@ -518,10 +518,7 @@
                                                 <input type="text" class="form-control" id="name" name="name" value="{{ library.name }}" required>
                                                 <div class="form-text">Enter the official name of your library.</div>
                                             </div>
-                                            <div class="mb-3">
-                                                <label for="name_hindi" class="form-label">Name in Hindi <span class="text-muted small">(Optional)</span></label>
-                                                <input type="text" class="form-control" id="name_hindi" name="name_hindi" value="{{ library.name_hindi }}">
-                                            </div>
+                                            <!-- Hindi name field removed -->
                                             <div class="mb-3">
                                                 <label for="description" class="form-label">Description</label>
                                                 <textarea class="form-control" id="description" name="description" rows="3">{{ library.description }}</textarea>
@@ -644,15 +641,15 @@
                                             <label for="default_language" class="form-label">Default Language</label>
                                             <select class="form-select" id="default_language" name="default_language">
                                                 <option value="en">English</option>
-                                                <option value="hi">Hindi (हिन्दी)</option>
-                                                <option value="bn">Bengali (বাংলা)</option>
-                                                <option value="te">Telugu (తెలుగు)</option>
-                                                <option value="mr">Marathi (मराठी)</option>
-                                                <option value="ta">Tamil (தமிழ்)</option>
-                                                <option value="gu">Gujarati (ગુજરાતી)</option>
-                                                <option value="kn">Kannada (ಕನ್ನಡ)</option>
-                                                <option value="ml">Malayalam (മലയാളം)</option>
-                                                <option value="pa">Punjabi (ਪੰਜਾਬੀ)</option>
+                                                <option value="hi">Hindi</option>
+                                                <option value="bn">Bengali</option>
+                                                <option value="te">Telugu</option>
+                                                <option value="mr">Marathi</option>
+                                                <option value="ta">Tamil</option>
+                                                <option value="gu">Gujarati</option>
+                                                <option value="kn">Kannada</option>
+                                                <option value="ml">Malayalam</option>
+                                                <option value="pa">Punjabi</option>
                                             </select>
                                         </div>
                                         <div class="col-md-6 mb-3">
