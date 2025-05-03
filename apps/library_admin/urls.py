@@ -31,7 +31,6 @@ urlpatterns = [
     path('publishers/<slug:slug>/', views.publisher_detail, name='publisher_detail'),
 
     # People Management URLs
-    path('members/', views.manage_members, name='members'),
     path('staff/', views.manage_staff, name='staff'),
 
     # Circulation URLs
@@ -59,6 +58,7 @@ urlpatterns = [
     path('members/', views.members, name='members'),
     path('members/add/', views.add_member, name='add_member'),
     path('members/renew/', views.renew_membership, name='renew_membership'),
+    path('members/<int:member_id>/profile/', views.member_profile, name='member_profile'),
 
     path('member-attendance/', views.member_attendance, name='member_attendance'),
     path('member-attendance/record/', views.record_attendance, name='record_attendance'),

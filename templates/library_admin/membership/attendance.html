@@ -341,6 +341,11 @@
                         <option value="Reading Newspapers" {% if purpose_filter == 'Reading Newspapers' %}selected{% endif %}>Reading Newspapers</option>
                         <option value="Using WiFi" {% if purpose_filter == 'Using WiFi' %}selected{% endif %}>Using WiFi</option>
                         <option value="Competitive Exam Preparation" {% if purpose_filter == 'Competitive Exam Preparation' %}selected{% endif %}>Competitive Exam Preparation</option>
+                        <option value="UPSC Preparation" {% if purpose_filter == 'UPSC Preparation' %}selected{% endif %}>UPSC Preparation</option>
+                        <option value="JEE/NEET Preparation" {% if purpose_filter == 'JEE/NEET Preparation' %}selected{% endif %}>JEE/NEET Preparation</option>
+                        <option value="Banking Exams" {% if purpose_filter == 'Banking Exams' %}selected{% endif %}>Banking Exams</option>
+                        <option value="SSC Preparation" {% if purpose_filter == 'SSC Preparation' %}selected{% endif %}>SSC Preparation</option>
+                        <option value="Research Work" {% if purpose_filter == 'Research Work' %}selected{% endif %}>Research Work</option>
                     </select>
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-search"></i>
@@ -352,8 +357,38 @@
                     <a href="{% url 'library_admin:member_attendance' %}?purpose=Exam+Preparation" class="btn btn-sm btn-outline-primary">Exam Prep</a>
                     <a href="{% url 'library_admin:member_attendance' %}?purpose=Competitive+Exam+Preparation" class="btn btn-sm btn-outline-primary">Competitive Exams</a>
                     <a href="{% url 'library_admin:member_attendance' %}?purpose=Reading+Newspapers" class="btn btn-sm btn-outline-primary">Newspapers</a>
+                    <a href="{% url 'library_admin:member_attendance' %}?purpose=UPSC+Preparation" class="btn btn-sm btn-outline-primary">UPSC</a>
+                    <a href="{% url 'library_admin:member_attendance' %}?purpose=JEE/NEET+Preparation" class="btn btn-sm btn-outline-primary">JEE/NEET</a>
+                    <a href="{% url 'library_admin:member_attendance' %}?purpose=Banking+Exams" class="btn btn-sm btn-outline-primary">Banking</a>
+                    <a href="{% url 'library_admin:member_attendance' %}?purpose=SSC+Preparation" class="btn btn-sm btn-outline-primary">SSC</a>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Bulk Actions -->
+    <div class="admin-pro-card-body border-bottom pb-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="bulk-actions">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="selectAllAttendance">
+                    <label class="form-check-label" for="selectAllAttendance">Select All</label>
+                </div>
+            </div>
+            <div class="bulk-action-buttons d-none">
+                <span class="me-2"><span id="selectedCount">0</span> members selected</span>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-outline-success" id="bulkCheckInBtn">
+                        <i class="fas fa-sign-in-alt"></i> Bulk Check In
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger" id="bulkCheckOutBtn">
+                        <i class="fas fa-sign-out-alt"></i> Bulk Check Out
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-primary" id="bulkAssignSeatsBtn">
+                        <i class="fas fa-chair"></i> Assign Seats
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
     <div class="admin-pro-card-body">
@@ -436,6 +471,86 @@
     </div>
 </div>
 
+<!-- ID Card Scanner Modal -->
+<div class="modal fade" id="scannerModal" tabindex="-1" aria-labelledby="scannerModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="scannerModalLabel"><i class="fas fa-id-card me-2"></i>Scan ID Card</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <div class="scanner-container p-3 border rounded mb-3 mx-auto" style="max-width: 300px; height: 200px; background-color: #f8f9fa;">
+                        <div class="d-flex flex-column justify-content-center align-items-center h-100">
+                            <i class="fas fa-id-card fa-4x mb-3 text-muted"></i>
+                            <div class="scanner-status">Ready to scan</div>
+                            <div class="scanner-animation"></div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="card_number" class="form-label">ID Card Number</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-barcode"></i></span>
+                            <input type="text" class="form-control" id="card_number" name="card_number" placeholder="Enter or scan card number" autofocus>
+                            <button class="btn btn-primary" type="button" id="scanButton">
+                                <i class="fas fa-camera"></i> Scan
+                            </button>
+                        </div>
+                        <small class="form-text text-muted">Place the ID card on the scanner or enter the number manually</small>
+                    </div>
+                </div>
+
+                <div id="scanResult" class="d-none">
+                    <div class="alert alert-success">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <i class="fas fa-check-circle fa-2x"></i>
+                            </div>
+                            <div>
+                                <h6 class="alert-heading mb-1">Member Found</h6>
+                                <p class="mb-0" id="scannedMemberInfo">Rahul Sharma (ID: MEM-12345)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="scan_purpose" class="form-label">Purpose</label>
+                                <select class="form-select" id="scan_purpose" name="scan_purpose">
+                                    <option value="Self Study">Self Study</option>
+                                    <option value="Exam Preparation">Exam Preparation</option>
+                                    <option value="Reading Newspapers">Reading Newspapers</option>
+                                    <option value="Competitive Exam Preparation">Competitive Exam Preparation</option>
+                                    <option value="Using WiFi">Using WiFi</option>
+                                    <option value="UPSC Preparation">UPSC Preparation</option>
+                                    <option value="JEE/NEET Preparation">JEE/NEET Preparation</option>
+                                    <option value="Banking Exams">Banking Exams</option>
+                                    <option value="SSC Preparation">SSC Preparation</option>
+                                    <option value="Research Work">Research Work</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="scan_seat" class="form-label">Seat Number</label>
+                                <input type="text" class="form-control" id="scan_seat" name="scan_seat" placeholder="Optional">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success d-none" id="quickCheckInBtn">
+                    <i class="fas fa-user-check"></i> Quick Check In
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Check In Modal -->
 <div class="modal fade" id="checkInModal" tabindex="-1" aria-labelledby="checkInModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -481,6 +596,11 @@
                                         <option value="Group Study">Group Study</option>
                                         <option value="Using Reference Materials">Using Reference Materials</option>
                                         <option value="Competitive Exam Preparation">Competitive Exam Preparation</option>
+                                        <option value="UPSC Preparation">UPSC Preparation</option>
+                                        <option value="JEE/NEET Preparation">JEE/NEET Preparation</option>
+                                        <option value="Banking Exams">Banking Exams</option>
+                                        <option value="SSC Preparation">SSC Preparation</option>
+                                        <option value="Research Work">Research Work</option>
                                         <option value="Other">Other</option>
                                     </select>
                                 </div>
@@ -529,10 +649,13 @@
                             <div>
                                 <h6 class="alert-heading mb-1">Reading Hall Rules</h6>
                                 <ul class="mb-0 ps-3 small">
-                                    <li>Maintain silence in the reading area</li>
-                                    <li>Mobile phones must be on silent mode</li>
+                                    <li>Maintain complete silence in the reading area</li>
+                                    <li>Mobile phones must be switched off or on silent mode</li>
                                     <li>No food or drinks allowed (except water)</li>
                                     <li>Handle library materials with care</li>
+                                    <li>Newspapers must be returned to the designated area after reading</li>
+                                    <li>Seats cannot be reserved for absent members</li>
+                                    <li>Members must sign out when leaving the reading hall</li>
                                 </ul>
                             </div>
                         </div>
@@ -965,6 +1088,350 @@
                 alert(`Analytics data will be updated for: ${value}`);
             });
         }
+
+        // ID Card Scanner functionality
+        const scanButton = document.getElementById('scanButton');
+        const cardNumberInput = document.getElementById('card_number');
+        const scanResult = document.getElementById('scanResult');
+        const quickCheckInBtn = document.getElementById('quickCheckInBtn');
+        const scannedMemberInfo = document.getElementById('scannedMemberInfo');
+        const scannerStatus = document.querySelector('.scanner-status');
+
+        if (scanButton && cardNumberInput) {
+            // Simulate scanning when the scan button is clicked
+            scanButton.addEventListener('click', function() {
+                // Show scanning animation
+                scannerStatus.textContent = 'Scanning...';
+                scannerStatus.classList.add('text-primary');
+
+                // Add scanning animation
+                const scannerContainer = document.querySelector('.scanner-container');
+                scannerContainer.classList.add('scanning');
+
+                // Simulate scanning delay
+                setTimeout(() => {
+                    const cardNumber = cardNumberInput.value.trim();
+
+                    if (cardNumber) {
+                        // Simulate finding a member
+                        scannerStatus.textContent = 'Member found!';
+                        scannerStatus.classList.remove('text-primary');
+                        scannerStatus.classList.add('text-success');
+
+                        // Show the scan result
+                        scanResult.classList.remove('d-none');
+                        quickCheckInBtn.classList.remove('d-none');
+
+                        // Set member info based on card number
+                        // In a real implementation, you would fetch this from the server
+                        let memberName = '';
+                        let memberId = '';
+
+                        if (cardNumber === '12345') {
+                            memberName = 'Rahul Sharma';
+                            memberId = 'MEM-12345';
+                        } else if (cardNumber === '23456') {
+                            memberName = 'Priya Mehta';
+                            memberId = 'MEM-23456';
+                        } else if (cardNumber === '34567') {
+                            memberName = 'Amit Kumar';
+                            memberId = 'MEM-34567';
+                        } else {
+                            memberName = 'Unknown Member';
+                            memberId = cardNumber;
+                        }
+
+                        scannedMemberInfo.textContent = `${memberName} (ID: ${memberId})`;
+                    } else {
+                        // No card number entered
+                        scannerStatus.textContent = 'No card detected';
+                        scannerStatus.classList.remove('text-primary');
+                        scannerStatus.classList.add('text-danger');
+                    }
+
+                    scannerContainer.classList.remove('scanning');
+                }, 1500);
+            });
+
+            // Handle Enter key in card number input
+            cardNumberInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    scanButton.click();
+                }
+            });
+
+            // Handle quick check-in button
+            if (quickCheckInBtn) {
+                quickCheckInBtn.addEventListener('click', function() {
+                    const purpose = document.getElementById('scan_purpose').value;
+                    const seat = document.getElementById('scan_seat').value;
+                    const memberInfo = scannedMemberInfo.textContent;
+
+                    // In a real implementation, you would submit this data to the server
+                    alert(`Quick check-in successful for ${memberInfo}\nPurpose: ${purpose}\nSeat: ${seat || 'Not assigned'}`);
+
+                    // Close the modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('scannerModal'));
+                    modal.hide();
+
+                    // Reset the form
+                    cardNumberInput.value = '';
+                    scanResult.classList.add('d-none');
+                    quickCheckInBtn.classList.add('d-none');
+                    scannerStatus.textContent = 'Ready to scan';
+                    scannerStatus.classList.remove('text-success', 'text-danger');
+                });
+            }
+        }
+
+        // Bulk actions functionality
+        const selectAllCheckbox = document.getElementById('selectAllAttendance');
+        const bulkActionButtons = document.querySelector('.bulk-action-buttons');
+        const selectedCountElement = document.getElementById('selectedCount');
+        const bulkCheckInBtn = document.getElementById('bulkCheckInBtn');
+        const bulkCheckOutBtn = document.getElementById('bulkCheckOutBtn');
+        const bulkAssignSeatsBtn = document.getElementById('bulkAssignSeatsBtn');
+
+        if (selectAllCheckbox) {
+            // Add checkboxes to each row
+            const rows = document.querySelectorAll('#attendanceTable tbody tr');
+            rows.forEach(row => {
+                const firstCell = row.querySelector('td:first-child');
+                if (firstCell) {
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.className = 'form-check-input me-2 attendance-checkbox';
+                    checkbox.setAttribute('data-id', row.getAttribute('data-id') || '');
+
+                    // Wrap the existing content in a div
+                    const existingContent = firstCell.innerHTML;
+                    firstCell.innerHTML = '';
+
+                    const checkboxWrapper = document.createElement('div');
+                    checkboxWrapper.className = 'd-flex align-items-center';
+
+                    checkboxWrapper.appendChild(checkbox);
+
+                    const contentWrapper = document.createElement('div');
+                    contentWrapper.innerHTML = existingContent;
+                    checkboxWrapper.appendChild(contentWrapper);
+
+                    firstCell.appendChild(checkboxWrapper);
+                }
+            });
+
+            // Handle select all checkbox
+            selectAllCheckbox.addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('.attendance-checkbox');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = selectAllCheckbox.checked;
+                });
+
+                updateSelectedCount();
+            });
+
+            // Handle individual checkboxes
+            document.addEventListener('change', function(e) {
+                if (e.target.classList.contains('attendance-checkbox')) {
+                    updateSelectedCount();
+                }
+            });
+
+            // Update selected count and show/hide bulk action buttons
+            function updateSelectedCount() {
+                const checkedBoxes = document.querySelectorAll('.attendance-checkbox:checked');
+                const count = checkedBoxes.length;
+
+                if (count > 0) {
+                    bulkActionButtons.classList.remove('d-none');
+                    selectedCountElement.textContent = count;
+                } else {
+                    bulkActionButtons.classList.add('d-none');
+                }
+
+                // Update select all checkbox state
+                const allCheckboxes = document.querySelectorAll('.attendance-checkbox');
+                selectAllCheckbox.checked = count > 0 && count === allCheckboxes.length;
+            }
+
+            // Handle bulk check-in button
+            if (bulkCheckInBtn) {
+                bulkCheckInBtn.addEventListener('click', function() {
+                    const checkedBoxes = document.querySelectorAll('.attendance-checkbox:checked');
+                    const memberIds = Array.from(checkedBoxes).map(checkbox => checkbox.getAttribute('data-id'));
+
+                    if (memberIds.length > 0) {
+                        // In a real implementation, you would submit this data to the server
+                        alert(`Bulk check-in for ${memberIds.length} members`);
+                    }
+                });
+            }
+
+            // Handle bulk check-out button
+            if (bulkCheckOutBtn) {
+                bulkCheckOutBtn.addEventListener('click', function() {
+                    const checkedBoxes = document.querySelectorAll('.attendance-checkbox:checked');
+                    const memberIds = Array.from(checkedBoxes).map(checkbox => checkbox.getAttribute('data-id'));
+
+                    if (memberIds.length > 0) {
+                        // In a real implementation, you would submit this data to the server
+                        alert(`Bulk check-out for ${memberIds.length} members`);
+                    }
+                });
+            }
+
+            // Handle bulk assign seats button
+            if (bulkAssignSeatsBtn) {
+                bulkAssignSeatsBtn.addEventListener('click', function() {
+                    const checkedBoxes = document.querySelectorAll('.attendance-checkbox:checked');
+                    const memberIds = Array.from(checkedBoxes).map(checkbox => checkbox.getAttribute('data-id'));
+
+                    if (memberIds.length > 0) {
+                        // Show a modal or prompt for seat assignment
+                        const seatingChart = document.getElementById('seatingChart');
+                        if (seatingChart) {
+                            // Scroll to the seating chart
+                            seatingChart.scrollIntoView({ behavior: 'smooth' });
+
+                            // Highlight the seating chart
+                            seatingChart.classList.add('highlight-section');
+                            setTimeout(() => {
+                                seatingChart.classList.remove('highlight-section');
+                            }, 2000);
+
+                            alert(`Please select seats for ${memberIds.length} members in the seating chart below`);
+                        } else {
+                            alert(`Bulk seat assignment for ${memberIds.length} members`);
+                        }
+                    }
+                });
+            }
+        }
+
+        // Print Report functionality
+        const printReportBtn = document.getElementById('printReportBtn');
+        if (printReportBtn) {
+            printReportBtn.addEventListener('click', function() {
+                // Create a printable version of the attendance data
+                const printWindow = window.open('', '_blank');
+
+                // Get current date
+                const now = new Date();
+                const dateString = now.toLocaleDateString();
+
+                // Create the print content
+                let printContent = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Reading Hall Attendance Report - ${dateString}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; }
+                            h1 { text-align: center; margin-bottom: 20px; }
+                            .report-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
+                            table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                            th { background-color: #f2f2f2; }
+                            .footer { margin-top: 30px; text-align: center; font-size: 12px; color: #666; }
+                            @media print {
+                                .no-print { display: none; }
+                                button { display: none; }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="no-print" style="text-align: right; margin-bottom: 20px;">
+                            <button onclick="window.print()">Print Report</button>
+                        </div>
+
+                        <h1>Reading Hall Attendance Report</h1>
+
+                        <div class="report-header">
+                            <div>
+                                <strong>Date:</strong> ${dateString}<br>
+                                <strong>Generated By:</strong> Library Administrator
+                            </div>
+                            <div>
+                                <strong>Total Visitors Today:</strong> ${document.querySelector('.admin-pro-stats-content h3').textContent}<br>
+                                <strong>Currently In Hall:</strong> ${document.querySelectorAll('.admin-pro-stats-content h3')[1].textContent}
+                            </div>
+                        </div>
+
+                        <h2>Attendance Register</h2>
+                `;
+
+                // Get the attendance table
+                const attendanceTable = document.getElementById('attendanceTable');
+                if (attendanceTable) {
+                    // Clone the table and remove the actions column
+                    const tableClone = attendanceTable.cloneNode(true);
+                    const headerRow = tableClone.querySelector('thead tr');
+                    const actionColumnIndex = Array.from(headerRow.cells).findIndex(cell => cell.textContent.trim() === 'Actions');
+
+                    if (actionColumnIndex !== -1) {
+                        // Remove the Actions column header
+                        headerRow.deleteCell(actionColumnIndex);
+
+                        // Remove the Actions column from each row
+                        const rows = tableClone.querySelectorAll('tbody tr');
+                        rows.forEach(row => {
+                            row.deleteCell(actionColumnIndex);
+                        });
+                    }
+
+                    printContent += tableClone.outerHTML;
+                } else {
+                    printContent += '<p>No attendance data available.</p>';
+                }
+
+                // Add seating information
+                printContent += `
+                    <h2>Current Seating Information</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Seat</th>
+                                <th>Status</th>
+                                <th>Member</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                // Get all seats
+                const seats = document.querySelectorAll('.seat');
+                seats.forEach(seat => {
+                    const seatId = seat.getAttribute('data-seat');
+                    const status = seat.getAttribute('data-status');
+                    const member = seat.getAttribute('data-member') || '-';
+
+                    printContent += `
+                        <tr>
+                            <td>${seatId}</td>
+                            <td>${status.charAt(0).toUpperCase() + status.slice(1)}</td>
+                            <td>${member}</td>
+                        </tr>
+                    `;
+                });
+
+                printContent += `
+                        </tbody>
+                    </table>
+
+                    <div class="footer">
+                        <p>This report was generated on ${now.toLocaleString()}.</p>
+                        <p>Library Management System - Reading Hall Attendance Module</p>
+                    </div>
+                    </body>
+                    </html>
+                `;
+
+                printWindow.document.open();
+                printWindow.document.write(printContent);
+                printWindow.document.close();
+            });
+        }
     });
 </script>
 
@@ -1246,6 +1713,107 @@
 
         .reading-table {
             width: 100%;
+        }
+    }
+
+    /* Scanner styles */
+    .scanner-container {
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .scanner-container.scanning {
+        box-shadow: 0 0 15px rgba(13, 110, 253, 0.5);
+    }
+
+    .scanner-container.scanning::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background-color: #0d6efd;
+        animation: scan 1.5s linear infinite;
+    }
+
+    @keyframes scan {
+        0% {
+            top: 0;
+        }
+        50% {
+            top: calc(100% - 5px);
+        }
+        100% {
+            top: 0;
+        }
+    }
+
+    .scanner-status {
+        font-weight: 500;
+        margin-top: 10px;
+    }
+
+    /* Highlight section effect */
+    .highlight-section {
+        animation: highlight-pulse 2s;
+    }
+
+    @keyframes highlight-pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.7);
+        }
+        70% {
+            box-shadow: 0 0 0 15px rgba(13, 110, 253, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(13, 110, 253, 0);
+        }
+    }
+
+    /* Bulk actions styles */
+    .bulk-actions {
+        display: flex;
+        align-items: center;
+    }
+
+    .attendance-checkbox {
+        cursor: pointer;
+    }
+
+    /* Print styles */
+    @media print {
+        .admin-pro-card {
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .admin-pro-btn,
+        .modal,
+        .admin-pro-card-toolbar,
+        .admin-pro-card-header button,
+        .bulk-actions,
+        .bulk-action-buttons {
+            display: none !important;
+        }
+
+        .table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+        }
+
+        .table th,
+        .table td {
+            border: 1px solid #ddd !important;
+            padding: 8px !important;
+        }
+
+        .table th {
+            background-color: #f2f2f2 !important;
+        }
+
+        .attendance-checkbox {
+            display: none !important;
         }
     }
 </style>

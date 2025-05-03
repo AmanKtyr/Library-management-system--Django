@@ -236,7 +236,91 @@ def manage_books(request):
 
 @login_required
 @user_passes_test(is_library_admin)
-def manage_members(request):
+def member_profile(request, member_id):
+    """View function for displaying a member's profile."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    # Get the member
+    member = get_object_or_404(User, id=member_id, user_type='MEMBER')
+
+    # Get the membership for this library
+    try:
+        membership = Membership.objects.get(user=member, library=library)
+    except Membership.DoesNotExist:
+        messages.error(request, "This user is not a member of your library.")
+        return redirect('library_admin:members')
+
+    # Get attendance records
+    attendance_records = MemberAttendance.objects.filter(
+        user=member,
+        library=library
+    ).order_by('-check_in_time')[:10]  # Get the 10 most recent attendance records
+
+    # Calculate attendance statistics
+    total_visits = MemberAttendance.objects.filter(user=member, library=library).count()
+
+    # Calculate total hours spent in library
+    total_minutes = 0
+    completed_visits = 0
+
+    for record in MemberAttendance.objects.filter(user=member, library=library, check_out_time__isnull=False):
+        duration = record.check_out_time - record.check_in_time
+        total_minutes += duration.total_seconds() / 60
+        completed_visits += 1
+
+    # Calculate average duration per visit
+    avg_duration_minutes = 0
+    if completed_visits > 0:
+        avg_duration_minutes = total_minutes / completed_visits
+
+    # Convert to hours and minutes
+    total_hours = total_minutes / 60
+    avg_hours = avg_duration_minutes / 60
+
+    # Get active plans for renewal
+    active_plans = MembershipPlan.objects.filter(is_active=True)
+
+    # Get today's date
+    today = timezone.now().date()
+
+    # Calculate days left in current membership
+    days_left = (membership.end_date - today).days
+
+    # Get most frequent purposes
+    purposes = MemberAttendance.objects.filter(
+        user=member,
+        library=library,
+        purpose__isnull=False
+    ).values('purpose').annotate(count=Count('purpose')).order_by('-count')[:5]
+
+    context = {
+        'library': library,
+        'member': member,
+        'membership': membership,
+        'attendance_records': attendance_records,
+        'total_visits': total_visits,
+        'total_hours': round(total_hours, 1),
+        'avg_hours': round(avg_hours, 1),
+        'active_plans': active_plans,
+        'today': today,
+        'days_left': days_left,
+        'purposes': purposes,
+        'completed_visits': completed_visits,
+        'pending_requests_count': MembershipRequest.objects.filter(library=library, status='PENDING').count(),
+    }
+
+    return render(request, 'library_admin/membership/member_profile.html', context)
+
+@login_required
+@user_passes_test(is_library_admin)
+def members(request):
     """View function for managing library members."""
     user = request.user
     libraries = Library.objects.filter(admin=user)
@@ -504,7 +588,7 @@ def manage_members(request):
         'pending_requests_count': pending_requests_count,
     }
 
-    return render(request, 'library_admin/users/member_list.html', context)
+    return render(request, 'library_admin/membership/members.html', context)
 
 @login_required
 @user_passes_test(is_library_admin)

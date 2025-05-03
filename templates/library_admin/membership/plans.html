@@ -56,6 +56,11 @@
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="upsc-plans-tab" data-bs-toggle="pill" data-bs-target="#upsc-plans" type="button" role="tab" aria-controls="upsc-plans" aria-selected="false">
+                                <i class="fas fa-landmark me-1"></i> UPSC/IAS
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
                             <button class="nav-link" id="general-plans-tab" data-bs-toggle="pill" data-bs-target="#general-plans" type="button" role="tab" aria-controls="general-plans" aria-selected="false">
                                 <i class="fas fa-users me-1"></i> General
                             </button>
@@ -68,6 +73,11 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="reading-hall-plans-tab" data-bs-toggle="pill" data-bs-target="#reading-hall-plans" type="button" role="tab" aria-controls="reading-hall-plans" aria-selected="false">
                                 <i class="fas fa-book-reader me-1"></i> Reading Hall
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="digital-plans-tab" data-bs-toggle="pill" data-bs-target="#digital-plans" type="button" role="tab" aria-controls="digital-plans" aria-selected="false">
+                                <i class="fas fa-laptop me-1"></i> Digital Access
                             </button>
                         </li>
                     </ul>
@@ -446,6 +456,143 @@
                         {% endfor %}
                     </div>
                 </div>
+
+                <!-- UPSC/IAS Plans Tab -->
+                <div class="tab-pane fade" id="upsc-plans" role="tabpanel" aria-labelledby="upsc-plans-tab">
+                    <div class="row">
+                        {% for plan in plans %}
+                            {% if 'upsc' in plan.name|lower or 'ias' in plan.name|lower or 'civil service' in plan.name|lower %}
+                                <div class="col-md-4 mb-4">
+                                    <div class="card h-100 {% if not plan.is_active %}border-secondary bg-light{% else %}border-success{% endif %}">
+                                        <div class="card-header {% if not plan.is_active %}bg-secondary text-white{% else %}bg-success text-white{% endif %}">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h5 class="mb-0">{{ plan.name }}</h5>
+                                                <span class="badge {% if plan.is_active %}bg-light text-success{% else %}bg-secondary{% endif %} rounded-pill">
+                                                    {% if plan.is_active %}Active{% else %}Inactive{% endif %}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="text-center mb-3">
+                                                <h3 class="text-success mb-0">₹{{ plan.price }}</h3>
+                                                <p class="text-muted">for {{ plan.duration_days }} days</p>
+                                            </div>
+
+                                            <ul class="list-group list-group-flush mb-3">
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span><i class="fas fa-book me-2 text-success"></i> Books Allowed</span>
+                                                    <span class="badge bg-success rounded-pill">{{ plan.max_books_allowed }}</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span><i class="fas fa-clock me-2 text-success"></i> Extended Hours</span>
+                                                    <span class="badge bg-success rounded-pill">12 hours</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span><i class="fas fa-users me-2 text-success"></i> Active Members</span>
+                                                    <span class="badge bg-success rounded-pill">{{ plan.active_member_count }}</span>
+                                                </li>
+                                            </ul>
+
+                                            <div class="mb-3">
+                                                <h6 class="card-subtitle mb-2 text-muted">Special Features</h6>
+                                                <div class="d-flex flex-wrap">
+                                                    <span class="badge bg-light text-dark border me-1 mb-1">Reserved Seating</span>
+                                                    <span class="badge bg-light text-dark border me-1 mb-1">Current Affairs</span>
+                                                    <span class="badge bg-light text-dark border me-1 mb-1">UPSC Materials</span>
+                                                    <span class="badge bg-light text-dark border me-1 mb-1">High-Speed WiFi</span>
+                                                    <span class="badge bg-light text-dark border me-1 mb-1">Discussion Room</span>
+                                                    <span class="badge bg-light text-dark border me-1 mb-1">Previous Papers</span>
+                                                </div>
+                                            </div>
+
+                                            <p class="card-text">{{ plan.description|truncatechars:100 }}</p>
+                                        </div>
+                                        <div class="card-footer bg-transparent">
+                                            <div class="d-flex justify-content-between">
+                                                <a href="{% url 'library_admin:edit_membership_plan' plan_id=plan.id %}" class="btn btn-sm btn-outline-success">
+                                                    <i class="fas fa-edit"></i> Edit
+                                                </a>
+                                                <button type="button" class="btn btn-sm btn-outline-danger delete-plan-btn"
+                                                        data-id="{{ plan.id }}"
+                                                        data-name="{{ plan.name }}">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Digital Access Plans Tab -->
+                <div class="tab-pane fade" id="digital-plans" role="tabpanel" aria-labelledby="digital-plans-tab">
+                    <div class="row">
+                        {% for plan in plans %}
+                            {% if 'digital' in plan.name|lower or 'online' in plan.name|lower or 'e-library' in plan.name|lower or 'e-book' in plan.name|lower %}
+                                <div class="col-md-4 mb-4">
+                                    <div class="card h-100 {% if not plan.is_active %}border-secondary bg-light{% else %}border-primary{% endif %}">
+                                        <div class="card-header {% if not plan.is_active %}bg-secondary text-white{% else %}bg-primary text-white{% endif %}">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h5 class="mb-0">{{ plan.name }}</h5>
+                                                <span class="badge {% if plan.is_active %}bg-light text-primary{% else %}bg-secondary{% endif %} rounded-pill">
+                                                    {% if plan.is_active %}Active{% else %}Inactive{% endif %}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="text-center mb-3">
+                                                <h3 class="text-primary mb-0">₹{{ plan.price }}</h3>
+                                                <p class="text-muted">for {{ plan.duration_days }} days</p>
+                                            </div>
+
+                                            <ul class="list-group list-group-flush mb-3">
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span><i class="fas fa-book me-2 text-primary"></i> E-Books Access</span>
+                                                    <span class="badge bg-primary rounded-pill">Unlimited</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span><i class="fas fa-newspaper me-2 text-primary"></i> E-Journals</span>
+                                                    <span class="badge bg-primary rounded-pill">Included</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span><i class="fas fa-users me-2 text-primary"></i> Active Members</span>
+                                                    <span class="badge bg-success rounded-pill">{{ plan.active_member_count }}</span>
+                                                </li>
+                                            </ul>
+
+                                            <div class="mb-3">
+                                                <h6 class="card-subtitle mb-2 text-muted">Digital Features</h6>
+                                                <div class="d-flex flex-wrap">
+                                                    <span class="badge bg-light text-dark border me-1 mb-1">E-Books</span>
+                                                    <span class="badge bg-light text-dark border me-1 mb-1">E-Journals</span>
+                                                    <span class="badge bg-light text-dark border me-1 mb-1">Online Databases</span>
+                                                    <span class="badge bg-light text-dark border me-1 mb-1">Remote Access</span>
+                                                    <span class="badge bg-light text-dark border me-1 mb-1">Mobile App</span>
+                                                </div>
+                                            </div>
+
+                                            <p class="card-text">{{ plan.description|truncatechars:100 }}</p>
+                                        </div>
+                                        <div class="card-footer bg-transparent">
+                                            <div class="d-flex justify-content-between">
+                                                <a href="{% url 'library_admin:edit_membership_plan' plan_id=plan.id %}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-edit"></i> Edit
+                                                </a>
+                                                <button type="button" class="btn btn-sm btn-outline-danger delete-plan-btn"
+                                                        data-id="{{ plan.id }}"
+                                                        data-name="{{ plan.name }}">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
         {% else %}
             <div class="admin-pro-empty-state">
@@ -570,7 +717,12 @@
                 { label: 'Quarterly Plans', query: 'quarterly' },
                 { label: 'Annual Plans', query: 'annual' },
                 { label: 'WiFi Included', query: 'wifi' },
-                { label: 'Reading Hall', query: 'reading hall' }
+                { label: 'Reading Hall', query: 'reading hall' },
+                { label: 'UPSC/IAS', query: 'upsc' },
+                { label: 'JEE/NEET', query: 'jee' },
+                { label: 'Banking Exams', query: 'banking' },
+                { label: 'Digital Access', query: 'digital' },
+                { label: 'Student Plans', query: 'student' }
             ];
 
             quickFilters.forEach(filter => {
