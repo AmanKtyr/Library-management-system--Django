@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from datetime import timedelta, datetime
 import json
 import csv
+import random
 import platform
 import psutil
 from django.conf import settings
@@ -17,7 +18,10 @@ from apps.libraries.models import Library
 from apps.libraries.forms import LibraryForm
 from apps.books.models import Book, BookCopy, Author, Category, Publisher
 from apps.books.forms import CategoryForm, AuthorForm, PublisherForm
-from apps.transactions.models import Transaction, Membership, MembershipPlan, MembershipRequest, Reservation
+from apps.transactions.models import (
+    Transaction, Membership, MembershipPlan, MembershipRequest, Reservation,
+    MemberAttendance, LibraryPlan
+)
 
 def is_library_admin(user):
     """Check if user is a library admin."""
@@ -1979,6 +1983,1038 @@ def help_documentation(request):
     }
 
     return render(request, 'library_admin/help/index.html', context)
+
+
+# Membership Management Views
+@login_required
+@user_passes_test(is_library_admin)
+def membership_dashboard(request):
+    """View function for the membership management dashboard."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+    today = timezone.now().date()
+
+    # Get membership stats
+    total_members = Membership.objects.filter(library=library).count()
+    active_members = Membership.objects.filter(library=library, is_active=True, end_date__gte=today).count()
+
+    # Get expiring memberships (within next 7 days)
+    expiry_threshold = today + timezone.timedelta(days=7)
+    expiring_soon = Membership.objects.filter(
+        library=library,
+        is_active=True,
+        end_date__gte=today,
+        end_date__lte=expiry_threshold
+    ).count()
+
+    # Get expiring memberships with details
+    expiring_memberships = Membership.objects.filter(
+        library=library,
+        is_active=True,
+        end_date__gte=today,
+        end_date__lte=expiry_threshold
+    ).order_by('end_date')[:5]
+
+    # Calculate days left for each membership
+    for membership in expiring_memberships:
+        membership.days_left = (membership.end_date - today).days
+
+    # Calculate total revenue (last 30 days)
+    # In a real implementation, this would come from a payment/transaction model
+    # For now, we'll just use a placeholder value
+    total_revenue = 25000
+
+    # Get reading hall attendance stats
+    today_attendance = MemberAttendance.objects.filter(
+        library=library,
+        check_in_time__date=today
+    ).count()
+
+    current_attendance = MemberAttendance.objects.filter(
+        library=library,
+        check_in_time__date=today,
+        check_out_time__isnull=True
+    ).count()
+
+    # Get current visitors
+    current_visitors = MemberAttendance.objects.filter(
+        library=library,
+        check_in_time__date=today,
+        check_out_time__isnull=True
+    ).order_by('check_in_time')
+
+    # Calculate current duration for each visitor
+    now = timezone.now()
+    for visitor in current_visitors:
+        duration = now - visitor.check_in_time
+        visitor.current_duration = int(duration.total_seconds() / 60)
+
+    # Calculate average daily attendance (last 30 days)
+    thirty_days_ago = today - timezone.timedelta(days=30)
+    attendance_by_day = MemberAttendance.objects.filter(
+        library=library,
+        check_in_time__date__gte=thirty_days_ago
+    ).values('check_in_time__date').annotate(count=Count('id'))
+
+    if attendance_by_day:
+        avg_daily_attendance = sum(day['count'] for day in attendance_by_day) / len(attendance_by_day)
+        avg_daily_attendance = round(avg_daily_attendance)
+    else:
+        avg_daily_attendance = 0
+
+    # Calculate average duration
+    attendances_with_duration = MemberAttendance.objects.filter(
+        library=library,
+        check_in_time__date__gte=thirty_days_ago,
+        check_out_time__isnull=False
+    )
+
+    if attendances_with_duration:
+        total_duration_minutes = 0
+        count = 0
+
+        for attendance in attendances_with_duration:
+            duration = attendance.check_out_time - attendance.check_in_time
+            total_duration_minutes += duration.total_seconds() / 60
+            count += 1
+
+        avg_duration = round(total_duration_minutes / count)
+    else:
+        avg_duration = 0
+
+    # Get popular plans
+    popular_plans = MembershipPlan.objects.filter(is_active=True).annotate(
+        member_count=Count('memberships')
+    ).order_by('-member_count')[:4]
+
+    # Get active members list for check-in
+    active_memberships_list = Membership.objects.filter(
+        library=library,
+        is_active=True,
+        end_date__gte=today
+    )
+    active_members_list = [membership.user for membership in active_memberships_list]
+
+    # Get active plans for renewal
+    active_plans = MembershipPlan.objects.filter(is_active=True)
+
+    # Get recent activities
+    # In a real implementation, this would come from an activity log model
+    # For now, we'll just use placeholder data
+    recent_activities = [
+        {
+            'type': 'new',
+            'title': 'New Member Joined',
+            'description': 'Rahul Sharma joined with Student Monthly Membership',
+            'timestamp': timezone.now() - timezone.timedelta(hours=2)
+        },
+        {
+            'type': 'renew',
+            'title': 'Membership Renewed',
+            'description': 'Priya Patel renewed General Quarterly Membership',
+            'timestamp': timezone.now() - timezone.timedelta(hours=5)
+        },
+        {
+            'type': 'checkin',
+            'title': 'Reading Hall Check-in',
+            'description': 'Amit Kumar checked in for Competitive Exam Preparation',
+            'timestamp': timezone.now() - timezone.timedelta(hours=6)
+        },
+        {
+            'type': 'checkout',
+            'title': 'Reading Hall Check-out',
+            'description': 'Neha Singh checked out after 3 hours 45 minutes',
+            'timestamp': timezone.now() - timezone.timedelta(hours=7)
+        },
+        {
+            'type': 'expire',
+            'title': 'Membership Expired',
+            'description': 'Vikram Joshi\'s Student Monthly Membership expired',
+            'timestamp': timezone.now() - timezone.timedelta(days=1)
+        }
+    ]
+
+    context = {
+        'library': library,
+        'total_members': total_members,
+        'active_members': active_members,
+        'expiring_soon': expiring_soon,
+        'total_revenue': total_revenue,
+        'today_attendance': today_attendance,
+        'current_attendance': current_attendance,
+        'current_visitors': current_visitors,
+        'avg_daily_attendance': avg_daily_attendance,
+        'avg_duration': avg_duration,
+        'expiring_memberships': expiring_memberships,
+        'popular_plans': popular_plans,
+        'recent_activities': recent_activities,
+        'active_members_list': active_members_list,
+        'active_plans': active_plans,
+        'today': today,
+        'pending_requests_count': MembershipRequest.objects.filter(library=library, status='PENDING').count(),
+    }
+
+    return render(request, 'library_admin/membership/dashboard.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def membership_plans(request):
+    """View function for managing membership plans."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    # Get all membership plans
+    plans = MembershipPlan.objects.all().order_by('-is_active', 'name')
+
+    # Search functionality
+    search_query = request.GET.get('q', '')
+    if search_query:
+        plans = plans.filter(
+            Q(name__icontains=search_query) |
+            Q(description__icontains=search_query)
+        )
+
+    # Filter by active status
+    is_active = request.GET.get('is_active', '')
+    if is_active:
+        is_active_bool = is_active.lower() == 'true'
+        plans = plans.filter(is_active=is_active_bool)
+
+    # Get membership counts for each plan
+    for plan in plans:
+        plan.member_count = Membership.objects.filter(plan=plan, library=library).count()
+        plan.active_member_count = Membership.objects.filter(plan=plan, library=library, is_active=True).count()
+
+    context = {
+        'library': library,
+        'plans': plans,
+        'search_query': search_query,
+        'is_active': is_active,
+        'pending_requests_count': MembershipRequest.objects.filter(library=library, status='PENDING').count(),
+    }
+
+    return render(request, 'library_admin/membership/plans.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def add_membership_plan(request):
+    """View function for adding a new membership plan."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        duration_days = request.POST.get('duration_days')
+        max_books_allowed = request.POST.get('max_books_allowed')
+        max_borrowing_days = request.POST.get('max_borrowing_days')
+        price = request.POST.get('price')
+        is_active = request.POST.get('is_active') == 'on'
+
+        # Validate required fields
+        if not all([name, description, duration_days, max_books_allowed, max_borrowing_days, price]):
+            messages.error(request, "Please fill in all required fields.")
+            return redirect('library_admin:add_membership_plan')
+
+        try:
+            # Create the membership plan
+            plan = MembershipPlan.objects.create(
+                name=name,
+                description=description,
+                duration_days=int(duration_days),
+                max_books_allowed=int(max_books_allowed),
+                max_borrowing_days=int(max_borrowing_days),
+                price=float(price),
+                is_active=is_active
+            )
+
+            messages.success(request, f"Membership plan '{plan.name}' has been created successfully.")
+            return redirect('library_admin:membership_plans')
+
+        except Exception as e:
+            messages.error(request, f"Error creating membership plan: {str(e)}")
+            return redirect('library_admin:add_membership_plan')
+
+    context = {
+        'library': library,
+        'page_title': 'Add Membership Plan',
+        'pending_requests_count': MembershipRequest.objects.filter(library=library, status='PENDING').count(),
+    }
+
+    return render(request, 'library_admin/membership/add_plan.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def edit_membership_plan(request, plan_id):
+    """View function for editing a membership plan."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    try:
+        plan = MembershipPlan.objects.get(id=plan_id)
+    except MembershipPlan.DoesNotExist:
+        messages.error(request, "Membership plan not found.")
+        return redirect('library_admin:membership_plans')
+
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        duration_days = request.POST.get('duration_days')
+        max_books_allowed = request.POST.get('max_books_allowed')
+        max_borrowing_days = request.POST.get('max_borrowing_days')
+        price = request.POST.get('price')
+        is_active = request.POST.get('is_active') == 'on'
+
+        # Validate required fields
+        if not all([name, description, duration_days, max_books_allowed, max_borrowing_days, price]):
+            messages.error(request, "Please fill in all required fields.")
+            return redirect('library_admin:edit_membership_plan', plan_id=plan.id)
+
+        try:
+            # Update the membership plan
+            plan.name = name
+            plan.description = description
+            plan.duration_days = int(duration_days)
+            plan.max_books_allowed = int(max_books_allowed)
+            plan.max_borrowing_days = int(max_borrowing_days)
+            plan.price = float(price)
+            plan.is_active = is_active
+            plan.save()
+
+            messages.success(request, f"Membership plan '{plan.name}' has been updated successfully.")
+            return redirect('library_admin:membership_plans')
+
+        except Exception as e:
+            messages.error(request, f"Error updating membership plan: {str(e)}")
+            return redirect('library_admin:edit_membership_plan', plan_id=plan.id)
+
+    context = {
+        'library': library,
+        'plan': plan,
+        'page_title': 'Edit Membership Plan',
+        'pending_requests_count': MembershipRequest.objects.filter(library=library, status='PENDING').count(),
+    }
+
+    return render(request, 'library_admin/membership/edit_plan.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def delete_membership_plan(request, plan_id):
+    """View function for deleting a membership plan."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    try:
+        plan = MembershipPlan.objects.get(id=plan_id)
+
+        # Check if the plan is being used by any memberships
+        if Membership.objects.filter(plan=plan).exists():
+            messages.error(request, f"Cannot delete plan '{plan.name}' as it is being used by existing memberships.")
+            return redirect('library_admin:membership_plans')
+
+        plan_name = plan.name
+        plan.delete()
+
+        messages.success(request, f"Membership plan '{plan_name}' has been deleted successfully.")
+
+    except MembershipPlan.DoesNotExist:
+        messages.error(request, "Membership plan not found.")
+
+    return redirect('library_admin:membership_plans')
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def members(request):
+    """View function for managing library members."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    # Get all memberships for this library
+    memberships = Membership.objects.filter(library=library).order_by('-is_active', '-end_date')
+
+    # Search functionality
+    search_query = request.GET.get('q', '')
+    if search_query:
+        memberships = memberships.filter(
+            Q(user__email__icontains=search_query) |
+            Q(user__first_name__icontains=search_query) |
+            Q(user__last_name__icontains=search_query) |
+            Q(membership_number__icontains=search_query)
+        )
+
+    # Filter by status
+    status = request.GET.get('status', '')
+    today = timezone.now().date()
+
+    if status == 'active':
+        memberships = memberships.filter(is_active=True, end_date__gte=today)
+    elif status == 'expired':
+        memberships = memberships.filter(Q(is_active=False) | Q(end_date__lt=today))
+    elif status == 'expiring':
+        # Expiring in the next 7 days
+        expiry_threshold = today + timezone.timedelta(days=7)
+        memberships = memberships.filter(is_active=True, end_date__gte=today, end_date__lte=expiry_threshold)
+
+    # Mark memberships as expiring soon (within 7 days)
+    expiry_threshold = today + timezone.timedelta(days=7)
+    for membership in memberships:
+        membership.expiring_soon = membership.is_active and membership.end_date <= expiry_threshold and membership.end_date >= today
+
+    # Get active plans for the form
+    active_plans = MembershipPlan.objects.filter(is_active=True)
+
+    context = {
+        'library': library,
+        'memberships': memberships,
+        'active_plans': active_plans,
+        'search_query': search_query,
+        'status': status,
+        'today': today,
+        'pending_requests_count': MembershipRequest.objects.filter(library=library, status='PENDING').count(),
+    }
+
+    return render(request, 'library_admin/membership/members.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def add_member(request):
+    """View function for adding a new member."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    if request.method == 'POST':
+        # Get form data
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        address = request.POST.get('address', '')
+        id_proof = request.POST.get('id_proof', '')
+        id_number = request.POST.get('id_number', '')
+        plan_id = request.POST.get('plan_id')
+        start_date_str = request.POST.get('start_date')
+        notes = request.POST.get('notes', '')
+
+        # Validate required fields
+        if not all([first_name, last_name, email, phone, plan_id, start_date_str]):
+            messages.error(request, "Please fill in all required fields.")
+            return redirect('library_admin:members')
+
+        try:
+            # Check if user already exists
+            existing_user = User.objects.filter(email=email).first()
+
+            if existing_user:
+                # Check if user already has a membership in this library
+                if Membership.objects.filter(user=existing_user, library=library).exists():
+                    messages.error(request, f"User with email {email} already has a membership in this library.")
+                    return redirect('library_admin:members')
+
+                member = existing_user
+            else:
+                # Create a new user
+                username = email.split('@')[0] + str(random.randint(100, 999))
+                password = User.objects.make_random_password()
+
+                member = User.objects.create_user(
+                    username=username,
+                    email=email,
+                    password=password,
+                    first_name=first_name,
+                    last_name=last_name,
+                    user_type='MEMBER'
+                )
+
+                # Update user profile fields
+                member.phone_number = phone
+                member.address = address
+                # Store ID proof info in the address field for now
+                if id_proof and id_number:
+                    member.address = f"{address}\n\nID Proof: {id_proof} - {id_number}"
+                member.save()
+
+            # Get the membership plan
+            plan = MembershipPlan.objects.get(id=plan_id)
+
+            # Parse start date
+            start_date = timezone.datetime.strptime(start_date_str, '%Y-%m-%d').date()
+
+            # Calculate end date based on plan duration
+            end_date = start_date + timezone.timedelta(days=plan.duration_days)
+
+            # Create the membership
+            membership = Membership.objects.create(
+                user=member,
+                library=library,
+                plan=plan,
+                start_date=start_date,
+                end_date=end_date,
+                is_active=True
+            )
+
+            messages.success(request, f"Member {member.get_full_name()} has been added successfully with membership ID: {membership.membership_number}.")
+
+            # Send welcome email with credentials if it's a new user
+            if not existing_user:
+                # In a real implementation, you would send an email with the credentials
+                messages.info(request, f"New user created with username: {username} and a random password. Please ask the member to check their email or reset their password.")
+
+            return redirect('library_admin:members')
+
+        except Exception as e:
+            messages.error(request, f"Error adding member: {str(e)}")
+            return redirect('library_admin:members')
+
+    return redirect('library_admin:members')
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def renew_membership(request):
+    """View function for renewing a membership."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    if request.method == 'POST':
+        membership_id = request.POST.get('membership_id')
+        plan_id = request.POST.get('plan_id')
+        start_date_str = request.POST.get('start_date')
+        payment_method = request.POST.get('payment_method', 'Cash')
+        payment_reference = request.POST.get('payment_reference', '')
+
+        # Validate required fields
+        if not all([membership_id, plan_id, start_date_str]):
+            messages.error(request, "Please fill in all required fields.")
+            return redirect('library_admin:members')
+
+        try:
+            # Get the membership
+            membership = Membership.objects.get(id=membership_id, library=library)
+
+            # Get the new plan
+            plan = MembershipPlan.objects.get(id=plan_id)
+
+            # Parse start date
+            start_date = timezone.datetime.strptime(start_date_str, '%Y-%m-%d').date()
+
+            # Calculate end date based on plan duration
+            end_date = start_date + timezone.timedelta(days=plan.duration_days)
+
+            # Update the membership
+            membership.plan = plan
+            membership.start_date = start_date
+            membership.end_date = end_date
+            membership.is_active = True
+            membership.save()
+
+            # In a real implementation, you would record the payment details
+
+            messages.success(request, f"Membership for {membership.user.get_full_name()} has been renewed successfully until {end_date.strftime('%B %d, %Y')}.")
+
+            return redirect('library_admin:members')
+
+        except Membership.DoesNotExist:
+            messages.error(request, "Membership not found.")
+        except MembershipPlan.DoesNotExist:
+            messages.error(request, "Membership plan not found.")
+        except Exception as e:
+            messages.error(request, f"Error renewing membership: {str(e)}")
+
+    return redirect('library_admin:members')
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def member_attendance(request):
+    """View function for managing member attendance in the reading hall."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    # Get all attendance records for this library
+    attendances = MemberAttendance.objects.filter(library=library).order_by('-check_in_time')
+
+    # Search functionality
+    search_query = request.GET.get('q', '')
+    if search_query:
+        attendances = attendances.filter(
+            Q(user__email__icontains=search_query) |
+            Q(user__first_name__icontains=search_query) |
+            Q(user__last_name__icontains=search_query) |
+            Q(purpose__icontains=search_query)
+        )
+
+    # Filter by date
+    date_filter = request.GET.get('date', '')
+    if date_filter:
+        try:
+            filter_date = timezone.datetime.strptime(date_filter, '%Y-%m-%d').date()
+            attendances = attendances.filter(check_in_time__date=filter_date)
+        except ValueError:
+            messages.error(request, "Invalid date format. Please use YYYY-MM-DD.")
+
+    # Get active members for the form
+    active_memberships = Membership.objects.filter(library=library, is_active=True)
+    active_members = [membership.user for membership in active_memberships]
+
+    context = {
+        'library': library,
+        'attendances': attendances,
+        'active_members': active_members,
+        'search_query': search_query,
+        'date_filter': date_filter,
+        'today': timezone.now().date(),
+        'pending_requests_count': MembershipRequest.objects.filter(library=library, status='PENDING').count(),
+    }
+
+    return render(request, 'library_admin/membership/attendance.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def record_attendance(request):
+    """View function for recording member attendance."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    if request.method == 'POST':
+        action = request.POST.get('action', '')
+
+        if action == 'check_in':
+            member_id = request.POST.get('member_id')
+            purpose = request.POST.get('purpose', '')
+            notes = request.POST.get('notes', '')
+
+            try:
+                member = User.objects.get(id=member_id)
+
+                # Check if member has an active membership
+                if not Membership.objects.filter(user=member, library=library, is_active=True).exists():
+                    messages.error(request, f"User {member.get_full_name()} does not have an active membership.")
+                    return redirect('library_admin:member_attendance')
+
+                # Check if member already has an open attendance record
+                if MemberAttendance.objects.filter(user=member, library=library, check_out_time__isnull=True).exists():
+                    messages.error(request, f"Member {member.get_full_name()} already has an open attendance record.")
+                    return redirect('library_admin:member_attendance')
+
+                # Create attendance record
+                attendance = MemberAttendance.objects.create(
+                    user=member,
+                    library=library,
+                    purpose=purpose,
+                    notes=notes,
+                    recorded_by=user
+                )
+
+                messages.success(request, f"Member {member.get_full_name()} has been checked in successfully.")
+
+            except User.DoesNotExist:
+                messages.error(request, "Member not found.")
+            except Exception as e:
+                messages.error(request, f"Error recording attendance: {str(e)}")
+
+        elif action == 'check_out':
+            attendance_id = request.POST.get('attendance_id')
+
+            try:
+                attendance = MemberAttendance.objects.get(id=attendance_id, library=library)
+
+                if attendance.check_out_time:
+                    messages.error(request, "This attendance record has already been checked out.")
+                    return redirect('library_admin:member_attendance')
+
+                attendance.check_out_time = timezone.now()
+                attendance.save()
+
+                duration = attendance.duration()
+                member_name = attendance.user.get_full_name()
+
+                messages.success(request, f"Member {member_name} has been checked out successfully. Duration: {duration} minutes.")
+
+            except MemberAttendance.DoesNotExist:
+                messages.error(request, "Attendance record not found.")
+            except Exception as e:
+                messages.error(request, f"Error checking out: {str(e)}")
+
+    return redirect('library_admin:member_attendance')
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def attendance_report(request):
+    """View function for generating attendance reports."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    # Get date range for report
+    start_date_str = request.GET.get('start_date', '')
+    end_date_str = request.GET.get('end_date', '')
+
+    if not start_date_str or not end_date_str:
+        # Default to last 30 days
+        end_date = timezone.now().date()
+        start_date = end_date - timezone.timedelta(days=30)
+    else:
+        try:
+            start_date = timezone.datetime.strptime(start_date_str, '%Y-%m-%d').date()
+            end_date = timezone.datetime.strptime(end_date_str, '%Y-%m-%d').date()
+        except ValueError:
+            messages.error(request, "Invalid date format. Please use YYYY-MM-DD.")
+            return redirect('library_admin:member_attendance')
+
+    # Get attendance records for the date range
+    attendances = MemberAttendance.objects.filter(
+        library=library,
+        check_in_time__date__gte=start_date,
+        check_in_time__date__lte=end_date
+    ).order_by('-check_in_time')
+
+    # Calculate statistics
+    total_visits = attendances.count()
+    unique_visitors = attendances.values('user').distinct().count()
+
+    # Calculate average visit duration
+    total_duration = 0
+    visits_with_duration = 0
+
+    for attendance in attendances:
+        if attendance.duration():
+            total_duration += attendance.duration()
+            visits_with_duration += 1
+
+    avg_duration = total_duration / visits_with_duration if visits_with_duration > 0 else 0
+
+    # Get most frequent visitors
+    frequent_visitors = User.objects.filter(
+        attendances__library=library,
+        attendances__check_in_time__date__gte=start_date,
+        attendances__check_in_time__date__lte=end_date
+    ).annotate(
+        visit_count=Count('attendances')
+    ).order_by('-visit_count')[:10]
+
+    # Get visits by purpose
+    visits_by_purpose = MemberAttendance.objects.filter(
+        library=library,
+        check_in_time__date__gte=start_date,
+        check_in_time__date__lte=end_date,
+        purpose__isnull=False
+    ).exclude(
+        purpose=''
+    ).values('purpose').annotate(
+        count=Count('id')
+    ).order_by('-count')
+
+    # Get visits by day of week
+    visits_by_day = MemberAttendance.objects.filter(
+        library=library,
+        check_in_time__date__gte=start_date,
+        check_in_time__date__lte=end_date
+    ).extra(
+        select={'day': "EXTRACT(DOW FROM check_in_time)"}
+    ).values('day').annotate(
+        count=Count('id')
+    ).order_by('day')
+
+    # Format day names
+    day_names = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    for day_data in visits_by_day:
+        day_data['day_name'] = day_names[int(day_data['day'])]
+
+    context = {
+        'library': library,
+        'attendances': attendances,
+        'start_date': start_date,
+        'end_date': end_date,
+        'total_visits': total_visits,
+        'unique_visitors': unique_visitors,
+        'avg_duration': round(avg_duration, 1),
+        'frequent_visitors': frequent_visitors,
+        'visits_by_purpose': visits_by_purpose,
+        'visits_by_day': visits_by_day,
+        'pending_requests_count': MembershipRequest.objects.filter(library=library, status='PENDING').count(),
+    }
+
+    return render(request, 'library_admin/membership/attendance_report.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def library_plans(request):
+    """View function for managing library plans."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    # Get all library plans
+    plans = LibraryPlan.objects.filter(library=library).order_by('-is_active', '-start_date')
+
+    # Search functionality
+    search_query = request.GET.get('q', '')
+    if search_query:
+        plans = plans.filter(
+            Q(name__icontains=search_query) |
+            Q(description__icontains=search_query) |
+            Q(target_audience__icontains=search_query)
+        )
+
+    # Filter by active status
+    is_active = request.GET.get('is_active', '')
+    if is_active:
+        is_active_bool = is_active.lower() == 'true'
+        plans = plans.filter(is_active=is_active_bool)
+
+    context = {
+        'library': library,
+        'plans': plans,
+        'search_query': search_query,
+        'is_active': is_active,
+        'today': timezone.now().date(),
+        'pending_requests_count': MembershipRequest.objects.filter(library=library, status='PENDING').count(),
+    }
+
+    return render(request, 'library_admin/membership/library_plans.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def add_library_plan(request):
+    """View function for adding a new library plan."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        start_date_str = request.POST.get('start_date')
+        end_date_str = request.POST.get('end_date', '')
+        target_audience = request.POST.get('target_audience', '')
+        budget = request.POST.get('budget', '')
+        success_metrics = request.POST.get('success_metrics', '')
+        is_active = request.POST.get('is_active') == 'on'
+
+        # Validate required fields
+        if not all([name, description, start_date_str]):
+            messages.error(request, "Please fill in all required fields.")
+            return redirect('library_admin:add_library_plan')
+
+        try:
+            # Parse dates
+            start_date = timezone.datetime.strptime(start_date_str, '%Y-%m-%d').date()
+            end_date = None
+            if end_date_str:
+                end_date = timezone.datetime.strptime(end_date_str, '%Y-%m-%d').date()
+
+            # Create the library plan
+            plan = LibraryPlan.objects.create(
+                library=library,
+                name=name,
+                description=description,
+                start_date=start_date,
+                end_date=end_date,
+                target_audience=target_audience,
+                budget=float(budget) if budget else None,
+                success_metrics=success_metrics,
+                is_active=is_active,
+                created_by=user
+            )
+
+            messages.success(request, f"Library plan '{plan.name}' has been created successfully.")
+            return redirect('library_admin:library_plans')
+
+        except ValueError:
+            messages.error(request, "Invalid date format. Please use YYYY-MM-DD.")
+        except Exception as e:
+            messages.error(request, f"Error creating library plan: {str(e)}")
+
+    context = {
+        'library': library,
+        'page_title': 'Add Library Plan',
+        'today': timezone.now().date(),
+        'pending_requests_count': MembershipRequest.objects.filter(library=library, status='PENDING').count(),
+    }
+
+    return render(request, 'library_admin/membership/add_library_plan.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def edit_library_plan(request, plan_id):
+    """View function for editing a library plan."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    try:
+        plan = LibraryPlan.objects.get(id=plan_id, library=library)
+    except LibraryPlan.DoesNotExist:
+        messages.error(request, "Library plan not found.")
+        return redirect('library_admin:library_plans')
+
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        start_date_str = request.POST.get('start_date')
+        end_date_str = request.POST.get('end_date', '')
+        target_audience = request.POST.get('target_audience', '')
+        budget = request.POST.get('budget', '')
+        success_metrics = request.POST.get('success_metrics', '')
+        is_active = request.POST.get('is_active') == 'on'
+
+        # Validate required fields
+        if not all([name, description, start_date_str]):
+            messages.error(request, "Please fill in all required fields.")
+            return redirect('library_admin:edit_library_plan', plan_id=plan.id)
+
+        try:
+            # Parse dates
+            start_date = timezone.datetime.strptime(start_date_str, '%Y-%m-%d').date()
+            end_date = None
+            if end_date_str:
+                end_date = timezone.datetime.strptime(end_date_str, '%Y-%m-%d').date()
+
+            # Update the library plan
+            plan.name = name
+            plan.description = description
+            plan.start_date = start_date
+            plan.end_date = end_date
+            plan.target_audience = target_audience
+            plan.budget = float(budget) if budget else None
+            plan.success_metrics = success_metrics
+            plan.is_active = is_active
+            plan.save()
+
+            messages.success(request, f"Library plan '{plan.name}' has been updated successfully.")
+            return redirect('library_admin:library_plans')
+
+        except ValueError:
+            messages.error(request, "Invalid date format. Please use YYYY-MM-DD.")
+        except Exception as e:
+            messages.error(request, f"Error updating library plan: {str(e)}")
+
+    context = {
+        'library': library,
+        'plan': plan,
+        'page_title': 'Edit Library Plan',
+        'today': timezone.now().date(),
+        'pending_requests_count': MembershipRequest.objects.filter(library=library, status='PENDING').count(),
+    }
+
+    return render(request, 'library_admin/membership/edit_library_plan.html', context)
+
+
+@login_required
+@user_passes_test(is_library_admin)
+def delete_library_plan(request, plan_id):
+    """View function for deleting a library plan."""
+    user = request.user
+    libraries = Library.objects.filter(admin=user)
+
+    if not libraries.exists():
+        messages.warning(request, "You are not assigned to any library yet.")
+        return redirect('core:home')
+
+    library = libraries.first()
+
+    try:
+        plan = LibraryPlan.objects.get(id=plan_id, library=library)
+        plan_name = plan.name
+        plan.delete()
+
+        messages.success(request, f"Library plan '{plan_name}' has been deleted successfully.")
+
+    except LibraryPlan.DoesNotExist:
+        messages.error(request, "Library plan not found.")
+
+    return redirect('library_admin:library_plans')
 
 
 @login_required

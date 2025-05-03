@@ -1,0 +1,508 @@
+{% extends 'library_admin/base.html' %}
+{% load static %}
+
+{% block title %}Membership Dashboard - Library Management System{% endblock %}
+{% block breadcrumb_title %}Membership Dashboard{% endblock %}
+{% block page_title %}Membership Dashboard{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'library_admin:members' %}" class="admin-pro-btn admin-pro-btn-outline me-2">
+    <i class="fas fa-users"></i> Manage Members
+</a>
+<a href="{% url 'library_admin:membership_plans' %}" class="admin-pro-btn admin-pro-btn-outline me-2">
+    <i class="fas fa-clipboard-list"></i> Membership Schemes
+</a>
+<button type="button" class="admin-pro-btn admin-pro-btn-primary" data-bs-toggle="modal" data-bs-target="#checkInModal">
+    <i class="fas fa-user-check"></i> Check In Member
+</button>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Membership Stats -->
+    <div class="col-md-3">
+        <div class="admin-pro-card admin-pro-card-stats mb-4">
+            <div class="admin-pro-card-body">
+                <div class="admin-pro-stats-icon bg-primary">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="admin-pro-stats-content">
+                    <h3>{{ total_members }}</h3>
+                    <p>Total Members</p>
+                </div>
+            </div>
+            <div class="admin-pro-card-footer">
+                <a href="{% url 'library_admin:members' %}" class="small text-primary">View all members <i class="fas fa-arrow-right ms-1"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="admin-pro-card admin-pro-card-stats mb-4">
+            <div class="admin-pro-card-body">
+                <div class="admin-pro-stats-icon bg-success">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <div class="admin-pro-stats-content">
+                    <h3>{{ active_members }}</h3>
+                    <p>Active Members</p>
+                </div>
+            </div>
+            <div class="admin-pro-card-footer">
+                <a href="{% url 'library_admin:members' %}?status=active" class="small text-success">View active members <i class="fas fa-arrow-right ms-1"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="admin-pro-card admin-pro-card-stats mb-4">
+            <div class="admin-pro-card-body">
+                <div class="admin-pro-stats-icon bg-warning">
+                    <i class="fas fa-user-clock"></i>
+                </div>
+                <div class="admin-pro-stats-content">
+                    <h3>{{ expiring_soon }}</h3>
+                    <p>Expiring Soon</p>
+                </div>
+            </div>
+            <div class="admin-pro-card-footer">
+                <a href="{% url 'library_admin:members' %}?status=expiring" class="small text-warning">View expiring memberships <i class="fas fa-arrow-right ms-1"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="admin-pro-card admin-pro-card-stats mb-4">
+            <div class="admin-pro-card-body">
+                <div class="admin-pro-stats-icon bg-info">
+                    <i class="fas fa-rupee-sign"></i>
+                </div>
+                <div class="admin-pro-stats-content">
+                    <h3>₹{{ total_revenue }}</h3>
+                    <p>Monthly Revenue</p>
+                </div>
+            </div>
+            <div class="admin-pro-card-footer">
+                <a href="{% url 'library_admin:transaction_reports' %}" class="small text-info">View financial reports <i class="fas fa-arrow-right ms-1"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Reading Hall Stats -->
+    <div class="col-md-6">
+        <div class="admin-pro-card mb-4">
+            <div class="admin-pro-card-header">
+                <h5 class="admin-pro-card-title">Reading Hall Attendance</h5>
+                <div class="admin-pro-card-toolbar">
+                    <a href="{% url 'library_admin:member_attendance' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
+                        <i class="fas fa-external-link-alt"></i> View All
+                    </a>
+                </div>
+            </div>
+            <div class="admin-pro-card-body">
+                <div class="d-flex justify-content-between mb-4">
+                    <div class="text-center">
+                        <h3 class="mb-0">{{ today_attendance }}</h3>
+                        <p class="text-muted">Today</p>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="mb-0">{{ current_attendance }}</h3>
+                        <p class="text-muted">Currently In</p>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="mb-0">{{ avg_daily_attendance }}</h3>
+                        <p class="text-muted">Daily Average</p>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="mb-0">{{ avg_duration }} min</h3>
+                        <p class="text-muted">Avg. Duration</p>
+                    </div>
+                </div>
+
+                <h6 class="mb-3">Current Visitors</h6>
+                {% if current_visitors %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Member</th>
+                                    <th>Check In</th>
+                                    <th>Duration</th>
+                                    <th>Purpose</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for attendance in current_visitors %}
+                                    <tr>
+                                        <td>{{ attendance.user.get_full_name }}</td>
+                                        <td>{{ attendance.check_in_time|time:"h:i A" }}</td>
+                                        <td>{{ attendance.current_duration }} min</td>
+                                        <td>{{ attendance.purpose|default:"Not specified" }}</td>
+                                        <td>
+                                            <form method="POST" action="{% url 'library_admin:record_attendance' %}" class="d-inline">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="action" value="check_out">
+                                                <input type="hidden" name="attendance_id" value="{{ attendance.id }}">
+                                                <button type="submit" class="btn btn-sm btn-outline-success">
+                                                    <i class="fas fa-sign-out-alt"></i> Check Out
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i> No members currently in the reading hall.
+                    </div>
+                {% endif %}
+
+                <div class="text-center mt-3">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#checkInModal">
+                        <i class="fas fa-user-check"></i> Check In Member
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Membership Expiry -->
+    <div class="col-md-6">
+        <div class="admin-pro-card mb-4">
+            <div class="admin-pro-card-header">
+                <h5 class="admin-pro-card-title">Expiring Memberships</h5>
+                <div class="admin-pro-card-toolbar">
+                    <a href="{% url 'library_admin:members' %}?status=expiring" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
+                        <i class="fas fa-external-link-alt"></i> View All
+                    </a>
+                </div>
+            </div>
+            <div class="admin-pro-card-body">
+                {% if expiring_memberships %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Member</th>
+                                    <th>Plan</th>
+                                    <th>Expiry Date</th>
+                                    <th>Days Left</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for membership in expiring_memberships %}
+                                    <tr>
+                                        <td>{{ membership.user.get_full_name }}</td>
+                                        <td>{{ membership.plan.name }}</td>
+                                        <td>{{ membership.end_date|date:"M d, Y" }}</td>
+                                        <td>
+                                            <span class="badge {% if membership.days_left <= 3 %}bg-danger{% elif membership.days_left <= 7 %}bg-warning{% else %}bg-info{% endif %}">
+                                                {{ membership.days_left }} days
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-outline-primary renew-membership-btn"
+                                                    data-id="{{ membership.id }}"
+                                                    data-name="{{ membership.user.get_full_name }}"
+                                                    data-plan="{{ membership.plan.id }}">
+                                                <i class="fas fa-sync-alt"></i> Renew
+                                            </button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i> No memberships expiring in the next 7 days.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Popular Schemes -->
+        <div class="admin-pro-card mb-4">
+            <div class="admin-pro-card-header">
+                <h5 class="admin-pro-card-title">Popular Membership Schemes</h5>
+                <div class="admin-pro-card-toolbar">
+                    <a href="{% url 'library_admin:membership_plans' %}" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-outline">
+                        <i class="fas fa-external-link-alt"></i> View All
+                    </a>
+                </div>
+            </div>
+            <div class="admin-pro-card-body">
+                <div class="row">
+                    {% for plan in popular_plans %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100 border-primary">
+                                <div class="card-header bg-primary text-white py-2">
+                                    <h6 class="mb-0">{{ plan.name }}</h6>
+                                </div>
+                                <div class="card-body py-2">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="text-primary fw-bold">₹{{ plan.price }}</span>
+                                        <span class="badge bg-info">{{ plan.member_count }} members</span>
+                                    </div>
+                                    <div class="small text-muted">
+                                        {{ plan.duration_days }} days | {{ plan.max_books_allowed }} books
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recent Activities -->
+    <div class="col-md-12">
+        <div class="admin-pro-card mb-4">
+            <div class="admin-pro-card-header">
+                <h5 class="admin-pro-card-title">Recent Membership Activities</h5>
+            </div>
+            <div class="admin-pro-card-body">
+                <div class="timeline">
+                    {% for activity in recent_activities %}
+                        <div class="timeline-item">
+                            <div class="timeline-item-marker">
+                                <div class="timeline-item-marker-indicator bg-primary">
+                                    <i class="fas {% if activity.type == 'new' %}fa-user-plus{% elif activity.type == 'renew' %}fa-sync-alt{% elif activity.type == 'expire' %}fa-user-times{% elif activity.type == 'checkin' %}fa-sign-in-alt{% elif activity.type == 'checkout' %}fa-sign-out-alt{% endif %}"></i>
+                                </div>
+                            </div>
+                            <div class="timeline-item-content">
+                                <div class="timeline-item-content-header">
+                                    {{ activity.title }}
+                                    <div class="text-muted small">{{ activity.timestamp|date:"M d, Y" }} at {{ activity.timestamp|time:"h:i A" }}</div>
+                                </div>
+                                <p>{{ activity.description }}</p>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i> No recent activities found.
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Check In Modal -->
+<div class="modal fade" id="checkInModal" tabindex="-1" aria-labelledby="checkInModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="checkInModalLabel">Register Student in Reading Hall</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{% url 'library_admin:record_attendance' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="check_in">
+                <div class="modal-body">
+                    <div class="form-group mb-3">
+                        <label for="member_id" class="form-label">Select Member <span class="text-danger">*</span></label>
+                        <select class="form-select" id="member_id" name="member_id" required>
+                            <option value="">-- Select Member --</option>
+                            {% for member in active_members_list %}
+                                <option value="{{ member.id }}">{{ member.get_full_name }} ({{ member.email }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="purpose" class="form-label">Purpose</label>
+                        <select class="form-select" id="purpose" name="purpose">
+                            <option value="">-- Select Purpose --</option>
+                            <option value="Self Study">Self Study</option>
+                            <option value="Exam Preparation">Exam Preparation</option>
+                            <option value="Reading Newspapers">Reading Newspapers</option>
+                            <option value="Reading Books">Reading Books</option>
+                            <option value="Using WiFi">Using WiFi</option>
+                            <option value="Borrowing Books">Borrowing Books</option>
+                            <option value="Returning Books">Returning Books</option>
+                            <option value="Research">Research</option>
+                            <option value="Group Study">Group Study</option>
+                            <option value="Using Reference Materials">Using Reference Materials</option>
+                            <option value="Competitive Exam Preparation">Competitive Exam Preparation</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-user-check"></i> Check In
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Renew Membership Modal -->
+<div class="modal fade" id="renewMembershipModal" tabindex="-1" aria-labelledby="renewMembershipModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="renewMembershipModalLabel">Renew Membership</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{% url 'library_admin:renew_membership' %}">
+                {% csrf_token %}
+                <input type="hidden" name="membership_id" id="renewMembershipId">
+                <div class="modal-body">
+                    <p>You are renewing membership for: <strong id="renewMemberName"></strong></p>
+
+                    <div class="form-group mb-3">
+                        <label for="renew_plan_id" class="form-label">Membership Plan <span class="text-danger">*</span></label>
+                        <select class="form-select" id="renew_plan_id" name="plan_id" required>
+                            <option value="">-- Select Plan --</option>
+                            {% for plan in active_plans %}
+                                <option value="{{ plan.id }}">{{ plan.name }} - ₹{{ plan.price }} ({{ plan.duration_days }} days)</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="renew_start_date" class="form-label">Start Date <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control" id="renew_start_date" name="start_date" value="{{ today|date:'Y-m-d' }}" required>
+                        <small class="form-text text-muted">Leave as today to start immediately, or set a future date if renewing in advance.</small>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="payment_method" class="form-label">Payment Method</label>
+                        <select class="form-select" id="payment_method" name="payment_method">
+                            <option value="Cash">Cash</option>
+                            <option value="UPI">UPI</option>
+                            <option value="Card">Card</option>
+                            <option value="Bank Transfer">Bank Transfer</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="payment_reference" class="form-label">Payment Reference</label>
+                        <input type="text" class="form-control" id="payment_reference" name="payment_reference">
+                        <small class="form-text text-muted">Receipt number, transaction ID, etc.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-sync-alt"></i> Renew Membership
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle renew membership button click
+        const renewButtons = document.querySelectorAll('.renew-membership-btn');
+        const renewMembershipModal = document.getElementById('renewMembershipModal');
+        const renewMembershipId = document.getElementById('renewMembershipId');
+        const renewMemberName = document.getElementById('renewMemberName');
+        const renewPlanId = document.getElementById('renew_plan_id');
+
+        renewButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const membershipId = this.getAttribute('data-id');
+                const memberName = this.getAttribute('data-name');
+                const planId = this.getAttribute('data-plan');
+
+                renewMembershipId.value = membershipId;
+                renewMemberName.textContent = memberName;
+                renewPlanId.value = planId;
+
+                const modal = new bootstrap.Modal(renewMembershipModal);
+                modal.show();
+            });
+        });
+
+        // Initialize select2 for member selection if available
+        if (typeof $.fn.select2 !== 'undefined') {
+            $('#member_id').select2({
+                dropdownParent: $('#checkInModal'),
+                placeholder: "Search for a member...",
+                allowClear: true
+            });
+        }
+    });
+</script>
+
+<style>
+    /* Timeline styles */
+    .timeline {
+        position: relative;
+        padding-left: 1.5rem;
+    }
+
+    .timeline:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0.75rem;
+        height: 100%;
+        width: 1px;
+        background-color: #e3e6ec;
+    }
+
+    .timeline-item {
+        position: relative;
+        padding-bottom: 1.5rem;
+    }
+
+    .timeline-item:last-child {
+        padding-bottom: 0;
+    }
+
+    .timeline-item-marker {
+        position: absolute;
+        left: -1.5rem;
+        width: 1.5rem;
+        height: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .timeline-item-marker-indicator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 100%;
+        color: #fff;
+    }
+
+    .timeline-item-content {
+        padding-left: 0.75rem;
+        padding-top: 0.25rem;
+    }
+
+    .timeline-item-content-header {
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+</style>
+{% endblock %}

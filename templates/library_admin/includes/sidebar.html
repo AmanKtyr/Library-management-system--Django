@@ -13,6 +13,29 @@
     <span class="menu-feature">Pro</span>
 </a>
 
+
+<!-- Membership Management Section -->
+<div class="admin-pro-menu-category">
+    <i class="fas fa-id-card category-icon"></i>
+    <span>Membership Management</span>
+</div>
+<a href="{% url 'library_admin:membership_dashboard' %}" class="admin-pro-menu-item {% if '/library-admin/membership/' in request.path and not '/plans/' in request.path and not '/members/' in request.path and not '/attendance/' in request.path %}active{% endif %}">
+    <i class="fas fa-tachometer-alt"></i>
+    <span>Dashboard</span>
+</a>
+<a href="{% url 'library_admin:membership_plans' %}" class="admin-pro-menu-item {% if '/library-admin/membership-plans/' in request.path %}active{% endif %}">
+    <i class="fas fa-clipboard-list"></i>
+    <span>Membership Schemes</span>
+</a>
+<a href="{% url 'library_admin:members' %}" class="admin-pro-menu-item {% if '/library-admin/members/' in request.path %}active{% endif %}">
+    <i class="fas fa-users"></i>
+    <span>Members</span>
+</a>
+<a href="{% url 'library_admin:member_attendance' %}" class="admin-pro-menu-item {% if '/library-admin/member-attendance/' in request.path %}active{% endif %}">
+    <i class="fas fa-calendar-check"></i>
+    <span>Reading Hall</span>
+</a>
+
 <!-- Catalog Management Section -->
 <div class="admin-pro-menu-category">
     <i class="fas fa-book-open category-icon"></i>
@@ -39,6 +62,8 @@
     <span>Publishers</span>
     <span class="menu-badge">New</span>
 </a>
+
+
 
 <!-- Circulation Section -->
 <div class="admin-pro-menu-category">

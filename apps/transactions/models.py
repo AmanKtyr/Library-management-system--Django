@@ -187,82 +187,6 @@ class Reservation(models.Model):
             self.save()
 
 
-class Reservation(models.Model):
-    """Model representing a book reservation."""
-    STATUS_CHOICES = (
-        ('PENDING', 'Pending'),
-        ('CONFIRMED', 'Confirmed'),
-        ('CANCELLED', 'Cancelled'),
-        ('COMPLETED', 'Completed'),
-        ('EXPIRED', 'Expired'),
-    )
-
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='reservations')
-    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reservations')
-    library = models.ForeignKey(Library, on_delete=models.CASCADE, related_name='reservations')
-
-    reservation_date = models.DateTimeField(auto_now_add=True)
-    expiry_date = models.DateTimeField()
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
-
-    notes = models.TextField(blank=True, null=True)
-    processed_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='processed_reservations'
-    )
-    processed_date = models.DateTimeField(blank=True, null=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        ordering = ['-reservation_date']
-
-    def __str__(self):
-        return f"{self.user.get_full_name()} - {self.book.title}"
-
-    def save(self, *args, **kwargs):
-        # Set expiry date if not already set (default to 3 days from reservation)
-        if not self.expiry_date:
-            self.expiry_date = timezone.now() + timedelta(days=3)
-        super().save(*args, **kwargs)
-
-    def is_expired(self):
-        return timezone.now() > self.expiry_date
-
-    def mark_as_expired(self):
-        if self.status in ['PENDING', 'CONFIRMED'] and self.is_expired():
-            self.status = 'EXPIRED'
-            self.save()
-
-    def confirm(self, staff_user=None):
-        if self.status == 'PENDING':
-            self.status = 'CONFIRMED'
-            if staff_user:
-                self.processed_by = staff_user
-                self.processed_date = timezone.now()
-            self.save()
-
-    def cancel(self, staff_user=None):
-        if self.status in ['PENDING', 'CONFIRMED']:
-            self.status = 'CANCELLED'
-            if staff_user:
-                self.processed_by = staff_user
-                self.processed_date = timezone.now()
-            self.save()
-
-    def complete(self, staff_user=None):
-        if self.status == 'CONFIRMED':
-            self.status = 'COMPLETED'
-            if staff_user:
-                self.processed_by = staff_user
-                self.processed_date = timezone.now()
-            self.save()
-
-
 class MembershipRequest(models.Model):
     """Model representing a pending membership request for a library."""
     STATUS_CHOICES = (
@@ -291,3 +215,65 @@ class MembershipRequest(models.Model):
 
     def __str__(self):
         return f"{self.user.email} - {self.library.name} - {self.status}"
+
+
+class MemberAttendance(models.Model):
+    """Model representing a member's attendance at the library."""
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='attendances')
+    library = models.ForeignKey(Library, on_delete=models.CASCADE, related_name='member_attendances')
+    check_in_time = models.DateTimeField(auto_now_add=True)
+    check_out_time = models.DateTimeField(blank=True, null=True)
+    purpose = models.CharField(max_length=100, blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
+    recorded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='recorded_attendances',
+        limit_choices_to={'user_type__in': ['SUPER_ADMIN', 'LIBRARY_ADMIN', 'STAFF']}
+    )
+
+    class Meta:
+        ordering = ['-check_in_time']
+
+    def __str__(self):
+        return f"{self.user.email} - {self.check_in_time.strftime('%Y-%m-%d %H:%M')}"
+
+    def duration(self):
+        """Calculate the duration of the visit in minutes."""
+        if self.check_out_time:
+            delta = self.check_out_time - self.check_in_time
+            return int(delta.total_seconds() / 60)
+        return None
+
+
+class LibraryPlan(models.Model):
+    """Model representing a library's operational plan or program."""
+    library = models.ForeignKey(Library, on_delete=models.CASCADE, related_name='plans')
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    start_date = models.DateField()
+    end_date = models.DateField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+    target_audience = models.CharField(max_length=100, blank=True, null=True)
+    budget = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    success_metrics = models.TextField(blank=True, null=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='created_library_plans'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.library.name} - {self.name}"
+
+    def is_expired(self):
+        if self.end_date:
+            return timezone.now().date() > self.end_date
+        return False

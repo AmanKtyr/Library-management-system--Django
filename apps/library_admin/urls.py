@@ -48,6 +48,22 @@ urlpatterns = [
     path('membership-requests/approve/', views.approve_membership_request, name='approve_membership_request'),
     path('membership-requests/reject/', views.reject_membership_request, name='reject_membership_request'),
 
+    # Membership Management URLs
+    path('membership/', views.membership_dashboard, name='membership_dashboard'),
+
+    path('membership-plans/', views.membership_plans, name='membership_plans'),
+    path('membership-plans/add/', views.add_membership_plan, name='add_membership_plan'),
+    path('membership-plans/<int:plan_id>/edit/', views.edit_membership_plan, name='edit_membership_plan'),
+    path('membership-plans/<int:plan_id>/delete/', views.delete_membership_plan, name='delete_membership_plan'),
+
+    path('members/', views.members, name='members'),
+    path('members/add/', views.add_member, name='add_member'),
+    path('members/renew/', views.renew_membership, name='renew_membership'),
+
+    path('member-attendance/', views.member_attendance, name='member_attendance'),
+    path('member-attendance/record/', views.record_attendance, name='record_attendance'),
+    path('member-attendance/report/', views.attendance_report, name='attendance_report'),
+
     # Reports & Analytics URLs
     path('reports/', views.reports, name='reports'),
     path('reports/transactions/', views.transaction_reports, name='transaction_reports'),

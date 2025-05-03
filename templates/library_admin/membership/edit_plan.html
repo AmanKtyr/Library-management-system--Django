@@ -1,0 +1,76 @@
+{% extends 'library_admin/base.html' %}
+{% load static %}
+
+{% block title %}Edit Membership Plan - Library Management System{% endblock %}
+{% block breadcrumb_title %}Edit Membership Plan{% endblock %}
+{% block page_title %}Edit Membership Plan{% endblock %}
+
+{% block content %}
+<div class="admin-pro-card mb-4">
+    <div class="admin-pro-card-header">
+        <h5 class="admin-pro-card-title">Edit Membership Plan: {{ plan.name }}</h5>
+        <div class="admin-pro-card-toolbar">
+            <a href="{% url 'library_admin:membership_plans' %}" class="admin-pro-btn admin-pro-btn-outline">
+                <i class="fas fa-arrow-left"></i> Back to Plans
+            </a>
+        </div>
+    </div>
+    <div class="admin-pro-card-body">
+        <form method="POST" action="{% url 'library_admin:edit_membership_plan' plan_id=plan.id %}">
+            {% csrf_token %}
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label for="name" class="form-label">Plan Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ plan.name }}" required>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="duration_days" class="form-label">Duration (days) <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="duration_days" name="duration_days" min="1" value="{{ plan.duration_days }}" required>
+                        <small class="form-text text-muted">Number of days the membership will be valid</small>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="max_books_allowed" class="form-label">Max Books Allowed <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="max_books_allowed" name="max_books_allowed" min="1" value="{{ plan.max_books_allowed }}" required>
+                        <small class="form-text text-muted">Maximum number of books a member can borrow at once</small>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="max_borrowing_days" class="form-label">Max Borrowing Days <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="max_borrowing_days" name="max_borrowing_days" min="1" value="{{ plan.max_borrowing_days }}" required>
+                        <small class="form-text text-muted">Maximum number of days a book can be borrowed</small>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label for="price" class="form-label">Price (₹) <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="price" name="price" min="0" step="0.01" value="{{ plan.price }}" required>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="description" name="description" rows="5" required>{{ plan.description }}</textarea>
+                    </div>
+                    
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="is_active" name="is_active" {% if plan.is_active %}checked{% endif %}>
+                        <label class="form-check-label" for="is_active">Active</label>
+                        <small class="form-text text-muted d-block">If checked, this plan will be available for new memberships</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-end">
+                <a href="{% url 'library_admin:membership_plans' %}" class="admin-pro-btn admin-pro-btn-outline me-2">Cancel</a>
+                <button type="submit" class="admin-pro-btn admin-pro-btn-primary">
+                    <i class="fas fa-save"></i> Update Plan
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

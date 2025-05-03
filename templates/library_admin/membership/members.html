@@ -1,0 +1,646 @@
+{% extends 'library_admin/base.html' %}
+{% load static %}
+
+{% block title %}Manage Members - Library Management System{% endblock %}
+{% block breadcrumb_title %}Manage Members{% endblock %}
+{% block page_title %}Manage Members{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'library_admin:membership_plans' %}" class="admin-pro-btn admin-pro-btn-outline me-2">
+    <i class="fas fa-clipboard-list"></i> Membership Schemes
+</a>
+<a href="{% url 'library_admin:member_attendance' %}" class="admin-pro-btn admin-pro-btn-outline me-2">
+    <i class="fas fa-calendar-check"></i> Reading Hall
+</a>
+<button type="button" class="admin-pro-btn admin-pro-btn-outline me-2" id="exportMembersBtn">
+    <i class="fas fa-file-export"></i> Export Data
+</button>
+<button type="button" class="admin-pro-btn admin-pro-btn-primary" data-bs-toggle="modal" data-bs-target="#addMemberModal">
+    <i class="fas fa-user-plus"></i> Add New Member
+</button>
+{% endblock %}
+
+{% block content %}
+<div class="admin-pro-card mb-4">
+    <div class="admin-pro-card-header">
+        <h5 class="admin-pro-card-title">Library Members</h5>
+        <div class="admin-pro-card-toolbar">
+            <form action="{% url 'library_admin:members' %}" method="GET" class="admin-pro-search-form">
+                <div class="input-group">
+                    <input type="text" name="q" class="form-control" placeholder="Search members..." value="{{ search_query }}">
+                    <select name="status" class="form-select">
+                        <option value="">All Status</option>
+                        <option value="active" {% if status == 'active' %}selected{% endif %}>Active</option>
+                        <option value="expired" {% if status == 'expired' %}selected{% endif %}>Expired</option>
+                        <option value="expiring" {% if status == 'expiring' %}selected{% endif %}>Expiring Soon</option>
+                    </select>
+                    <select name="plan_type" class="form-select">
+                        <option value="">All Plans</option>
+                        <option value="student" {% if plan_type == 'student' %}selected{% endif %}>Student</option>
+                        <option value="competitive" {% if plan_type == 'competitive' %}selected{% endif %}>Competitive Exams</option>
+                        <option value="reading" {% if plan_type == 'reading' %}selected{% endif %}>Reading Hall</option>
+                        <option value="general" {% if plan_type == 'general' %}selected{% endif %}>General</option>
+                    </select>
+                    <select name="sort" class="form-select">
+                        <option value="name" {% if sort == 'name' %}selected{% endif %}>Sort by Name</option>
+                        <option value="recent" {% if sort == 'recent' %}selected{% endif %}>Recently Added</option>
+                        <option value="expiry" {% if sort == 'expiry' %}selected{% endif %}>Expiry Date</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <div class="mt-2 d-flex flex-wrap gap-2">
+                    <a href="{% url 'library_admin:members' %}?status=active" class="btn btn-sm btn-outline-success">Active Members</a>
+                    <a href="{% url 'library_admin:members' %}?status=expiring" class="btn btn-sm btn-outline-warning">Expiring Soon</a>
+                    <a href="{% url 'library_admin:members' %}?status=expired" class="btn btn-sm btn-outline-danger">Expired Memberships</a>
+                    <a href="{% url 'library_admin:members' %}?plan_type=reading" class="btn btn-sm btn-outline-info">Reading Hall Users</a>
+                    <a href="{% url 'library_admin:members' %}?plan_type=competitive" class="btn btn-sm btn-outline-primary">Competitive Exam</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="admin-pro-card-body">
+        {% if memberships %}
+            <div class="table-responsive">
+                <table class="table table-hover admin-pro-table" id="membersTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 3%;">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="selectAllMembers">
+                                </div>
+                            </th>
+                            <th style="width: 25%;">Member</th>
+                            <th style="width: 15%;">Membership ID</th>
+                            <th style="width: 15%;">Plan</th>
+                            <th style="width: 15%;">Validity</th>
+                            <th style="width: 12%;">Status</th>
+                            <th style="width: 15%;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for membership in memberships %}
+                            <tr class="{% if membership.is_expired %}table-danger{% elif membership.expiring_soon %}table-warning{% endif %}">
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input member-checkbox" type="checkbox" value="{{ membership.id }}">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="admin-pro-table-item-icon bg-primary">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div class="ms-2">
+                                            <h6 class="mb-0">{{ membership.user.get_full_name }}</h6>
+                                            <small class="text-muted">{{ membership.user.email }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ membership.membership_number }}</td>
+                                <td>{{ membership.plan.name }}</td>
+                                <td>
+                                    {{ membership.start_date|date:"M d, Y" }} to<br>
+                                    {{ membership.end_date|date:"M d, Y" }}
+                                </td>
+                                <td>
+                                    {% if membership.is_expired %}
+                                        <span class="badge bg-danger">Expired</span>
+                                    {% elif membership.expiring_soon %}
+                                        <span class="badge bg-warning">Expiring Soon</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="admin-pro-table-actions">
+                                        <button type="button" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-primary view-member-btn"
+                                                data-id="{{ membership.id }}"
+                                                data-tooltip="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button type="button" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-success renew-membership-btn"
+                                                data-id="{{ membership.id }}"
+                                                data-name="{{ membership.user.get_full_name }}"
+                                                data-plan="{{ membership.plan.id }}"
+                                                data-tooltip="Renew Membership">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                        <button type="button" class="admin-pro-btn admin-pro-btn-sm admin-pro-btn-info check-in-btn"
+                                                data-id="{{ membership.user.id }}"
+                                                data-name="{{ membership.user.get_full_name }}"
+                                                data-tooltip="Check In">
+                                            <i class="fas fa-sign-in-alt"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="admin-pro-empty-state">
+                <div class="admin-pro-empty-state-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>No Members Found</h3>
+                <p>There are no members matching your search criteria.</p>
+                <button type="button" class="admin-pro-btn admin-pro-btn-primary" data-bs-toggle="modal" data-bs-target="#addMemberModal">
+                    <i class="fas fa-user-plus"></i> Add New Member
+                </button>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Add Member Modal -->
+<div class="modal fade" id="addMemberModal" tabindex="-1" aria-labelledby="addMemberModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addMemberModalLabel">Add New Member</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{% url 'library_admin:add_member' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="first_name" class="form-label">First Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" required>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label for="last_name" class="form-label">Last Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" required>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label for="phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                                <input type="tel" class="form-control" id="phone" name="phone" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="address" class="form-label">Address</label>
+                                <textarea class="form-control" id="address" name="address" rows="3"></textarea>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label for="id_proof" class="form-label">ID Proof</label>
+                                <select class="form-select" id="id_proof" name="id_proof">
+                                    <option value="">-- Select ID Proof --</option>
+                                    <option value="Aadhar Card">Aadhar Card</option>
+                                    <option value="PAN Card">PAN Card</option>
+                                    <option value="Voter ID">Voter ID</option>
+                                    <option value="Driving License">Driving License</option>
+                                    <option value="Passport">Passport</option>
+                                    <option value="Student ID">Student ID</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label for="id_number" class="form-label">ID Number</label>
+                                <input type="text" class="form-control" id="id_number" name="id_number">
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="plan_id" class="form-label">Membership Plan <span class="text-danger">*</span></label>
+                                <select class="form-select" id="plan_id" name="plan_id" required>
+                                    <option value="">-- Select Plan --</option>
+                                    {% for plan in active_plans %}
+                                        <option value="{{ plan.id }}">{{ plan.name }} - ₹{{ plan.price }} ({{ plan.duration_days }} days)</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="start_date" class="form-label">Start Date <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="start_date" name="start_date" value="{{ today|date:'Y-m-d' }}" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Add Member
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Renew Membership Modal -->
+<div class="modal fade" id="renewMembershipModal" tabindex="-1" aria-labelledby="renewMembershipModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="renewMembershipModalLabel">Renew Membership</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{% url 'library_admin:renew_membership' %}">
+                {% csrf_token %}
+                <input type="hidden" name="membership_id" id="renewMembershipId">
+                <div class="modal-body">
+                    <p>You are renewing membership for: <strong id="renewMemberName"></strong></p>
+
+                    <div class="form-group mb-3">
+                        <label for="renew_plan_id" class="form-label">Membership Plan <span class="text-danger">*</span></label>
+                        <select class="form-select" id="renew_plan_id" name="plan_id" required>
+                            <option value="">-- Select Plan --</option>
+                            {% for plan in active_plans %}
+                                <option value="{{ plan.id }}">{{ plan.name }} - ₹{{ plan.price }} ({{ plan.duration_days }} days)</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="renew_start_date" class="form-label">Start Date <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control" id="renew_start_date" name="start_date" value="{{ today|date:'Y-m-d' }}" required>
+                        <small class="form-text text-muted">Leave as today to start immediately, or set a future date if renewing in advance.</small>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="payment_method" class="form-label">Payment Method</label>
+                        <select class="form-select" id="payment_method" name="payment_method">
+                            <option value="Cash">Cash</option>
+                            <option value="UPI">UPI</option>
+                            <option value="Card">Card</option>
+                            <option value="Bank Transfer">Bank Transfer</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="payment_reference" class="form-label">Payment Reference</label>
+                        <input type="text" class="form-control" id="payment_reference" name="payment_reference">
+                        <small class="form-text text-muted">Receipt number, transaction ID, etc.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-sync-alt"></i> Renew Membership
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Member Details Modal -->
+<div class="modal fade" id="memberDetailsModal" tabindex="-1" aria-labelledby="memberDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="memberDetailsModalLabel">Member Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="memberDetailsContent">
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p>Loading member details...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Check In Modal -->
+<div class="modal fade" id="quickCheckInModal" tabindex="-1" aria-labelledby="quickCheckInModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="quickCheckInModalLabel">Check In Member to Reading Hall</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{% url 'library_admin:record_attendance' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="check_in">
+                <input type="hidden" name="member_id" id="quickCheckInMemberId">
+                <div class="modal-body">
+                    <p>You are checking in: <strong id="quickCheckInMemberName"></strong></p>
+
+                    <div class="form-group mb-3">
+                        <label for="quick_purpose" class="form-label">Purpose</label>
+                        <select class="form-select" id="quick_purpose" name="purpose">
+                            <option value="">-- Select Purpose --</option>
+                            <option value="Self Study">Self Study</option>
+                            <option value="Exam Preparation">Exam Preparation</option>
+                            <option value="Reading Newspapers">Reading Newspapers</option>
+                            <option value="Reading Books">Reading Books</option>
+                            <option value="Using WiFi">Using WiFi</option>
+                            <option value="Borrowing Books">Borrowing Books</option>
+                            <option value="Returning Books">Returning Books</option>
+                            <option value="Research">Research</option>
+                            <option value="Group Study">Group Study</option>
+                            <option value="Using Reference Materials">Using Reference Materials</option>
+                            <option value="Competitive Exam Preparation">Competitive Exam Preparation</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="quick_notes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="quick_notes" name="notes" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-user-check"></i> Check In
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle export button click
+        const exportBtn = document.getElementById('exportMembersBtn');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', function() {
+                // Get current date in YYYY-MM-DD format
+                const today = new Date();
+                const date = today.getFullYear() + '-' +
+                      String(today.getMonth() + 1).padStart(2, '0') + '-' +
+                      String(today.getDate()).padStart(2, '0');
+
+                // Create a CSV from the table data
+                const table = document.getElementById('membersTable');
+                if (!table) {
+                    alert('No member data to export');
+                    return;
+                }
+
+                let csv = [];
+                const rows = table.querySelectorAll('tr');
+
+                // Add header row
+                const headerRow = [];
+                const headers = rows[0].querySelectorAll('th');
+                for (let i = 1; i < headers.length - 1; i++) { // Skip the checkbox and Actions columns
+                    headerRow.push('"' + headers[i].innerText.trim() + '"');
+                }
+                csv.push(headerRow.join(','));
+
+                // Add data rows
+                for (let i = 1; i < rows.length; i++) {
+                    const row = [];
+                    const cols = rows[i].querySelectorAll('td');
+
+                    // Skip the first (checkbox) and last (actions) columns
+                    for (let j = 1; j < cols.length - 1; j++) {
+                        // Clean up the text content
+                        let cellText = cols[j].innerText.trim().replace(/\n/g, ' ');
+                        row.push('"' + cellText + '"');
+                    }
+
+                    csv.push(row.join(','));
+                }
+
+                // Create and trigger download
+                const csvContent = csv.join('\n');
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+
+                link.setAttribute('href', url);
+                link.setAttribute('download', `library_members_${date}.csv`);
+                link.style.visibility = 'hidden';
+
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        }
+
+        // Handle renew membership button click
+        const renewButtons = document.querySelectorAll('.renew-membership-btn');
+        const renewMembershipModal = document.getElementById('renewMembershipModal');
+        const renewMembershipId = document.getElementById('renewMembershipId');
+        const renewMemberName = document.getElementById('renewMemberName');
+        const renewPlanId = document.getElementById('renew_plan_id');
+
+        renewButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const membershipId = this.getAttribute('data-id');
+                const memberName = this.getAttribute('data-name');
+                const planId = this.getAttribute('data-plan');
+
+                renewMembershipId.value = membershipId;
+                renewMemberName.textContent = memberName;
+                renewPlanId.value = planId;
+
+                const modal = new bootstrap.Modal(renewMembershipModal);
+                modal.show();
+            });
+        });
+
+        // Handle view member details button click
+        const viewButtons = document.querySelectorAll('.view-member-btn');
+        const memberDetailsModal = document.getElementById('memberDetailsModal');
+        const memberDetailsContent = document.getElementById('memberDetailsContent');
+
+        viewButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const membershipId = this.getAttribute('data-id');
+
+                // Show loading state
+                memberDetailsContent.innerHTML = `
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p>Loading member details...</p>
+                    </div>
+                `;
+
+                const modal = new bootstrap.Modal(memberDetailsModal);
+                modal.show();
+
+                // In a real implementation, you would fetch member details via AJAX
+                // For now, we'll simulate it with a timeout
+                setTimeout(() => {
+                    // This would be replaced with actual data from the server
+                    memberDetailsContent.innerHTML = `
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card border-0 mb-3">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0"><i class="fas fa-user-circle me-2"></i>Personal Information</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <p><strong>Name:</strong> John Doe</p>
+                                        <p><strong>Email:</strong> john.doe@example.com</p>
+                                        <p><strong>Phone:</strong> +91 9876543210</p>
+                                        <p><strong>Address:</strong> 123 Main St, Anytown, India</p>
+                                        <p><strong>ID Proof:</strong> Aadhar Card (1234-5678-9012)</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card border-0 mb-3">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0"><i class="fas fa-id-card me-2"></i>Membership Details</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <p><strong>Membership ID:</strong> MEM-12345</p>
+                                        <p><strong>Plan:</strong> Monthly Reading Hall Access</p>
+                                        <p><strong>Validity:</strong> Jan 1, 2023 to Jan 31, 2023</p>
+                                        <p><strong>Status:</strong> <span class="badge bg-success">Active</span></p>
+                                        <p><strong>Joined On:</strong> Dec 15, 2022</p>
+                                        <div class="d-grid gap-2 mt-3">
+                                            <button class="btn btn-sm btn-outline-primary" type="button">
+                                                <i class="fas fa-sync-alt me-1"></i> Renew Membership
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card border-0 mb-3">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0"><i class="fas fa-calendar-check me-2"></i>Recent Attendance</h6>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <table class="table table-sm mb-0">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Check In</th>
+                                                    <th>Check Out</th>
+                                                    <th>Duration</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Jan 15, 2023</td>
+                                                    <td>09:30 AM</td>
+                                                    <td>01:45 PM</td>
+                                                    <td>4h 15m</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Jan 12, 2023</td>
+                                                    <td>10:15 AM</td>
+                                                    <td>03:30 PM</td>
+                                                    <td>5h 15m</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Jan 10, 2023</td>
+                                                    <td>02:00 PM</td>
+                                                    <td>06:45 PM</td>
+                                                    <td>4h 45m</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="card border-0 mb-3">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0"><i class="fas fa-book me-2"></i>Reading Preferences</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <h6 class="text-muted mb-2">Frequently Used For</h6>
+                                            <div class="d-flex flex-wrap gap-1">
+                                                <span class="badge bg-primary">Self Study</span>
+                                                <span class="badge bg-primary">Exam Preparation</span>
+                                                <span class="badge bg-primary">Reading Newspapers</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <h6 class="text-muted mb-2">Average Study Time</h6>
+                                            <div class="progress" style="height: 10px;">
+                                                <div class="progress-bar bg-success" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <small class="text-muted">4.5 hours per visit</small>
+                                        </div>
+
+                                        <div>
+                                            <h6 class="text-muted mb-2">Preferred Seating</h6>
+                                            <p class="mb-0"><i class="fas fa-map-marker-alt text-danger me-1"></i> Quiet Zone, Window Side</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }, 1000);
+            });
+        });
+
+        // Handle check in button click
+        const checkInButtons = document.querySelectorAll('.check-in-btn');
+        const quickCheckInModal = document.getElementById('quickCheckInModal');
+        const quickCheckInMemberId = document.getElementById('quickCheckInMemberId');
+        const quickCheckInMemberName = document.getElementById('quickCheckInMemberName');
+
+        checkInButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const memberId = this.getAttribute('data-id');
+                const memberName = this.getAttribute('data-name');
+
+                quickCheckInMemberId.value = memberId;
+                quickCheckInMemberName.textContent = memberName;
+
+                const modal = new bootstrap.Modal(quickCheckInModal);
+                modal.show();
+            });
+        });
+
+        // Handle select all checkbox
+        const selectAllCheckbox = document.getElementById('selectAllMembers');
+        const memberCheckboxes = document.querySelectorAll('.member-checkbox');
+
+        if (selectAllCheckbox) {
+            selectAllCheckbox.addEventListener('change', function() {
+                memberCheckboxes.forEach(checkbox => {
+                    checkbox.checked = selectAllCheckbox.checked;
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,321 @@
+{% extends 'library_admin/base.html' %}
+{% load static %}
+
+{% block title %}Attendance Report - Library Management System{% endblock %}
+{% block breadcrumb_title %}Attendance Report{% endblock %}
+{% block page_title %}Attendance Report{% endblock %}
+
+{% block page_actions %}
+<a href="{% url 'library_admin:member_attendance' %}" class="admin-pro-btn admin-pro-btn-outline">
+    <i class="fas fa-arrow-left"></i> Back to Attendance
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="admin-pro-card mb-4">
+    <div class="admin-pro-card-header">
+        <h5 class="admin-pro-card-title">Attendance Report</h5>
+        <div class="admin-pro-card-toolbar">
+            <form action="{% url 'library_admin:attendance_report' %}" method="GET" class="admin-pro-search-form">
+                <div class="input-group">
+                    <span class="input-group-text">From</span>
+                    <input type="date" name="start_date" class="form-control" value="{{ start_date|date:'Y-m-d' }}" max="{{ today|date:'Y-m-d' }}">
+                    <span class="input-group-text">To</span>
+                    <input type="date" name="end_date" class="form-control" value="{{ end_date|date:'Y-m-d' }}" max="{{ today|date:'Y-m-d' }}">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="admin-pro-card-body">
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="admin-pro-card admin-pro-card-stats">
+                    <div class="admin-pro-card-body">
+                        <div class="admin-pro-stats-icon bg-primary">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="admin-pro-stats-content">
+                            <h3>{{ total_visits }}</h3>
+                            <p>Total Visits</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="admin-pro-card admin-pro-card-stats">
+                    <div class="admin-pro-card-body">
+                        <div class="admin-pro-stats-icon bg-success">
+                            <i class="fas fa-user-friends"></i>
+                        </div>
+                        <div class="admin-pro-stats-content">
+                            <h3>{{ unique_visitors }}</h3>
+                            <p>Unique Visitors</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="admin-pro-card admin-pro-card-stats">
+                    <div class="admin-pro-card-body">
+                        <div class="admin-pro-stats-icon bg-info">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="admin-pro-stats-content">
+                            <h3>{{ avg_duration }}</h3>
+                            <p>Avg. Minutes per Visit</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="admin-pro-card admin-pro-card-stats">
+                    <div class="admin-pro-card-body">
+                        <div class="admin-pro-stats-icon bg-warning">
+                            <i class="fas fa-calendar-day"></i>
+                        </div>
+                        <div class="admin-pro-stats-content">
+                            <h3>{{ visits_by_day|length }}</h3>
+                            <p>Days with Activity</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="admin-pro-card h-100">
+                    <div class="admin-pro-card-header">
+                        <h5 class="admin-pro-card-title">Most Frequent Visitors</h5>
+                    </div>
+                    <div class="admin-pro-card-body">
+                        {% if frequent_visitors %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Member</th>
+                                            <th>Visits</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for visitor in frequent_visitors %}
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="admin-pro-table-item-icon bg-primary">
+                                                            <i class="fas fa-user"></i>
+                                                        </div>
+                                                        <div class="ms-2">
+                                                            <h6 class="mb-0">{{ visitor.get_full_name }}</h6>
+                                                            <small class="text-muted">{{ visitor.email }}</small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-primary">{{ visitor.visit_count }} visits</span>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="admin-pro-empty-state">
+                                <p>No visitor data available for the selected period.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="admin-pro-card h-100">
+                    <div class="admin-pro-card-header">
+                        <h5 class="admin-pro-card-title">Visits by Purpose</h5>
+                    </div>
+                    <div class="admin-pro-card-body">
+                        {% if visits_by_purpose %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Purpose</th>
+                                            <th>Count</th>
+                                            <th>Percentage</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for purpose in visits_by_purpose %}
+                                            <tr>
+                                                <td>{{ purpose.purpose }}</td>
+                                                <td>{{ purpose.count }}</td>
+                                                <td>
+                                                    <div class="progress">
+                                                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ purpose.count|divisibleby:total_visits|floatformat:0 }}%;" aria-valuenow="{{ purpose.count }}" aria-valuemin="0" aria-valuemax="{{ total_visits }}">
+                                                            {{ purpose.count|divisibleby:total_visits|floatformat:0 }}%
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="admin-pro-empty-state">
+                                <p>No purpose data available for the selected period.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="admin-pro-card">
+                    <div class="admin-pro-card-header">
+                        <h5 class="admin-pro-card-title">Visits by Day of Week</h5>
+                    </div>
+                    <div class="admin-pro-card-body">
+                        {% if visits_by_day %}
+                            <div class="chart-container" style="height: 300px;">
+                                <canvas id="visitsChart"></canvas>
+                            </div>
+                        {% else %}
+                            <div class="admin-pro-empty-state">
+                                <p>No day-wise data available for the selected period.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="admin-pro-card">
+            <div class="admin-pro-card-header">
+                <h5 class="admin-pro-card-title">Attendance Records</h5>
+            </div>
+            <div class="admin-pro-card-body">
+                {% if attendances %}
+                    <div class="table-responsive">
+                        <table class="table table-hover admin-pro-table" id="attendanceReportTable">
+                            <thead>
+                                <tr>
+                                    <th>Member</th>
+                                    <th>Check In</th>
+                                    <th>Check Out</th>
+                                    <th>Duration</th>
+                                    <th>Purpose</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for attendance in attendances %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="admin-pro-table-item-icon bg-primary">
+                                                    <i class="fas fa-user"></i>
+                                                </div>
+                                                <div class="ms-2">
+                                                    <h6 class="mb-0">{{ attendance.user.get_full_name }}</h6>
+                                                    <small class="text-muted">{{ attendance.user.email }}</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>{{ attendance.check_in_time|date:"M d, Y" }}<br>{{ attendance.check_in_time|time:"h:i A" }}</td>
+                                        <td>
+                                            {% if attendance.check_out_time %}
+                                                {{ attendance.check_out_time|date:"M d, Y" }}<br>{{ attendance.check_out_time|time:"h:i A" }}
+                                            {% else %}
+                                                <span class="badge bg-success">Currently In</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if attendance.duration %}
+                                                {{ attendance.duration }} minutes
+                                            {% else %}
+                                                <span class="badge bg-warning">In Progress</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ attendance.purpose|default:"Not specified" }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="admin-pro-empty-state">
+                        <div class="admin-pro-empty-state-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <h3>No Attendance Records Found</h3>
+                        <p>There are no attendance records for the selected date range.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        {% if visits_by_day %}
+            // Prepare data for chart
+            const dayLabels = [
+                {% for day in visits_by_day %}
+                    "{{ day.day_name }}",
+                {% endfor %}
+            ];
+            
+            const visitCounts = [
+                {% for day in visits_by_day %}
+                    {{ day.count }},
+                {% endfor %}
+            ];
+            
+            // Create chart
+            const ctx = document.getElementById('visitsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: dayLabels,
+                    datasets: [{
+                        label: 'Number of Visits',
+                        data: visitCounts,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+        {% endif %}
+        
+        // Initialize DataTable if available
+        if (typeof $.fn.DataTable !== 'undefined') {
+            $('#attendanceReportTable').DataTable({
+                "pageLength": 10,
+                "order": [[1, "desc"]]
+            });
+        }
+    });
+</script>
+{% endblock %}

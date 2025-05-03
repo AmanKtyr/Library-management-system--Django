@@ -1,0 +1,307 @@
+{% extends 'library_admin/base.html' %}
+{% load static %}
+
+{% block title %}Add Membership Plan - Library Management System{% endblock %}
+{% block breadcrumb_title %}Add Membership Plan{% endblock %}
+{% block page_title %}Add Membership Plan{% endblock %}
+
+{% block content %}
+<div class="admin-pro-card mb-4">
+    <div class="admin-pro-card-header">
+        <h5 class="admin-pro-card-title">Add New Membership Plan</h5>
+        <div class="admin-pro-card-toolbar">
+            <a href="{% url 'library_admin:membership_plans' %}" class="admin-pro-btn admin-pro-btn-outline">
+                <i class="fas fa-arrow-left"></i> Back to Plans
+            </a>
+        </div>
+    </div>
+    <div class="admin-pro-card-body">
+        <form method="POST" action="{% url 'library_admin:add_membership_plan' %}">
+            {% csrf_token %}
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label for="name" class="form-label">Plan Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="plan_type" class="form-label">Plan Type <span class="text-danger">*</span></label>
+                        <select class="form-select" id="plan_type" name="plan_type" required>
+                            <option value="STUDENT">Student</option>
+                            <option value="GENERAL">General</option>
+                            <option value="SENIOR_CITIZEN">Senior Citizen</option>
+                            <option value="CORPORATE">Corporate</option>
+                            <option value="FAMILY">Family</option>
+                        </select>
+                        <small class="form-text text-muted">Type of membership plan</small>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="duration_days" class="form-label">Duration <span class="text-danger">*</span></label>
+                        <select class="form-select" id="duration_select" onchange="updateDurationDays()">
+                            <option value="30">1 Month</option>
+                            <option value="90">3 Months</option>
+                            <option value="180">6 Months</option>
+                            <option value="365">1 Year</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                        <div id="custom_duration_container" class="mt-2 d-none">
+                            <input type="number" class="form-control" id="duration_days_custom" min="1" placeholder="Enter custom duration in days">
+                        </div>
+                        <input type="hidden" id="duration_days" name="duration_days" value="30" required>
+                        <small class="form-text text-muted">Period for which the membership will be valid</small>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="max_books_allowed" class="form-label">Max Books Allowed <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="max_books_allowed" name="max_books_allowed" min="0" required>
+                        <small class="form-text text-muted">Maximum number of books a member can borrow at once (0 for reading hall only)</small>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="max_borrowing_days" class="form-label">Max Borrowing Days <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="max_borrowing_days" name="max_borrowing_days" min="0" required>
+                        <small class="form-text text-muted">Maximum number of days a book can be borrowed</small>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label for="price" class="form-label">Membership Fee (₹) <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="price" name="price" min="0" step="1" required>
+                        <small class="form-text text-muted">Membership fee for the plan duration</small>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="security_deposit" class="form-label">Security Deposit (₹)</label>
+                        <input type="number" class="form-control" id="security_deposit" name="security_deposit" min="0" step="1" value="0">
+                        <small class="form-text text-muted">Refundable security deposit (if applicable)</small>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label">Features</label>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="reading_hall_access" name="reading_hall_access" checked>
+                            <label class="form-check-label" for="reading_hall_access">Reading Hall Access</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="wifi_access" name="wifi_access" checked>
+                            <label class="form-check-label" for="wifi_access">WiFi Access</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="newspaper_access" name="newspaper_access" checked>
+                            <label class="form-check-label" for="newspaper_access">Newspaper & Magazine Access</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="computer_access" name="computer_access">
+                            <label class="form-check-label" for="computer_access">Computer Access</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="is_active" name="is_active" checked>
+                        <label class="form-check-label" for="is_active">Active</label>
+                        <small class="form-text text-muted d-block">If checked, this plan will be available for new memberships</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end">
+                <a href="{% url 'library_admin:membership_plans' %}" class="admin-pro-btn admin-pro-btn-outline me-2">Cancel</a>
+                <button type="submit" class="admin-pro-btn admin-pro-btn-primary">
+                    <i class="fas fa-save"></i> Save Plan
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function updateDurationDays() {
+        const durationSelect = document.getElementById('duration_select');
+        const customDurationContainer = document.getElementById('custom_duration_container');
+        const durationDaysInput = document.getElementById('duration_days');
+        const durationDaysCustomInput = document.getElementById('duration_days_custom');
+
+        if (durationSelect.value === 'custom') {
+            customDurationContainer.classList.remove('d-none');
+            durationDaysCustomInput.addEventListener('input', function() {
+                durationDaysInput.value = this.value;
+            });
+        } else {
+            customDurationContainer.classList.add('d-none');
+            durationDaysInput.value = durationSelect.value;
+        }
+
+        // Update price based on duration and plan type
+        updateSuggestedPrice();
+    }
+
+    function updateSuggestedPrice() {
+        const planType = document.getElementById('plan_type').value;
+        const durationDays = parseInt(document.getElementById('duration_days').value);
+        const priceInput = document.getElementById('price');
+        const securityDepositInput = document.getElementById('security_deposit');
+
+        let basePrice = 0;
+        let baseDeposit = 0;
+
+        // Set base prices based on plan type (monthly rates)
+        switch(planType) {
+            case 'STUDENT':
+                basePrice = 100;
+                baseDeposit = 500;
+                break;
+            case 'GENERAL':
+                basePrice = 200;
+                baseDeposit = 1000;
+                break;
+            case 'SENIOR_CITIZEN':
+                basePrice = 150;
+                baseDeposit = 500;
+                break;
+            case 'CORPORATE':
+                basePrice = 500;
+                baseDeposit = 2000;
+                break;
+            case 'FAMILY':
+                basePrice = 300;
+                baseDeposit = 1500;
+                break;
+        }
+
+        // Calculate price based on duration
+        let months = durationDays / 30;
+        let suggestedPrice = Math.round(basePrice * months);
+
+        // Apply discounts for longer durations
+        if (months >= 12) {
+            suggestedPrice = Math.round(suggestedPrice * 0.8); // 20% discount for annual plans
+        } else if (months >= 6) {
+            suggestedPrice = Math.round(suggestedPrice * 0.9); // 10% discount for 6-month plans
+        } else if (months >= 3) {
+            suggestedPrice = Math.round(suggestedPrice * 0.95); // 5% discount for 3-month plans
+        }
+
+        priceInput.value = suggestedPrice;
+        securityDepositInput.value = baseDeposit;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set default values
+        document.getElementById('max_books_allowed').value = 3;
+        document.getElementById('max_borrowing_days').value = 14;
+
+        // Initialize duration days
+        updateDurationDays();
+
+        // Add event listeners
+        document.getElementById('plan_type').addEventListener('change', updateSuggestedPrice);
+        document.getElementById('duration_select').addEventListener('change', updateDurationDays);
+
+        // Set suggested plan names based on type and duration
+        document.getElementById('plan_type').addEventListener('change', function() {
+            const planType = this.value;
+            const durationSelect = document.getElementById('duration_select');
+            const nameInput = document.getElementById('name');
+
+            let typeName = '';
+            switch(planType) {
+                case 'STUDENT':
+                    typeName = 'Student';
+                    break;
+                case 'GENERAL':
+                    typeName = 'General';
+                    break;
+                case 'SENIOR_CITIZEN':
+                    typeName = 'Senior Citizen';
+                    break;
+                case 'CORPORATE':
+                    typeName = 'Corporate';
+                    break;
+                case 'FAMILY':
+                    typeName = 'Family';
+                    break;
+            }
+
+            let durationText = '';
+            switch(durationSelect.value) {
+                case '30':
+                    durationText = 'Monthly';
+                    break;
+                case '90':
+                    durationText = 'Quarterly';
+                    break;
+                case '180':
+                    durationText = 'Half-Yearly';
+                    break;
+                case '365':
+                    durationText = 'Annual';
+                    break;
+                default:
+                    durationText = '';
+            }
+
+            nameInput.value = typeName + ' ' + durationText + ' Membership';
+        });
+
+        document.getElementById('duration_select').addEventListener('change', function() {
+            const durationValue = this.value;
+            const planType = document.getElementById('plan_type').value;
+            const nameInput = document.getElementById('name');
+
+            let typeName = '';
+            switch(planType) {
+                case 'STUDENT':
+                    typeName = 'Student';
+                    break;
+                case 'GENERAL':
+                    typeName = 'General';
+                    break;
+                case 'SENIOR_CITIZEN':
+                    typeName = 'Senior Citizen';
+                    break;
+                case 'CORPORATE':
+                    typeName = 'Corporate';
+                    break;
+                case 'FAMILY':
+                    typeName = 'Family';
+                    break;
+            }
+
+            let durationText = '';
+            switch(durationValue) {
+                case '30':
+                    durationText = 'Monthly';
+                    break;
+                case '90':
+                    durationText = 'Quarterly';
+                    break;
+                case '180':
+                    durationText = 'Half-Yearly';
+                    break;
+                case '365':
+                    durationText = 'Annual';
+                    break;
+                case 'custom':
+                    durationText = 'Custom';
+                    break;
+            }
+
+            nameInput.value = typeName + ' ' + durationText + ' Membership';
+        });
+
+        // Trigger initial name suggestion
+        document.getElementById('plan_type').dispatchEvent(new Event('change'));
+    });
+</script>
+{% endblock %}
