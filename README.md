@@ -116,7 +116,13 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [AOS Library](https://michalsnik.github.io/aos/)
 - [Google Fonts](https://fonts.google.com/)
 
+
+super admin
 Id aman@gmail.com
+pass Aman@#12
+
+Library admin
+Id ktyrpro@gmail.com
 pass Aman@#12
 
 
